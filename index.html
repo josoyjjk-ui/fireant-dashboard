@@ -351,7 +351,7 @@
         <span class="ev-badge">🗓 2월 25일 오후 9시</span>
         <span class="ev-badge reward">🔥 Block Street NFT x 50명 + 스타벅스 x 400명</span>
       </div>
-      <div class="ev-countdown" data-target="2026-02-25T21:00:00+09:00"></div>
+      <div class="ev-countdown" data-target="2026-02-25T22:00:00+09:00"></div>
       <a href="https://t.me/fireantcrypto" target="_blank" class="ev-btn">참여하기 →</a>
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSdvCJj9VFPQiGhRYMkTG-HIxaKv4EHcGfnn589N2bZiiszcMQ/viewform" target="_blank" class="ev-btn-outline">응모폼 →</a>
     </div>
@@ -367,7 +367,7 @@
         <span class="ev-badge">🗓 2/24 (월) ~ 2/28 (금)</span>
         <span class="ev-badge reward">💰 300만원 상당</span>
       </div>
-      <div class="ev-countdown" data-target="2026-02-24T00:00:00+09:00"></div>
+      <div class="ev-countdown" data-target="2026-02-28T23:59:59+09:00"></div>
       <a href="https://t.me/fireantcrypto" target="_blank" class="ev-btn">참여하기 →</a>
     </div>
   </div>
@@ -508,12 +508,12 @@ function updateCountdowns() {
     const target = new Date(el.dataset.target).getTime();
     const now = Date.now();
     const diff = target - now;
-    if (diff <= 0) { el.textContent = '🔴 진행 중!'; return; }
+    if (diff <= 0) { el.textContent = '🔴 종료됨'; return; }
     const d = Math.floor(diff / 86400000);
     const h = Math.floor((diff % 86400000) / 3600000);
-    let txt = '⏰ ';
-    if (d > 0) txt += d + '일 ' + h + '시간 남음';
-    else txt += h + '시간 남음';
+    let txt = '⏰ 종료까지 ';
+    if (d > 0) txt += d + '일 ' + h + '시간';
+    else txt += h + '시간';
     el.textContent = txt;
   });
 }
