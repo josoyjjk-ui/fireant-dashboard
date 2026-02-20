@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 불개미 CRYPTO</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;600;700;900&display=swap');
+  
+  :root {
+    --bg: #08080f;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,68,68,0.4);
+    --red: #FF3B3B;
+    --orange: #FF6B35;
+    --gold: #FFD740;
+    --blue: #5B8DEF;
+    --green: #4ADE80;
+    --text: #E8E8ED;
+    --text-dim: #6B6B80;
+    --text-muted: #3E3E50;
+    --glow-red: rgba(255,59,59,0.15);
+    --glow-orange: rgba(255,107,53,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Noto Sans KR', 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  canvas#particles {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+  }
+
+  /* Ambient glow */
+  .ambient {
+    position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(255,59,59,0.08) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 16px 60px;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 0;
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(8,8,15,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 900; font-size: 1.1rem; color: var(--red);
+  }
+  .nav-brand img { width: 28px; height: 28px; border-radius: 50%; }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none;
+    font-size: 0.78rem; font-weight: 600;
+    padding: 6px 12px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 48px 0 32px;
+  }
+  .hero-logo {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--red);
+    box-shadow: 0 0 40px var(--glow-red);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--red), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+  .hero .tagline {
+    color: var(--text-dim); font-size: 0.88rem;
+    margin-top: 8px; font-weight: 400;
+  }
+
+  /* PRICE TICKER removed */
+
+  /* ── SECTION ── */
+  .section { margin-top: 36px; }
+  .section-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px;
+  }
+  .section-head h2 {
+    font-size: 1rem; font-weight: 800; color: var(--text);
+  }
+  .section-head .count {
+    font-size: 0.7rem; font-weight: 700;
+    color: var(--red); background: var(--glow-red);
+    padding: 2px 8px; border-radius: 6px;
+  }
+
+  /* ── EVENT CARD ── */
+  .ev-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  .ev-card:hover {
+    border-color: var(--border-hover);
+    background: var(--surface-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 40px rgba(255,59,59,0.08);
+  }
+  .ev-card .status-dot {
+    position: absolute; top: 20px; right: 20px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(74,222,128,0.5);
+    animation: pulse 2s infinite;
+  }
+  .ev-card .status-dot.ended { background: var(--text-muted); box-shadow: none; animation: none; }
+  .ev-card .status-dot.soon { background: var(--gold); box-shadow: 0 0 8px rgba(255,215,64,0.5); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .ev-tag {
+    display: inline-block;
+    font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 3px 10px; border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .ev-tag.ama { background: rgba(91,141,239,0.15); color: var(--blue); }
+  .ev-tag.fireweek { background: var(--glow-red); color: var(--red); }
+  .ev-tag.event { background: rgba(255,215,64,0.12); color: var(--gold); }
+  .ev-tag.airdrop { background: rgba(74,222,128,0.12); color: var(--green); }
+
+  .ev-title {
+    font-size: 1rem; font-weight: 800;
+    color: var(--text); line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  .ev-title a { color: inherit; text-decoration: none; }
+  .ev-title a:hover { color: var(--orange); }
+
+  .ev-meta {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 12px;
+  }
+  .ev-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.73rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+  }
+  .ev-badge.reward { color: var(--gold); }
+
+  .ev-countdown {
+    font-family: 'Inter', monospace;
+    font-size: 0.82rem; font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 12px;
+  }
+
+  .ev-rewards {
+    display: flex; flex-direction: column; gap: 4px;
+    margin-bottom: 14px;
+  }
+  .ev-reward {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.82rem; color: var(--text-dim);
+  }
+  .ev-reward::before { content: '🎁'; font-size: 0.75rem; }
+
+  .ev-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px;
+    background: linear-gradient(135deg, var(--red), var(--orange));
+    color: #fff; text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem; font-weight: 700;
+    transition: all 0.2s;
+    border: none; cursor: pointer;
+  }
+  .ev-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 20px rgba(255,59,59,0.3);
+  }
+  .ev-btn-outline {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px;
+    background: transparent;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem; font-weight: 700;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    margin-left: 8px;
+  }
+  .ev-btn-outline:hover { border-color: var(--red); color: var(--text); }
+
+  /* ── INSIGHT LIST ── */
+  .insight {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    text-decoration: none;
+    transition: all 0.25s;
+  }
+  .insight:hover {
+    border-color: var(--border-hover);
+    background: var(--surface-hover);
+  }
+  .insight-icon {
+    width: 36px; height: 36px; min-width: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    background: var(--glow-red);
+  }
+  .insight-body { flex: 1; min-width: 0; }
+  .insight-title {
+    font-size: 0.88rem; font-weight: 700;
+    color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .insight-date {
+    font-size: 0.72rem; color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .insight-arrow { color: var(--text-muted); font-size: 0.9rem; }
+
+  /* ── SOCIAL GRID ── */
+  .social-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .social-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: all 0.25s;
+  }
+  .social-card:hover {
+    border-color: var(--border-hover);
+    background: var(--surface-hover);
+    transform: translateY(-1px);
+  }
+  .social-icon { font-size: 1.4rem; }
+  .social-name { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+  .social-handle { font-size: 0.7rem; color: var(--text-dim); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    margin-top: 48px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .footer p { font-size: 0.72rem; color: var(--text-muted); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 420px) {
+    .hero h1 { font-size: 1.6rem; }
+    .tick { padding: 12px; }
+    .tick-price { font-size: 1rem; }
+    .social-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="ambient"></div>
+
+<div class="wrap">
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="nav-brand">🔥 불개미</div>
+    <div class="nav-links">
+      <a href="#events">이벤트</a>
+      <a href="#insights">인사이트</a>
+      <a href="#links">채널</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <img src="https://raw.githubusercontent.com/nickandfireant/fireant-assets/main/fireant-logo.png" alt="불개미" class="hero-logo"
+         onerror="this.style.display='none'">
+    <h1>불개미 CRYPTO</h1>
+    <div class="tagline">해외 크립토 프로젝트 · 한국 마케팅 · 커뮤니티</div>
+  </div>
+
+  <!-- PRICE TICKER removed -->
+
+  <!-- EVENTS -->
+  <div class="section" id="events">
+    <div class="section-head">
+      <h2>📌 이벤트</h2>
+      <span class="count">LIVE 2</span>
+    </div>
+
+    <!-- Block Street AMA -->
+    <div class="ev-card">
+      <div class="status-dot"></div>
+      <span class="ev-tag ama">AMA</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto" target="_blank">Block Street AMA with 불개미</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 2월 26일 (수) 오후 9시</span>
+        <span class="ev-badge reward">💰 50만원 상당</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-02-26T21:00:00+09:00"></div>
+      <div class="ev-rewards">
+        <div class="ev-reward">Block Street 토큰 에어드롭 추첨</div>
+        <div class="ev-reward">스타벅스 기프트카드 x 50명</div>
+      </div>
+      <a href="https://t.me/fireantcrypto" target="_blank" class="ev-btn">참여하기 →</a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdvCJj9VFPQiGhRYMkTG-HIxaKv4EHcGfnn589N2bZiiszcMQ/viewform" target="_blank" class="ev-btn-outline">응모폼 →</a>
+    </div>
+
+    <!-- Block Street Fireweek -->
+    <div class="ev-card">
+      <div class="status-dot soon"></div>
+      <span class="ev-tag fireweek">🔥 FIREWEEK</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto" target="_blank">Block Street Fireweek — Web3 Toss</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 2/24 (월) ~ 2/28 (금)</span>
+        <span class="ev-badge reward">💰 300만원 상당</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-02-24T00:00:00+09:00"></div>
+      <div class="ev-rewards">
+        <div class="ev-reward">월: 분석영상 | 화: 사용해보기</div>
+        <div class="ev-reward">수: AMA | 목: 후기야핑 | 금: 리워드</div>
+      </div>
+      <a href="https://t.me/fireantcrypto" target="_blank" class="ev-btn">참여하기 →</a>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="section" id="insights">
+    <div class="section-head">
+      <h2>💡 최근 인사이트</h2>
+    </div>
+
+    <a href="https://t.me/fireantcrypto" target="_blank" class="insight">
+      <div class="insight-icon">📊</div>
+      <div class="insight-body">
+        <div class="insight-title">BTC ETF 자금흐름 vs 가격 상관관계 분석</div>
+        <div class="insight-date">2026.02</div>
+      </div>
+      <span class="insight-arrow">→</span>
+    </a>
+
+    <a href="https://t.me/fireantcrypto" target="_blank" class="insight">
+      <div class="insight-icon">🔥</div>
+      <div class="insight-body">
+        <div class="insight-title">스테이블코인 → RWA → 자금 재유입 내러티브</div>
+        <div class="insight-date">2026.02</div>
+      </div>
+      <span class="insight-arrow">→</span>
+    </a>
+
+    <a href="https://t.me/fireantcrypto" target="_blank" class="insight">
+      <div class="insight-icon">🏛️</div>
+      <div class="insight-body">
+        <div class="insight-title">거래소 라이선스 인수합병 시나리오</div>
+        <div class="insight-date">2026.02</div>
+      </div>
+      <span class="insight-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- SOCIAL -->
+  <div class="section" id="links">
+    <div class="section-head">
+      <h2>🔗 채널</h2>
+    </div>
+    <div class="social-grid">
+      <a href="https://t.me/fireantcrypto" target="_blank" class="social-card">
+        <span class="social-icon">💬</span>
+        <div>
+          <div class="social-name">Telegram</div>
+          <div class="social-handle">@fireantcrypto</div>
+        </div>
+      </a>
+      <a href="https://x.com/ROKMCFIREANT" target="_blank" class="social-card">
+        <span class="social-icon">𝕏</span>
+        <div>
+          <div class="social-name">X (Twitter)</div>
+          <div class="social-handle">@ROKMCFIREANT</div>
+        </div>
+      </a>
+      <a href="https://t.me/Blockstreet_KR" target="_blank" class="social-card">
+        <span class="social-icon">🏢</span>
+        <div>
+          <div class="social-name">Block Street</div>
+          <div class="social-handle">파트너 채널</div>
+        </div>
+      </a>
+      <a href="https://t.me/Blockstreet_KR_community" target="_blank" class="social-card">
+        <span class="social-icon">👥</span>
+        <div>
+          <div class="social-name">커뮤니티</div>
+          <div class="social-handle">Block Street</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>© 2026 불개미 CRYPTO · Built with 🔥</p>
+  </div>
+
+</div>
+
+<script>
+// ── FIRE PARTICLES ──
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor(init) {
+    this.reset();
+    if (init) { this.y = Math.random() * H; this.life = Math.random() * 120; }
+  }
+  reset() {
+    this.x = Math.random() * W;
+    this.y = H + 5;
+    this.size = Math.random() * 2.5 + 0.5;
+    this.vy = -(Math.random() * 1.2 + 0.2);
+    this.vx = (Math.random() - 0.5) * 0.4;
+    this.opacity = Math.random() * 0.35 + 0.05;
+    this.hue = Math.random() > 0.6 ? 0 : 20; // red or orange
+    this.life = 0;
+    this.maxLife = Math.random() * 250 + 80;
+  }
+  update() {
+    this.y += this.vy;
+    this.x += this.vx + Math.sin(this.life * 0.015) * 0.2;
+    this.life++;
+    this.opacity *= 0.997;
+    if (this.life > this.maxLife || this.y < -10 || this.opacity < 0.005) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${this.hue}, 100%, 55%, ${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 50; i++) particles.push(new Particle(true));
+
+(function animate() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animate);
+})();
+
+// ── COUNTDOWN TIMERS ──
+function updateCountdowns() {
+  document.querySelectorAll('.ev-countdown[data-target]').forEach(el => {
+    const target = new Date(el.dataset.target).getTime();
+    const now = Date.now();
+    const diff = target - now;
+    if (diff <= 0) { el.textContent = '🔴 진행 중!'; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    let txt = '⏰ ';
+    if (d > 0) txt += d + '일 ' + h + '시간 남음';
+    else txt += h + '시간 남음';
+    el.textContent = txt;
+  });
+}
+updateCountdowns();
+setInterval(updateCountdowns, 60000);
+</script>
+</body>
+</html>
