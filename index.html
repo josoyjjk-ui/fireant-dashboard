@@ -298,6 +298,63 @@
   }
   .footer p { font-size: 0.72rem; color: var(--text-muted); }
 
+  /* ── EXTERNAL EVENT CARD (compact) ── */
+  .ev-card-sm {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  .ev-card-sm:hover {
+    border-color: var(--border-hover);
+    background: var(--surface-hover);
+  }
+  .ev-card-sm .status-dot {
+    position: absolute; top: 14px; right: 14px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(74,222,128,0.4);
+    animation: pulse 2s infinite;
+  }
+  .ev-card-sm .status-dot.ended { background: var(--text-muted); box-shadow: none; animation: none; }
+  .ev-card-sm .status-dot.soon { background: var(--gold); box-shadow: 0 0 6px rgba(255,215,64,0.4); }
+  .ev-card-sm .ev-tag {
+    font-size: 0.62rem;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+  }
+  .ev-card-sm .ev-title {
+    font-size: 0.88rem; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .ev-card-sm .ev-meta { margin-bottom: 8px; }
+  .ev-card-sm .ev-badge { font-size: 0.68rem; padding: 3px 8px; }
+  .ev-card-sm .ev-countdown { font-size: 0.75rem; margin-bottom: 8px; }
+  .ev-card-sm .ev-btn {
+    padding: 7px 16px;
+    font-size: 0.75rem;
+  }
+  .ev-card-sm .ev-btn-outline {
+    padding: 7px 16px;
+    font-size: 0.75rem;
+  }
+
+  .section-head-sub {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px; margin-top: 24px;
+  }
+  .section-head-sub h3 {
+    font-size: 0.88rem; font-weight: 700; color: var(--text-dim);
+  }
+  .section-head-sub .count {
+    font-size: 0.65rem; font-weight: 700;
+    color: var(--text-dim); background: rgba(255,255,255,0.06);
+    padding: 2px 7px; border-radius: 5px;
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 420px) {
     .hero h1 { font-size: 1.6rem; }
@@ -333,10 +390,10 @@
 
   <!-- PRICE TICKER removed -->
 
-  <!-- EVENTS -->
+  <!-- EVENTS: 불개미 주관 -->
   <div class="section" id="events">
     <div class="section-head">
-      <h2>📌 이벤트</h2>
+      <h2>📌 불개미 주관 이벤트</h2>
       <span class="count">LIVE 2</span>
     </div>
 
@@ -370,6 +427,29 @@
       <div class="ev-countdown" data-target="2026-02-27T23:59:59+09:00"></div>
       <a href="https://t.me/fireantcrypto/39764" target="_blank" class="ev-btn">참여하기 →</a>
     </div>
+
+    <!-- EVENTS: 외부 참여 가능 -->
+    <div class="section-head-sub">
+      <h3>🌐 외부 참여 가능 이벤트</h3>
+      <span class="count">0</span>
+    </div>
+
+    <!-- 외부 이벤트가 추가되면 아래 형식으로 -->
+    <!--
+    <div class="ev-card-sm">
+      <div class="status-dot"></div>
+      <span class="ev-tag event">EVENT</span>
+      <div class="ev-title"><a href="#" target="_blank">이벤트 제목</a></div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 일정</span>
+        <span class="ev-badge reward">🔥 보상</span>
+      </div>
+      <div class="ev-countdown" data-target=""></div>
+      <a href="#" target="_blank" class="ev-btn">참여하기 →</a>
+    </div>
+    -->
+    <div style="text-align:center; padding:16px 0; color:var(--text-muted); font-size:0.8rem;">현재 진행 중인 외부 이벤트가 없습니다</div>
+
   </div>
 
   <!-- INSIGHTS -->
