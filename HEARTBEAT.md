@@ -1,0 +1,26 @@
+# HEARTBEAT.md
+
+## 예약 작업
+
+### 매일 오후 2:30 KST — ETF 유출입 현황 포스트
+1. SoSoValue 브라우저 접속 (BTC: sosovalue.com/assets/etf/us-btc-spot, ETH: sosovalue.com/assets/etf/us-eth-spot)
+2. Daily Total Net Inflow + Market Data 테이블 (CumNetInflow 컬럼까지만) 스크린샷 크롭
+3. BTC/ETH 좌우 합체 이미지 생성
+4. 불개미 스타일 포스트 작성:
+   ```
+   🪙🔹 비트코인, 이더리움 현물 ETF 유출입 현황
+   
+   비트코인 : [금액] 순유입/순유출
+   이더리움 : [금액] 순유입/순유출
+   
+   [데이터 해석 + 주요 ETF별 동향 + 한 줄 결론]
+   ```
+5. 이미지 + 캡션을 텔레그램(477743685)으로 전송
+- 참고: 미국장 마감 후 데이터 반영 시차가 있어 전일(미국 기준) 데이터가 최신일 수 있음
+
+### 다음주까지 매일 — 텔레그램 아카이빙 50개 적재 (Notion)
+1. 대상 채널: https://t.me/fireantcrypto
+2. 적재량: 하루 50개 (중복 제외)
+3. 저장 위치: Notion "불개미 크립토 아카이빙" 하위 "콘텐츠 DB"
+4. 저장 필드: 제목/채널/작성일/원문링크/본문/태그/핵심수치/수집시각/포스트ID/플랫폼
+5. 진행 보고: 적재 완료 후 당일 누적 건수 보고
