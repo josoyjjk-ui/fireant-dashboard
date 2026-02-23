@@ -8,7 +8,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;600;700;900&display=swap');
   
-  :root {
+  :root, [data-theme="dark"] {
     --bg: #08080f;
     --surface: rgba(255,255,255,0.04);
     --surface-hover: rgba(255,255,255,0.07);
@@ -26,6 +26,30 @@
     --glow-orange: rgba(255,107,53,0.12);
     --radius: 16px;
     --radius-sm: 10px;
+    --nav-bg: rgba(8,8,15,0.85);
+    --particle-opacity: 1;
+    --ambient-opacity: 1;
+  }
+
+  [data-theme="light"] {
+    --bg: #F5F5F7;
+    --surface: rgba(0,0,0,0.03);
+    --surface-hover: rgba(0,0,0,0.06);
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(255,68,68,0.3);
+    --red: #E02020;
+    --orange: #E85D2A;
+    --gold: #D4A017;
+    --blue: #3B6FD4;
+    --green: #22A855;
+    --text: #1A1A2E;
+    --text-dim: #5A5A72;
+    --text-muted: #9E9EB5;
+    --glow-red: rgba(224,32,32,0.08);
+    --glow-orange: rgba(232,93,42,0.06);
+    --nav-bg: rgba(245,245,247,0.9);
+    --particle-opacity: 0.3;
+    --ambient-opacity: 0.4;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,12 +61,21 @@
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  /* Smooth transitions for themed elements */
+  .ev-card, .ev-card-sm, .insight, .social-card, .nav, .ev-badge,
+  .ev-tag, .ev-countdown, .ev-btn-outline, .footer {
+    transition: all 0.3s ease;
   }
 
   canvas#particles {
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
     z-index: 0; pointer-events: none;
+    opacity: var(--particle-opacity);
+    transition: opacity 0.4s;
   }
 
   /* Ambient glow */
@@ -51,6 +84,28 @@
     width: 600px; height: 400px;
     background: radial-gradient(ellipse, rgba(255,59,59,0.08) 0%, transparent 70%);
     pointer-events: none; z-index: 0;
+    opacity: var(--ambient-opacity);
+    transition: opacity 0.4s;
+  }
+
+  /* Theme toggle button */
+  .theme-toggle {
+    width: 34px; height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    margin-left: 6px;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+    background: var(--surface-hover);
   }
 
   .wrap {
@@ -65,7 +120,7 @@
     display: flex; align-items: center; justify-content: space-between;
     padding: 16px 0;
     position: sticky; top: 0; z-index: 10;
-    background: rgba(8,8,15,0.85);
+    background: var(--nav-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
@@ -355,6 +410,19 @@
     padding: 2px 7px; border-radius: 5px;
   }
 
+  /* ── LIGHT THEME OVERRIDES ── */
+  [data-theme="light"] .hero-logo {
+    border-color: var(--red);
+    box-shadow: 0 0 20px rgba(224,32,32,0.15);
+  }
+  [data-theme="light"] .ev-card:hover,
+  [data-theme="light"] .ev-card-sm:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+  [data-theme="light"] .ev-btn {
+    box-shadow: 0 2px 10px rgba(224,32,32,0.2);
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 420px) {
     .hero h1 { font-size: 1.6rem; }
@@ -378,6 +446,7 @@
       <a href="#events">이벤트</a>
       <a href="#insights">인사이트</a>
       <a href="#links">채널</a>
+      <button class="theme-toggle" id="themeToggle" title="테마 전환">🌙</button>
     </div>
   </div>
 
@@ -645,6 +714,25 @@ function updateEventStatuses() {
 }
 updateEventStatuses();
 setInterval(updateEventStatuses, 60000);
+
+// ── THEME TOGGLE ──
+const themeBtn = document.getElementById('themeToggle');
+const html = document.documentElement;
+
+// 저장된 테마 복원
+const saved = localStorage.getItem('fa-theme');
+if (saved) {
+  html.setAttribute('data-theme', saved);
+  themeBtn.textContent = saved === 'light' ? '☀️' : '🌙';
+}
+
+themeBtn.addEventListener('click', () => {
+  const current = html.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  themeBtn.textContent = next === 'light' ? '☀️' : '🌙';
+  localStorage.setItem('fa-theme', next);
+});
 </script>
 </body>
 </html>
