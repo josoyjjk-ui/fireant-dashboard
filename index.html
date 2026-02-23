@@ -398,7 +398,7 @@
     </div>
 
     <!-- 한국경제TV 출연 기념 에어드랍 -->
-    <div class="ev-card">
+    <div class="ev-card" data-start="2026-02-23T00:00:00+09:00" data-end="2026-03-03T23:59:59+09:00">
       <div class="status-dot"></div>
       <span class="ev-tag" style="background:linear-gradient(135deg,#FF6B35,#FF3B3B);color:#fff;">☕ 에어드랍</span>
       <div class="ev-title">
@@ -414,7 +414,7 @@
     </div>
 
     <!-- Block Street AMA -->
-    <div class="ev-card">
+    <div class="ev-card" data-start="2026-02-25T21:00:00+09:00" data-end="2026-02-25T23:00:00+09:00">
       <div class="status-dot"></div>
       <span class="ev-tag ama">AMA</span>
       <div class="ev-title">
@@ -430,7 +430,7 @@
     </div>
 
     <!-- Block Street Fireweek -->
-    <div class="ev-card">
+    <div class="ev-card" data-start="2026-02-23T00:00:00+09:00" data-end="2026-02-27T23:59:59+09:00">
       <div class="status-dot"></div>
       <span class="ev-tag fireweek">🔥 FIREWEEK</span>
       <div class="ev-title">
@@ -450,7 +450,7 @@
       <span class="count">2</span>
     </div>
 
-    <div class="ev-card-sm">
+    <div class="ev-card-sm" data-start="2026-02-19T00:00:00+09:00" data-end="2026-02-26T23:59:59+09:00">
       <div class="status-dot"></div>
       <span class="ev-tag event">EVENT</span>
       <div class="ev-title"><a href="https://t.me/Blockstreet_KR/5" target="_blank">Block Street 한국 커뮤니티 오픈 이벤트</a></div>
@@ -463,7 +463,7 @@
       <a href="https://naver.me/5zUAGOe3" target="_blank" class="ev-btn-outline">응모폼 →</a>
     </div>
 
-    <div class="ev-card-sm">
+    <div class="ev-card-sm" data-start="2026-02-19T00:00:00+09:00" data-end="2026-03-05T23:59:59+09:00">
       <div class="status-dot"></div>
       <span class="ev-tag event">EVENT</span>
       <div class="ev-title"><a href="https://t.me/fireantcrypto/39741" target="_blank">Virtuals 한국 커뮤니티 오픈 이벤트</a></div>
@@ -607,23 +607,44 @@ for (let i = 0; i < 50; i++) particles.push(new Particle(true));
   requestAnimationFrame(animate);
 })();
 
-// ── COUNTDOWN TIMERS ──
-function updateCountdowns() {
+// ── AUTO STATUS + COUNTDOWN ──
+function updateEventStatuses() {
+  const now = Date.now();
+  // 이벤트 카드 상태 자동 전환 (data-start, data-end 기반)
+  document.querySelectorAll('[data-start][data-end]').forEach(card => {
+    const start = new Date(card.dataset.start).getTime();
+    const end = new Date(card.dataset.end).getTime();
+    const dot = card.querySelector('.status-dot');
+    if (!dot) return;
+    // 클래스 초기화
+    dot.classList.remove('soon', 'ended');
+    if (now < start) {
+      // 시작 전 → 노란색
+      dot.classList.add('soon');
+    } else if (now > end) {
+      // 종료 → 회색
+      dot.classList.add('ended');
+    }
+    // else: 진행 중 → 기본 (초록/빨간 = live)
+  });
+
+  // 카운트다운 타이머
   document.querySelectorAll('.ev-countdown[data-target]').forEach(el => {
     const target = new Date(el.dataset.target).getTime();
-    const now = Date.now();
     const diff = target - now;
     if (diff <= 0) { el.textContent = '🔴 종료됨'; return; }
     const d = Math.floor(diff / 86400000);
     const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
     let txt = '⏰ 종료까지 ';
     if (d > 0) txt += d + '일 ' + h + '시간';
-    else txt += h + '시간';
+    else if (h > 0) txt += h + '시간 ' + m + '분';
+    else txt += m + '분';
     el.textContent = txt;
   });
 }
-updateCountdowns();
-setInterval(updateCountdowns, 60000);
+updateEventStatuses();
+setInterval(updateEventStatuses, 60000);
 </script>
 </body>
 </html>
