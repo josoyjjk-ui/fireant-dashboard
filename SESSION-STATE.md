@@ -21,3 +21,4 @@
 - 사용자 신규 선호: 이미지/자동화 작업은 연결된 API 경로를 최우선으로 사용하고, API 실패 시에만 브라우저 경로로 fallback
 - HEARTBEAT 판정 고정: cron list + 해당 job runs 확인 후, run finished=ok && delivered=true면 HEARTBEAT_OK 처리. 완료 증빙 없이 미완료 경고 금지.
 - 신규 진행: 텔레그램 대화 정리 정책(저/중/고위험 분류) 실행 — 1단계 보존 스냅샷/체크리스트 생성 후 2단계 기간별 삭제 롤링 적용
+- 최신 결정: 4단계 Failback 플랜 복구(기본값 Claude), 단기 운용은 ChatGPT 유지
