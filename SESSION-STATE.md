@@ -18,3 +18,4 @@
   - 최소 재현 프롬프트로 분리 테스트
 
 - 사용자 신규 선호: failover로 모델 전환 발생 시 즉시 사용자에게 보고
+- HEARTBEAT 판정 고정: cron list + 해당 job runs 확인 후, run finished=ok && delivered=true면 HEARTBEAT_OK 처리. 완료 증빙 없이 미완료 경고 금지.
