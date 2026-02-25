@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>불개미 고민 배너 무텍스트</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#0a0d16}
+.banner{width:1600px;height:900px;position:relative;overflow:hidden;
+background:
+radial-gradient(1100px 500px at 8% 10%, rgba(255,84,64,.18), transparent 62%),
+radial-gradient(900px 500px at 88% 88%, rgba(255,148,77,.12), transparent 62%),
+linear-gradient(135deg,#0a1022,#0a0d16 72%);
+}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:42px 42px}
+.vignette{position:absolute;inset:0;background:radial-gradient(circle at 50% 55%, transparent 35%, rgba(0,0,0,.35) 100%)}
+.logo-wrap{position:absolute;left:82px;top:68px;z-index:3}
+.logo{width:118px;height:118px;object-fit:contain;filter:drop-shadow(0 0 26px rgba(255,95,70,.45))}
+.scene{position:absolute;inset:0;z-index:2}
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="grid"></div>
+  <div class="logo-wrap"><img class="logo" src="./fireant-logo-nobg.png" alt="불개미 로고"/></div>
+
+  <svg class="scene" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="floor" x1="260" y1="720" x2="1360" y2="720" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#FF5D46"/>
+        <stop offset="1" stop-color="#FF9A55"/>
+      </linearGradient>
+      <radialGradient id="aiGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1120 285) rotate(90) scale(190 190)">
+        <stop stop-color="#7FB4FF" stop-opacity="0.95"/>
+        <stop offset="1" stop-color="#7FB4FF" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="personGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(780 520) rotate(90) scale(260 260)">
+        <stop stop-color="#FF764E" stop-opacity="0.26"/>
+        <stop offset="1" stop-color="#FF764E" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="wire" x1="840" y1="350" x2="1125" y2="285" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#FF9A66"/>
+        <stop offset="1" stop-color="#8AB9FF"/>
+      </linearGradient>
+      <filter id="blurSoft" x="0" y="0" width="1600" height="900" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="0.35"/>
+      </filter>
+    </defs>
+
+    <!-- ambient glows -->
+    <circle cx="1120" cy="285" r="190" fill="url(#aiGlow)"/>
+    <circle cx="780" cy="520" r="260" fill="url(#personGlow)"/>
+
+    <!-- floor -->
+    <path d="M260 720H1360" stroke="url(#floor)" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- thinking person silhouette -->
+    <g filter="url(#blurSoft)">
+      <circle cx="780" cy="430" r="66" fill="#1A2746" stroke="#91BFFF" stroke-opacity="0.55" stroke-width="2"/>
+      <path d="M690 590C700 520 737 487 780 487C826 487 862 523 871 590L886 720H674L690 590Z" fill="#19243F" stroke="#7EAEFF" stroke-opacity="0.4" stroke-width="2"/>
+      <!-- hand to chin -->
+      <path d="M760 540L818 486" stroke="#A5C8FF" stroke-opacity="0.9" stroke-width="11" stroke-linecap="round"/>
+      <circle cx="824" cy="480" r="13" fill="#AFCFFF"/>
+      <!-- legs -->
+      <path d="M724 720L700 790" stroke="#30466F" stroke-width="16" stroke-linecap="round"/>
+      <path d="M840 720L866 790" stroke="#30466F" stroke-width="16" stroke-linecap="round"/>
+    </g>
+
+    <!-- AI core object -->
+    <g>
+      <rect x="1030" y="220" width="180" height="120" rx="20" fill="#121D36" stroke="#8BB8FF" stroke-opacity="0.8" stroke-width="2"/>
+      <rect x="1060" y="252" width="120" height="56" rx="12" fill="#1A2B52" stroke="#9CC4FF" stroke-opacity="0.9"/>
+      <circle cx="1120" cy="280" r="18" fill="#9FC6FF"/>
+      <circle cx="1120" cy="280" r="8" fill="#3E69B0"/>
+      <!-- chip pins -->
+      <path d="M1030 242H1008M1030 268H1008M1030 294H1008M1210 242H1232M1210 268H1232M1210 294H1232" stroke="#89B7FF" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- thought bubbles -->
+    <circle cx="920" cy="390" r="17" fill="#8FBFFF" fill-opacity="0.78"/>
+    <circle cx="962" cy="362" r="12" fill="#8FBFFF" fill-opacity="0.64"/>
+    <circle cx="996" cy="338" r="8" fill="#8FBFFF" fill-opacity="0.52"/>
+
+    <!-- connection wires (tension) -->
+    <path d="M838 470C910 430 975 380 1048 322" stroke="url(#wire)" stroke-opacity="0.85" stroke-width="3.5"/>
+    <path d="M850 525C920 500 1010 430 1105 340" stroke="#86B5FF" stroke-opacity="0.45" stroke-width="2.5"/>
+
+    <!-- crypto/agent floating nodes -->
+    <g opacity="0.9">
+      <circle cx="1245" cy="210" r="14" fill="#FF9A66"/>
+      <circle cx="1286" cy="248" r="11" fill="#7FB4FF"/>
+      <circle cx="1262" cy="300" r="13" fill="#A287FF"/>
+      <path d="M1245 210L1286 248L1262 300L1210 280L1245 210Z" stroke="#9DB8E8" stroke-opacity="0.45" stroke-width="2"/>
+    </g>
+
+    <!-- subtle sparks -->
+    <circle cx="1090" cy="162" r="2.5" fill="#FFD1AE"/>
+    <circle cx="1168" cy="170" r="2" fill="#B8D3FF"/>
+    <circle cx="1200" cy="330" r="2.2" fill="#FFC29B"/>
+    <circle cx="980" cy="305" r="1.8" fill="#A7CBFF"/>
+  </svg>
+
+  <div class="vignette"></div>
+</div>
+</body>
+</html>

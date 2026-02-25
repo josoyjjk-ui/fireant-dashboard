@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>불개미 고민 배너</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;900&display=swap');
+*{box-sizing:border-box} body{margin:0;background:#0a0d16;font-family:'Noto Sans KR',sans-serif}
+.banner{width:1600px;height:900px;position:relative;overflow:hidden;background:radial-gradient(900px 430px at 12% 8%,rgba(255,84,64,.16),transparent 62%),radial-gradient(800px 420px at 88% 92%,rgba(255,148,77,.10),transparent 62%),linear-gradient(135deg,#0a0f21,#0a0d16 72%);color:#f5f7ff}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:42px 42px}
+.wrap{position:relative;z-index:2;height:100%;padding:68px 78px;display:flex;flex-direction:column;justify-content:space-between}
+.top{display:flex;align-items:center;gap:20px}
+.logo{width:104px;height:104px;object-fit:contain;filter:drop-shadow(0 0 24px rgba(255,90,70,.35))}
+.brand{font-size:72px;font-weight:900;letter-spacing:-1.4px;background:linear-gradient(90deg,#ff4a3d,#ff9a55);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.mid{display:flex;justify-content:space-between;align-items:center;gap:44px}
+.copy h1{margin:0;font-size:86px;line-height:1.05;letter-spacing:-2px}
+.copy p{margin:20px 0 0;font-size:30px;color:#d3dcf6;font-weight:700}
+.card{width:600px;height:380px;border:1px solid rgba(255,255,255,.1);border-radius:26px;background:rgba(255,255,255,.03);position:relative;overflow:hidden}
+.badge{position:absolute;right:26px;top:20px;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,160,120,.45);color:#ffbe9f;font-size:16px;font-weight:700;background:rgba(255,90,60,.08)}
+.foot{display:flex;justify-content:space-between;align-items:flex-end}
+.motto{font-size:28px;color:#ffc7ad;font-weight:700}
+.handle{font-size:24px;color:#9eb1de}
+svg{position:absolute;inset:0}
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="top">
+      <img class="logo" src="./fireant-logo-nobg.png" alt="불개미 로고"/>
+      <div class="brand">불개미 CRYPTO</div>
+    </div>
+
+    <div class="mid">
+      <div class="copy">
+        <h1>AI 앞에서<br>고민하는 투자자</h1>
+        <p>대체될지, 장악할지 — 지금 선택해야 합니다</p>
+      </div>
+
+      <div class="card">
+        <div class="badge">THINKING MODE</div>
+        <svg viewBox="0 0 600 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="65" y1="305" x2="560" y2="305" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FF5D46"/>
+              <stop offset="1" stop-color="#FF9A55"/>
+            </linearGradient>
+            <radialGradient id="g2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(395 120) rotate(90) scale(120 120)">
+              <stop stop-color="#6EA7FF" stop-opacity="0.9"/>
+              <stop offset="1" stop-color="#6EA7FF" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <rect x="0" y="0" width="600" height="380" fill="transparent"/>
+
+          <!-- background glow/thought cloud -->
+          <circle cx="395" cy="120" r="120" fill="url(#g2)"/>
+          <circle cx="448" cy="92" r="9" fill="#8CB8FF" fill-opacity=".7"/>
+          <circle cx="474" cy="72" r="6" fill="#8CB8FF" fill-opacity=".6"/>
+          <circle cx="492" cy="58" r="4" fill="#8CB8FF" fill-opacity=".55"/>
+
+          <!-- floor line -->
+          <path d="M65 305H560" stroke="url(#g1)" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- thoughtful person silhouette -->
+          <circle cx="300" cy="134" r="42" fill="#1E2B4A" stroke="#8CB8FF" stroke-opacity=".55"/>
+          <path d="M245 228C250 185 275 170 300 170C328 170 350 186 355 228L362 305H238L245 228Z" fill="#1A2540" stroke="#7FAFFF" stroke-opacity=".45"/>
+          <path d="M288 203L322 176" stroke="#9EC2FF" stroke-opacity=".8" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="326" cy="171" r="8" fill="#A8C9FF"/>
+          <path d="M246 233L213 265" stroke="#6C88C4" stroke-opacity=".7" stroke-width="8" stroke-linecap="round"/>
+          <path d="M354 233L392 262" stroke="#6C88C4" stroke-opacity=".7" stroke-width="8" stroke-linecap="round"/>
+
+          <!-- floating AI/crypto symbols -->
+          <rect x="385" y="145" width="66" height="40" rx="8" fill="#131E37" stroke="#7BAEFF"/>
+          <text x="418" y="170" text-anchor="middle" fill="#9EC2FF" font-size="18" font-weight="700" font-family="Arial">AI</text>
+
+          <rect x="455" y="195" width="78" height="44" rx="10" fill="#20192D" stroke="#FF9A66"/>
+          <text x="494" y="222" text-anchor="middle" fill="#FFC19D" font-size="16" font-weight="700" font-family="Arial">CRYPTO</text>
+
+          <path d="M451 165L455 195" stroke="#8DB7FF" stroke-opacity=".6" stroke-width="2"/>
+          <path d="M423 185L455 195" stroke="#8DB7FF" stroke-opacity=".6" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="motto">블록체인은 모두를 위하여 · AI는 적응한 자를 위하여</div>
+      <div class="handle">@fireantcrypto</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
