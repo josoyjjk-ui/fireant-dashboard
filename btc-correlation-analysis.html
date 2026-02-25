@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d1117; color:#c9d1d9; font-family:'Segoe UI',system-ui,sans-serif; padding:20px; }
+h1 { color:#f0f6fc; font-size:22px; margin-bottom:4px; }
+.subtitle { color:#8b949e; font-size:13px; margin-bottom:20px; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.card { background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px; }
+.card h3 { color:#f0f6fc; font-size:14px; margin-bottom:12px; }
+.full { grid-column:1/-1; }
+canvas { width:100%!important; }
+.corr-matrix { width:100%; border-collapse:collapse; font-size:13px; }
+.corr-matrix th, .corr-matrix td { padding:8px 6px; text-align:center; border:1px solid #30363d; }
+.corr-matrix th { background:#21262d; color:#f0f6fc; font-weight:600; }
+.bar-row { display:flex; align-items:center; margin:6px 0; font-size:12px; }
+.bar-label { width:160px; color:#8b949e; flex-shrink:0; }
+.bar-container { flex:1; height:20px; background:#21262d; border-radius:4px; position:relative; overflow:hidden; }
+.bar { height:100%; border-radius:4px; display:flex; align-items:center; justify-content:flex-end; padding-right:6px; font-size:11px; font-weight:600; }
+.insight { background:#1c2128; border-left:3px solid #f78166; padding:12px 16px; border-radius:0 8px 8px 0; margin:8px 0; font-size:13px; line-height:1.6; }
+.tag { display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; margin-right:4px; }
+.tag-pos { background:#1a3a2a; color:#3fb950; }
+.tag-neg { background:#3a1a1a; color:#f85149; }
+.tag-neutral { background:#2a2a1a; color:#d29922; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head><body>
+<h1>🔗 비트코인 가격·거래량·심리지표 상관관계 분석</h1>
+<div class="subtitle">최근 365일 데이터 기반 | 2026.02.24 기준</div>
+
+<div class="grid">
+
+<!-- Correlation Matrix -->
+<div class="card">
+<h3>📊 상관관계 매트릭스 (동시점)</h3>
+<table class="corr-matrix">
+<tr><th></th><th>가격</th><th>F&G</th><th>거래량</th><th>변동성</th></tr>
+<tr><th>가격</th><td style="background:#1a3a2a;color:#3fb950">1.000</td><td style="background:#1a3a2a;color:#3fb950">0.749</td><td style="background:#2a1a1a;color:#f85149">-0.100</td><td style="background:#2a2a1a;color:#d29922">—</td></tr>
+<tr><th>F&G</th><td style="background:#1a3a2a;color:#3fb950">0.749</td><td style="background:#1a3a2a;color:#3fb950">1.000</td><td style="background:#2a1a1a;color:#f85149">-0.245</td><td style="background:#2a1a1a;color:#f85149">-0.540</td></tr>
+<tr><th>거래량</th><td style="background:#2a1a1a;color:#f85149">-0.100</td><td style="background:#2a1a1a;color:#f85149">-0.245</td><td style="background:#1a3a2a;color:#3fb950">1.000</td><td style="background:#2a2a1a;color:#d29922">—</td></tr>
+<tr><th>변동성</th><td style="background:#2a2a1a;color:#d29922">—</td><td style="background:#2a1a1a;color:#f85149">-0.540</td><td style="background:#2a2a1a;color:#d29922">—</td><td style="background:#1a3a2a;color:#3fb950">1.000</td></tr>
+</table>
+</div>
+
+<!-- Lagged Correlation -->
+<div class="card">
+<h3>⏳ 시차 상관관계 (F&G/거래량 → n일 후 수익률)</h3>
+<div style="margin:8px 0 4px;font-size:12px;color:#58a6ff;font-weight:600">F&G →</div><div class="bar-row">
+<div class="bar-label">1일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#3fb95033;margin-left:50%;width:11.5%;border:1px solid #3fb950">+0.023</div></div></div><div class="bar-row">
+<div class="bar-label">3일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#3fb95033;margin-left:50%;width:23.0%;border:1px solid #3fb950">+0.046</div></div></div><div class="bar-row">
+<div class="bar-label">7일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#3fb95033;margin-left:50%;width:21.0%;border:1px solid #3fb950">+0.042</div></div></div><div class="bar-row">
+<div class="bar-label">14일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#3fb95033;margin-left:50%;width:17.0%;border:1px solid #3fb950">+0.034</div></div></div><div class="bar-row">
+<div class="bar-label">30일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#3fb95033;margin-left:50%;width:24.0%;border:1px solid #3fb950">+0.048</div></div></div><div style="margin:8px 0 4px;font-size:12px;color:#f78166;font-weight:600">거래량 →</div><div class="bar-row">
+<div class="bar-label">1일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#f8514933;margin-left:34.5%;width:15.5%;width:15.5%;border:1px solid #f85149">-0.031</div></div></div><div class="bar-row">
+<div class="bar-label">3일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#f8514933;margin-left:-4.5%;width:54.5%;width:54.5%;border:1px solid #f85149">-0.109</div></div></div><div class="bar-row">
+<div class="bar-label">7일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#f8514933;margin-left:25.0%;width:25.0%;width:25.0%;border:1px solid #f85149">-0.050</div></div></div><div class="bar-row">
+<div class="bar-label">14일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#3fb95033;margin-left:50%;width:5.0%;border:1px solid #3fb950">+0.010</div></div></div><div class="bar-row">
+<div class="bar-label">30일 후</div>
+<div class="bar-container"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#30363d"></div>
+<div class="bar" style="background:#f8514933;margin-left:21.0%;width:29.0%;width:29.0%;border:1px solid #f85149">-0.058</div></div></div></div>
+
+<!-- F&G Bucket Analysis -->
+<div class="card">
+<h3>🎯 F&G 구간별 30일 후 수익률</h3>
+<div class="bar-row">
+<div class="bar-label">극도의 공포 (0-20)</div>
+<div class="bar-container"><div class="bar" style="background:#f8514944;width:59.5%;border:1px solid #f85149">-11.9%</div></div>
+<span class="tag tag-neg" style="margin-left:8px">87건</span></div><div class="bar-row">
+<div class="bar-label">공포 (21-40)</div>
+<div class="bar-container"><div class="bar" style="background:#f7816644;width:55.0%;border:1px solid #f78166">-11.0%</div></div>
+<span class="tag tag-neg" style="margin-left:8px">79건</span></div><div class="bar-row">
+<div class="bar-label">중립 (41-60)</div>
+<div class="bar-container"><div class="bar" style="background:#d2992244;width:31.5%;border:1px solid #d29922">-6.3%</div></div>
+<span class="tag tag-neg" style="margin-left:8px">51건</span></div><div class="bar-row">
+<div class="bar-label">탐욕 (61-80)</div>
+<div class="bar-container"><div class="bar" style="background:#3fb95044;width:21.5%;border:1px solid #3fb950">-4.3%</div></div>
+<span class="tag tag-neutral" style="margin-left:8px">71건</span></div><div class="bar-row">
+<div class="bar-label">극도의 탐욕 (81-100)</div>
+<div class="bar-container"><div class="bar" style="background:#58a6ff44;width:11.0%;border:1px solid #58a6ff">-2.2%</div></div>
+<span class="tag tag-neutral" style="margin-left:8px">48건</span></div>
+<div class="insight">
+💡 현재 F&G = 5 (극도의 공포). 이 구간에서 30일 후 수익률은 과거 1년 기준 <b>평균 -1.1%</b>이었으나, 
+극단적 공포 구간은 표본이 적어 신뢰도 주의. 하락 추세에서의 극단적 공포 ≠ 바닥 확정.
+</div>
+</div>
+
+<!-- Volume Bucket -->
+<div class="card">
+<h3>📈 거래량 구간별 30일 후 수익률</h3>
+
+<div style="margin-top:8px"><div class="bar-row">
+<div class="bar-label">저거래량 (하위25%)</div>
+<div class="bar-container"><div class="bar" style="background:#58a6ff44;width:3.5999999999999996%;border:1px solid #58a6ff">+0.3%</div></div>
+<span style="margin-left:4px;font-size:11px;color:#8b949e">양수58%</span>
+<span class="tag" style="margin-left:4px;background:#21262d;color:#8b949e">89건</span></div><div class="bar-row">
+<div class="bar-label">보통 거래량</div>
+<div class="bar-container"><div class="bar" style="background:#d2992244;width:10.8%;border:1px solid #d29922">-0.9%</div></div>
+<span style="margin-left:4px;font-size:11px;color:#8b949e">양수50%</span>
+<span class="tag" style="margin-left:4px;background:#21262d;color:#8b949e">165건</span></div><div class="bar-row">
+<div class="bar-label">고거래량 (상위25%)</div>
+<div class="bar-container"><div class="bar" style="background:#f7816644;width:54.0%;border:1px solid #f78166">-4.5%</div></div>
+<span style="margin-left:4px;font-size:11px;color:#8b949e">양수30%</span>
+<span class="tag" style="margin-left:4px;background:#21262d;color:#8b949e">82건</span></div></div>
+<div class="insight">
+💡 고거래량 = 하락 동반 매도(패닉셀) 경향. 거래량 급등 후 30일 수익률이 음수인 경우가 많았음.
+저거래량 구간이 오히려 안정적.
+</div>
+</div>
+
+<!-- Chart 1: Price + F&G overlay -->
+<div class="card full">
+<h3>📉 가격 vs F&G 지수 (365일)</h3>
+<canvas id="chart1" height="200"></canvas>
+</div>
+
+<!-- Chart 2: Price + Volume -->
+<div class="card full">
+<h3>📊 가격 vs 거래량 (365일)</h3>
+<canvas id="chart2" height="200"></canvas>
+</div>
+
+<!-- Chart 3: F&G vs Volatility -->
+<div class="card full">
+<h3>⚡ F&G vs 변동성 (역상관 -0.540)</h3>
+<canvas id="chart3" height="200"></canvas>
+</div>
+
+</div>
+
+<script>
+const labels = ["02/23", "02/26", "03/01", "03/04", "03/07", "03/10", "03/13", "03/16", "03/19", "03/22", "03/25", "03/28", "03/31", "04/03", "04/06", "04/09", "04/12", "04/15", "04/18", "04/21", "04/24", "04/27", "04/30", "05/03", "05/06", "05/09", "05/12", "05/15", "05/18", "05/21", "05/24", "05/27", "05/30", "06/02", "06/05", "06/08", "06/11", "06/14", "06/17", "06/20", "06/23", "06/26", "06/29", "07/02", "07/05", "07/08", "07/11", "07/14", "07/17", "07/20", "07/23", "07/26", "07/29", "08/01", "08/04", "08/07", "08/10", "08/13", "08/16", "08/19", "08/22", "08/25", "08/28", "08/31", "09/03", "09/06", "09/09", "09/12", "09/15", "09/18", "09/21", "09/24", "09/27", "09/30", "10/03", "10/06", "10/09", "10/12", "10/15", "10/18", "10/21", "10/24", "10/27", "10/30", "11/02", "11/05", "11/08", "11/11", "11/14", "11/17", "11/20", "11/23", "11/26", "11/29", "12/02", "12/05", "12/08", "12/11", "12/14", "12/17", "12/20", "12/23", "12/26", "12/29", "01/01", "01/04", "01/07", "01/10", "01/13", "01/16", "01/19", "01/22", "01/25", "01/28", "01/31", "02/03", "02/06", "02/09", "02/12", "02/15", "02/18", "02/21"];
+const prices = [96274, 84128, 86051, 87255, 86767, 78562, 81081, 82572, 86878, 83837, 87440, 84387, 82540, 83159, 78366, 82587, 85272, 83638, 84460, 87516, 94022, 93777, 94186, 95903, 96836, 102982, 102802, 103788, 106489, 109700, 107779, 108976, 104039, 105909, 101581, 105779, 108677, 105481, 104599, 103313, 105424, 107012, 108392, 108887, 108245, 108955, 117574, 119869, 119283, 117329, 118809, 117971, 117942, 113263, 115066, 117522, 119312, 123375, 117470, 112871, 116910, 110150, 112582, 108274, 111752, 110230, 111549, 116116, 115401, 117126, 115300, 113361, 109727, 114078, 122319, 124723, 121714, 115085, 110819, 107229, 108387, 111046, 114115, 108326, 110565, 103894, 102305, 103034, 94532, 92141, 86554, 86823, 90487, 90843, 91315, 89352, 90662, 92547, 88170, 86223, 88341, 87441, 87315, 87133, 88743, 91500, 91287, 90392, 95374, 95521, 92569, 89484, 86581, 89183, 78664, 75679, 70536, 70109, 66221, 68801, 66434, 67965];
+const fgs = [49, 21, 20, 15, 34, 20, 45, 30, 32, 32, 46, 44, 34, 25, 34, 18, 43, 38, 33, 39, 63, 61, 56, 65, 59, 73, 70, 70, 74, 70, 66, 74, 60, 64, 57, 62, 72, 63, 68, 54, 47, 74, 68, 63, 67, 65, 71, 74, 74, 72, 74, 72, 73, 65, 64, 62, 69, 73, 56, 56, 50, 47, 48, 48, 55, 48, 48, 57, 53, 52, 49, 44, 33, 50, 63, 71, 70, 24, 34, 23, 34, 30, 51, 34, 37, 23, 20, 26, 16, 14, 11, 13, 15, 28, 23, 28, 20, 29, 21, 16, 20, 24, 20, 24, 20, 25, 42, 25, 26, 49, 44, 20, 25, 29, 20, 17, 9, 14, 5, 8, 8, 8];
+const vols = [0.72, 5.07, 1.58, 5.67, 6.2, 4.41, 2.11, 1.09, 2.6, 0.4, 2.02, 2.15, 1.89, 2.34, 2.37, 4.96, 1.2, 1.55, 0.47, 2.66, 2.0, 0.73, 2.02, 0.68, 1.74, 2.35, 2.86, 1.84, 1.36, 4.1, 0.97, 2.52, 2.47, 1.59, 2.84, 0.62, 1.59, 0.79, 2.38, 1.85, 3.61, 1.58, 0.66, 2.12, 0.37, 1.32, 3.06, 3.78, 3.0, 1.08, 2.03, 1.29, 2.07, 3.85, 1.66, 1.9, 1.25, 3.32, 0.75, 3.01, 3.26, 3.71, 1.9, 0.99, 2.13, 0.73, 2.11, 2.41, 2.14, 2.25, 0.63, 1.99, 0.78, 2.61, 4.34, 3.48, 3.27, 4.15, 3.37, 1.26, 4.51, 2.19, 2.18, 3.62, 1.23, 3.65, 1.35, 2.36, 6.17, 4.52, 5.07, 2.41, 2.69, 0.87, 4.09, 2.98, 2.66, 3.15, 1.24, 3.2, 0.49, 2.1, 2.15, 2.7, 0.84, 0.97, 2.45, 0.43, 4.3, 2.1, 1.91, 2.14, 1.73, 2.46, 4.18, 4.8, 7.08, 3.05, 2.86, 1.53, 2.16, 0.8];
+const volatility = [null, null, null, null, null, null, null, null, null, null, 71.4, 66.9, 66.8, 52.0, 53.5, 56.5, 56.7, 55.4, 52.3, 52.0, 55.8, 54.8, 54.5, 53.0, 48.9, 43.7, 38.4, 37.8, 39.2, 39.3, 35.4, 35.4, 36.3, 35.3, 35.8, 30.3, 33.1, 34.2, 33.4, 32.1, 32.4, 32.4, 31.1, 33.1, 31.7, 30.4, 31.2, 30.0, 29.6, 29.5, 26.2, 25.9, 26.4, 25.5, 25.6, 26.5, 22.1, 23.8, 27.1, 29.0, 31.6, 34.0, 34.1, 35.3, 35.5, 34.7, 33.9, 33.5, 30.2, 28.5, 24.6, 22.9, 25.7, 24.3, 28.0, 28.1, 30.2, 41.6, 42.6, 43.6, 44.6, 44.6, 43.4, 43.6, 40.9, 46.7, 46.6, 38.2, 42.1, 42.0, 45.5, 45.8, 47.1, 45.9, 52.3, 49.2, 48.0, 46.8, 43.9, 44.2, 40.7, 39.6, 37.0, 37.0, 28.0, 24.9, 27.6, 26.4, 28.4, 27.2, 25.8, 30.4, 32.0, 32.7, 43.7, 46.7, 81.0, 81.4, 80.8, 81.8, 82.0, 80.5];
+
+const commonOpts = {
+  responsive: true,
+  interaction: { intersect: false, mode: 'index' },
+  plugins: { legend: { labels: { color: '#8b949e', font: { size: 11 } } } },
+  scales: {
+    x: { ticks: { color: '#484f58', maxTicksLimit: 12, font: { size: 10 } }, grid: { color: '#21262d' } }
+  }
+};
+
+// Chart 1: Price + F&G
+new Chart(document.getElementById('chart1'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      { label: 'BTC 가격 ($)', data: prices, borderColor: '#f78166', backgroundColor: '#f7816622', fill: true, yAxisID: 'y1', pointRadius: 0, borderWidth: 2 },
+      { label: 'Fear & Greed', data: fgs, borderColor: '#58a6ff', backgroundColor: '#58a6ff22', fill: true, yAxisID: 'y2', pointRadius: 0, borderWidth: 2 }
+    ]
+  },
+  options: { ...commonOpts, scales: { ...commonOpts.scales,
+    y1: { position:'left', ticks:{color:'#f78166',callback:v=>'$'+v.toLocaleString()}, grid:{color:'#21262d'} },
+    y2: { position:'right', min:0, max:100, ticks:{color:'#58a6ff'}, grid:{drawOnChartArea:false} }
+  }}
+});
+
+// Chart 2: Price + Volume
+new Chart(document.getElementById('chart2'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      { label: 'BTC 가격 ($)', data: prices, borderColor: '#f78166', yAxisID: 'y1', pointRadius: 0, borderWidth: 2 },
+      { label: '거래량 ($B)', data: vols, type:'bar', backgroundColor: '#238636aa', yAxisID: 'y2' }
+    ]
+  },
+  options: { ...commonOpts, scales: { ...commonOpts.scales,
+    y1: { position:'left', ticks:{color:'#f78166',callback:v=>'$'+v.toLocaleString()}, grid:{color:'#21262d'} },
+    y2: { position:'right', ticks:{color:'#238636',callback:v=>v+'B'}, grid:{drawOnChartArea:false} }
+  }}
+});
+
+// Chart 3: F&G vs Volatility
+new Chart(document.getElementById('chart3'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      { label: 'Fear & Greed', data: fgs, borderColor: '#58a6ff', yAxisID: 'y1', pointRadius: 0, borderWidth: 2 },
+      { label: '30일 변동성 (%)', data: volatility, borderColor: '#f85149', yAxisID: 'y2', pointRadius: 0, borderWidth: 2 }
+    ]
+  },
+  options: { ...commonOpts, scales: { ...commonOpts.scales,
+    y1: { position:'left', min:0, max:100, ticks:{color:'#58a6ff'}, grid:{color:'#21262d'} },
+    y2: { position:'right', ticks:{color:'#f85149',callback:v=>v+'%'}, grid:{drawOnChartArea:false} }
+  }}
+});
+</script>
+</body></html>

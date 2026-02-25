@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>불개미 AI 배너 미니멀</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;900&display=swap');
+*{box-sizing:border-box} body{margin:0;background:#0a0d16;font-family:'Noto Sans KR',sans-serif}
+.banner{width:1600px;height:900px;position:relative;overflow:hidden;background:radial-gradient(900px 420px at 15% 8%,rgba(255,80,60,.16),transparent 60%),radial-gradient(700px 400px at 88% 92%,rgba(255,140,70,.10),transparent 60%),linear-gradient(135deg,#0b1020,#0a0d16 70%);color:#f3f6ff}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:44px 44px}
+.wrap{position:relative;z-index:2;height:100%;padding:70px 80px;display:flex;flex-direction:column;justify-content:space-between}
+.top{display:flex;align-items:center;gap:18px}
+.logo{width:92px;height:92px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(255,90,70,.35))}
+.brand{font-size:54px;font-weight:900;letter-spacing:-1px;background:linear-gradient(90deg,#ff4a3d,#ff944d);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.main{font-size:96px;line-height:1.08;font-weight:900;letter-spacing:-2px}
+.main .accent{color:#ff9a66}
+.bottom{display:flex;justify-content:space-between;align-items:flex-end}
+.tag{font-size:30px;color:#ffc7ad;font-weight:700}
+.handle{font-size:24px;color:#9db0dd}
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="grid"></div>
+  <div class="wrap">
+    <div class="top">
+      <img class="logo" src="./fireant-logo-nobg.png" alt="불개미 로고" />
+      <div class="brand">불개미 CRYPTO</div>
+    </div>
+
+    <div class="main">
+      AI를 <span class="accent">장악</span>하라
+    </div>
+
+    <div class="bottom">
+      <div class="tag">적응 못하면 대체됩니다</div>
+      <div class="handle">@fireantcrypto</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

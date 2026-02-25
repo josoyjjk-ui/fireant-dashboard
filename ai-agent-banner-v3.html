@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>불개미 메인 배너</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#0a0d16}
+.banner{width:1600px;height:900px;position:relative;overflow:hidden;
+background:
+radial-gradient(980px 520px at 18% 20%, rgba(255,84,64,.22), transparent 62%),
+radial-gradient(900px 460px at 86% 90%, rgba(255,150,80,.10), transparent 64%),
+linear-gradient(135deg,#0a1022,#0a0d16 74%);
+}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:44px 44px}
+.logo{position:absolute;left:86px;top:70px;width:124px;height:124px;object-fit:contain;filter:drop-shadow(0 0 24px rgba(255,95,70,.45));z-index:3}
+.scene{position:absolute;inset:0;z-index:2}
+.vignette{position:absolute;inset:0;background:radial-gradient(circle at 45% 55%, transparent 35%, rgba(0,0,0,.36) 100%)}
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="grid"></div>
+  <img class="logo" src="./fireant-logo-nobg.png" alt="불개미 로고"/>
+
+  <svg class="scene" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="floor" x1="180" y1="760" x2="1410" y2="760" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#FF624A"/>
+        <stop offset="1" stop-color="#FF9E5B"/>
+      </linearGradient>
+      <radialGradient id="humanGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(610 520) rotate(90) scale(340 340)">
+        <stop stop-color="#FF7A53" stop-opacity=".32"/>
+        <stop offset="1" stop-color="#FF7A53" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="robotGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1140 520) rotate(90) scale(200 200)">
+        <stop stop-color="#7FB6FF" stop-opacity=".2"/>
+        <stop offset="1" stop-color="#7FB6FF" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="link" x1="760" y1="530" x2="1040" y2="525" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#FFB07A"/>
+        <stop offset="1" stop-color="#90BEFF"/>
+      </linearGradient>
+    </defs>
+
+    <circle cx="610" cy="520" r="340" fill="url(#humanGlow)"/>
+    <circle cx="1140" cy="520" r="200" fill="url(#robotGlow)"/>
+
+    <path d="M180 760H1410" stroke="url(#floor)" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- 불개미(사람) 크게: 메인 -->
+    <g>
+      <circle cx="610" cy="430" r="104" fill="#1A2746" stroke="#93C1FF" stroke-opacity=".6" stroke-width="2.4"/>
+      <path d="M470 650C488 542 545 486 614 486C689 486 744 546 761 650L786 760H444L470 650Z" fill="#18233E" stroke="#84B1FF" stroke-opacity=".5" stroke-width="2.4"/>
+      <!-- 고민 포즈(손 턱) -->
+      <path d="M582 560L677 486" stroke="#A7CBFF" stroke-width="16" stroke-linecap="round"/>
+      <circle cx="688" cy="478" r="18" fill="#B2D0FF"/>
+      <path d="M508 760L478 840" stroke="#2D436B" stroke-width="20" stroke-linecap="round"/>
+      <path d="M705 760L738 840" stroke="#2D436B" stroke-width="20" stroke-linecap="round"/>
+    </g>
+
+    <!-- 로봇 작게/보조 -->
+    <g opacity="0.9">
+      <rect x="1035" y="430" width="150" height="190" rx="28" fill="#111C34" stroke="#88B8FF" stroke-opacity=".75" stroke-width="2"/>
+      <rect x="1062" y="458" width="96" height="60" rx="14" fill="#1B2A4F" stroke="#9CC5FF" stroke-opacity=".9"/>
+      <circle cx="1088" cy="488" r="9" fill="#9BC4FF"/>
+      <circle cx="1132" cy="488" r="9" fill="#9BC4FF"/>
+      <rect x="1092" y="522" width="34" height="8" rx="4" fill="#7DAFFF"/>
+      <rect x="1008" y="478" width="28" height="10" rx="5" fill="#2B436D"/>
+      <rect x="1185" y="478" width="28" height="10" rx="5" fill="#2B436D"/>
+      <rect x="1072" y="620" width="20" height="56" rx="10" fill="#2A4069"/>
+      <rect x="1128" y="620" width="20" height="56" rx="10" fill="#2A4069"/>
+      <circle cx="1120" cy="400" r="12" fill="#89B9FF"/>
+      <rect x="1116" y="376" width="8" height="24" rx="4" fill="#5E82BD"/>
+    </g>
+
+    <!-- 연결선 -->
+    <path d="M760 530C845 520 930 515 1040 525" stroke="url(#link)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M744 575C835 578 930 560 1038 545" stroke="#86B4FF" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- 떠다니는 활용 옵션 아이콘 -->
+    <g opacity=".9">
+      <rect x="890" y="360" width="48" height="30" rx="8" fill="#1A2A4F" stroke="#8FBCFF"/>
+      <circle cx="914" cy="375" r="6" fill="#9DC6FF"/>
+      <rect x="950" y="340" width="52" height="32" rx="9" fill="#2A1F37" stroke="#FFA571"/>
+      <path d="M976 348V364M968 356H984" stroke="#FFC7A4" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </svg>
+
+  <div class="vignette"></div>
+</div>
+</body>
+</html>
