@@ -698,6 +698,18 @@ function updateEventStatuses() {
     // else: 진행 중 → 기본 (초록/빨간 = live)
   });
 
+  // 외부 참여 가능 이벤트: 마감 지나면 자동 숨김
+  let externalVisible = 0;
+  document.querySelectorAll('.ev-card-sm[data-end]').forEach(card => {
+    const end = new Date(card.dataset.end).getTime();
+    const expired = now > end;
+    card.style.display = expired ? 'none' : '';
+    if (!expired) externalVisible += 1;
+  });
+  const externalCountEl = document.querySelector('.section-head-sub .count');
+  if (externalCountEl) externalCountEl.textContent = String(externalVisible);
+
+
   // 카운트다운 타이머
   document.querySelectorAll('.ev-countdown[data-target]').forEach(el => {
     const target = new Date(el.dataset.target).getTime();
