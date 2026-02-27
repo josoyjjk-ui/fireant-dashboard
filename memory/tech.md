@@ -7,7 +7,16 @@
 - 모든 날짜/요일/시간은 한국시간(KST) 기준으로 표기
 
 ## 알려진 이슈
-- reasoning/thinking 출력이 텔레그램 메시지로 노출되는 버그 발생 이력 있음 (2026-02-24). /reasoning off로 해결.
+- reasoning/thinking 출력이 텔레그램 메시지로 노출되는 버그 (2026-02-24~25):
+  - 원인: openclaw.json에 무효 키(`streaming`, `ownerDisplay`) 사용 → 설정 미적용
+  - 해결: (1) 무효 키 제거 (2) 올바른 키 `streamMode: "off"` 적용 (3) AGENTS.md에 `/reasoning off` 매 세션 실행 추가
+  - 참고: `reasoning: false`는 config-level 키가 아님 (agents.defaults에도 models에도 Unrecognized). 세션 명령 `/reasoning off`만 유효.
+  - 올바른 텔레그램 설정 키: `botToken`, `dmPolicy`, `allowFrom`, `groupPolicy`, `streamMode` (NOT `streaming`)
+  - 관련 이슈: GitHub openclaw/openclaw #24626, #24376
+- openclaw.json 무효 키 문제 (2026-02-25 수정):
+  - `commands.ownerDisplay`, `channels.telegram.streaming`, `gateway.errorHandling`, `gateway.logging` 모두 Unrecognized
+  - config reload가 계속 실패하여 설정 변경이 적용되지 않음 → 답변 끊김/failover 실패의 근본 원인
+  - 해결: 무효 키 전부 제거
 - 텔레그램 공개 웹뷰(t.me/s)는 일부 과거 글만 부분 수집 가능(파라미터 before 활용)
 - X는 비로그인/보안정책으로 자동 수집 제한될 수 있음
 

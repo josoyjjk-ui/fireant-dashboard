@@ -41,6 +41,9 @@
 
 ## 콘텐츠 양식 템플릿
 
+### 1. AMA 공지 양식
+📌[프로젝트명] AMA with fireant 🗓 일정 : [날짜 시간] ✔️ [프로젝트 소개 한줄] ✔️ AMA 참여방법 1. 불개미 Crypto 채널 입장 : [채널링크](https://t.me/fireantcrypto) 2. 불개미 트위터 팔로우 : [트위터링크](https://x.com/ROKMCFIREANT) 3. 불개미 유튜브 구독 : [불갬튜브](https://www.youtube.com/@FIREANTCRYPTO) 4. [프로젝트] 한국커뮤니티 (필수) : [한국채널] / [대화방] 5. 라스트 = AMA 사전질문 작성 폼 : [구글폼 링크 바로가기] 🔥 AMA 리워드 1. [보상1] 2. [보상2]
+
 ### AMA 공지 양식
 - 구조: 📌 제목 → 🗓 일정 → ✔️ 프로젝트 한줄소개 → ✔️ 참여방법(채널/트위터/유튜브/프로젝트커뮤 입장 + 구글폼) → 🔥 리워드
 - 참고: Fight.id / Block Street AMA
