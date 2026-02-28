@@ -69,12 +69,12 @@ def append_csv(row):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
     await update.message.reply_text(
-        "👋 안녕하세요!\n\n"
+        "안녕하세요! 👋\n\n"
         "저는 *불개미 커뮤니티 캠페인 당첨자 검증 봇*입니다.\n\n"
-        "불개미 커뮤니티의 AMA 등 각종 캠페인 당첨자 정보를 수집하고 검증합니다.\n\n"
-        "이 봇에 오신 목적을 선택해주세요 👇",
+        "⚠️ 당첨자가 아닌 분이 작성하면 제출은 가능하나 보상은 지급되지 않습니다.\n\n"
+        "아래를 눌러 정보 제출을 시작해주세요 👇",
         parse_mode='Markdown',
-        reply_markup=kb([("🎉  캠페인에 당첨되었어요", "START_AMA")])
+        reply_markup=kb([("🎉  정보 제출 시작하기", "START_AMA")])
     )
     return MENU
 
@@ -337,7 +337,10 @@ if __name__ == '__main__':
     ensure_csv()
 
     conv = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[
+            CommandHandler('start', start),
+            MessageHandler(filters.ALL & ~filters.COMMAND, start),
+        ],
         states={
             MENU: [
                 CallbackQueryHandler(menu_ama,    pattern='^START_AMA$'),
