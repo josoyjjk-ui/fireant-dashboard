@@ -385,7 +385,6 @@ if __name__ == '__main__':
             CommandHandler('cancel', cancel),
             CommandHandler('start',  start),
         ],
-        allow_reentry=True,
     )
 
     app = Application.builder().token(BOT_TOKEN).build()
