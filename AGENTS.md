@@ -35,10 +35,12 @@
 
 ## WAL Protocol
 
-채팅 히스토리는 버퍼. `SESSION-STATE.md`가 RAM.
+채팅 히스토리는 버퍼. `SESSION-STATE.md`가 RAM. **SQLite DB가 장기 영구 메모리.**
 
 트리거: 정정 | 고유명사 | 선호 | 결정 | 초안 변경 | 구체적 값
-→ SESSION-STATE.md에 먼저 쓰기 → 그 다음 답변.
+→ **두 곳에 동시 기록 후** 답변:
+  1. `SESSION-STATE.md` (현재 세션 RAM)
+  2. `exec: mem add "내용" category tags` (SQLite 영구 저장 + 자동 supersede)
 
 - 사용자 이름: 불개미 (Fireant)
 
@@ -49,21 +51,23 @@
 - "최신 결정" 섹션 금지 — 결정은 해당 작업 항목에 인라인.
 - 작업 완료 시 ACTIVE에서 제거 (일일 로그에 기록).
 
-### 메모리
+### 메모리 시스템 (이중 레이어)
 
-| 파일 | 용도 |
-|------|------|
-| `MEMORY.md` | 핵심 인덱스만 (매 세션 로드) |
-| `memory/style.md` | 불개미 스타일 패턴 28개 + 양식 |
-| `memory/projects.md` | 대시보드·채널·GitHub |
-| `memory/people.md` | 사용자 정보·응답 규칙 |
-| `memory/tech.md` | 기술 교훈·설정 |
-| `memory/YYYY-MM-DD.md` | 일일 로그 |
-| `SESSION-STATE.md` | 현재 작업 (WAL 대상) |
+| 레이어 | 저장소 | 용도 |
+|--------|--------|------|
+| **L1: 영구 DB** | `memory-system/memories.db` (SQLite) | bge-m3 벡터 + BM25 하이브리드, 자동 supersede |
+| **L2: 구조화 파일** | `memory/*.md` | 카테고리별 빠른 로드 (ETF양식, 프로젝트 등) |
+| **L3: 세션 RAM** | `SESSION-STATE.md` | 현재 작업 상태 |
 
-### 메모리 검색 규칙 (키워드 트리거)
+### 메모리 검색 규칙
 
-**1단계: 키워드 → 파일 직접 로드**
+**1단계 (SQLite 의미검색)**: 모든 쿼리에 우선 적용
+```bash
+exec: mem search "쿼리" [category]   # bge-m3 벡터 + BM25 + RRF, <200ms
+```
+"기억해봐" 요청 시 반드시 이 명령 실행.
+
+**2단계 (키워드 → 파일 직접 로드)**: L1 결과 불충분 시
 
 | 키워드 감지 | 로드 파일 |
 |------------|----------|
@@ -72,8 +76,16 @@
 | 호칭, 이름, 말투규칙, 악, 응답규칙 | `memory/people.md` |
 | 버그, 오류, API, 키, 크리덴셜, reasoning, 누출, 설정, config, 에러, 장애 | `memory/tech.md` |
 
-**2단계 (1단계 실패)**: `memory_search` 벡터 검색 (minScore: 0.3)
-**3단계 (2단계 실패)**: `memory/` 디렉토리 파일 목록 스캔 → 파일명으로 추론 로드
+**3단계 (OpenClaw 내장)**: `memory_search` 벡터 검색 (minScore: 0.3)
+
+### mem 명령어 (WAL 필수 도구)
+```bash
+mem add "텍스트" category tags     # 저장 (코사인 0.85 이상 구버전 자동 supersede)
+mem search "쿼리" [category]       # 하이브리드 검색
+mem stats                          # 통계 확인
+```
+- DB 경로: `/Users/fireant/.openclaw/workspace/memory-system/memories.db`
+- Ollama bge-m3 필요 (brew services: ollama)
 
 ---
 
