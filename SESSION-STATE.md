@@ -1,13 +1,16 @@
-# SESSION-STATE.md — Current Work
+# SESSION-STATE
 
-## Active Tasks
-(없음 — 해병님이 수동 완료)
+## ACTIVE
 
-## Decisions
-- 이미지 요청 시: message(action=send, media=파일경로, caption=설명) 사용
-- ETF 포스트: 데이터 + 불개미 스타일 캡션 + 생성 이미지 1장
+### fireantagent_bot 배포 대기
+- 상태: Apps Script 배포 "유형 선택" 화면에서 기어 아이콘 클릭 불응
+- 필요: 해병님이 맥미니에서 직접 기어 아이콘 → 웹 앱 선택
+- 이후: 모든 사용자 설정 → 배포 → URL → 봇 WEBHOOK_URL 연결 (딸수가 처리)
+- Script TAB ID: 2110A5FBA2F01823D8FAE0118A44FC63
+- Script Project ID: 1YyEJKe3RrxzGxT-lRSpctVUde2t8irphKeGgrWdZEh3HJTSI9igmuaLm
+- Sheet ID: 1R7vwJKA1JtcUsktr7DPRQGr_28glZuXtP9swsDKAfuk
 
-## Preferences
-- "불개미 칠판 스타일" 기준 템플릿 확정: 첨부된 레퍼런스 이미지의 외형(빨간 불개미 캐릭터 + 칠판 구도) 고정, 칠판 내부 텍스트만 변경
-
-(30줄 이내 유지)
+### fireantagent_bot 실행 중
+- 세션: nimble-bloom
+- CSV: /workspace/verification_results.csv
+- 봇 토큰: Keychain fireantagent_bot
