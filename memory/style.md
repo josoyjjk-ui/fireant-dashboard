@@ -53,11 +53,19 @@
 - 참고: INFINIT Fireweek (1/26~1/30, 300만원)
 
 ### ETF 데일리 포스트 고정 양식 (변경 금지)
+
+**이미지 레이아웃**: 칠판 좌우 2컬럼 분할 (BTC 왼쪽 / ETH 오른쪽)
+- 헤더: `BTC (+[NET]M)` | `ETH (+[NET]M)`
+- 세로 중앙선 + 행별 가로 구분선
+- 행: 운용사명 + 금액 (BTC: BlackRock/Fidelity/Grayscale/Bitwise/ARK/Invesco | ETH: BlackRock/Fidelity/Grayscale/GrayMini/VanEck)
+- 레퍼런스: `/workspace/fireant-chalk-reference.jpg`
+
+**캡션 고정 양식:**
 ```
 📌 비트코인, 이더리움 현물 ETF 유출입 현황
 
-비트코인 : [BTC_NET] 순유입/유출 (IBIT [금액] / FBTC [금액])
-이더리움 : [ETH_NET] 순유입/유출 (ETHA [금액] / FETH [금액])
+비트코인 : [BTC_NET] 순유입/유출 (BlackRock [금액] / Fidelity [금액])
+이더리움 : [ETH_NET] 순유입/유출 (BlackRock [금액] / Fidelity [금액])
 
 [해석 1~2줄: 기관 자금 흐름 + 시장 분위기, 불개미 직설체]
 
@@ -67,8 +75,8 @@
 ```
 📌 비트코인, 이더리움 현물 ETF 유출입 현황
 
-비트코인 : +507M 순유입 (IBIT +290M / FBTC +29M)
-이더리움 : +157M 순유입 (ETHA +31M / FETH +62M)
+비트코인 : +507M 순유입 (BlackRock +290M / Fidelity +29M)
+이더리움 : +157M 순유입 (BlackRock +31M / Fidelity +62M)
 
 블랙록(IBIT) 중심으로 기관 자금이 계속 유입되고,
 그레이스케일도 유입 전환되며 시장 분위기 반전이 확인됩니다.
@@ -77,7 +85,7 @@
 ```
 **규칙:**
 - 헤더: 반드시 `📌 비트코인, 이더리움 현물 ETF 유출입 현황` 고정
-- 데이터: `비트코인 :` / `이더리움 :` 형식 고정, 괄호 안에 운용사별 금액
+- 데이터: `비트코인 :` / `이더리움 :` 형식 고정, 괄호 안에 BlackRock/Fidelity 금액
 - 해석: 2줄 이내, 직설체, 기관 흐름 + 분위기 한 줄씩
 - 결론: 1줄 + 🔥 마감
 
