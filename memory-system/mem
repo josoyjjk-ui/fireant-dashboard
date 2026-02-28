@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# mem — 메모리 빠른 CLI 래퍼
+# 사용법:
+#   mem add "텍스트" [category] [tags]
+#   mem search "쿼리" [category]
+#   mem stats
+#   mem migrate [dir]
+cd "$(dirname "$0")" && node memory.js "$@"
