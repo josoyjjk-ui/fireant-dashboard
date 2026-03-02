@@ -18,3 +18,8 @@
 
 ## 참고 채널/글 아카이브
 - Simon's Rabbit Crypt (@simon_rabbit_hole): METR 시간범위 분석 에세이 — AI 자율작업 14.5시간(Claude Opus 4.6), 배증주기 123일, R²=0.93, 신뢰구간 상단 98시간. 집사 비유(주인 잠든 사이 스스로 판단하는 존재), 끓는점 비유(99도→100도), 벤치마크 포화 경고, AI 자기개선 피드백루프 가능성. 문체: 숫자→직관적 비유→철학적 질문 순환, 긴 호흡의 에세이형.
+
+## 불개미 로고
+- 경로: `/Users/fireant/.openclaw/workspace/assets/fireant-logo.jpg`
+- 용도: 이미지 생성/배너 작업 시 불개미 로고로 사용
+- 설명: 빨간 개미 캐릭터, 베레모, 불꽃, FIRE ANT CRYPTO 배너
