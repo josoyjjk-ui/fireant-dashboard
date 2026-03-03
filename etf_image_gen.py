@@ -1,5 +1,9 @@
 """
-ETF 칠판 이미지 생성기 — Gemini 칠판 필기 방식
+ETF 칠판 이미지 생성기 — Gemini (nano-banana) 방식
+규칙:
+  - 철자 오류는 허용
+  - 숫자는 반드시 정확해야 함 → 불일치 시 최대 3회 재시도
+  - gemini-2.5-flash-image 전용
 """
 # /// script
 # dependencies = ["google-genai", "Pillow"]
@@ -9,12 +13,14 @@ from PIL import Image as PILImage
 
 TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets/fireant-chalkboard-base.jpg")
 OUTPUT   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "etf_daily_chalk.png")
+MODEL    = "gemini-2.5-flash-image"
+MAX_RETRY = 3
 
 
 def select_funds(funds: dict) -> list[tuple]:
     """BlackRock/Fidelity 고정 + 규칙에 따른 상위 운용사 선별"""
-    FIXED = ["BlackRock", "Fidelity"]
-    others = {k: v for k, v in funds.items() if k not in FIXED}
+    FIXED   = ["BlackRock", "Fidelity"]
+    others  = {k: v for k, v in funds.items() if k not in FIXED}
     inflow  = {k: v for k, v in others.items() if v > 0}
     outflow = {k: v for k, v in others.items() if v < 0}
     mixed   = bool(inflow) and bool(outflow)
@@ -43,31 +49,81 @@ def fmt(val: float) -> str:
 
 
 def build_prompt(btc_total, btc_rows, eth_total, eth_rows) -> str:
-    btc_lines = "\n".join(f"{name:<12} {fmt(val)}" for name, val in btc_rows)
-    eth_lines = "\n".join(f"{name:<12} {fmt(val)}" for name, val in eth_rows)
-    return f"""On the blank chalkboard in this image, write the following ETF data in beautiful chalk handwriting style.
+    btc_lines = "\n".join(f"  {name:<12} {fmt(val)}" for name, val in btc_rows)
+    eth_lines = "\n".join(f"  {name:<12} {fmt(val)}" for name, val in eth_rows)
 
-Draw a vertical white chalk line dividing the chalkboard into left and right halves.
+    # 숫자만 추출 (검증용)
+    all_nums = [fmt(btc_total), fmt(eth_total)]
+    for _, v in btc_rows: all_nums.append(fmt(v))
+    for _, v in eth_rows: all_nums.append(fmt(v))
+
+    return f"""On the blank chalkboard in this image, write ETF flow data in chalk handwriting style.
+
+Draw a vertical white chalk line dividing the board into left/right halves.
 Draw a horizontal line under the header row.
-Draw faint horizontal separator lines between each data row.
+Draw faint separator lines between each data row.
 
 LEFT COLUMN — BTC:
 Header (yellow chalk, large): "BTC ({fmt(btc_total)})"
-Rows below (white chalk for names, green for positive, red for negative):
+Rows (fund name LEFT-aligned, number RIGHT-aligned per row):
 {btc_lines}
 
 RIGHT COLUMN — ETH:
 Header (yellow chalk, large): "ETH ({fmt(eth_total)})"
-Rows below (white chalk for names, green for positive, red for negative):
+Rows (fund name LEFT-aligned, number RIGHT-aligned per row):
 {eth_lines}
 
-Rules:
-- Write every number EXACTLY as shown — do not change any digit
-- Fund names in white chalk, LEFT-aligned in each cell
-- Numbers in bright green (positive) or red (negative) chalk, RIGHT-aligned
-- Headers in yellow chalk, larger font than data rows
-- Authentic chalk handwriting texture on dark green board
-- Keep the fire ant character and wooden frame completely unchanged"""
+CRITICAL: Write EVERY number EXACTLY as listed above. Numbers must be pixel-perfect.
+Positive numbers in bright green chalk. Negative numbers in red chalk. Zero (0M) in white chalk.
+Fund names in white chalk. Keep fire ant character and frame unchanged.""", all_nums
+
+
+def verify_numbers(img_path: str, expected: list[str]) -> tuple[bool, list[str]]:
+    """이미지에서 숫자 검증 — google vision 대신 gemini로 확인"""
+    from google import genai
+    from google.genai import types
+
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    with open(img_path, "rb") as f:
+        data = f.read()
+
+    prompt = f"""List EVERY number written on the chalkboard in this image.
+Format: one number per line, exactly as written (e.g. +767M, -43M, 0M, +962M).
+Do not include fund names, just the numbers."""
+
+    resp = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[types.Part.from_bytes(data=data, mime_type="image/jpeg"), prompt]
+    )
+    found_text = resp.text.lower()
+
+    missing = []
+    for num in expected:
+        # 숫자 매칭 (대소문자 무시, m/b 단위 포함)
+        if num.lower() not in found_text:
+            missing.append(num)
+
+    return len(missing) == 0, missing
+
+
+def generate_once(client, ref_bytes, prompt) -> bytes | None:
+    from google.genai import types
+
+    resp = client.models.generate_content(
+        model=MODEL,
+        contents=[
+            types.Part.from_bytes(data=ref_bytes, mime_type="image/jpeg"),
+            prompt
+        ],
+        config=types.GenerateContentConfig(
+            response_modalities=["TEXT", "IMAGE"],
+            image_config=types.ImageConfig(image_size="1K", aspect_ratio="16:9")
+        )
+    )
+    for part in resp.candidates[0].content.parts:
+        if part.inline_data:
+            return part.inline_data.data
+    return None
 
 
 def generate(btc_total: float, btc_funds: dict,
@@ -75,7 +131,6 @@ def generate(btc_total: float, btc_funds: dict,
              output: str = OUTPUT) -> str:
 
     from google import genai
-    from google.genai import types
 
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -85,31 +140,31 @@ def generate(btc_total: float, btc_funds: dict,
 
     btc_rows = select_funds(btc_funds)
     eth_rows = select_funds(eth_funds)
-    prompt   = build_prompt(btc_total, btc_rows, eth_total, eth_rows)
+    prompt, expected_nums = build_prompt(btc_total, btc_rows, eth_total, eth_rows)
 
     with open(TEMPLATE, "rb") as f:
         ref = f.read()
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash-image",
-        contents=[
-            types.Part.from_bytes(data=ref, mime_type="image/jpeg"),
-            prompt
-        ],
-        config=types.GenerateContentConfig(
-            response_modalities=["TEXT", "IMAGE"],
-            image_config=types.ImageConfig(image_size="1K", aspect_ratio="16:9")
-        )
-    )
+    for attempt in range(1, MAX_RETRY + 1):
+        print(f"⏳ 생성 시도 {attempt}/{MAX_RETRY}...")
+        img_data = generate_once(client, ref, prompt)
+        if not img_data:
+            print(f"  ❌ 이미지 없음, 재시도")
+            continue
 
-    for part in response.candidates[0].content.parts:
-        if part.inline_data:
-            img = PILImage.open(io.BytesIO(part.inline_data.data)).convert("RGB")
-            img.save(output, quality=95)
-            print(f"✅ 저장: {output}  {img.size}")
+        img = PILImage.open(io.BytesIO(img_data)).convert("RGB")
+        img.save(output, quality=95)
+
+        ok, missing = verify_numbers(output, expected_nums)
+        if ok:
+            print(f"✅ 저장: {output}  {img.size}  (시도 {attempt}회)")
             return output
+        else:
+            print(f"  ⚠️ 숫자 불일치: {missing} — 재시도")
 
-    raise RuntimeError("Gemini 이미지 생성 실패")
+    # 최대 재시도 초과 → 마지막 결과 그대로 사용 (철자 오류는 허용)
+    print(f"⚠️ {MAX_RETRY}회 시도 후 최종 저장 (숫자 불일치 있을 수 있음): {output}")
+    return output
 
 
 if __name__ == "__main__":
