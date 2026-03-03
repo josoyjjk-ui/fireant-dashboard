@@ -168,14 +168,15 @@ def generate(btc_total: float, btc_funds: dict,
 
 
 if __name__ == "__main__":
-    # 3/3 최신 확정 데이터
+    # 3/2 (US) Farside 확정 데이터
     btc_funds = {
-        "BlackRock": 767, "Fidelity": 95, "Bitwise": 36,
+        "BlackRock": 263, "Fidelity": 95, "Bitwise": 36,
         "VanEck": 20, "GrayMini": 18, "Ark": 6,
         "Franklin": 14, "Invesco": 6, "Grayscale": 0,
     }
+    # ETH: 3/2 Farside 미반영, bloomingbit 소스
     eth_funds = {
         "BlackRock": 26, "Fidelity": 1,
         "GrayMini": 5, "Grayscale": 4, "VanEck": 0,
     }
-    generate(962, btc_funds, 39, eth_funds)
+    generate(458, btc_funds, 39, eth_funds)
