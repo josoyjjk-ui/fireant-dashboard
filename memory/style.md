@@ -1,7 +1,77 @@
 # 불개미 스타일 가이드
 # 검색 키워드: 불개미 스타일, 포스트 작성법, 글쓰기 톤, 문체 패턴, 캡션,
-# 공지문, 시황 코멘트, 분석글, 이벤트 공지, AMA 양식, Fireweek 양식,
+# 공지문, 시황 코멘트, 분석글, 이벤트 공지, AMA 양식, AMA 스크립트, Script 표준양식, Fireweek 양식,
 # ETF 포스트, 리캡, 요약, 직설체, 이모지, 감탄사, 말투, 문장 구성
+
+## ⚠️ AMA Script 표준양식 (2026-03-05 확정, 모든 스크립트 제작 시 이 양식 적용)
+
+**레퍼런스 Docs**: https://docs.google.com/document/d/15orrjuD-E0EzXALaELjwbzTv-BawXmt6ZLBl1bP0Vr0/edit
+
+```
+[프로젝트명] AMA Script
+Guest: [이름] ([직함], [프로젝트명])
+Topic: [토픽 한 줄]
+
+📌 Intro Section
+MC:
+안녕하세요 여러분, 오늘은 [프로젝트명]과 함께 AMA 시간을 가지게 되었습니다.
+Hello everyone, today we are having an AMA session with [프로젝트명].
+오늘 AMA에도 많은 관심과 참여 부탁드립니다.
+We appreciate your interest and participation in today's AMA as well.
+
+GUEST :
+
+MC:
+안녕하세요 [게스트이름]님, 불개미 커뮤니티에 [프로젝트명]과 자기소개 부탁드립니다!
+Hello [게스트이름], please introduce yourself and [프로젝트명] to the Fireant community!
+
+Answer :
+
+
+📝 Questions Section
+MC Pre Question 1 : @[닉네임]
+[질문 한국어]
+[질문 영어 번역]
+
+GUEST Answer 1 :
+
+(Q2~Q7 동일 구조 반복)
+
+
+🎤 Live Question Section
+MC:
+이것으로 사전질문을 모두 마치도록 하겠습니다. 이제부터는 현장질문을 한번 받아볼건데요, 댓글 혹은 채팅창에 질문 올려주시면 해당 질문중 팀에서 답변할 수 있도록 요청하겠습니다.
+That concludes the pre-submitted questions. Now we'll take live questions from the audience. Please post your questions in the comments or chat, and we'll ask the team to answer them.
+
+Live Question 1 :
+——————————————————————————
+GUEST Answer 1 :
+
+Live Question 2 :
+——————————————————————————
+GUEST Answer 2 :
+
+Live Question 3 :
+——————————————————————————
+GUEST Answer 3 :
+
+
+👋 Ending Section
+MC:
+처음 소개부터 질의응답 시간까지 완료되었는데요 이것으로 오늘 AMA를 마무리하도록 하겠습니다. [게스트이름]님께서도 고생하셨습니다. 이번 AMA를 통해 한국 커뮤니티에게 꼭 전달하고 싶은 메시지가 있다면 무엇인가요?
+We've completed everything from the introduction to Q&A. That wraps up today's AMA. Thank you for your time, [게스트이름]. Is there a message you'd like to share with the Korean community through this AMA?
+
+GUEST :
+```
+
+**규칙:**
+- MC 한국어 대사 아래 반드시 영어 번역 포함
+- 질문: 한국어 원문 + 영어 번역 (2줄)
+- 섹션 구분: 📌 Intro / 📝 Questions / 🎤 Live / 👋 Ending 이모지 고정
+- GUEST Answer 란은 비워두기 (파운더가 직접 채움)
+- Live Question은 3개 슬롯 기본
+
+
 
 ## 기본 톤
 - 직설적/현장감/짧은 문장, 감탄사와 이모지 혼합
