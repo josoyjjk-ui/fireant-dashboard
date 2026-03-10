@@ -750,9 +750,10 @@ themeBtn.addEventListener('click', () => {
 /* ── COUPONI BOT TIMER ── */
 (function(){
   // 해병님이 내용 줄 때마다 여기 세팅. 내용 없으면 ACTIVE=false
-  const COUPONI_ACTIVE = false; // true = 운영 중, false = 오프라인
-  const COUPONI_END = null;   // 종료 시각 e.g. '2026-03-20T23:59:00+09:00'
-  const COUPONI_LABEL = '';   // 현재 운영 내용 e.g. '블록스트릿 리캡 캠페인'
+  const COUPONI_ACTIVE = true;
+  const COUPONI_START = '2026-03-10T16:01:00+09:00';
+  const COUPONI_END = '2026-03-10T20:00:00+09:00';
+  const COUPONI_LABEL = '기프티콘 클레임 (16:01 ~ 20:00)';
 
   const dot = document.getElementById('couponi-dot');
   const status = document.getElementById('couponi-status');
@@ -765,25 +766,48 @@ themeBtn.addEventListener('click', () => {
       dot.style.boxShadow = '0 0 8px rgba(255,59,59,0.6)';
       status.textContent = '🔴 오프라인';
       status.style.color = 'var(--red)';
-      mode.textContent = '점검 중';
+      mode.textContent = '운영 예정 없음';
       timer.textContent = '--:--:--';
       return;
     }
-    dot.style.background = '#4ADE80';
-    dot.style.boxShadow = '0 0 8px rgba(74,222,128,0.6)';
-    status.textContent = '🟢 운영 중';
-    status.style.color = 'var(--green)';
-    mode.textContent = COUPONI_LABEL || '정상 가동';
-
-    if(!COUPONI_END){ timer.textContent = '∞'; return; }
-    const end = new Date(COUPONI_END).getTime();
     const now = Date.now();
-    const diff = end - now;
-    if(diff <= 0){ timer.textContent = '종료'; return; }
-    const h = Math.floor(diff/3600000);
-    const m = Math.floor((diff%3600000)/60000);
-    const s = Math.floor((diff%60000)/1000);
-    timer.textContent = `${h}시간 ${m}분 ${s}초`;
+    const start = COUPONI_START ? new Date(COUPONI_START).getTime() : 0;
+    const end = COUPONI_END ? new Date(COUPONI_END).getTime() : 0;
+
+    if(start && now < start){
+      // 시작 전 — 대기 중
+      dot.style.background = '#FFD740';
+      dot.style.boxShadow = '0 0 8px rgba(255,215,64,0.6)';
+      status.textContent = '🟡 대기 중';
+      status.style.color = 'var(--gold)';
+      mode.textContent = COUPONI_LABEL || '시작 대기';
+      const diff = start - now;
+      const h = Math.floor(diff/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      const s = Math.floor((diff%60000)/1000);
+      timer.textContent = `시작까지 ${h}시간 ${m}분 ${s}초`;
+    } else if(end && now > end){
+      // 종료
+      dot.style.background = '#FF3B3B';
+      dot.style.boxShadow = '0 0 8px rgba(255,59,59,0.6)';
+      status.textContent = '🔴 종료';
+      status.style.color = 'var(--red)';
+      mode.textContent = COUPONI_LABEL || '종료됨';
+      timer.textContent = '종료';
+    } else {
+      // 운영 중
+      dot.style.background = '#4ADE80';
+      dot.style.boxShadow = '0 0 8px rgba(74,222,128,0.6)';
+      status.textContent = '🟢 운영 중';
+      status.style.color = 'var(--green)';
+      mode.textContent = COUPONI_LABEL || '정상 가동';
+      if(!end){ timer.textContent = '∞'; return; }
+      const diff = end - now;
+      const h = Math.floor(diff/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      const s = Math.floor((diff%60000)/1000);
+      timer.textContent = `남은시간 ${h}시간 ${m}분 ${s}초`;
+    }
   }
   updateCouponi();
   setInterval(updateCouponi, 1000);
