@@ -159,15 +159,10 @@ async def confirm(update: Update, context: ContextTypes.DEFAULT_TYPE):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         user_id = update.effective_user.id
 
-        # Save to CSV
-        row = [now, user_id, d["telegram_id"], d["twitter_id"],
-               d["phone"], d["email"], d["error_desc"]]
-        with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(row)
-
         # Save to Google Sheets
-        append_to_gsheet([str(x) for x in row])
+        row = [now, str(user_id), d["telegram_id"], d["twitter_id"],
+               d["phone"], d["email"], d["error_desc"]]
+        append_to_gsheet(row)
 
         # Notify admin
         admin_msg = (
