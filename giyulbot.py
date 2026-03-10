@@ -9,6 +9,7 @@ import json
 import csv
 import os
 import asyncio
+import requests as http_requests
 from datetime import datetime
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (
@@ -20,6 +21,46 @@ BOT_TOKEN = "***REMOVED***"
 ADMIN_ID = 477743685
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "giyulbot_data")
 CSV_PATH = os.path.join(DATA_DIR, "reports.csv")
+GOOGLE_TOKEN_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "secrets", "google-token.json")
+GSHEET_ID = "1grh4SF4Ba8jDT44p5Kw0eg0HOJZpiO0dv7ztJCzpxBs"
+GSHEET_RANGE = "신고내역!A:G"
+
+
+def get_google_token():
+    """Get fresh Google OAuth token."""
+    try:
+        with open(GOOGLE_TOKEN_PATH) as f:
+            td = json.load(f)
+        resp = http_requests.post("https://oauth2.googleapis.com/token", data={
+            "client_id": td["client_id"],
+            "client_secret": td["client_secret"],
+            "refresh_token": td["refresh_token"],
+            "grant_type": "refresh_token"
+        }, timeout=10)
+        return resp.json().get("access_token")
+    except Exception as e:
+        print(f"[GSheet] Token error: {e}")
+        return None
+
+
+def append_to_gsheet(row):
+    """Append a row to Google Sheets."""
+    try:
+        token = get_google_token()
+        if not token:
+            return False
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        resp = http_requests.post(
+            f"https://sheets.googleapis.com/v4/spreadsheets/{GSHEET_ID}/values/{GSHEET_RANGE}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS",
+            headers=headers,
+            json={"values": [row]},
+            timeout=10
+        )
+        print(f"[GSheet] Append: {resp.status_code}")
+        return resp.status_code == 200
+    except Exception as e:
+        print(f"[GSheet] Error: {e}")
+        return False
 
 # Conversation states
 TG_ID, TWITTER_ID, PHONE, EMAIL, ERROR_DESC, CONFIRM = range(6)
@@ -119,12 +160,14 @@ async def confirm(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.effective_user.id
 
         # Save to CSV
+        row = [now, user_id, d["telegram_id"], d["twitter_id"],
+               d["phone"], d["email"], d["error_desc"]]
         with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow([
-                now, user_id, d["telegram_id"], d["twitter_id"],
-                d["phone"], d["email"], d["error_desc"]
-            ])
+            writer.writerow(row)
+
+        # Save to Google Sheets
+        append_to_gsheet([str(x) for x in row])
 
         # Notify admin
         admin_msg = (
