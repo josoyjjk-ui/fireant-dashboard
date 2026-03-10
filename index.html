@@ -554,6 +554,32 @@
     </a>
   </div>
 
+  <!-- COUPONI BOT STATUS -->
+  <div class="section" id="couponi">
+    <div class="section-head">
+      <h2>🎁 쿠포니봇 상태</h2>
+    </div>
+    <div class="ev-card" style="position:relative;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <span id="couponi-dot" style="width:12px; height:12px; border-radius:50%; background:#4ADE80; box-shadow:0 0 8px rgba(74,222,128,0.6); display:inline-block;"></span>
+        <span id="couponi-status" style="font-weight:700; font-size:1.1rem; color:var(--green);">🟢 운영 중</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+        <div style="background:var(--surface); border-radius:var(--radius-sm); padding:12px; text-align:center;">
+          <div style="color:var(--text-dim); font-size:0.8rem;">상태</div>
+          <div id="couponi-mode" style="font-weight:700; font-size:1rem; color:var(--text); margin-top:4px;">정상 가동</div>
+        </div>
+        <div style="background:var(--surface); border-radius:var(--radius-sm); padding:12px; text-align:center;">
+          <div style="color:var(--text-dim); font-size:0.8rem;">남은 시간</div>
+          <div id="couponi-timer" style="font-weight:700; font-size:1rem; color:var(--gold); margin-top:4px;">--:--:--</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="https://t.me/noorakbot" target="_blank" class="ev-btn-outline" style="flex:1; text-align:center;">⚠️ 오류 신고 (CS봇) →</a>
+      </div>
+    </div>
+  </div>
+
   <!-- SOCIAL -->
   <div class="section" id="links">
     <div class="section-head">
@@ -720,6 +746,47 @@ themeBtn.addEventListener('click', () => {
   themeBtn.textContent = next === 'light' ? '☀️' : '🌙';
   localStorage.setItem('fa-theme', next);
 });
+
+/* ── COUPONI BOT TIMER ── */
+(function(){
+  // Set couponi bot end time here (KST). null = no timer, just show status.
+  const COUPONI_END = null; // e.g. '2026-03-20T23:59:00+09:00'
+  const COUPONI_ACTIVE = true; // true = 운영 중, false = 오프라인
+
+  const dot = document.getElementById('couponi-dot');
+  const status = document.getElementById('couponi-status');
+  const mode = document.getElementById('couponi-mode');
+  const timer = document.getElementById('couponi-timer');
+
+  function updateCouponi(){
+    if(!COUPONI_ACTIVE){
+      dot.style.background = '#FF3B3B';
+      dot.style.boxShadow = '0 0 8px rgba(255,59,59,0.6)';
+      status.textContent = '🔴 오프라인';
+      status.style.color = 'var(--red)';
+      mode.textContent = '점검 중';
+      timer.textContent = '--:--:--';
+      return;
+    }
+    dot.style.background = '#4ADE80';
+    dot.style.boxShadow = '0 0 8px rgba(74,222,128,0.6)';
+    status.textContent = '🟢 운영 중';
+    status.style.color = 'var(--green)';
+    mode.textContent = '정상 가동';
+
+    if(!COUPONI_END){ timer.textContent = '∞'; return; }
+    const end = new Date(COUPONI_END).getTime();
+    const now = Date.now();
+    const diff = end - now;
+    if(diff <= 0){ timer.textContent = '종료'; return; }
+    const h = Math.floor(diff/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    timer.textContent = `${h}시간 ${m}분 ${s}초`;
+  }
+  updateCouponi();
+  setInterval(updateCouponi, 1000);
+})();
 </script>
 </body>
 </html>
