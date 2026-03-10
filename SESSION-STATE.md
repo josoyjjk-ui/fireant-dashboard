@@ -2,15 +2,14 @@
 
 ## ACTIVE
 
-### fireantagent_bot 배포 대기
-- 상태: Apps Script 배포 "유형 선택" 화면에서 기어 아이콘 클릭 불응
-- 필요: 해병님이 맥미니에서 직접 기어 아이콘 → 웹 앱 선택
-- 이후: 모든 사용자 설정 → 배포 → URL → 봇 WEBHOOK_URL 연결 (딸수가 처리)
-- Script TAB ID: 2110A5FBA2F01823D8FAE0118A44FC63
-- Script Project ID: 1YyEJKe3RrxzGxT-lRSpctVUde2t8irphKeGgrWdZEh3HJTSI9igmuaLm
-- Sheet ID: 1R7vwJKA1JtcUsktr7DPRQGr_28glZuXtP9swsDKAfuk
+### 서브에이전트 아키텍처 구현 대기
+- 메인(딸수) + 참모(GPT-5.4, 상시) + 공병(Sonnet, 호출형)
+- 해병님 최종 "진행" 대기 중
 
-### fireantagent_bot 실행 중
-- 세션: nimble-bloom
-- CSV: /workspace/verification_results.csv
-- 봇 토큰: Keychain fireantagent_bot
+### fireantagent_bot 배포 대기
+- Apps Script 배포 "유형 선택" 기어 아이콘 → 해병님 물리 조작 필요
+- Script Project: 1YyEJKe3RrxzGxT-lRSpctVUde2t8irphKeGgrWdZEh3HJTSI9igmuaLm
+
+### Billions 공지 3개 전송 대기
+- Fireweek + AMA + 사전질문폼 — 해병님 확인 후 전송
+- Form: 1RQgAz8fhVrrdLzXz3XPkiy_gpN3DN8MRjGlzCN9-9sg
