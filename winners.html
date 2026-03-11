@@ -503,7 +503,7 @@
 
           <div class="form-group">
             <label class="form-label">이벤트명 <span class="req">*</span></label>
-            <input type="text" class="form-input" id="f_event" placeholder="예: Billions AMA 3/16" required>
+            <input type="text" class="form-input" id="f_event" placeholder="예: 불개미 AMA 3월 21일 진행" required>
           </div>
 
           <div class="form-group">
@@ -516,11 +516,15 @@
             <div class="contact-row">
               <select class="form-select" id="f_contact_type" required>
                 <option value="">유형 선택</option>
-                <option value="카카오톡 ID">카카오톡 ID</option>
                 <option value="전화번호">전화번호</option>
               </select>
-              <input type="text" class="form-input" id="f_contact" placeholder="카카오 ID 또는 전화번호" required>
+              <input type="text" class="form-input" id="f_contact" placeholder="전화번호" required>
             </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">당첨된 상품 <span class="req">*</span></label>
+            <input type="text" class="form-input" id="f_reward_item" placeholder="예: 1만원 상품권 * 허위입력시 당첨이 취소됩니다." required>
           </div>
 
           <div class="form-group">
@@ -528,7 +532,7 @@
               <input type="checkbox" id="f_agree" required>
               <span class="checkbox-label">
                 <strong>개인정보 수집 및 이용에 동의합니다.</strong><br>
-                리워드 지급 목적으로 위 정보를 수집·이용합니다. 지급 완료 후 즉시 파기됩니다.
+                리워드 지급 및 비정상적인 행위자 검증목적으로 위 정보를 수집, 이용합니다. 수집 후 6개월간 보관됩니다.
               </span>
             </label>
           </div>
