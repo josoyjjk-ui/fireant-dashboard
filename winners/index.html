@@ -684,7 +684,7 @@ function renderAllWinners() {
         background:rgba(255,255,255,0.04);
         border:1px solid rgba(255,255,255,0.1);
         border-radius:var(--radius-sm);
-        height:320px;
+        height:400px;
         overflow-y:auto;
         display:grid;
         grid-template-columns:repeat(4,1fr);
@@ -694,17 +694,18 @@ function renderAllWinners() {
       ">`;
     list.forEach(w => {
       html += `<span style="
-        font-size:0.82rem;
-        font-weight:600;
-        color:#E8E8ED;
-        padding:6px 10px;
+        font-size:0.7rem;
+        font-weight:700;
+        color:#ffffff;
+        padding:8px 6px;
         border-radius:6px;
-        background:rgba(255,255,255,0.1);
-        border:1px solid rgba(255,255,255,0.15);
+        background:rgba(255,255,255,0.12);
+        border:1px solid rgba(255,255,255,0.2);
         white-space:nowrap;
         overflow:hidden;
         text-overflow:ellipsis;
-        letter-spacing:0.01em;
+        text-align:center;
+        line-height:1.2;
       ">${escHtml(w.telegram || '')}</span>`;
     });
     html += `</div></div>`;
