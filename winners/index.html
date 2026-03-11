@@ -441,9 +441,9 @@
 
   <!-- NAV -->
   <div class="nav">
-    <a href="index.html" class="nav-brand">🔥 불개미</a>
+    <a href="../" class="nav-brand">🔥 불개미</a>
     <div class="nav-links">
-      <a href="index.html">홈</a>
+      <a href="../">홈</a>
       <a href="winners.html" class="active">🏆 당첨자</a>
       <button class="theme-toggle" id="themeToggle" title="테마 전환">🌙</button>
     </div>
@@ -618,7 +618,7 @@ let dataLoaded = false;
 
 async function loadWinners() {
   try {
-    const res = await fetch('winners.json?t=' + Date.now());
+    const res = await fetch('../winners.json?t=' + Date.now());
     if (!res.ok) throw new Error('not found');
     const data = await res.json();
     winnersData = Array.isArray(data) ? data : [];
