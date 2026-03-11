@@ -667,14 +667,40 @@ function renderAllWinners() {
     if (!byEvent[ev]) byEvent[ev] = [];
     byEvent[ev].push(w);
   });
-  let html = `<div class="section-head" style="margin-top:20px"><h2>🏅 전체 당첨자 목록</h2></div>`;
+  let html = `<div style="margin-top:20px">`;
   Object.entries(byEvent).forEach(([ev, list]) => {
-    html += `<div class="section-head" style="margin-top:18px;margin-bottom:8px">
-      <span style="font-size:0.8rem;font-weight:700;color:var(--gold)">${escHtml(ev)}</span>
-      <span style="font-size:0.7rem;color:var(--text-muted);margin-left:6px">${list.length}명</span>
-    </div>`;
-    list.forEach(w => { html += renderCard(w); });
+    html += `<div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:0.85rem;font-weight:700;color:var(--gold)">🏅 ${escHtml(ev)}</span>
+        <span style="font-size:0.72rem;color:var(--text-muted);background:var(--surface);padding:2px 8px;border-radius:20px">${list.length}명</span>
+      </div>
+      <div style="
+        background:var(--surface);
+        border:1px solid var(--border);
+        border-radius:var(--radius-sm);
+        height:280px;
+        overflow-y:auto;
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+        align-content:start;
+        gap:4px;
+        padding:10px;
+      ">`;
+    list.forEach(w => {
+      html += `<span style="
+        font-size:0.78rem;
+        color:var(--text);
+        padding:5px 8px;
+        border-radius:6px;
+        background:var(--surface-hover);
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      ">${escHtml(w.telegram || '')}</span>`;
+    });
+    html += `</div></div>`;
   });
+  html += `</div>`;
   el.innerHTML = html;
 }
 
