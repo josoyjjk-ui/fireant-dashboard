@@ -21,7 +21,7 @@
     --green: #4ADE80;
     --text: #E8E8ED;
     --text-dim: #6B6B80;
-    --text-muted: #3E3E50;
+    --text-muted: #8A8AA8;
     --glow-red: rgba(255,59,59,0.15);
     --glow-orange: rgba(255,107,53,0.12);
     --radius: 16px;
@@ -192,7 +192,7 @@
     box-shadow: 0 0 0 3px rgba(255,215,64,0.08);
   }
   .search-hint {
-    font-size: 0.72rem; color: var(--text-muted);
+    font-size: 0.78rem; color: var(--text-dim); font-weight: 500;
     margin-top: 6px; padding-left: 2px;
   }
 
@@ -255,7 +255,7 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    color: var(--text-muted);
+    color: var(--text-dim);
   }
   .state-box .state-icon { font-size: 2.5rem; margin-bottom: 12px; }
   .state-box p { font-size: 0.86rem; line-height: 1.6; }
@@ -653,7 +653,7 @@ function renderAllWinners() {
     el.innerHTML = `<div class="state-box">
       <div class="state-icon">📋</div>
       <div class="state-title">등록된 당첨자 없음</div>
-      <p>현재 등록된 당첨자 데이터가 없습니다.<br>이벤트 종료 후 공지되면 업데이트됩니다.</p>
+      <p style="color:var(--text-dim);font-size:0.9rem;line-height:1.6;">현재 등록된 당첨자 데이터가 없습니다.<br>이벤트 종료 후 공지되면 업데이트됩니다.</p>
     </div>`;
     return;
   }
