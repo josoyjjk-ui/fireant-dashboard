@@ -642,6 +642,7 @@ function renderCard(w) {
   return `
     <div class="winner-card">
       <span class="winner-event">${escHtml(w.event || '이벤트')}</span>
+      ${w.note ? `<span style="font-size:0.72rem;color:var(--gold);font-weight:700;margin-bottom:4px;display:block;">(${escHtml(w.note)})</span>` : ''}
       <div class="winner-handles">
         ${tg ? `<span class="winner-handle"><span class="platform">텔레그램</span> ${escHtml(tg)}</span>` : ''}
         ${tw ? `<span class="winner-handle"><span class="platform">트위터</span> ${escHtml(tw)}</span>` : ''}
