@@ -37,9 +37,12 @@ rows = con.execute("""
 """).fetchall()
 con.close()
 
+total_points = sum(r["points"] for r in rows)
+
 data = {
     "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M KST"),
     "period": {"start": period["start_date"], "end": period["end_date"]} if period else {},
+    "total_points": total_points,
     "leaderboard": [
         {
             "rank": r["rank"],
