@@ -121,11 +121,18 @@ def get_user(user_id: int):
 def register_user(user_id: int, username: str, first_name: str) -> bool:
     """새 유저 등록. 이미 있으면 False."""
     with get_db() as conn:
-        existing = conn.execute("SELECT user_id FROM users WHERE user_id=?", (user_id,)).fetchone()
+        existing = conn.execute("SELECT user_id, ever_registered FROM users WHERE user_id=?", (user_id,)).fetchone()
         if existing:
-            return False
+            if existing["ever_registered"] == 1:
+                return False  # 이미 등록 완료 (재입장 어뷰징 차단)
+            # 레코드 있으나 미완료 → 업데이트
+            conn.execute(
+                "UPDATE users SET username=?, first_name=?, points=10, ever_registered=1 WHERE user_id=?",
+                (username, first_name, user_id)
+            )
+            return True
         conn.execute(
-            "INSERT INTO users (user_id, username, first_name, points) VALUES (?,?,?,10)",
+            "INSERT INTO users (user_id, username, first_name, points, ever_registered) VALUES (?,?,?,10,1)",
             (user_id, username, first_name)
         )
     return True
