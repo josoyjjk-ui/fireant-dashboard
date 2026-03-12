@@ -156,7 +156,8 @@ def set_referrer(user_id: int, referrer_input: str) -> tuple[bool, str, int]:
         if referrer["user_id"] == user_id:
             return False, "자기 자신을 초대자로 등록할 수 없습니다.", 0
         conn.execute("UPDATE users SET referrer_id=? WHERE user_id=?", (referrer["user_id"], user_id))
-        conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (referrer["user_id"],))
+        conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (referrer["user_id"],))  # 초대자 +10
+        conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (user_id,))              # 피초대자 +10
         new_points = referrer["points"] + 10
     return True, referrer["first_name"], referrer["user_id"], new_points
 
@@ -180,6 +181,10 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not user:
         return
 
+    # 그룹챗에서는 무응답
+    if update.effective_chat.type != "private":
+        return
+
     # 이벤트 공지 — 항상 먼저 표시
     await update.message.reply_text(
         "📣 현재 진행중인 이벤트는 Billions 채널 / 대화방 입장이벤트 입니다.\n\n"
@@ -200,10 +205,11 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         await update.message.reply_text(
             f"✅ 환영합니다, {user.first_name}님!\n"
-            f"+10 포인트가 지급됐습니다.\n\n"
-            f"나를 이곳에 초대한 사람의 텔레그램 @유저네임을 넣어주세요!\n"
+            f"🎉 기본 +10 포인트가 지급됐습니다!\n\n"
+            f"나를 이곳에 초대한 사람의 텔레그램 @유저네임을 입력하면\n"
+            f"👉 나에게 +10포인트 추가 지급\n"
+            f"👉 초대한 친구에게도 +10포인트 지급\n\n"
             f"(예: @fireantico)\n"
-            f"그럼 초대받은 나와 초대한 내 친구에게 각각 10포인트씩 지급됩니다!\n"
             f"없으면 /skip 입력"
         )
         return WAITING_REFERRER
@@ -236,7 +242,7 @@ async def receive_referrer_id(update: Update, context: ContextTypes.DEFAULT_TYPE
         invitee_name = user.first_name or user.username or "누군가"
         invitee_username = f"@{user.username}" if user.username else invitee_name
         await update.message.reply_text(
-            f"✅ {msg}님을 초대자로 등록했습니다!\n초대자에게 +10 포인트가 지급됐습니다."
+            f"✅ {msg}님을 초대자로 등록했습니다!\n💰 나에게 +10포인트, 초대자에게도 +10포인트 지급됐습니다."
         )
         # 초대자에게 알림 DM
         try:
@@ -258,11 +264,17 @@ async def receive_referrer_id(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 
 async def cmd_skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.type != "private":
+        return
+
     await update.message.reply_text("초대자 없이 등록했습니다. /points 로 포인트를 확인하세요.")
     return ConversationHandler.END
 
 
 async def cmd_setreferrer(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.type != "private":
+        return
+
     """기존 등록 유저도 초대자를 나중에 입력할 수 있는 명령어. /setreferrer @username"""
     user = update.effective_user
     args = context.args
@@ -284,7 +296,7 @@ async def cmd_setreferrer(update: Update, context: ContextTypes.DEFAULT_TYPE):
         invitee_name = user.first_name or user.username or "누군가"
         invitee_username = f"@{user.username}" if user.username else invitee_name
         await update.message.reply_text(
-            f"✅ {msg}님을 초대자로 등록했습니다!\n초대자에게 +10 포인트가 지급됐습니다."
+            f"✅ {msg}님을 초대자로 등록했습니다!\n💰 나에게 +10포인트, 초대자에게도 +10포인트 지급됐습니다."
         )
         try:
             await context.bot.send_message(
@@ -303,6 +315,9 @@ async def cmd_setreferrer(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_points(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.type != "private":
+        return
+
     user = update.effective_user
     row = get_user(user.id)
     if not row:
@@ -315,6 +330,9 @@ async def cmd_points(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_rank(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.type != "private":
+        return
+
     board = get_leaderboard(10)
     if not board:
         await update.message.reply_text("아직 등록된 유저가 없습니다.")
