@@ -30,6 +30,7 @@
 3. USER.md → 내가 돕는 사람
 4. memory/YYYY-MM-DD.md (오늘+어제) → 최근 맥락
 5. SESSION-STATE.md → 진행 중인 작업
+6. **memory/style.md → 포스트/콘텐츠 작업 전 반드시 로드 (컴팩션 후 특히 필수)**
 
 ---
 
