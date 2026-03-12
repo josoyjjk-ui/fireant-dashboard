@@ -536,7 +536,7 @@ async def chat_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
             # 30초 후 자동 삭제
             async def delete_later(chat_id, msg_id):
                 import asyncio
-                await asyncio.sleep(30)
+                await asyncio.sleep(5)
                 try:
                     await context.bot.delete_message(chat_id=chat_id, message_id=msg_id)
                 except Exception:
