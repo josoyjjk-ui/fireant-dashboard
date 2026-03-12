@@ -246,6 +246,46 @@ async def cmd_skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
+async def cmd_setreferrer(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """기존 등록 유저도 초대자를 나중에 입력할 수 있는 명령어. /setreferrer @username"""
+    user = update.effective_user
+    args = context.args
+    if not args:
+        await update.message.reply_text(
+            "사용법: /setreferrer @유저네임\n예: /setreferrer @fireantico"
+        )
+        return
+
+    referrer_input = args[0]
+    result = set_referrer(user.id, referrer_input)
+    if len(result) == 4:
+        ok, msg, referrer_uid, new_points = result
+    else:
+        ok, msg, referrer_uid = result
+        new_points = 0
+
+    if ok:
+        invitee_name = user.first_name or user.username or "누군가"
+        invitee_username = f"@{user.username}" if user.username else invitee_name
+        await update.message.reply_text(
+            f"✅ {msg}님을 초대자로 등록했습니다!\n초대자에게 +10 포인트가 지급됐습니다."
+        )
+        try:
+            await context.bot.send_message(
+                chat_id=referrer_uid,
+                text=(
+                    f"🎉 {invitee_username}님이 회원님의 초대로 등록했습니다!\n\n"
+                    f"📌 피초대자: {invitee_username}\n"
+                    f"💰 지급 포인트: +10점\n"
+                    f"🏆 현재 누적 포인트: {new_points}점"
+                )
+            )
+        except Exception:
+            pass
+    else:
+        await update.message.reply_text(f"❌ {msg}")
+
+
 async def cmd_points(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     row = get_user(user.id)
@@ -552,6 +592,7 @@ def main():
 
     # 유저 명령어
     app.add_handler(CommandHandler("points", cmd_points))
+    app.add_handler(CommandHandler("setreferrer", cmd_setreferrer))
     app.add_handler(CommandHandler("rank", cmd_rank))
 
     # 관리자 명령어
