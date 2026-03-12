@@ -451,19 +451,22 @@ async def chat_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     # 신규 입장 (was: not member → now: member)
     if old_status in ("left", "kicked", "restricted") and new_status == "member":
+        # 봇은 먼저 DM 불가 → 채널에 멘션 메시지로 안내
         try:
+            mention = f'<a href="tg://user?id={target_user.id}">{target_user.first_name}</a>'
+            bot_username = (await context.bot.get_me()).username
             await context.bot.send_message(
-                chat_id=target_user.id,
+                chat_id=result.chat.id,
                 text=(
-                    f"안녕하세요, {target_user.first_name}님! 👋\n"
-                    f"채널에 오신 걸 환영합니다!\n\n"
-                    f"먼저 /start 로 이벤트에 참여해주세요!\n\n"
-                    f"나를 이곳에 초대한 사람의 텔레그램 아이디를 넣어주세요!\n"
-                    f"그럼 초대받은 나와 초대한 내 친구에게 각각 10포인트씩 지급됩니다!"
-                )
+                    f"🎉 {mention}님 환영합니다!\n\n"
+                    f"🔥 친구초대 이벤트 진행 중!\n"
+                    f"포인트를 받으려면 아래 봇에서 /start 를 눌러주세요 👇\n"
+                    f"@{bot_username}"
+                ),
+                parse_mode="HTML"
             )
         except Exception as e:
-            logger.warning("DM 발송 실패 (user_id=%s): %s", target_user.id, e)
+            logger.warning("채널 환영 메시지 실패 (user_id=%s): %s", target_user.id, e)
 
     # 퇴장 / 강퇴 (was: member/admin → now: left/kicked)
     elif old_status in ("member", "administrator", "creator", "restricted") and new_status in ("left", "kicked"):
