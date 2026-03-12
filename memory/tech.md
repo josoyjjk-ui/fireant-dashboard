@@ -24,3 +24,9 @@
 - Plan B: contextPruning cache-ttl 60분, keepLastAssistants 6, minPrunableToolChars 2000
 - Plan C: 도구 호출 3회+ 예상 시 서브에이전트 위임
 - Plan A: MEMORY.md 분리 완료 (style/projects/people/tech)
+
+## 내부 tool 오류 알림 텔레그램 노출 (2026-03-13)
+- 증상: Edit 도구 실패 시 "⚠️ 📝 Edit: ... failed" 메시지가 텔레그램으로 전송됨
+- 원인: OpenClaw platform이 tool 오류를 채널에 push하는 것으로 보임 (platform 버그)
+- 상태: 미해결 (OpenClaw upstream 이슈)
+- 대응: 중요 편집은 python 스크립트로 처리해 Edit 도구 실패 최소화
