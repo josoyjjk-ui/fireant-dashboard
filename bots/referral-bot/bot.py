@@ -180,6 +180,15 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not user:
         return
 
+    # 이벤트 공지 — 항상 먼저 표시
+    await update.message.reply_text(
+        "📣 현재 진행중인 이벤트는 Billions 채널 / 대화방 입장이벤트 입니다.\n\n"
+        "👉 Billions 공지채널: https://t.me/Billions_Korea\n"
+        "👉 Billions 대화방: https://t.me/billions_Koreachat\n\n"
+        "위 두 채널에 입장하고 아래 절차를 따라주세요!",
+        disable_web_page_preview=True
+    )
+
     is_new = register_user(user.id, user.username or "", user.first_name or "")
 
     if is_new:
