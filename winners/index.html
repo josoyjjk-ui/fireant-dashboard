@@ -492,13 +492,31 @@
     <div id="applyFormWrap">
       <div class="form-card">
         <div class="form-title">📬 리워드 수령 정보 제출</div>
-        <div class="form-desc">당첨이 확인된 분만 제출해 주세요. 제출 즉시 담당자에게 전달됩니다.</div>
+        <div class="form-desc">신청 유형을 먼저 선택해 주세요.</div>
 
-        <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:0.82rem; color:#856404;">
+        <!-- 신청 유형 선택 -->
+        <div style="display:flex; gap:10px; margin-bottom:18px;">
+          <button type="button" id="type-btn-error"
+            onclick="selectApplyType('error')"
+            style="flex:1; padding:12px 8px; border-radius:10px; border:2px solid #e0e0e0; background:#fff; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all .2s; color:#666;">
+            ⚠️ 쿠포니봇 오류 신청
+          </button>
+          <button type="button" id="type-btn-winner"
+            onclick="selectApplyType('winner')"
+            style="flex:1; padding:12px 8px; border-radius:10px; border:2px solid #e0e0e0; background:#fff; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all .2s; color:#666;">
+            🏆 당첨자 리워드 신청
+          </button>
+        </div>
+
+        <!-- 오류 신청 안내 -->
+        <div id="notice-error" style="display:none; background:#fff3cd; border:1px solid #ffc107; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:0.82rem; color:#856404;">
           ⚠️ 오류신청은 쿠포니봇 운영시간 중 제출된 오류만 유효하게 처리될 예정입니다.
         </div>
 
-        <form id="rewardForm" onsubmit="submitForm(event)">
+        <!-- 숨겨진 신청유형 필드 -->
+        <input type="hidden" id="f_apply_type" value="">
+
+        <form id="rewardForm" onsubmit="submitForm(event)" style="display:none;">
           <div class="form-group">
             <label class="form-label">연락처 <span class="req">*</span></label>
             <div class="contact-row">
@@ -805,8 +823,30 @@ function prefillAndSwitch(nick) {
 // Google Apps Script Web App URL (doPost endpoint)
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxS89ovB-E8iXkqoKJ_643AJJoJu1flCSx7HLGKDSWhJZsW5_RhDNCSwStoF2fbCQ/exec';
 
+function selectApplyType(type) {
+  const applyType = document.getElementById('f_apply_type');
+  const btnError  = document.getElementById('type-btn-error');
+  const btnWinner = document.getElementById('type-btn-winner');
+  const noticeError = document.getElementById('notice-error');
+  const form = document.getElementById('rewardForm');
+
+  applyType.value = type === 'error' ? '쿠포니봇 오류 신청' : '당첨자 리워드 신청';
+
+  btnError.style.border  = type === 'error'  ? '2px solid #f90' : '2px solid #e0e0e0';
+  btnError.style.background  = type === 'error'  ? '#fff8e1' : '#fff';
+  btnError.style.color   = type === 'error'  ? '#b8860b' : '#666';
+  btnWinner.style.border = type === 'winner' ? '2px solid #FF6B2C' : '2px solid #e0e0e0';
+  btnWinner.style.background = type === 'winner' ? '#fff3ee' : '#fff';
+  btnWinner.style.color  = type === 'winner' ? '#FF6B2C' : '#666';
+
+  noticeError.style.display = type === 'error' ? 'block' : 'none';
+  form.style.display = 'block';
+}
+
 async function submitForm(e) {
   e.preventDefault();
+  const applyType = document.getElementById('f_apply_type').value;
+  if (!applyType) { showToast('신청 유형을 먼저 선택해 주세요.', true); return; }
   const agree = document.getElementById('f_agree').checked;
   if (!agree) { showToast('개인정보 수집에 동의해 주세요.', true); return; }
 
@@ -815,7 +855,7 @@ async function submitForm(e) {
   btn.textContent = '⏳ 제출 중...';
 
   const form = new FormData();
-  form.append('entry.2010035811', document.getElementById('f_telegram').value || '');
+  form.append('entry.2010035811', (applyType ? '[' + applyType + '] ' : '') + (document.getElementById('f_telegram').value || ''));
   form.append('entry.255925888',  document.getElementById('f_twitter').value || '');
   form.append('entry.512449725',  document.getElementById('f_event').value || '');
   form.append('entry.300366735',  document.getElementById('f_email').value || '');
