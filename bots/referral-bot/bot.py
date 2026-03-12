@@ -519,11 +519,11 @@ async def chat_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     # 신규 입장 (was: not member → now: member)
     if old_status in ("left", "kicked", "restricted") and new_status == "member":
-        # 봇은 먼저 DM 불가 → 채널에 멘션 메시지로 안내
+        # 봇은 먼저 DM 불가 → 채널에 멘션 메시지로 안내 후 30초 뒤 자동 삭제
         try:
             mention = f'<a href="tg://user?id={target_user.id}">{target_user.first_name}</a>'
             bot_username = (await context.bot.get_me()).username
-            await context.bot.send_message(
+            sent = await context.bot.send_message(
                 chat_id=result.chat.id,
                 text=(
                     f"🎉 {mention}님 환영합니다!\n\n"
@@ -533,6 +533,16 @@ async def chat_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
                 ),
                 parse_mode="HTML"
             )
+            # 30초 후 자동 삭제
+            async def delete_later(chat_id, msg_id):
+                import asyncio
+                await asyncio.sleep(30)
+                try:
+                    await context.bot.delete_message(chat_id=chat_id, message_id=msg_id)
+                except Exception:
+                    pass
+            import asyncio
+            asyncio.create_task(delete_later(result.chat.id, sent.message_id))
         except Exception as e:
             logger.warning("채널 환영 메시지 실패 (user_id=%s): %s", target_user.id, e)
 
