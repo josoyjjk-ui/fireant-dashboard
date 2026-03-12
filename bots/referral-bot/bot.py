@@ -78,6 +78,7 @@ def init_db():
                 first_name  TEXT,
                 points      INTEGER DEFAULT 0,
                 referrer_id INTEGER,
+                ever_registered INTEGER DEFAULT 0,
                 registered_at TEXT DEFAULT (datetime('now', 'localtime')),
                 FOREIGN KEY (referrer_id) REFERENCES users(user_id)
             );
