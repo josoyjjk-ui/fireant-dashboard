@@ -131,22 +131,27 @@ def register_user(user_id: int, username: str, first_name: str) -> bool:
     return True
 
 
-def set_referrer(user_id: int, referrer_id: int) -> tuple[bool, str]:
-    """초대자 설정. (성공여부, 메시지)"""
-    if user_id == referrer_id:
-        return False, "자기 자신을 초대자로 등록할 수 없습니다."
+def set_referrer(user_id: int, referrer_input: str) -> tuple[bool, str, int]:
+    """초대자 설정. referrer_input은 @username 문자열.
+    반환: (성공여부, 메시지, 초대자_user_id)"""
+    username_clean = referrer_input.lstrip("@").strip().lower()
     with get_db() as conn:
         user = conn.execute("SELECT referrer_id FROM users WHERE user_id=?", (user_id,)).fetchone()
         if not user:
-            return False, "먼저 /start로 등록해주세요."
+            return False, "먼저 /start로 등록해주세요.", 0
         if user["referrer_id"] is not None:
-            return False, "이미 초대자가 등록되어 있습니다."
-        referrer = conn.execute("SELECT user_id, first_name FROM users WHERE user_id=?", (referrer_id,)).fetchone()
+            return False, "이미 초대자가 등록되어 있습니다.", 0
+        referrer = conn.execute(
+            "SELECT user_id, first_name, points FROM users WHERE LOWER(username)=?", (username_clean,)
+        ).fetchone()
         if not referrer:
-            return False, f"ID {referrer_id}는 아직 봇을 시작하지 않은 유저입니다."
-        conn.execute("UPDATE users SET referrer_id=? WHERE user_id=?", (referrer_id, user_id))
-        conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (referrer_id,))
-    return True, referrer["first_name"]
+            return False, f"@{username_clean} 유저를 찾을 수 없습니다.\n상대방도 먼저 봇에서 /start를 눌러야 합니다.", 0
+        if referrer["user_id"] == user_id:
+            return False, "자기 자신을 초대자로 등록할 수 없습니다.", 0
+        conn.execute("UPDATE users SET referrer_id=? WHERE user_id=?", (referrer["user_id"], user_id))
+        conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (referrer["user_id"],))
+        new_points = referrer["points"] + 10
+    return True, referrer["first_name"], referrer["user_id"], new_points
 
 
 def get_leaderboard(limit: int = 10):
@@ -180,9 +185,10 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             f"✅ 환영합니다, {user.first_name}님!\n"
             f"+10 포인트가 지급됐습니다.\n\n"
-            f"나를 이곳에 초대한 사람의 텔레그램 아이디를 넣어주세요!\n"
+            f"나를 이곳에 초대한 사람의 텔레그램 @유저네임을 넣어주세요!\n"
+            f"(예: @fireantico)\n"
             f"그럼 초대받은 나와 초대한 내 친구에게 각각 10포인트씩 지급됩니다!\n"
-            f"(없으면 /skip 입력)"
+            f"없으면 /skip 입력"
         )
         return WAITING_REFERRER
     else:
@@ -197,17 +203,38 @@ async def receive_referrer_id(update: Update, context: ContextTypes.DEFAULT_TYPE
     user = update.effective_user
     text = update.message.text.strip()
 
-    try:
-        referrer_id = int(text)
-    except ValueError:
+    if not text or text.startswith("/"):
         await update.message.reply_text(
-            "숫자 ID를 입력해주세요. (예: 123456789)\n없으면 /skip"
+            "@유저네임을 입력해주세요. (예: @fireantico)\n없으면 /skip"
         )
         return WAITING_REFERRER
 
-    ok, msg = set_referrer(user.id, referrer_id)
+    result = set_referrer(user.id, text)
+    if len(result) == 4:
+        ok, msg, referrer_uid, new_points = result
+    else:
+        ok, msg, referrer_uid = result
+        new_points = 0
+
     if ok:
-        await update.message.reply_text(f"✅ {msg}님을 초대자로 등록했습니다! 초대자에게 +10 포인트가 지급됐습니다.")
+        invitee_name = user.first_name or user.username or "누군가"
+        invitee_username = f"@{user.username}" if user.username else invitee_name
+        await update.message.reply_text(
+            f"✅ {msg}님을 초대자로 등록했습니다!\n초대자에게 +10 포인트가 지급됐습니다."
+        )
+        # 초대자에게 알림 DM
+        try:
+            await context.bot.send_message(
+                chat_id=referrer_uid,
+                text=(
+                    f"🎉 {invitee_username}님이 회원님의 초대로 등록했습니다!\n\n"
+                    f"📌 피초대자: {invitee_username}\n"
+                    f"💰 지급 포인트: +10점\n"
+                    f"🏆 현재 누적 포인트: {new_points}점"
+                )
+            )
+        except Exception:
+            pass  # 초대자가 봇을 시작 안 했을 경우 무시
     else:
         await update.message.reply_text(f"❌ {msg}")
 
