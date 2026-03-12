@@ -124,7 +124,7 @@ def register_user(user_id: int, username: str, first_name: str) -> bool:
         if existing:
             return False
         conn.execute(
-            "INSERT INTO users (user_id, username, first_name, points) VALUES (?,?,?,1)",
+            "INSERT INTO users (user_id, username, first_name, points) VALUES (?,?,?,10)",
             (user_id, username, first_name)
         )
     return True
@@ -144,7 +144,7 @@ def set_referrer(user_id: int, referrer_id: int) -> tuple[bool, str]:
         if not referrer:
             return False, f"ID {referrer_id}는 아직 봇을 시작하지 않은 유저입니다."
         conn.execute("UPDATE users SET referrer_id=? WHERE user_id=?", (referrer_id, user_id))
-        conn.execute("UPDATE users SET points = points + 1 WHERE user_id=?", (referrer_id,))
+        conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (referrer_id,))
     return True, referrer["first_name"]
 
 
@@ -171,9 +171,16 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if is_new:
         await update.message.reply_text(
+            "🔥 친구초대 이벤트 진행 중!\n\n"
+            "친구를 초대하면 나와 친구 모두 10포인트씩 지급됩니다.\n"
+            "포인트는 이벤트 종료 후 리워드로 환산됩니다.\n\n"
+            "👇 아래에 초대한 분의 아이디를 입력해주세요!"
+        )
+        await update.message.reply_text(
             f"✅ 환영합니다, {user.first_name}님!\n"
-            f"+1 포인트가 지급됐습니다.\n\n"
-            f"초대한 분의 텔레그램 숫자 ID를 입력해주세요.\n"
+            f"+10 포인트가 지급됐습니다.\n\n"
+            f"나를 이곳에 초대한 사람의 텔레그램 아이디를 넣어주세요!\n"
+            f"그럼 초대받은 나와 초대한 내 친구에게 각각 10포인트씩 지급됩니다!\n"
             f"(없으면 /skip 입력)"
         )
         return WAITING_REFERRER
@@ -199,7 +206,7 @@ async def receive_referrer_id(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     ok, msg = set_referrer(user.id, referrer_id)
     if ok:
-        await update.message.reply_text(f"✅ {msg}님을 초대자로 등록했습니다! 초대자에게 +1 포인트가 지급됐습니다.")
+        await update.message.reply_text(f"✅ {msg}님을 초대자로 등록했습니다! 초대자에게 +10 포인트가 지급됐습니다.")
     else:
         await update.message.reply_text(f"❌ {msg}")
 
@@ -420,7 +427,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text("❌ 초기화 취소됐습니다.")
 
 
-# ── 채널 멤버 이벤트 (신규 입장) ─────────────────────────────────────────────
+# ── 채널 멤버 이벤트 (신규 입장 / 퇴장) ────────────────────────────────────
 async def chat_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = update.chat_member
     if not result:
@@ -435,26 +442,61 @@ async def chat_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     if not registered:
         return
 
-    # 신규 입장 (was: not member → now: member)
     old_status = result.old_chat_member.status
     new_status = result.new_chat_member.status
+    target_user = result.new_chat_member.user
+
+    if target_user.is_bot:
+        return
+
+    # 신규 입장 (was: not member → now: member)
     if old_status in ("left", "kicked", "restricted") and new_status == "member":
-        new_user = result.new_chat_member.user
-        if new_user.is_bot:
-            return
         try:
             await context.bot.send_message(
-                chat_id=new_user.id,
+                chat_id=target_user.id,
                 text=(
-                    f"안녕하세요, {new_user.first_name}님! 👋\n"
+                    f"안녕하세요, {target_user.first_name}님! 👋\n"
                     f"채널에 오신 걸 환영합니다!\n\n"
-                    f"초대한 분의 텔레그램 숫자 ID를 입력해주세요.\n"
-                    f"(없으면 /skip 입력)\n\n"
-                    f"먼저 /start 로 이벤트에 참여해주세요!"
+                    f"먼저 /start 로 이벤트에 참여해주세요!\n\n"
+                    f"나를 이곳에 초대한 사람의 텔레그램 아이디를 넣어주세요!\n"
+                    f"그럼 초대받은 나와 초대한 내 친구에게 각각 10포인트씩 지급됩니다!"
                 )
             )
         except Exception as e:
-            logger.warning("DM 발송 실패 (user_id=%s): %s", new_user.id, e)
+            logger.warning("DM 발송 실패 (user_id=%s): %s", target_user.id, e)
+
+    # 퇴장 / 강퇴 (was: member/admin → now: left/kicked)
+    elif old_status in ("member", "administrator", "creator", "restricted") and new_status in ("left", "kicked"):
+        user_id = target_user.id
+        logger.info("채널 퇴장 감지 user_id=%s channel_id=%s", user_id, channel_id)
+
+        with get_db() as conn:
+            user_row = conn.execute(
+                "SELECT points, referrer_id FROM users WHERE user_id=?", (user_id,)
+            ).fetchone()
+
+            if user_row:
+                referrer_id = user_row["referrer_id"]
+
+                # 해당 유저 포인트 0 초기화
+                conn.execute("UPDATE users SET points=0 WHERE user_id=?", (user_id,))
+
+                # 초대자에게 지급됐던 10포인트 회수
+                if referrer_id:
+                    conn.execute(
+                        "UPDATE users SET points = MAX(0, points - 10) WHERE user_id=?",
+                        (referrer_id,)
+                    )
+                    logger.info("초대자 포인트 회수 referrer_id=%s", referrer_id)
+
+        # 퇴장 유저에게 DM
+        try:
+            await context.bot.send_message(
+                chat_id=user_id,
+                text="채널을 퇴장하여 포인트가 몰수되었습니다."
+            )
+        except Exception as e:
+            logger.warning("퇴장 DM 발송 실패 (user_id=%s): %s", user_id, e)
 
 
 # ── 메인 ─────────────────────────────────────────────────────────────────────
