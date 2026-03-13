@@ -168,30 +168,30 @@ def generate(btc_total: float, btc_funds: dict,
 
 
 if __name__ == "__main__":
-    # 3/9 (US) Farside 확정 데이터 — Coinglass 접속 실패, Farside 단독 확인
+    # 3/12 (US) Farside 확정 데이터
     btc_funds = {
-        "BlackRock": 109.3,
-        "Fidelity": 60.1,
-        "Bitwise": -4.5,
-        "Ark": -2.7,
+        "BlackRock": 46.1,
+        "Fidelity": 15.3,
+        "Bitwise": -5.7,
+        "Ark": 3.0,
         "BTCO": 0.0,
         "EZBC": 0.0,
         "BRRR": 0.0,
-        "VanEck": 4.9,
+        "VanEck": 0.0,
         "BTCW": 0.0,
+        "Grayscale": -9.9,
+        "GrayMini": 5.0,
+    }
+    # ETH: 3/12 Farside 확정 데이터
+    eth_funds = {
+        "BlackRock": 18.7,
+        "Fidelity": 52.0,
+        "Bitwise": 0.9,
+        "21Shares": 0.0,
+        "VanEck": 0.0,
+        "Invesco": 0.0,
+        "Franklin": 0.8,
         "Grayscale": 0.0,
         "GrayMini": 0.0,
     }
-    # ETH: 3/9 Farside 확정 데이터
-    eth_funds = {
-        "BlackRock": -55.1,
-        "Fidelity": 16.2,
-        "Bitwise": 0.0,
-        "21Shares": 1.0,
-        "VanEck": 0.0,
-        "Invesco": 0.0,
-        "Franklin": 0.0,
-        "Grayscale": -13.4,
-        "GrayMini": 0.0,
-    }
-    generate(167.1, btc_funds, -51.3, eth_funds)
+    generate(53.8, btc_funds, 72.4, eth_funds)

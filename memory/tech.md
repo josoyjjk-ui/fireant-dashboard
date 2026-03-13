@@ -6,6 +6,11 @@
 ## 운영 원칙
 - 모든 날짜/요일/시간은 한국시간(KST) 기준으로 표기
 
+## Google 계정 우선순위 (2026-03-14 확정)
+- **1순위**: `fireant@bridge34.com` — 캘린더, 드라이브, 시트, 슬라이드, 독스, Forms 전부
+- **2순위**: `josoyjjk@gmail.com` — 1순위 실패 시 fallback
+- OAuth 토큰: `secrets/google-token.json` (bridge34.com 계정 기준)
+
 ## 알려진 이슈
 - reasoning/thinking 출력이 텔레그램 메시지로 노출되는 버그 (2026-02-24~25):
   - 원인: openclaw.json에 무효 키(`streaming`, `ownerDisplay`) 사용 → 설정 미적용
