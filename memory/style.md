@@ -142,7 +142,7 @@ GUEST :
 
 #### 🖼️ 이미지 양식 (칠판 2컬럼 테이블)
 
-레퍼런스: `/Users/fireant/.openclaw/workspace/fireant-chalk-reference.jpg` (-i 필수)
+레퍼런스: `/Users/fireant/.openclaw/workspace/assets/fireant-chalk-reference.jpg` (-i 필수)
 
 ```
 칠판 구조:
