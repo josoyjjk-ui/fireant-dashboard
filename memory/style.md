@@ -3,9 +3,23 @@
 # 공지문, 시황 코멘트, 분석글, 이벤트 공지, AMA 양식, AMA 스크립트, Script 표준양식, Fireweek 양식,
 # ETF 포스트, 리캡, 요약, 직설체, 이모지, 감탄사, 말투, 문장 구성
 
-## ⚠️ AMA Script 표준양식 (2026-03-05 확정, 모든 스크립트 제작 시 이 양식 적용)
+## ⚠️ AMA Script 표준양식 (2026-03-13 확정, 모든 스크립트 제작 시 이 양식 적용)
 
-**레퍼런스 Docs**: https://docs.google.com/document/d/15orrjuD-E0EzXALaELjwbzTv-BawXmt6ZLBl1bP0Vr0/edit
+**레퍼런스 Docs (최신)**: https://docs.google.com/document/d/1MokTFm2fh_usUNO149RUVYhqg_j7FnqrNMfXzB0gQHQ/edit
+**이전 레퍼런스**: https://docs.google.com/document/d/1pIaqIRaCfMGh4LRWN8rDPV7uC2vmB5qontWBKOUoJBA/edit (Sahara AI)
+
+### 서식 규칙 (Google Docs 색상/크기)
+| 요소 | 색상 | 크기 | Bold |
+|------|------|------|------|
+| 제목 (`[프로젝트] AMA Script`) | 파랑 #1A73E8 | 18pt | ✅ |
+| 섹션 헤더 (📌📝🎤👋) | 파랑 #1A73E8 | 15pt | ✅ |
+| `MC Pre Question N : @닉네임` | 주황 #E37400 | 12pt | ✅ |
+| `Live Question N :` | 주황 #E37400 | 12pt | ✅ |
+| `MC:` | 빨강 #D93025 | 10.5pt | ✅ |
+| `GUEST :` / `GUEST Answer N :` / `Answer :` | 초록 #188038 | 10.5pt | ✅ |
+| `Guest:` / `Topic:` | 기본색 | 10.5pt | ✅ |
+| 영어 번역 줄 | 회색 #5F6368 | 기본 | ❌ |
+| 구분선 (`——————`) | 연회색 #BDBDBD | 기본 | ❌ |
 
 ```
 [프로젝트명] AMA Script
