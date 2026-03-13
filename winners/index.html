@@ -463,7 +463,7 @@
   <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('search')">🔍 당첨자 조회</button>
-    <button class="tab-btn" onclick="switchTab('apply')">📬 리워드 신청 (AMA 질문선정자 or 특정인만)</button>
+    <button class="tab-btn" onclick="switchTab('apply')">📬 리워드 신청</button>
   </div>
 
   <!-- TAB: 당첨자 조회 -->
@@ -489,96 +489,20 @@
 
   <!-- TAB: 리워드 신청 -->
   <div class="tab-panel" id="tab-apply">
-    <div id="applyFormWrap">
-      <div class="form-card">
-        <div class="form-title">📬 리워드 수령 정보 제출</div>
-        <div class="form-desc">신청 유형을 먼저 선택해 주세요.</div>
-
-        <!-- 신청 유형 선택 -->
-        <div style="display:flex; gap:10px; margin-bottom:18px;">
-          <button type="button" id="type-btn-error"
-            onclick="selectApplyType('error')"
-            style="flex:1; padding:12px 8px; border-radius:10px; border:2px solid #e0e0e0; background:#fff; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all .2s; color:#666;">
-            ⚠️ 쿠포니봇 오류 신청
-          </button>
-          <button type="button" id="type-btn-winner"
-            onclick="selectApplyType('winner')"
-            style="flex:1; padding:12px 8px; border-radius:10px; border:2px solid #e0e0e0; background:#fff; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all .2s; color:#666;">
-            🏆 당첨자 리워드 신청
-          </button>
-        </div>
-
-        <!-- 오류 신청 안내 -->
-        <div id="notice-error" style="display:none; background:#fff3cd; border:1px solid #ffc107; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:0.82rem; color:#856404;">
-          ⚠️ 오류신청은 쿠포니봇 운영시간 중 제출된 오류만 유효하게 처리될 예정입니다.
-        </div>
-
-        <!-- 숨겨진 신청유형 필드 -->
-        <input type="hidden" id="f_apply_type" value="">
-
-        <form id="rewardForm" onsubmit="submitForm(event)" style="display:none;">
-          <div class="form-group">
-            <label class="form-label">연락처 <span class="req">*</span></label>
-            <div class="contact-row">
-              <select class="form-select" id="f_contact_type" required>
-                <option value="">유형 선택</option>
-                <option value="전화번호">전화번호</option>
-              </select>
-              <input type="text" class="form-input" id="f_contact" placeholder="전화번호" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">텔레그램 닉네임 <span class="req">*</span></label>
-            <input type="text" class="form-input" id="f_telegram" placeholder="@username" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">이메일 주소 <span class="req">*</span></label>
-            <input type="email" class="form-input" id="f_email" placeholder="example@email.com" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">트위터 닉네임 <span class="opt">(선택)</span></label>
-            <input type="text" class="form-input" id="f_twitter" placeholder="@username">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">이벤트명 <span class="req">*</span></label>
-            <input type="text" class="form-input" id="f_event" placeholder="예: 메가이더 불개미 AMA 3월 21일 오후 8시" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">지갑 주소 <span class="opt">(선택 — 필요한 경우만)</span></label>
-            <input type="text" class="form-input" id="f_wallet" placeholder="0x... 또는 지갑 주소">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">당첨된 상품 <span class="req">*</span></label>
-            <input type="text" class="form-input" id="f_reward_item" placeholder="예: 1만원 상품권 * 허위입력시 당첨이 취소됩니다." required>
-          </div>
-
-          <div class="form-group">
-            <label class="checkbox-wrap">
-              <input type="checkbox" id="f_agree" required>
-              <span class="checkbox-label">
-                <strong>개인정보 수집 및 이용에 동의합니다.</strong><br>
-                리워드 지급 및 비정상적인 행위자 검증목적으로 위 정보를 수집, 이용합니다. 수집 후 6개월간 보관됩니다.
-              </span>
-            </label>
-          </div>
-
-          <button type="submit" class="form-submit" id="submitBtn">🎁 리워드 신청하기</button>
-          <p class="form-note">허위 신청 시 리워드가 취소될 수 있습니다.</p>
-        </form>
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 48px 20px; gap: 20px;">
+      <div style="font-size:2.5rem;">🎁</div>
+      <div style="font-size:1.15rem; font-weight:700; color:var(--text);">리워드 수령 신청</div>
+      <div style="font-size:0.88rem; color:var(--text-muted); text-align:center; line-height:1.7;">
+        아래 링크에서 리워드 수령 신청을 진행해 주세요.<br>
+        당첨자 확인 후 순차적으로 지급됩니다.
       </div>
-    </div>
-    <div id="applySuccess" style="display:none">
-      <div class="success-box">
-        <div class="s-icon">✅</div>
-        <h3>신청이 완료되었습니다!</h3>
-        <p>리워드 수령 정보가 접수되었습니다.<br>확인 후 순차적으로 지급됩니다.<br>감사합니다 🔥</p>
-      </div>
+      <a href="https://couponybot.com/" target="_blank" rel="noopener"
+        style="display:inline-block; padding: 16px 40px; background: linear-gradient(135deg, #ff4d00, #ff8c00); color:#fff; font-weight:700; font-size:1rem; border-radius:12px; text-decoration:none; box-shadow: 0 4px 16px rgba(255,100,0,0.35); transition: transform .15s, box-shadow .15s;"
+        onmouseover="this.style.transform='scale(1.03)'; this.style.boxShadow='0 6px 22px rgba(255,100,0,0.5)';"
+        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(255,100,0,0.35)';">
+        🔗 쿠포니봇 바로가기
+      </a>
+      <div style="font-size:0.78rem; color:var(--text-muted);">couponybot.com</div>
     </div>
   </div>
 
