@@ -43,3 +43,10 @@ jobs:
           git add feed.json
           git commit -m "chore: auto-update feed.json [$(date -u +%Y-%m-%dT%H:%M:%SZ)]"
           git push
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot***REMOVED***/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\":\"477743685\",\"text\":\"⚠️ [피드 자동업데이트 실패]\\nGitHub Actions fetch-feed 워크플로우 오류\\n시각: $(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
