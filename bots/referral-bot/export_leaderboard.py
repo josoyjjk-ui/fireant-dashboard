@@ -1,6 +1,18 @@
 # DB에서 leaderboard.json 생성 후 /tmp/fireant-dashboard에 복사 + git push
-import sqlite3, json, subprocess
+import sqlite3, json, subprocess, urllib.request
 from datetime import datetime, date
+
+BOT_TOKEN = "***REMOVED***"
+CHAT_ID = "477743685"
+
+def tg_alert(msg: str):
+    try:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        data = json.dumps({"chat_id": CHAT_ID, "text": msg}).encode()
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=5)
+    except Exception:
+        pass
 
 DB = '/Users/fireant/.openclaw/workspace/bots/referral-bot/referral.db'
 DASHBOARD = '/tmp/fireant-dashboard'
@@ -63,9 +75,16 @@ print(f"✅ leaderboard.json 생성 완료 ({len(data['leaderboard'])}명)")
 # ── git push ──────────────────────────────────────────────────
 result = subprocess.run(
     ["bash", "-c",
-     f"cd {DASHBOARD} && git add leaderboard.json && "
-     f"git diff --cached --quiet || git commit -m '리더보드 자동 업데이트' && git push"],
+     f"cd {DASHBOARD} && git fetch origin main && "
+     f"git add leaderboard.json && "
+     f"git diff --cached --quiet || git commit -m '리더보드 자동 업데이트' && "
+     f"git rebase origin/main && git push"],
     capture_output=True, text=True
 )
 print(result.stdout or "up-to-date")
-print(result.stderr[:200] if result.stderr else "")
+if result.returncode != 0:
+    err = result.stderr[:300] if result.stderr else "unknown error"
+    tg_alert(f"⚠️ [리더보드 동기화 실패]\n{err}")
+    print(f"ALERT SENT: {err}")
+else:
+    print(result.stderr[:200] if result.stderr else "")
