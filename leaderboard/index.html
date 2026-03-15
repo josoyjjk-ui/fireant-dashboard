@@ -574,7 +574,7 @@ function lookupPoint() {
   }
   resultEl.innerHTML = '<div style="color:var(--text-dim);font-size:0.85rem;">조회 중...</div>';
 
-  fetch('leaderboard.json?_=' + Date.now())
+  fetch('../leaderboard.json?_=' + Date.now())
     .then(r => r.json())
     .then(data => {
       const list = data.leaderboard || [];
