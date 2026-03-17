@@ -168,31 +168,31 @@ def generate(btc_total: float, btc_funds: dict,
 
 
 if __name__ == "__main__":
-    # 3/13 (US) 데이터 — Farside 직접 수집
-    # Coinglass 교차검증: $180.40M vs $180.40M → PASS
+    # 3/16 (US) 데이터 — Farside 직접 수집
+    # Coinglass 교차검증: $199.4M vs $199.4M → PASS
     btc_funds = {
-        "BlackRock": 143.6,
-        "Fidelity": 23.2,
-        "Bitwise": 3.1,
-        "Ark": 2.4,
+        "BlackRock": 139.4,
+        "Fidelity": 64.5,
+        "Bitwise": 2.8,
+        "Ark": -3.1,
         "BTCO": 0.0,
-        "EZBC": 0.0,
+        "EZBC": 2.1,
         "BRRR": 0.0,
-        "VanEck": 8.1,
+        "VanEck": -6.3,
         "BTCW": 0.0,
         "Grayscale": 0.0,
         "GrayMini": 0.0,
     }
-    # ETH: 3/13 데이터
+    # ETH: 3/16 데이터
     eth_funds = {
-        "BlackRock": 32.4,
-        "Fidelity": 2.2,
-        "Bitwise": -7.9,
+        "BlackRock": -16.2,
+        "Fidelity": 32.4,
+        "Bitwise": 34.9,
         "21Shares": 0.0,
         "VanEck": 0.0,
         "Invesco": 0.0,
         "Franklin": 0.0,
         "Grayscale": 0.0,
-        "GrayMini": 0.0,
+        "GrayMini": -15.2,
     }
-    generate(180.4, btc_funds, 26.7, eth_funds)
+    generate(199.4, btc_funds, 35.9, eth_funds)

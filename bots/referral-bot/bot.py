@@ -52,6 +52,12 @@ logger = logging.getLogger(__name__)
 
 # ConversationHandler 상태
 WAITING_REFERRER = 1
+
+# /inform 상태값
+INF_EMAIL = 10
+INF_TG    = 11
+INF_PHONE = 12
+INF_AGREE = 13
 WAITING_RESET_CONFIRM = 2
 
 # ── DB ───────────────────────────────────────────────────────────────────────
@@ -97,6 +103,15 @@ def init_db():
 
             INSERT OR IGNORE INTO event_period (id, start_date, end_date)
             VALUES (1, NULL, NULL);
+
+            CREATE TABLE IF NOT EXISTS user_info (
+                user_id     INTEGER PRIMARY KEY,
+                email       TEXT,
+                telegram_id TEXT,
+                phone       TEXT,
+                agreed      INTEGER DEFAULT 0,
+                submitted_at TEXT DEFAULT (datetime('now', 'localtime'))
+            );
         """)
     logger.info("DB 초기화 완료: %s", DB_PATH)
 
@@ -315,6 +330,156 @@ async def cmd_setreferrer(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pass
     else:
         await update.message.reply_text(f"❌ {msg}")
+
+
+# ── /inform 플로우 ────────────────────────────────────────────────────────────
+
+async def cmd_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """상품 수령 정보 입력 시작"""
+    if update.effective_chat.type != "private":
+        await update.message.reply_text("개인 채팅에서만 사용 가능합니다.")
+        return ConversationHandler.END
+
+    user_id = update.effective_user.id
+
+    # 이미 제출한 경우 안내
+    with get_db() as conn:
+        existing = conn.execute("SELECT user_id FROM user_info WHERE user_id=?", (user_id,)).fetchone()
+    if existing:
+        await update.message.reply_text("✅ 이미 정보를 제출하셨습니다.\n수정이 필요하면 관리자에게 문의해주세요.")
+        return ConversationHandler.END
+
+    await update.message.reply_text(
+        "📋 *상품 수령 정보 입력*\n\n"
+        "리워드 지급을 위해 아래 정보를 순서대로 입력해주세요.\n\n"
+        "1️⃣ 이메일 주소를 입력해주세요.\n"
+        "예) example@gmail.com",
+        parse_mode="Markdown"
+    )
+    return INF_EMAIL
+
+
+async def inf_receive_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    email = update.message.text.strip()
+    if "@" not in email or "." not in email:
+        await update.message.reply_text("❌ 올바른 이메일 형식이 아닙니다. 다시 입력해주세요.\n예) example@gmail.com")
+        return INF_EMAIL
+
+    context.user_data["inf_email"] = email
+    await update.message.reply_text(
+        f"✅ 이메일: {email}\n\n"
+        "2️⃣ 텔레그램 아이디를 입력해주세요. (@포함)\n"
+        "예) @fireantico"
+    )
+    return INF_TG
+
+
+async def inf_receive_tg(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    tg = update.message.text.strip()
+    if not tg.startswith("@"):
+        tg = "@" + tg
+    context.user_data["inf_tg"] = tg
+    await update.message.reply_text(
+        f"✅ 텔레그램: {tg}\n\n"
+        "3️⃣ 휴대전화 번호를 입력해주세요.\n"
+        "예) 010-1234-5678"
+    )
+    return INF_PHONE
+
+
+async def inf_receive_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    phone = update.message.text.strip()
+    context.user_data["inf_phone"] = phone
+
+    keyboard = InlineKeyboardMarkup([[
+        InlineKeyboardButton("✅ 동의합니다", callback_data="inf_agree_yes"),
+        InlineKeyboardButton("❌ 동의하지 않습니다", callback_data="inf_agree_no"),
+    ]])
+    await update.message.reply_text(
+        f"✅ 휴대전화: {phone}\n\n"
+        "4️⃣ *개인정보 수집·이용 동의*\n\n"
+        "수집 항목: 이메일, 텔레그램 아이디, 휴대전화 번호\n"
+        "수집 목적: 이벤트 리워드 지급\n"
+        "보유 기간: 리워드 지급 완료 후 6개월\n\n"
+        "위 내용에 동의하십니까?",
+        parse_mode="Markdown",
+        reply_markup=keyboard
+    )
+    return INF_AGREE
+
+
+async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    user_id = query.from_user.id
+
+    if query.data == "inf_agree_no":
+        await query.edit_message_text("❌ 개인정보 수집에 동의하지 않아 정보 입력이 취소되었습니다.")
+        return ConversationHandler.END
+
+    email = context.user_data.get("inf_email", "")
+    tg    = context.user_data.get("inf_tg", "")
+    phone = context.user_data.get("inf_phone", "")
+
+    with get_db() as conn:
+        conn.execute(
+            "INSERT OR REPLACE INTO user_info (user_id, email, telegram_id, phone, agreed) VALUES (?,?,?,?,1)",
+            (user_id, email, tg, phone)
+        )
+
+    await query.edit_message_text(
+        "🎉 *정보 제출 완료!*\n\n"
+        f"📧 이메일: {email}\n"
+        f"💬 텔레그램: {tg}\n"
+        f"📱 휴대전화: {phone}\n\n"
+        "리워드는 순위 확정 후 순차적으로 지급됩니다.\n감사합니다! 🔥",
+        parse_mode="Markdown"
+    )
+    return ConversationHandler.END
+
+
+async def cmd_export_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """관리자 전용: /export_inform — 정보 수집 결과 CSV 다운로드"""
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    with get_db() as conn:
+        rows = conn.execute("""
+            SELECT u.username, u.first_name, i.telegram_id, i.email, i.phone, i.submitted_at,
+                   u.points,
+                   (SELECT COUNT(*) FROM users u2 WHERE u2.referrer_id = u.user_id) as invite_count
+            FROM user_info i
+            JOIN users u ON u.user_id = i.user_id
+            WHERE i.agreed = 1
+            ORDER BY u.points DESC
+        """).fetchall()
+
+    if not rows:
+        await update.message.reply_text("제출된 정보가 없습니다.")
+        return
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["순위", "텔레그램아이디", "이름", "포인트", "초대수", "이메일", "전화번호", "제출일시"])
+    for i, r in enumerate(rows, 1):
+        writer.writerow([i, r["telegram_id"] or r["username"], r["first_name"],
+                         r["points"], r["invite_count"], r["email"], r["phone"], r["submitted_at"]])
+
+    await update.message.reply_document(
+        document=buf.getvalue().encode("utf-8-sig"),
+        filename="billions_ama_inform.csv",
+        caption=f"📋 정보 제출 현황 — 총 {len(rows)}명"
+    )
+
+
+async def cmd_inform_count(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """관리자: 정보 제출 현황 간단 확인"""
+    if update.effective_user.id != ADMIN_ID:
+        return
+    with get_db() as conn:
+        total = conn.execute("SELECT COUNT(*) as c FROM users WHERE ever_registered=1").fetchone()["c"]
+        submitted = conn.execute("SELECT COUNT(*) as c FROM user_info WHERE agreed=1").fetchone()["c"]
+    await update.message.reply_text(f"📊 정보 제출 현황\n전체 등록자: {total}명\n제출 완료: {submitted}명\n미제출: {total - submitted}명")
 
 
 async def cmd_points(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -637,6 +802,20 @@ def main():
     )
     app.add_handler(conv)
 
+    # /inform ConversationHandler
+    inform_conv = ConversationHandler(
+        entry_points=[CommandHandler("inform", cmd_inform)],
+        states={
+            INF_EMAIL: [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_email)],
+            INF_TG:    [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_tg)],
+            INF_PHONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_phone)],
+            INF_AGREE: [CallbackQueryHandler(inf_agree_callback, pattern="^inf_agree_")],
+        },
+        fallbacks=[CommandHandler("start", cmd_start)],
+        per_message=False,
+    )
+    app.add_handler(inform_conv)
+
     # 유저 명령어
     app.add_handler(CommandHandler("points", cmd_points))
     app.add_handler(CommandHandler("setreferrer", cmd_setreferrer))
@@ -650,6 +829,8 @@ def main():
     app.add_handler(CommandHandler("removechannel", cmd_removechannel))
     app.add_handler(CommandHandler("reset", cmd_reset))
     app.add_handler(CommandHandler("setperiod", cmd_setperiod))
+    app.add_handler(CommandHandler("export_inform", cmd_export_inform))
+    app.add_handler(CommandHandler("inform_count", cmd_inform_count))
 
     # 콜백
     app.add_handler(CallbackQueryHandler(callback_handler))
