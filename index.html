@@ -423,32 +423,40 @@
 
   </div>
 
-  <!-- CONTENT ROUTINE -->
-  <!-- FEED: 최신 콘텐츠 -->
-  <div class="section" id="feed">
+  <!-- 불개미 일일시황 이미지 블록 (엔트리 페이지 유지) -->
+  <div class="section" id="daily-report" style="margin-top:24px;">
     <div class="section-head">
-      <h2>📡 최신 시황분석</h2>
+      <h2>📊 불개미 일일시황</h2>
     </div>
-    <div id="feed-updated" class="feed-updated" style="display:none;"></div>
-    <div class="feed-tabs">
-      <button class="feed-tab active" data-tab="telegram">📢 텔레그램</button>
-      <button class="feed-tab" data-tab="youtube">▶️ 유튜브</button>
-      <button class="feed-tab" data-tab="naver">📝 블로그</button>
-      <button class="feed-tab" data-tab="twitter">𝕏 트위터</button>
-    </div>
-    <div id="feed-youtube" class="feed-panel">
-      <div class="feed-loading">⏳ 불러오는 중…</div>
-    </div>
-    <div id="feed-telegram" class="feed-panel active">
-      <div class="feed-loading">⏳ 불러오는 중…</div>
-    </div>
-    <div id="feed-naver" class="feed-panel">
-      <div class="feed-loading">⏳ 불러오는 중…</div>
-    </div>
-    <div id="feed-twitter" class="feed-panel">
-      <div class="feed-loading">⏳ 불러오는 중…</div>
+    <div style="margin-top:12px; background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.18);">
+      <div style="padding:14px 16px 8px; display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-size:0.85rem; font-weight:700; color:var(--text-dim);" id="daily-report-label">매일 오후 17:00 업데이트</span>
+        <span style="font-size:0.78rem; color:var(--text-dim);" id="daily-report-date"></span>
+      </div>
+      <div style="padding:0 8px 12px;">
+        <img id="daily-report-img"
+             src="assets/daily-report-latest.jpg"
+             alt="불개미 일일시황"
+             style="width:100%; height:auto; border-radius:10px; display:block;"
+             onerror="this.parentElement.innerHTML='<div style=\'padding:24px;text-align:center;color:var(--text-dim);font-size:0.9rem;\'>⏳ 이미지를 불러올 수 없습니다</div>'">
+      </div>
     </div>
   </div>
+  <script>
+    var DAILY_REPORT_IMAGE = 'assets/daily-report-latest.jpg';
+    (function() {
+      var img = document.getElementById('daily-report-img');
+      if (img) img.src = DAILY_REPORT_IMAGE;
+      var dateEl = document.getElementById('daily-report-date');
+      if (dateEl) {
+        var now = new Date();
+        var y = now.getFullYear();
+        var m = String(now.getMonth()+1).padStart(2,'0');
+        var d = String(now.getDate()).padStart(2,'0');
+        dateEl.textContent = y + '.' + m + '.' + d;
+      }
+    })();
+  </script>
 
   <div class="section" id="routine" style="margin-top:28px;">
     <div class="section-head">
