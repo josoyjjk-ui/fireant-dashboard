@@ -398,6 +398,15 @@
     <div id="feed-telegram" class="feed-panel active">
       <div class="feed-loading">⏳ 불러오는 중…</div>
     </div>
+    <div id="feed-naver" class="feed-panel">
+      <div class="feed-loading">⏳ 불러오는 중…</div>
+    </div>
+    <div id="feed-twitter" class="feed-panel">
+      <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" class="social-card" style="margin-top:8px;">
+        <span class="social-icon">𝕏</span>
+        <div><div class="social-name">불개미 Fireant</div><div class="social-handle">@fireant_korea</div></div>
+      </a>
+    </div>
   </div>
   <!-- INSIGHTS -->
   <div class="section" id="insights">
@@ -564,7 +573,7 @@ btn.addEventListener('click',()=>{const c=html2.getAttribute('data-theme')||'dar
     if (el) el.innerHTML = html;
   }
 
-  fetch('/feed.json?_=' + Date.now())
+  fetch('../feed.json?_=' + Date.now())
     .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(data => {
       setPanel('youtube',  renderYoutube(data.youtube));
