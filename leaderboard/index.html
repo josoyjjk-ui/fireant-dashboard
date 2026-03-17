@@ -447,7 +447,7 @@ async function loadData() {
   btn.classList.add('spinning');
 
   try {
-    const res = await fetch('../leaderboard.json?t=' + Date.now());
+    const res = await fetch('/leaderboard.json?t=' + Date.now());
     if (!res.ok) throw new Error('fetch failed');
     const data = await res.json();
 
@@ -551,7 +551,7 @@ function lookupPoint() {
   }
   resultEl.innerHTML = '<div style="color:var(--text-dim);font-size:0.85rem;">조회 중...</div>';
 
-  fetch('../leaderboard.json?_=' + Date.now())
+  fetch('/leaderboard.json?_=' + Date.now())
     .then(r => r.json())
     .then(data => {
       const list = data.leaderboard || [];
