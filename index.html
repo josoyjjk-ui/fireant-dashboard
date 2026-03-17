@@ -582,56 +582,85 @@
     <h1>불개미 CRYPTO 게시판</h1>
   </div>
 
-  <!-- CONTENT ROUTINE -->
+  <!-- CONTENT ROUTINE CALENDAR -->
   <div class="section" id="routine" style="margin-top:28px;">
     <div class="section-head">
       <h2>📅 불개미 콘텐츠 루틴</h2>
     </div>
-    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-top:14px;">
 
-      <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 12px; display:flex; flex-direction:column; gap:6px;">
-        <div style="font-size:1.4rem;">📊</div>
-        <div style="font-size:0.82rem; font-weight:700; color:var(--text);">일일 시황</div>
-        <div style="font-size:0.73rem; color:var(--text-dim);">화~토 오후 3:30</div>
-        <div style="font-size:0.7rem; color:var(--text-muted);">텔레그램 · X · 유튜브쇼츠 · 블로그</div>
-      </div>
-
-      <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 12px; display:flex; flex-direction:column; gap:6px;">
-        <div style="font-size:1.4rem;">🗓</div>
-        <div style="font-size:0.82rem; font-weight:700; color:var(--text);">주간 시황</div>
-        <div style="font-size:0.73rem; color:var(--text-dim);">매주 월 오후 3:30</div>
-        <div style="font-size:0.7rem; color:var(--text-muted);">텔레그램 · X · 블로그</div>
-      </div>
-
-      <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 12px; display:flex; flex-direction:column; gap:6px;">
-        <div style="font-size:1.4rem;">🎥</div>
-        <div style="font-size:0.82rem; font-weight:700; color:var(--text);">유튜브 롱폼</div>
-        <div style="font-size:0.73rem; color:var(--text-dim);">매주 화 오후 6:00</div>
-        <div style="font-size:0.7rem; color:var(--text-muted);">유튜브</div>
-      </div>
-
-      <div style="background:var(--surface); border:1px solid rgba(255,59,59,0.3); border-radius:12px; padding:14px 12px; display:flex; flex-direction:column; gap:6px; position:relative;">
-        <div style="font-size:1.4rem;">🔴</div>
-        <div style="font-size:0.82rem; font-weight:700; color:var(--text);">유튜브 라이브</div>
-        <div style="font-size:0.73rem; color:var(--text-dim);">매주 일 밤 9:00</div>
-        <div style="font-size:0.7rem; color:var(--text-muted);">유튜브</div>
-      </div>
-
-      <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 12px; display:flex; flex-direction:column; gap:6px;">
-        <div style="font-size:1.4rem;">📝</div>
-        <div style="font-size:0.82rem; font-weight:700; color:var(--text);">월간 시황</div>
-        <div style="font-size:0.73rem; color:var(--text-dim);">매월 말일</div>
-        <div style="font-size:0.7rem; color:var(--text-muted);">텔레그램 · X · 블로그</div>
-      </div>
-
-      <div style="background:var(--surface); border:1px solid rgba(255,215,64,0.3); border-radius:12px; padding:14px 12px; display:flex; flex-direction:column; gap:6px;">
-        <div style="font-size:1.4rem;">🎁</div>
-        <div style="font-size:0.82rem; font-weight:700; color:var(--gold);">구독자 전용 혜택</div>
-        <div style="font-size:0.73rem; color:var(--text-dim);">이벤트·캠페인 상품</div>
-        <div style="font-size:0.7rem; color:var(--text-muted);">불개미 채널 구독자 한정</div>
-      </div>
-
+    <!-- 범례 -->
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; margin-bottom:14px;">
+      <span style="display:flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text-dim);"><span style="width:10px;height:10px;border-radius:3px;background:#5B8DEF;display:inline-block;"></span>주간시황</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text-dim);"><span style="width:10px;height:10px;border-radius:3px;background:#FF6B35;display:inline-block;"></span>일일시황</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text-dim);"><span style="width:10px;height:10px;border-radius:3px;background:#A855F7;display:inline-block;"></span>유튜브 롱폼</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text-dim);"><span style="width:10px;height:10px;border-radius:3px;background:#FF3B3B;display:inline-block;"></span>라이브</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--text-dim);"><span style="width:10px;height:10px;border-radius:3px;background:#FFD740;display:inline-block;"></span>월간시황</span>
     </div>
+
+    <div id="routineCalendar" style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;"></div>
+
+    <script>
+    (function(){
+      const DAY_KO = ['일','월','화','수','목','금','토'];
+      // 루틴 정의: dow=요일(0=일), events[]
+      const ROUTINE = {
+        0: [{label:'🔴 라이브', sub:'밤 9:00', color:'#FF3B3B'}],
+        1: [{label:'🗓 주간시황', sub:'3:30 PM', color:'#5B8DEF'}],
+        2: [{label:'📊 일일시황', sub:'3:30 PM', color:'#FF6B35'},{label:'🎥 롱폼', sub:'6:00 PM', color:'#A855F7'}],
+        3: [{label:'📊 일일시황', sub:'3:30 PM', color:'#FF6B35'}],
+        4: [{label:'📊 일일시황', sub:'3:30 PM', color:'#FF6B35'}],
+        5: [{label:'📊 일일시황', sub:'3:30 PM', color:'#FF6B35'}],
+        6: [{label:'📊 일일시황', sub:'3:30 PM', color:'#FF6B35'}],
+      };
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      // 이번주 월요일 기준으로 2주
+      const todayDow = today.getDay(); // 0=일
+      const diffToMon = (todayDow === 0) ? -6 : 1 - todayDow;
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() + diffToMon);
+
+      // 요일 헤더
+      const cal = document.getElementById('routineCalendar');
+      // 월~일 순서로 헤더
+      const headerOrder = [1,2,3,4,5,6,0];
+      headerOrder.forEach(d => {
+        const h = document.createElement('div');
+        h.style.cssText = 'text-align:center;font-size:0.7rem;font-weight:700;color:var(--text-dim);padding:4px 0;';
+        h.textContent = DAY_KO[d];
+        if(d===0||d===6) h.style.color='#FF6B35';
+        cal.appendChild(h);
+      });
+
+      // 2주 날짜 생성 (월~일 순서)
+      for(let week=0; week<2; week++){
+        headerOrder.forEach(dow => {
+          const date = new Date(weekStart);
+          const offset = week*7 + (dow === 0 ? 6 : dow - 1);
+          date.setDate(weekStart.getDate() + offset);
+
+          const isToday = date.getTime() === today.getTime();
+          const isPast  = date < today;
+          const isLastDay = date.getDate() === new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
+          const events = [...(ROUTINE[dow] || [])];
+          if(isLastDay) events.push({label:'📝 월간시황', sub:'', color:'#FFD740'});
+
+          const cell = document.createElement('div');
+          cell.style.cssText = `background:var(--surface);border:1px solid ${isToday?'rgba(255,107,53,0.6)':'var(--border)'};border-radius:10px;padding:8px 6px;min-height:90px;opacity:${isPast?'0.45':'1'};transition:opacity 0.2s;`;
+
+          let inner = `<div style="font-size:0.75rem;font-weight:${isToday?'900':'600'};color:${isToday?'var(--orange)':'var(--text)'};margin-bottom:4px;text-align:center;">${date.getDate()}</div>`;
+          events.forEach(ev => {
+            inner += `<div style="background:${ev.color}22;border-left:2px solid ${ev.color};border-radius:3px;padding:2px 4px;margin-bottom:3px;font-size:0.62rem;color:var(--text);line-height:1.3;">${ev.label}${ev.sub?`<br><span style="color:var(--text-dim);font-size:0.58rem;">${ev.sub}</span>`:''}`;
+            inner += `</div>`;
+          });
+          cell.innerHTML = inner;
+          cal.appendChild(cell);
+        });
+      }
+    })();
+    </script>
   </div>
 
   <!-- EVENTS: 불개미 주관 -->
