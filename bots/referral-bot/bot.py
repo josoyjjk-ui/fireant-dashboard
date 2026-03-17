@@ -10,8 +10,44 @@ import io
 import logging
 import sqlite3
 import subprocess
+import threading
 from datetime import datetime
 from contextlib import contextmanager
+
+# Google Sheets 연동
+try:
+    from google.oauth2.credentials import Credentials
+    from google.auth.transport.requests import Request
+    from googleapiclient.discovery import build as gbuild
+    GSHEETS_AVAILABLE = True
+except ImportError:
+    GSHEETS_AVAILABLE = False
+
+GSHEETS_TOKEN   = '/Users/fireant/.openclaw/workspace/secrets/google-token.json'
+GSHEETS_SCOPES  = ['https://www.googleapis.com/auth/spreadsheets']
+GSHEETS_SHEET_ID = '1VtyzrEuAolk-lqtCIExag5TeguMSbh3PB0p93JdG7Tk'
+GSHEETS_RANGE    = '정보수집!A:H'
+
+def append_to_sheet(row: list):
+    """Google Sheets에 행 추가 (비동기 스레드로 실행)"""
+    if not GSHEETS_AVAILABLE:
+        return
+    def _write():
+        try:
+            creds = Credentials.from_authorized_user_file(GSHEETS_TOKEN, GSHEETS_SCOPES)
+            if creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            service = gbuild('sheets', 'v4', credentials=creds)
+            service.spreadsheets().values().append(
+                spreadsheetId=GSHEETS_SHEET_ID,
+                range=GSHEETS_RANGE,
+                valueInputOption='USER_ENTERED',
+                insertDataOption='INSERT_ROWS',
+                body={'values': [row]}
+            ).execute()
+        except Exception as e:
+            logging.getLogger(__name__).error(f"Sheets 기록 실패: {e}")
+    threading.Thread(target=_write, daemon=True).start()
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
@@ -426,6 +462,17 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
             "INSERT OR REPLACE INTO user_info (user_id, email, telegram_id, phone, agreed) VALUES (?,?,?,?,1)",
             (user_id, email, tg, phone)
         )
+        # 포인트 및 순위 조회
+        user_row = conn.execute("SELECT points FROM users WHERE user_id=?", (user_id,)).fetchone()
+        points = user_row["points"] if user_row else 0
+        rank_row = conn.execute(
+            "SELECT COUNT(*)+1 as rank FROM users WHERE points > ?", (points,)
+        ).fetchone()
+        rank = rank_row["rank"] if rank_row else "-"
+
+    # Google Sheets에 기록
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    append_to_sheet([now_str, str(user_id), tg, query.from_user.first_name or "", email, phone, points, rank])
 
     await query.edit_message_text(
         "🎉 *정보 제출 완료!*\n\n"
