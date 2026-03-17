@@ -457,11 +457,16 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     tg    = context.user_data.get("inf_tg", "")
     phone = context.user_data.get("inf_phone", "")
 
+    inserted = False
     with get_db() as conn:
-        conn.execute(
-            "INSERT OR REPLACE INTO user_info (user_id, email, telegram_id, phone, agreed) VALUES (?,?,?,?,1)",
-            (user_id, email, tg, phone)
-        )
+        # 이미 제출 여부 재확인 (동시 요청 방지)
+        existing = conn.execute("SELECT user_id FROM user_info WHERE user_id=?", (user_id,)).fetchone()
+        if not existing:
+            conn.execute(
+                "INSERT INTO user_info (user_id, email, telegram_id, phone, agreed) VALUES (?,?,?,?,1)",
+                (user_id, email, tg, phone)
+            )
+            inserted = True
         # 포인트 및 순위 조회
         user_row = conn.execute("SELECT points FROM users WHERE user_id=?", (user_id,)).fetchone()
         points = user_row["points"] if user_row else 0
@@ -470,9 +475,10 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         ).fetchone()
         rank = rank_row["rank"] if rank_row else "-"
 
-    # Google Sheets에 기록
-    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    append_to_sheet([now_str, str(user_id), tg, query.from_user.first_name or "", email, phone, points, rank])
+    # Google Sheets에 기록 (신규 제출 시에만)
+    if inserted:
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        append_to_sheet([now_str, str(user_id), tg, query.from_user.first_name or "", email, phone, points, rank])
 
     await query.edit_message_text(
         "🎉 *정보 제출 완료!*\n\n"
