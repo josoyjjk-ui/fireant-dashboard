@@ -40,13 +40,12 @@
 <canvas id="particles"></canvas>
 
 <div class="nav">
-  <div class="nav-links">
-      <a href="/">🔥 불개미 Crypto</a>
-      <a href="/feed/">📊 정기 시장분석</a>
-      <a href="/events/">📌 이벤트</a>
-      <a href="/indicators/" style="color:var(--orange);font-weight:800;">📈 불개미지표</a>
-      <a href="/leaderboard/">🏆 리더보드</a>
-      <button class="theme-toggle" id="themeToggle" title="테마 전환">🌙</button>
+      <div class="nav-links">
+      <a href="/" style="color:rgba(255,255,255,0.55);">불개미 Crypto</a>
+      <a href="/feed/" style="color:rgba(255,255,255,0.55);">정기 시장분석</a>
+      <a href="/events/" style="color:rgba(255,255,255,0.55);">이벤트</a>
+      <a href="/indicators/" style="color:#fff;font-weight:800;">불개미지표</a>
+      <a href="/leaderboard/" style="color:rgba(255,255,255,0.55);">리더보드</a>
     </div>
 </div>
 
@@ -97,6 +96,11 @@
 
   </div>
 </div>
+
+  <!-- 하단 테마 토글 -->
+  <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
+    <button id="themeToggle" title="테마 전환" style="background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-dim); padding:6px 14px; cursor:pointer; font-size:0.8rem;">🌙 다크 / ☀️ 라이트</button>
+  </div>
 
 <script>
 // PARTICLES
