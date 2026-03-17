@@ -15,7 +15,7 @@ KST = timezone(timedelta(hours=9))
 
 FEEDS = {
     "youtube": "https://www.youtube.com/feeds/videos.xml?channel_id=UCIf165OxaJWen5QbbETQcEw",
-    "naver":   "https://rss.blog.naver.com/fireantcrypto",
+    "naver":   "https://rss.blog.naver.com/fireant_korea",
     "telegram": [
         "https://rsshub.app/telegram/channel/fireantcrypto",
         "https://rss.app/feeds/_PLACEHOLDER_NOOP",  # fallback placeholder (skip)
