@@ -410,19 +410,59 @@
   <!-- 이용 가이드 -->
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; padding:0 2px;">
 
+    <a href="#daily-report" style="text-decoration:none; display:block; background:rgba(91,141,239,0.07); border:1px solid rgba(91,141,239,0.25); border-radius:14px; padding:16px 14px;">
+      <div style="font-size:0.95rem; font-weight:800; color:var(--text); margin-bottom:4px;">📊 불개미 일일시황</div>
+      <div style="font-size:0.82rem; color:var(--text); line-height:1.6;">매일 오후 3시<br>최신 시황 이미지</div>
+    </a>
+
     <a href="#routine" style="text-decoration:none; display:block; background:rgba(255,107,53,0.07); border:1px solid rgba(255,107,53,0.25); border-radius:14px; padding:16px 14px;">
-      
       <div style="font-size:0.95rem; font-weight:800; color:var(--text); margin-bottom:4px;">정기 코인시장 분석</div>
       <div style="font-size:0.82rem; color:var(--text); line-height:1.6;">매일·매주·매월<br>시장 분석 & 시황</div>
     </a>
 
     <a href="events/" style="text-decoration:none; display:block; background:rgba(255,215,64,0.07); border:1px solid rgba(255,215,64,0.25); border-radius:14px; padding:16px 14px;">
-      
       <div style="font-size:0.95rem; font-weight:800; color:var(--text); margin-bottom:4px;">참여 캠페인</div>
       <div style="font-size:0.82rem; color:var(--text); line-height:1.6;">비정기 이벤트<br>참여하고 보상 획득</div>
     </a>
 
   </div>
+
+  <!-- 불개미 일일시황 이미지 블록 -->
+  <div class="section" id="daily-report" style="margin-top:24px;">
+    <div class="section-head">
+      <h2>📊 불개미 일일시황</h2>
+    </div>
+    <div style="margin-top:12px; background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.18);">
+      <div style="padding:14px 16px 8px; display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-size:0.85rem; font-weight:700; color:var(--text-dim);" id="daily-report-label">매일 오후 3:00 업데이트</span>
+        <span style="font-size:0.78rem; color:var(--text-dim);" id="daily-report-date"></span>
+      </div>
+      <div style="padding:0 8px 12px;">
+        <img id="daily-report-img"
+             src="assets/daily-report-latest.jpg"
+             alt="불개미 일일시황"
+             style="width:100%; height:auto; border-radius:10px; display:block;"
+             onerror="this.parentElement.innerHTML='<div style=\'padding:24px;text-align:center;color:var(--text-dim);font-size:0.9rem;\'>⏳ 이미지를 불러올 수 없습니다</div>'">
+      </div>
+    </div>
+  </div>
+  <script>
+    // ─── 운영 시 이미지 교체: 아래 DAILY_REPORT_IMAGE 값만 변경하면 전체 반영 ───
+    var DAILY_REPORT_IMAGE = 'assets/daily-report-latest.jpg';
+    // ──────────────────────────────────────────────────────────────────────────
+    (function() {
+      var img = document.getElementById('daily-report-img');
+      if (img) img.src = DAILY_REPORT_IMAGE;
+      var dateEl = document.getElementById('daily-report-date');
+      if (dateEl) {
+        var now = new Date();
+        var y = now.getFullYear();
+        var m = String(now.getMonth()+1).padStart(2,'0');
+        var d = String(now.getDate()).padStart(2,'0');
+        dateEl.textContent = y + '.' + m + '.' + d;
+      }
+    })();
+  </script>
 
   <!-- CONTENT ROUTINE -->
   <!-- FEED: 최신 콘텐츠 -->
