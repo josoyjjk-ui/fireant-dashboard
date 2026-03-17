@@ -64,12 +64,6 @@
     transition: background 0.4s, color 0.4s;
   }
 
-  /* Smooth transitions for themed elements */
-  .ev-card, .ev-card-sm, .insight, .social-card, .nav, .ev-badge,
-  .ev-tag, .ev-countdown, .ev-btn-outline, .footer {
-    transition: all 0.3s ease;
-  }
-
   canvas#particles {
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
@@ -130,7 +124,7 @@
     font-weight: 900; font-size: 1.1rem; color: var(--red);
   }
   .nav-brand img { width: 28px; height: 28px; border-radius: 50%; }
-  .nav-links { display: flex; gap: 6px; }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
   .nav-links a {
     color: var(--text-dim); text-decoration: none;
     font-size: 0.78rem; font-weight: 600;
@@ -163,8 +157,6 @@
     margin-top: 8px; font-weight: 400;
   }
 
-  /* PRICE TICKER removed */
-
   /* ── SECTION ── */
   .section { margin-top: 36px; }
   .section-head {
@@ -179,115 +171,6 @@
     color: var(--red); background: var(--glow-red);
     padding: 2px 8px; border-radius: 6px;
   }
-
-  /* ── EVENT CARD ── */
-  .ev-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 12px;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-  .ev-card:hover {
-    border-color: var(--border-hover);
-    background: var(--surface-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 40px rgba(255,59,59,0.08);
-  }
-  .ev-card .status-dot {
-    position: absolute; top: 20px; right: 20px;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 8px rgba(74,222,128,0.5);
-    animation: pulse 2s infinite;
-  }
-  .ev-card .status-dot.ended { background: var(--text-muted); box-shadow: none; animation: none; }
-  .ev-card .status-dot.soon { background: var(--gold); box-shadow: 0 0 8px rgba(255,215,64,0.5); }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  .ev-tag {
-    display: inline-block;
-    font-size: 0.68rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.5px;
-    padding: 3px 10px; border-radius: 6px;
-    margin-bottom: 10px;
-  }
-  .ev-tag.ama { background: rgba(91,141,239,0.15); color: var(--blue); }
-  .ev-tag.fireweek { background: var(--glow-red); color: var(--red); }
-  .ev-tag.event { background: rgba(255,215,64,0.12); color: var(--gold); }
-  .ev-tag.airdrop { background: rgba(74,222,128,0.12); color: var(--green); }
-
-  .ev-title {
-    font-size: 1rem; font-weight: 800;
-    color: var(--text); line-height: 1.4;
-    margin-bottom: 10px;
-  }
-  .ev-title a { color: inherit; text-decoration: none; }
-  .ev-title a:hover { color: var(--orange); }
-
-  .ev-meta {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-bottom: 12px;
-  }
-  .ev-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 0.73rem; font-weight: 600;
-    padding: 4px 10px; border-radius: 6px;
-    background: rgba(255,255,255,0.05);
-    color: var(--text-dim);
-  }
-  .ev-badge.reward { color: var(--gold); }
-
-  .ev-countdown {
-    font-family: 'Inter', monospace;
-    font-size: 0.82rem; font-weight: 700;
-    color: var(--orange);
-    margin-bottom: 12px;
-  }
-
-  .ev-rewards {
-    display: flex; flex-direction: column; gap: 4px;
-    margin-bottom: 14px;
-  }
-  .ev-reward {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 0.82rem; color: var(--text-dim);
-  }
-  .ev-reward::before { content: '🎁'; font-size: 0.75rem; }
-
-  .ev-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 22px;
-    background: linear-gradient(135deg, var(--red), var(--orange));
-    color: #fff; text-decoration: none;
-    border-radius: var(--radius-sm);
-    font-size: 0.82rem; font-weight: 700;
-    transition: all 0.2s;
-    border: none; cursor: pointer;
-  }
-  .ev-btn:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 20px rgba(255,59,59,0.3);
-  }
-  .ev-btn-outline {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 22px;
-    background: transparent;
-    color: var(--text-dim);
-    text-decoration: none;
-    border-radius: var(--radius-sm);
-    font-size: 0.82rem; font-weight: 700;
-    border: 1px solid var(--border);
-    transition: all 0.2s;
-    margin-left: 8px;
-  }
-  .ev-btn-outline:hover { border-color: var(--red); color: var(--text); }
 
   /* ── INSIGHT LIST ── */
   .insight {
@@ -352,76 +235,6 @@
     border-top: 1px solid var(--border);
   }
   .footer p { font-size: 0.72rem; color: var(--text-muted); }
-
-  /* ── EXTERNAL EVENT CARD (compact) ── */
-  .ev-card-sm {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    margin-bottom: 5px;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-  .ev-card-sm:hover {
-    border-color: var(--border-hover);
-    background: var(--surface-hover);
-  }
-  .ev-card-sm .status-dot {
-    position: absolute; top: 10px; right: 10px;
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 5px rgba(74,222,128,0.4);
-    animation: pulse 2s infinite;
-  }
-  .ev-card-sm .status-dot.ended { background: var(--text-muted); box-shadow: none; animation: none; }
-  .ev-card-sm .status-dot.soon { background: var(--gold); box-shadow: 0 0 5px rgba(255,215,64,0.4); }
-  .ev-card-sm .ev-tag {
-    font-size: 0.5rem;
-    padding: 1px 6px;
-    margin-bottom: 3px;
-  }
-  .ev-card-sm .ev-title {
-    font-size: 0.7rem; font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .ev-card-sm .ev-meta { margin-bottom: 4px; }
-  .ev-card-sm .ev-badge { font-size: 0.55rem; padding: 2px 6px; }
-  .ev-card-sm .ev-countdown { font-size: 0.6rem; margin-bottom: 4px; }
-  .ev-card-sm .ev-btn {
-    padding: 5px 13px;
-    font-size: 0.6rem;
-  }
-  .ev-card-sm .ev-btn-outline {
-    padding: 5px 13px;
-    font-size: 0.6rem;
-  }
-
-  .section-head-sub {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 10px; margin-top: 24px;
-  }
-  .section-head-sub h3 {
-    font-size: 0.88rem; font-weight: 700; color: var(--text-dim);
-  }
-  .section-head-sub .count {
-    font-size: 0.65rem; font-weight: 700;
-    color: var(--text-dim); background: rgba(255,255,255,0.06);
-    padding: 2px 7px; border-radius: 5px;
-  }
-
-  /* ── LIGHT THEME OVERRIDES ── */
-  [data-theme="light"] .hero-logo {
-    border-color: var(--red);
-    box-shadow: 0 0 20px rgba(224,32,32,0.15);
-  }
-  [data-theme="light"] .ev-card:hover,
-  [data-theme="light"] .ev-card-sm:hover {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-  }
-  [data-theme="light"] .ev-btn {
-    box-shadow: 0 2px 10px rgba(224,32,32,0.2);
-  }
 
   /* ── FEED SECTION ── */
   .feed-tabs {
@@ -547,8 +360,6 @@
   /* ── RESPONSIVE ── */
   @media (max-width: 420px) {
     .hero h1 { font-size: 1.6rem; }
-    .tick { padding: 12px; }
-    .tick-price { font-size: 1rem; }
     .social-grid { grid-template-columns: 1fr; }
     .feed-thumb { width: 80px; min-width: 80px; height: 45px; }
     .feed-thumb-placeholder { width: 80px; min-width: 80px; height: 45px; }
@@ -568,8 +379,7 @@
   <div class="nav">
     <div class="nav-brand">🔥 불개미</div>
     <div class="nav-links">
-      <a href="#events">이벤트</a>
-      <a href="content.html">📡 콘텐츠</a>
+      <a href="events.html">📌 이벤트</a>
       <a href="leaderboard/">🏆 리더보드</a>
       <button class="theme-toggle" id="themeToggle" title="테마 전환">🌙</button>
     </div>
@@ -602,7 +412,6 @@
     <script>
     (function(){
       const DAY_KO = ['일','월','화','수','목','금','토'];
-      // 루틴 정의: dow=요일(0=일), events[]
       const ROUTINE = {
         0: [{label:'🔴 라이브', sub:'밤 9:00', color:'#FF3B3B'}],
         1: [{label:'🗓 주간시황', sub:'3:30 PM', color:'#5B8DEF'}],
@@ -616,15 +425,12 @@
       const today = new Date();
       today.setHours(0,0,0,0);
 
-      // 이번주 월요일 기준으로 2주
-      const todayDow = today.getDay(); // 0=일
+      const todayDow = today.getDay();
       const diffToMon = (todayDow === 0) ? -6 : 1 - todayDow;
       const weekStart = new Date(today);
       weekStart.setDate(today.getDate() + diffToMon);
 
-      // 요일 헤더
       const cal = document.getElementById('routineCalendar');
-      // 월~일 순서로 헤더
       const headerOrder = [1,2,3,4,5,6,0];
       headerOrder.forEach(d => {
         const h = document.createElement('div');
@@ -634,7 +440,6 @@
         cal.appendChild(h);
       });
 
-      // 2주 날짜 생성 (월~일 순서)
       for(let week=0; week<2; week++){
         headerOrder.forEach(dow => {
           const date = new Date(weekStart);
@@ -663,129 +468,107 @@
     </script>
   </div>
 
-  <!-- EVENTS: 불개미 주관 -->
-  <div class="section" id="events">
+  <!-- INSIGHTS -->
+  <div class="section" id="insights">
     <div class="section-head">
-      <h2>📌 불개미 주관 이벤트</h2>
-      <span class="count">LIVE 2</span>
+      <h2>💡 불개미 시장 인사이트 아티클</h2>
     </div>
-
-    <!-- Everything AMA (3/10) -->
-    <!-- Billions 친구초대 이벤트 (3/13~3/22) -->
-    <div class="ev-card" data-start="2026-03-13T00:00:00+09:00" data-end="2026-03-22T23:59:00+09:00">
-      <div class="status-dot"></div>
-      <span class="ev-tag event">친구초대</span>
-      <span class="ev-tag" style="background:rgba(41,98,255,0.15); color:#5B8DEF;">Billions</span>
-      <div class="ev-title">
-        <a href="https://t.me/fireantcrypto/40185" target="_blank">🔥 Billions 친구초대 이벤트 — 입장만 해도 최대 1천만원</a>
+    <a href="https://t.me/fireantcrypto/40112" target="_blank" class="insight">
+      <div class="insight-icon">🤔</div>
+      <div class="insight-body">
+        <div class="insight-title">지금 시점에 투자할만한 자산, 크립토밖에 안 보이는건 나뿐인가?</div>
+        <div class="insight-date">2026.03.10</div>
       </div>
-      <div class="ev-meta">
-        <span class="ev-badge">🗓 3월 13일 ~ 3월 22일</span>
-        <span class="ev-badge reward">🎁 최대 1천만원 리워드 풀 (포인트 분배)</span>
+      <span class="insight-arrow">→</span>
+    </a>
+    <a href="https://t.me/fireantcrypto/39918" target="_blank" class="insight">
+      <div class="insight-icon">📌</div>
+      <div class="insight-body">
+        <div class="insight-title">FIRE-ANTERVIEW with 조셉 루빈 (이더리움, Consensys and 메타마스크 창업자)</div>
+        <div class="insight-date">2026.02.26</div>
       </div>
-      <div class="ev-countdown" data-target="2026-03-22T23:59:00+09:00"></div>
-      <a href="https://t.me/mate_ref_bot" target="_blank" class="ev-btn">🤖 @mate_ref_bot 참여하기 →</a>
-      <a href="leaderboard/" class="ev-btn-outline">📊 리더보드 →</a>
-    </div>
-
-    <!-- Billions Fireweek (3/16~3/20) -->
-    <div class="ev-card" data-start="2026-03-16T00:00:00+09:00" data-end="2026-03-20T23:59:00+09:00">
-      <div class="status-dot"></div>
-      <span class="ev-tag event">Fireweek</span>
-      <div class="ev-title">
-        <a href="https://t.me/fireantcrypto/40140" target="_blank">🔥 Billions Network와 함께하는 Fireweek</a>
+      <span class="insight-arrow">→</span>
+    </a>
+    <a href="https://t.me/fireantcrypto/39785" target="_blank" class="insight">
+      <div class="insight-icon">🔥</div>
+      <div class="insight-body">
+        <div class="insight-title">크립토 시총 5,700조 vs 코스피+코스닥 2,700조 — 한국이 놓친 기회</div>
+        <div class="insight-date">2026.02.22</div>
       </div>
-      <div class="ev-meta">
-        <span class="ev-badge">🗓 3월 3주차 (3/16 ~ 3/20)</span>
-        <span class="ev-badge reward">🎁 총 1,000만원 이상 리워드</span>
-      </div>
-      <div class="ev-countdown" data-target="2026-03-20T23:59:00+09:00"></div>
-      <a href="https://t.me/fireantcrypto/40140" target="_blank" class="ev-btn">자세히 보기 →</a>
-    </div>
-
-    <!-- Billions AMA 교육세션 (3/16 오후 2시) -->
-    <div class="ev-card" data-start="2026-03-16T14:00:00+09:00" data-end="2026-03-16T15:30:00+09:00">
-      <div class="status-dot"></div>
-      <span class="ev-tag ama">AMA</span>
-      <div class="ev-title">
-        <a href="https://t.me/fireantcrypto/40143" target="_blank">📌 Billions Founder Evin과 함께하는 교육세션</a>
-      </div>
-      <div class="ev-meta">
-        <span class="ev-badge">🗓 3월 16일 (월) 오후 2시 KST</span>
-        <span class="ev-badge reward">🎁 5만원(질문당첨) + 3만원 x 100명 + ☕ x 500명</span>
-      </div>
-      <div class="ev-countdown" data-target="2026-03-16T14:00:00+09:00"></div>
-      <a href="https://t.me/fireantcrypto/40143" target="_blank" class="ev-btn">참여하기 →</a>
-      <a href="https://docs.google.com/forms/d/1RQgAz8fhVrrdLzXz3XPkiy_gpN3DN8MRjGlzCN9-9sg/viewform" target="_blank" class="ev-btn-outline">사전질문 폼 →</a>
-    </div>
-
-    <!-- 블록스트릿 AMA 리캡 캠페인 (~ 3/20) -->
-    <div class="ev-card" data-start="2026-03-10T00:00:00+09:00" data-end="2026-03-20T23:59:00+09:00">
-      <div class="status-dot"></div>
-      <span class="ev-tag event">캠페인</span>
-      <div class="ev-title">
-        <a href="https://t.me/fireantcrypto/40111" target="_blank">📸 블록스트릿 AMA 요점정리 리캡 캠페인</a>
-      </div>
-      <div class="ev-meta">
-        <span class="ev-badge">🗓 ~ 3월 20일 (금) 마감</span>
-        <span class="ev-badge reward">🎁 5만원 x 10명 + 1만원 x 50명 + ☕ x 100명</span>
-      </div>
-      <div class="ev-countdown" data-target="2026-03-20T23:59:00+09:00"></div>
-      <a href="https://t.me/fireantcrypto/40111" target="_blank" class="ev-btn">참여하기 →</a>
-      <a href="https://docs.google.com/forms/d/1kKP8OXstjmmdKWPsDMG2GJsH5zNO_rz0mWEujFNnch0/viewform" target="_blank" class="ev-btn-outline">제출 폼 →</a>
-    </div>
-
-
-    <!-- EVENTS: 외부 참여 가능 -->
-    <div class="section-head-sub">
-      <h3>🌐 외부 참여 가능 이벤트</h3>
-      <span class="count">1</span>
-    </div>
-
-    <div class="ev-card-sm" data-start="2026-02-27T00:00:00+09:00" data-end="2026-03-12T23:59:00+09:00">
-      <div class="status-dot"></div>
-      <span class="ev-tag event">EVENT</span>
-      <div class="ev-title"><a href="https://t.me/fireantcrypto/39929" target="_blank">Everything 한국 커뮤니티 오픈 기념 이벤트</a></div>
-      <div class="ev-meta">
-        <span class="ev-badge">🗓 2/27 (금) ~ 3/12 (목)</span>
-        <span class="ev-badge reward">💸 1만원 x 50명 + 5천원 x 200명</span>
-      </div>
-      <div class="ev-countdown" data-target="2026-03-12T23:59:00+09:00"></div>
-      <a href="https://t.me/fireantcrypto/39929" target="_blank" class="ev-btn">참여하기 →</a>
-      <a href="https://naver.me/xF4k1iIq" target="_blank" class="ev-btn-outline">응모폼 →</a>
-    </div>
-
+      <span class="insight-arrow">→</span>
+    </a>
   </div>
 
-  <!-- INSIGHTS -->
-  <!-- COUPONI BOT STATUS -->
-  <div class="section" id="couponi">
+  <!-- FEED: 최신 콘텐츠 -->
+  <div class="section" id="feed">
     <div class="section-head">
-      <h2>🎁 쿠포니봇 상태</h2>
+      <h2>📡 최신 콘텐츠</h2>
     </div>
-    <div class="ev-card" style="position:relative;">
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-        <span id="couponi-dot" style="width:10px; height:10px; border-radius:50%; background:#4ADE80; box-shadow:0 0 6px rgba(74,222,128,0.6); display:inline-block;"></span>
-        <span id="couponi-status" style="font-weight:700; font-size:0.9rem; color:var(--green);">🟢 운영 중</span>
-        <a href="https://t.me/Couponybot" target="_blank" style="margin-left:auto; font-size:0.78rem; color:var(--blue); text-decoration:none; font-weight:600;">쿠포니봇 바로가기 →</a>
-      </div>
-      <a href="https://fireantcrypto.com/winners" target="_blank" id="couponi-event" style="display:block; background:var(--surface); border-radius:var(--radius-sm); padding:7px 12px; margin-bottom:8px; text-decoration:none; color:var(--text);">
-        <div style="color:var(--text-dim); font-size:0.7rem; margin-bottom:2px;">📌 지급 대상 이벤트</div>
-        <div id="couponi-event-title" style="font-weight:600; font-size:0.82rem;">Billions Fireweek 및 친구초대 이벤트</div>
+    <div id="feed-updated" class="feed-updated" style="display:none;"></div>
+    <div class="feed-tabs">
+      <button class="feed-tab active" data-tab="youtube">▶️ 유튜브</button>
+      <button class="feed-tab" data-tab="telegram">📢 텔레그램</button>
+      <button class="feed-tab" data-tab="naver">📝 블로그</button>
+    </div>
+    <div id="feed-youtube" class="feed-panel active">
+      <div class="feed-loading">⏳ 불러오는 중…</div>
+    </div>
+    <div id="feed-telegram" class="feed-panel">
+      <div class="feed-loading">⏳ 불러오는 중…</div>
+    </div>
+    <div id="feed-naver" class="feed-panel">
+      <div class="feed-loading">⏳ 불러오는 중…</div>
+    </div>
+  </div>
+
+  <!-- CHANNELS -->
+  <div class="section" id="channels">
+    <div class="section-head">
+      <h2>🔗 채널</h2>
+    </div>
+    <div class="social-grid">
+      <a href="https://t.me/fireantcrypto" target="_blank" class="social-card">
+        <span class="social-icon">📢</span>
+        <div>
+          <div class="social-name">텔레그램 채널</div>
+          <div class="social-handle">@fireantcrypto</div>
+        </div>
       </a>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
-        <div style="background:var(--surface); border-radius:var(--radius-sm); padding:8px; text-align:center;">
-          <div style="color:var(--text-dim); font-size:0.7rem;">상태</div>
-          <div id="couponi-mode" style="font-weight:700; font-size:0.85rem; color:var(--text); margin-top:2px;">정상 가동</div>
+      <a href="https://t.me/fireantgroup" target="_blank" class="social-card">
+        <span class="social-icon">💬</span>
+        <div>
+          <div class="social-name">텔레그램 대화방</div>
+          <div class="social-handle">불개미 커뮤니티</div>
         </div>
-        <div style="background:var(--surface); border-radius:var(--radius-sm); padding:8px; text-align:center;">
-          <div style="color:var(--text-dim); font-size:0.7rem;">남은 시간</div>
-          <div id="couponi-timer" style="font-weight:700; font-size:0.85rem; color:var(--gold); margin-top:2px;">--:--:--</div>
+      </a>
+      <a href="https://x.com/fireant_korea" target="_blank" class="social-card">
+        <span class="social-icon">𝕏</span>
+        <div>
+          <div class="social-name">트위터</div>
+          <div class="social-handle">@fireant_korea</div>
         </div>
-      </div>
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <a href="https://fireantcrypto.com/winners/#tab-apply" class="ev-btn-outline" style="flex:1; text-align:center; padding:6px 10px; font-size:0.82rem;">⚠️ 오류 신고 →</a>
-      </div>
+      </a>
+      <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" class="social-card">
+        <span class="social-icon">▶️</span>
+        <div>
+          <div class="social-name">유튜브</div>
+          <div class="social-handle">@FIREANTCRYPTO</div>
+        </div>
+      </a>
+      <a href="https://blog.naver.com/fireantcrypto" target="_blank" class="social-card">
+        <span class="social-icon">📝</span>
+        <div>
+          <div class="social-name">네이버 블로그</div>
+          <div class="social-handle">불개미 Crypto</div>
+        </div>
+      </a>
+      <a href="https://couponybot.com/" target="_blank" class="social-card">
+        <span class="social-icon">🎁</span>
+        <div>
+          <div class="social-name">쿠포니봇</div>
+          <div class="social-handle">couponybot.com</div>
+        </div>
+      </a>
     </div>
   </div>
 
@@ -822,7 +605,7 @@ class Particle {
     this.vy = -(Math.random() * 1.2 + 0.2);
     this.vx = (Math.random() - 0.5) * 0.4;
     this.opacity = Math.random() * 0.35 + 0.05;
-    this.hue = Math.random() > 0.6 ? 0 : 20; // red or orange
+    this.hue = Math.random() > 0.6 ? 0 : 20;
     this.life = 0;
     this.maxLife = Math.random() * 250 + 80;
   }
@@ -849,62 +632,10 @@ for (let i = 0; i < 50; i++) particles.push(new Particle(true));
   requestAnimationFrame(animate);
 })();
 
-// ── AUTO STATUS + COUNTDOWN ──
-function updateEventStatuses() {
-  const now = Date.now();
-  // 이벤트 카드 상태 자동 전환 (data-start, data-end 기반)
-  document.querySelectorAll('[data-start][data-end]').forEach(card => {
-    const start = new Date(card.dataset.start).getTime();
-    const end = new Date(card.dataset.end).getTime();
-    const dot = card.querySelector('.status-dot');
-    if (!dot) return;
-    // 클래스 초기화
-    dot.classList.remove('soon', 'ended');
-    if (now < start) {
-      // 시작 전 → 노란색
-      dot.classList.add('soon');
-    } else if (now > end) {
-      // 종료 → 회색
-      dot.classList.add('ended');
-    }
-    // else: 진행 중 → 기본 (초록/빨간 = live)
-  });
-
-  // 외부 참여 가능 이벤트: 마감 지나면 자동 숨김
-  let externalVisible = 0;
-  document.querySelectorAll('.ev-card-sm[data-end]').forEach(card => {
-    const end = new Date(card.dataset.end).getTime();
-    const expired = now > end;
-    card.style.display = expired ? 'none' : '';
-    if (!expired) externalVisible += 1;
-  });
-  const externalCountEl = document.querySelector('.section-head-sub .count');
-  if (externalCountEl) externalCountEl.textContent = String(externalVisible);
-
-
-  // 카운트다운 타이머
-  document.querySelectorAll('.ev-countdown[data-target]').forEach(el => {
-    const target = new Date(el.dataset.target).getTime();
-    const diff = target - now;
-    if (diff <= 0) { el.textContent = '🔴 종료됨'; return; }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    let txt = '⏰ 종료까지 ';
-    if (d > 0) txt += d + '일 ' + h + '시간';
-    else if (h > 0) txt += h + '시간 ' + m + '분';
-    else txt += m + '분';
-    el.textContent = txt;
-  });
-}
-updateEventStatuses();
-setInterval(updateEventStatuses, 60000);
-
 // ── THEME TOGGLE ──
 const themeBtn = document.getElementById('themeToggle');
 const html = document.documentElement;
 
-// 저장된 테마 복원
 const saved = localStorage.getItem('fa-theme');
 if (saved) {
   html.setAttribute('data-theme', saved);
@@ -998,83 +729,6 @@ themeBtn.addEventListener('click', () => {
       if (panel) panel.classList.add('active');
     });
   });
-})();
-
-/* ── COUPONI BOT TIMER ── */
-(function(){
-  // 해병님이 내용 줄 때마다 여기 세팅. 내용 없으면 ACTIVE=false
-  const COUPONI_ACTIVE = true;
-  const COUPONI_START = '2026-03-12T16:07:00+09:00';
-  const COUPONI_END = '2026-03-12T20:00:00+09:00';
-  const COUPONI_LABEL = '대기중';
-
-  const dot = document.getElementById('couponi-dot');
-  const status = document.getElementById('couponi-status');
-  const mode = document.getElementById('couponi-mode');
-  const timer = document.getElementById('couponi-timer');
-
-  function updateCouponi(){
-    if(!COUPONI_ACTIVE){
-      dot.style.background = '#FF3B3B';
-      dot.style.boxShadow = '0 0 8px rgba(255,59,59,0.6)';
-      status.textContent = '🔴 오프라인';
-      status.style.color = 'var(--red)';
-      mode.textContent = '운영 예정 없음';
-      timer.textContent = '--:--:--';
-      return;
-    }
-    const now = Date.now();
-    const start = COUPONI_START ? new Date(COUPONI_START).getTime() : 0;
-    const end = COUPONI_END ? new Date(COUPONI_END).getTime() : 0;
-
-    const twoHoursBefore = start ? start - 7200000 : 0;
-    if(start && now < start){
-      if(now >= twoHoursBefore){
-        // 시작 2시간 전 ~ 시작 전 — 대기 중 + 카운트다운
-        dot.style.background = '#FFD740';
-        dot.style.boxShadow = '0 0 8px rgba(255,215,64,0.6)';
-        status.textContent = '🟡 대기 중';
-        status.style.color = 'var(--gold)';
-        mode.textContent = COUPONI_LABEL || '시작 대기';
-        const diff = start - now;
-        const h = Math.floor(diff/3600000);
-        const m = Math.floor((diff%3600000)/60000);
-        const s = Math.floor((diff%60000)/1000);
-        timer.textContent = `시작까지 ${h}시간 ${m}분 ${s}초`;
-      } else {
-        // 2시간 이전 — 오프라인
-        dot.style.background = '#FF3B3B';
-        dot.style.boxShadow = '0 0 8px rgba(255,59,59,0.6)';
-        status.textContent = '🔴 오프라인';
-        status.style.color = 'var(--red)';
-        mode.textContent = COUPONI_LABEL || '운영 예정';
-        timer.textContent = '--:--:--';
-      }
-    } else if(end && now > end){
-      // 종료 → 오프라인으로 표시
-      dot.style.background = '#FF3B3B';
-      dot.style.boxShadow = '0 0 8px rgba(255,59,59,0.6)';
-      status.textContent = '🔴 오프라인';
-      status.style.color = 'var(--red)';
-      mode.textContent = '운영 종료';
-      timer.textContent = '--:--:--';
-    } else {
-      // 운영 중
-      dot.style.background = '#4ADE80';
-      dot.style.boxShadow = '0 0 8px rgba(74,222,128,0.6)';
-      status.textContent = '🟢 운영 중';
-      status.style.color = 'var(--green)';
-      mode.textContent = COUPONI_LABEL || '정상 가동';
-      if(!end){ timer.textContent = '∞'; return; }
-      const diff = end - now;
-      const h = Math.floor(diff/3600000);
-      const m = Math.floor((diff%3600000)/60000);
-      const s = Math.floor((diff%60000)/1000);
-      timer.textContent = `남은시간 ${h}시간 ${m}분 ${s}초`;
-    }
-  }
-  updateCouponi();
-  setInterval(updateCouponi, 1000);
 })();
 </script>
 
