@@ -28,8 +28,9 @@ dat_week   = A("DAT_WEEK_AGO", "$1.28B (17,990 BTC)")
 cb_premium = A("CB_PREMIUM",   "+0.023%")
 date_str   = A("DATE",         datetime.now().strftime("%Y.%m.%d (KST)"))
 
-OUTPUT  = "/Users/fireant/.openclaw/workspace/daily-report-latest.png"
-REF_IMG = "/Users/fireant/.openclaw/workspace/assets/daily-chalk-reference.jpg"
+OUTPUT   = "/Users/fireant/.openclaw/workspace/daily-report-latest.png"
+REF_IMG  = "/Users/fireant/.openclaw/workspace/assets/daily-chalk-reference.jpg"
+LOGO_IMG = "/Users/fireant/.openclaw/workspace/assets/fireant-logo-nobg2.png"  # 로컬 로고 고정 (웹 다운로드 금지)
 # 이미지 생성 모델 우선순위
 MODEL_CHAIN = [
     "grok-imagine-image-pro",         # 1순위: xAI Grok (글자 표현 우수)
@@ -84,6 +85,18 @@ def get_xai_key():
                        capture_output=True, text=True)
     return r.stdout.strip() if r.returncode == 0 else None
 
+def overlay_logo(img_rgba):
+    """로컬 저장된 불개미 로고를 좌상단에 합성 (웹 다운로드 절대 금지)"""
+    from PIL import Image as PILImage
+    if not os.path.exists(LOGO_IMG):
+        print(f"⚠️ 로고 파일 없음: {LOGO_IMG}", file=sys.stderr)
+        return img_rgba
+    logo = PILImage.open(LOGO_IMG).convert("RGBA")
+    lh = 90; lw = int(logo.width * lh / logo.height)
+    logo = logo.resize((lw, lh), PILImage.LANCZOS)
+    img_rgba.paste(logo, (28, 28), logo)
+    return img_rgba
+
 def try_grok(prompt_text):
     """xAI Grok Imagine API로 이미지 생성 (텍스트 프롬프트만, 레퍼런스 이미지 미지원)"""
     import requests
@@ -99,16 +112,14 @@ def try_grok(prompt_text):
         raise Exception(f"{r.status_code} {r.text[:200]}")
     img_url = r.json()["data"][0]["url"]
     img_bytes_out = requests.get(img_url, timeout=60).content
-    img = PILImage.open(BytesIO(img_bytes_out))
-    if img.mode == "RGBA":
-        rgb = PILImage.new("RGB", img.size, (255, 255, 255))
-        rgb.paste(img, mask=img.split()[3])
-        rgb.save(OUTPUT, "PNG")
-    else:
-        img.convert("RGB").save(OUTPUT, "PNG")
+    img = PILImage.open(BytesIO(img_bytes_out)).convert("RGBA")
+    img = overlay_logo(img)
+    img.convert("RGB").save(OUTPUT, "PNG")
 
 def try_gemini(model_name):
     """Gemini 모델로 레퍼런스 이미지 기반 생성"""
+    from io import BytesIO
+    from PIL import Image as PILImage
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     with open(REF_IMG, "rb") as f:
         img_bytes = f.read()
@@ -116,13 +127,15 @@ def try_gemini(model_name):
     mime = "image/jpeg" if ext in ("jpg", "jpeg") else "image/png"
     response = client.models.generate_content(
         model=model_name,
-        contents=[types.Part.from_bytes(data=img_bytes, mime_type=mime), prompt]
+        contents=[types.Part.from_bytes(data=img_bytes, mime_type=mime), prompt],
+        config=types.GenerateContentConfig(response_modalities=["IMAGE", "TEXT"])
     )
     saved = False
     for part in response.candidates[0].content.parts:
         if part.inline_data:
-            with open(OUTPUT, "wb") as f:
-                f.write(part.inline_data.data)
+            img = PILImage.open(BytesIO(part.inline_data.data)).convert("RGBA")
+            img = overlay_logo(img)
+            img.convert("RGB").save(OUTPUT, "PNG")
             saved = True
             break
     if not saved:
