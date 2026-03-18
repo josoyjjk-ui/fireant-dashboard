@@ -30,7 +30,7 @@ date_str   = A("DATE",         datetime.now().strftime("%Y.%m.%d (KST)"))
 
 OUTPUT  = "/Users/fireant/.openclaw/workspace/daily-report-latest.png"
 REF_IMG = "/Users/fireant/.openclaw/workspace/assets/daily-chalk-reference.jpg"
-MODEL   = "gemini-2.5-flash-image"  # 고정 모델
+MODEL   = "gemini-3.1-flash-image-preview"  # 고정 모델
 
 btc_dir = "순유입" if "+" in btc_etf else "순유출"
 eth_dir = "순유입" if "+" in eth_etf else "순유출"
