@@ -25,6 +25,7 @@ btc_oi_24h = A("BTC_OI_24H",   "+1.34%")
 eth_oi_24h = A("ETH_OI_24H",   "-2.12%")
 dat_now    = A("DAT_NOW",      "$1.57B (22,341 BTC)")
 dat_week   = A("DAT_WEEK_AGO", "$1.28B (17,990 BTC)")
+cb_premium = A("CB_PREMIUM",   "+0.023%")
 date_str   = A("DATE",         datetime.now().strftime("%Y.%m.%d (KST)"))
 
 OUTPUT  = "/Users/fireant/.openclaw/workspace/daily-report-latest.png"
@@ -56,7 +57,7 @@ ETH 24시간 : {eth_oi_24h}
 1주일 전  : {dat_week}
 
 [우하단 박스: 코인베이스 프리미엄]
-빈 칸 유지
+현재 지수: {cb_premium}
 
 === 스타일 규칙 (절대 변경 금지) ===
 - 나무 액자 프레임 (갈색 나무결, 두껍게)
