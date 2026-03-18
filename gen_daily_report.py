@@ -1,22 +1,17 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pillow>=10.0.0", "requests>=2.28.0"]
+# dependencies = ["google-genai>=1.0.0", "pillow>=10.0.0", "requests>=2.28.0"]
 # ///
 """
-불개미 일일시황 이미지 생성기 v9
-- PIL 고정 렌더링 (확정 양식 2026-03-19)
-- 배경: 진한 흑갈색 (#1a1410)
-- 로고: 좌상단 박스 밖 자유배치
-- 4분할: 흰 구분선
-- 좌상단: ETF 박스 (BTC/ETH 각 블랙록·피델리티)
-- 우상단: 큰 타이틀 + 미결제약정 박스
-- 좌하단: DAT 박스
-- 우하단: 코인베이스 프리미엄 박스
+불개미 일일시황 이미지 생성기 v7
+- 모델: gemini-2.5-flash-image (고정)
+- 레퍼런스 이미지 기반 AI 재현 + 데이터 치환
 """
-import sys, os
-from PIL import Image, ImageDraw, ImageFont
+import sys, os, subprocess
 from datetime import datetime
+from google import genai
+from google.genai import types
 
 # ── 인자 파싱 ──────────────────────────────────────────────
 args = sys.argv[1:]
@@ -24,187 +19,135 @@ def A(key, default="—"):
     try: return args[args.index(key)+1]
     except: return default
 
-btc_etf       = A("BTC_ETF",        "+$199.37M")
-eth_etf       = A("ETH_ETF",        "+$138.25M")
-btc_blackrock = A("BTC_BLACKROCK",  "+$169M")
-btc_fidelity  = A("BTC_FIDELITY",   "+$24M")
-eth_blackrock = A("ETH_BLACKROCK",  "+$82M")
-eth_fidelity  = A("ETH_FIDELITY",   "-$35M")
-btc_oi_24h    = A("BTC_OI_24H",     "-4.67%")
-eth_oi_24h    = A("ETH_OI_24H",     "-9.93%")
-dat_now       = A("DAT_NOW",        "$1.57B (22,341 BTC)")
-cb_premium    = A("CB_PREMIUM",     "N/A")
-date_str      = A("DATE",           datetime.now().strftime("%Y.%m.%d (KST)"))
+btc_etf    = A("BTC_ETF",      "+$199.37M")
+eth_etf    = A("ETH_ETF",      "+$138.25M")
+btc_oi_24h = A("BTC_OI_24H",   "+1.34%")
+eth_oi_24h = A("ETH_OI_24H",   "-2.12%")
+dat_now    = A("DAT_NOW",      "$1.57B (22,341 BTC)")
+dat_week   = A("DAT_WEEK_AGO", "$1.28B (17,990 BTC)")
+cb_premium = A("CB_PREMIUM",   "+0.023%")
+date_str   = A("DATE",         datetime.now().strftime("%Y.%m.%d (KST)"))
 
-OUTPUT   = "/Users/fireant/.openclaw/workspace/daily-report-latest.png"
-LOGO_IMG = "/Users/fireant/.openclaw/workspace/assets/fireant-logo-nobg2.png"
-FONT     = "/System/Library/Fonts/AppleSDGothicNeo.ttc"
+OUTPUT  = "/Users/fireant/.openclaw/workspace/daily-report-latest.png"
+REF_IMG = "/Users/fireant/.openclaw/workspace/assets/daily-chalk-reference.jpg"
+# 이미지 생성 모델 우선순위
+MODEL_CHAIN = [
+    "grok-imagine-image-pro",         # 1순위: xAI Grok (글자 표현 우수)
+    "gemini-3.1-flash-image-preview", # 2순위
+    "gemini-3-pro-image-preview",     # 3순위
+]
 
-# ── 색상 ──────────────────────────────────────────────────
-BG       = (26, 20, 16)     # 진한 흑갈색 #1a1410
-WHITE    = (255, 255, 255)
-YELLOW   = (220, 190, 60)   # 골드 노랑 (BTC/ETH 헤더)
-GREEN    = (80, 210, 80)    # 양수
-RED      = (220, 60, 60)    # 음수
-GRAY     = (180, 175, 168)  # 소주석·날짜
-LINE     = (220, 220, 220)  # 흰 구분선/박스
+btc_dir = "순유입" if "+" in btc_etf else "순유출"
+eth_dir = "순유입" if "+" in eth_etf else "순유출"
 
-W, H = 1280, 720
+prompt = f"""이 이미지를 완전히 동일한 스타일과 레이아웃으로 재현하되, 아래 데이터로 수치만 교체해서 새로 생성해라.
 
-# ── 폰트 ──────────────────────────────────────────────────
-def f(sz, bold=False):
-    return ImageFont.truetype(FONT, sz, index=7 if bold else 3)
+=== 교체할 데이터 (아래 텍스트를 글자 하나도 틀리지 말고 그대로 표기) ===
 
-fMainTitle = f(72, True)   # 불개미 일일시황
-fSecTitle  = f(32, True)   # 섹션 타이틀 (미결제약정 추이 등)
-fETFHead   = f(34, True)   # BTC (+$199.37M)
-fFund      = f(26)          # 블랙록 +$169M
-fData      = f(28)          # BTC 24시간 : -4.67%
-fSmall     = f(17)          # 소주석
-fDate      = f(22)          # 날짜
+[좌상단 박스 제목] BTC ETH ETF 유출입
+[좌상단 부제] ETF 데이터는 마지막 거래일 기준
+[좌상단 BTC 줄] BTC ({btc_etf})
+[좌상단 ETH 줄] ETH ({eth_etf})
 
-# ── 유틸 ──────────────────────────────────────────────────
-def cv(v): return GREEN if "+" in str(v) else RED if "-" in str(v) else WHITE
+[우상단 큰 제목] 불개미 일일시황
+[우상단 날짜] {date_str}
 
-def draw_img():
-    img = Image.new("RGB", (W, H), BG)
-    d = ImageDraw.Draw(img)
+[우중단 박스 제목] 미결제약정 추이
+[우중단 줄1] BTC 24시간 : {btc_oi_24h}
+[우중단 줄2] ETH 24시간 : {eth_oi_24h}
+※ 반드시 위 2줄만. "32시간" "48시간" "72시간" 같은 항목 절대 추가하지 말 것.
 
-    MX = W // 2       # 640
-    MY = 430           # 수평 분할선
+[좌하단 박스 제목] DAT 추이
+[좌하단 줄1] WEEKLY NET INFLOW : {dat_now}
+※ 줄 1개만. 나머지 줄 추가 금지. "WEEKLY NET INFLOW" 텍스트 오타 절대 금지.
 
-    # ── 분할선 ──
-    d.line([(MX, 0), (MX, H)], fill=LINE, width=2)
-    d.line([(0, MY), (W, MY)], fill=LINE, width=2)
+[우하단 박스 제목] 코인베이스 프리미엄
+[우하단 줄1] 현재 지수 : {cb_premium}
+※ "형재" "형제" 오타 절대 금지. 반드시 "현재 지수"로 표기.
 
-    PAD = 14  # 박스 내부 패딩
-    R   = 12  # 모서리 둥글기
+=== 스타일 규칙 (절대 변경 금지) ===
+- 나무 액자 프레임 완전 없음. 칠판 배경이 이미지 끝까지 꽉 차야 함. 갈색/브라운 테두리 절대 금지.
+- 어두운 칠판 배경 (dark chalkboard green/black)
+- 분필 폰트 (chalk font, handwritten feel)
+- 좌상단 빨간 불개미 캐릭터 반드시 포함
+- 섹션 박스: 흰색 분필선 직사각형
+- 색상: 양수=초록, 음수=빨강, BTC·ETH 헤더=노란색, 일반텍스트=흰색
+- 16:9 와이드 비율
+- 위에 명시된 텍스트 외 임의 내용(블랙록, 피델리티 등 세부 데이터) 추가 금지"""
 
-    # ── 박스 그리기 ──────────────────────────────────────
-    # 좌상단 박스: 로고 크기(140px) 아래부터 시작, ETF 텍스트 포함
-    LOGO_H = 130
-    boxes = {
-        "etf":  (8,  LOGO_H+4, MX-4,  MY-4),   # 좌상단 (로고 아래부터)
-        "oi":   (MX+4, 180, W-8, MY-4),          # 우상단 미결제약정 박스만
-        "dat":  (8,  MY+4, MX-4, H-8),           # 좌하단
-        "cb":   (MX+4, MY+4, W-8, H-8),          # 우하단
-    }
-    for bx1, by1, bx2, by2 in boxes.values():
-        d.rounded_rectangle([bx1, by1, bx2, by2], radius=R, outline=LINE, width=2)
+# ── API 호출 (fallback chain) ──────────────────────────────
 
-    # ── 좌상단: BTC·ETH ETF 유출입 ──────────────────────
-    bx1, by1, bx2, by2 = boxes["etf"]
-    cx = (bx1 + bx2) // 2
+def get_xai_key():
+    key = os.environ.get("XAI_API_KEY")
+    if key: return key
+    r = subprocess.run(["security", "find-generic-password", "-s", "XAI_API_KEY", "-a", "openclaw", "-w"],
+                       capture_output=True, text=True)
+    return r.stdout.strip() if r.returncode == 0 else None
 
-    # 타이틀
-    ty = by1 + 16
-    ctxt(d, cx, ty, "BTC·ETH ETF 유출입", fSecTitle, WHITE)
-    ty += 42
-    ctxt(d, cx, ty, "(ETF 데이터는 마지막 거래일 기준)", fSmall, GRAY)
+def try_grok(prompt_text):
+    """xAI Grok Imagine API로 이미지 생성 (텍스트 프롬프트만, 레퍼런스 이미지 미지원)"""
+    import requests
+    from io import BytesIO
+    from PIL import Image as PILImage
+    xai_key = get_xai_key()
+    if not xai_key:
+        raise Exception("XAI_API_KEY not found")
+    headers = {"Authorization": f"Bearer {xai_key}", "Content-Type": "application/json"}
+    data = {"model": "grok-imagine-image-pro", "prompt": prompt_text, "n": 1}
+    r = requests.post("https://api.x.ai/v1/images/generations", headers=headers, json=data, timeout=120)
+    if r.status_code != 200:
+        raise Exception(f"{r.status_code} {r.text[:200]}")
+    img_url = r.json()["data"][0]["url"]
+    img_bytes_out = requests.get(img_url, timeout=60).content
+    img = PILImage.open(BytesIO(img_bytes_out))
+    if img.mode == "RGBA":
+        rgb = PILImage.new("RGB", img.size, (255, 255, 255))
+        rgb.paste(img, mask=img.split()[3])
+        rgb.save(OUTPUT, "PNG")
+    else:
+        img.convert("RGB").save(OUTPUT, "PNG")
 
-    # BTC 헤더
-    ty += 34
-    ctxt(d, cx, ty, f"BTC ({btc_etf})", fETFHead, YELLOW)
-    ty += 48
-    # 블랙록 | 피델리티
-    draw_fund_row(d, bx1, bx2, ty, "블랙록", btc_blackrock, "피델리티", btc_fidelity)
+def try_gemini(model_name):
+    """Gemini 모델로 레퍼런스 이미지 기반 생성"""
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    with open(REF_IMG, "rb") as f:
+        img_bytes = f.read()
+    ext = REF_IMG.rsplit(".", 1)[-1].lower()
+    mime = "image/jpeg" if ext in ("jpg", "jpeg") else "image/png"
+    response = client.models.generate_content(
+        model=model_name,
+        contents=[types.Part.from_bytes(data=img_bytes, mime_type=mime), prompt]
+    )
+    saved = False
+    for part in response.candidates[0].content.parts:
+        if part.inline_data:
+            with open(OUTPUT, "wb") as f:
+                f.write(part.inline_data.data)
+            saved = True
+            break
+    if not saved:
+        txt = response.text[:300] if hasattr(response, "text") and response.text else "없음"
+        raise Exception(f"이미지 없음 — 텍스트: {txt}")
 
-    # 구분선
-    ty += 44
-    sep_y = ty + 4
-    d.line([(bx1+20, sep_y), (bx2-20, sep_y)], fill=LINE, width=1)
-
-    # ETH 헤더
-    ty += 22
-    ctxt(d, cx, ty, f"ETH ({eth_etf})", fETFHead, YELLOW)
-    ty += 48
-    draw_fund_row(d, bx1, bx2, ty, "블랙록", eth_blackrock, "피델리티", eth_fidelity)
-
-    # ── 우상단: 타이틀 + 미결제약정 ──────────────────────
-    rcx = MX + (W - MX) // 2
-
-    # 큰 타이틀 (박스 밖)
-    ctxt(d, rcx, 30, "불개미 일일시황", fMainTitle, WHITE)
-    ctxt(d, rcx, 118, date_str, fDate, GRAY)
-
-    # 미결제약정 박스
-    bx1, by1, bx2, by2 = boxes["oi"]
-    oy = by1 + 18
-    ctxt(d, rcx, oy, "미결제약정 추이", fSecTitle, WHITE)
-    oy += 56
-    # BTC / ETH 각 줄
-    draw_data_line(d, bx1+20, bx2-20, oy, "BTC 24시간 :", btc_oi_24h)
-    oy += 46
-    draw_data_line(d, bx1+20, bx2-20, oy, "ETH 24시간 :", eth_oi_24h)
-
-    # ── 좌하단: DAT 추이 ──────────────────────────────────
-    bx1, by1, bx2, by2 = boxes["dat"]
-    dcx = (bx1 + bx2) // 2
-    dcy = (by1 + by2) // 2
-    ctxt(d, dcx, dcy - 42, "DAT 추이", fSecTitle, WHITE)
-    # WEEKLY NET INFLOW 레이블 + 값
-    label = "WEEKLY NET INFLOW : "
-    bb = d.textbbox((0,0), label, font=fData)
-    val_w = d.textbbox((0,0), dat_now, font=fData)[2]
-    total_w = bb[2] + val_w
-    lx = dcx - total_w // 2
-    d.text((lx, dcy + 10), label, font=fData, fill=WHITE)
-    d.text((lx + bb[2], dcy + 10), dat_now, font=fData, fill=GREEN)
-
-    # ── 우하단: 코인베이스 프리미엄 ──────────────────────
-    bx1, by1, bx2, by2 = boxes["cb"]
-    ccx = (bx1 + bx2) // 2
-    ccy = (by1 + by2) // 2
-    ctxt(d, ccx, ccy - 42, "코인베이스 프리미엄", fSecTitle, WHITE)
-    cb_text = f"현재 지수 : {cb_premium}"
-    ctxt(d, ccx, ccy + 10, cb_text, fData, WHITE)
-
-    # ── 로고 합성 (박스 밖 좌상단) ────────────────────────
+last_error = None
+for model in MODEL_CHAIN:
     try:
-        logo = Image.open(LOGO_IMG).convert("RGBA")
-        lh = LOGO_H
-        lw = int(logo.width * lh / logo.height)
-        logo = logo.resize((lw, lh), Image.LANCZOS)
-        img_rgba = img.convert("RGBA")
-        img_rgba.paste(logo, (8, 4), logo)
-        img = img_rgba.convert("RGB")
+        print(f"Trying model: {model}...")
+        if model == "grok-imagine-image-pro":
+            try_grok(prompt)
+        else:
+            try_gemini(model)
+        print(f"✅ 저장: {OUTPUT}  (model={model})")
+        sys.exit(0)
     except Exception as e:
-        print(f"⚠️ 로고 합성 실패: {e}", file=sys.stderr)
+        err = str(e)
+        print(f"⚠️ {model} 실패: {err[:120]}", file=sys.stderr)
+        last_error = err
+        if any(x in err for x in ["503", "UNAVAILABLE", "timeout", "Timeout", "deadline", "404", "NOT_FOUND", "XAI_API_KEY"]):
+            continue
+        # 치명적 오류
+        print(f"❌ 이미지 생성 실패: {err}", file=sys.stderr)
+        sys.exit(1)
 
-    img.save(OUTPUT, "PNG")
-    print(f"✅ 저장: {OUTPUT}")
-
-def ctxt(d, cx, y, text, font, color):
-    bb = d.textbbox((0,0), text, font=font)
-    d.text((cx - (bb[2]-bb[0])//2, y), text, font=font, fill=color)
-
-def draw_fund_row(d, bx1, bx2, y, l1, v1, l2, v2):
-    """펀드 2열 렌더링"""
-    mid = (bx1 + bx2) // 2
-    # 좌열
-    lw1 = d.textbbox((0,0), l1, font=f(26))[2]
-    vw1 = d.textbbox((0,0), v1, font=f(26))[2]
-    gap = 10
-    total1 = lw1 + gap + vw1
-    lx1 = mid // 2 - total1 // 2 + bx1 // 2
-    d.text((lx1, y), l1, font=f(26), fill=WHITE)
-    d.text((lx1 + lw1 + gap, y), v1, font=f(26), fill=cv(v1))
-    # 우열
-    lw2 = d.textbbox((0,0), l2, font=f(26))[2]
-    vw2 = d.textbbox((0,0), v2, font=f(26))[2]
-    total2 = lw2 + gap + vw2
-    lx2 = mid + (bx2 - mid) // 2 - total2 // 2
-    d.text((lx2, y), l2, font=f(26), fill=WHITE)
-    d.text((lx2 + lw2 + gap, y), v2, font=f(26), fill=cv(v2))
-
-def draw_data_line(d, x1, x2, y, label, value):
-    """레이블 + 값 한 줄 (값은 오른쪽)"""
-    font = f(28)
-    lbb = d.textbbox((0,0), label, font=font)
-    vbb = d.textbbox((0,0), value, font=font)
-    total = lbb[2] + 12 + vbb[2]
-    lx = (x1 + x2) // 2 - total // 2
-    d.text((lx, y), label, font=font, fill=WHITE)
-    d.text((lx + lbb[2] + 12, y), value, font=font, fill=cv(value))
-
-draw_img()
+print(f"❌ 모든 모델 실패. 마지막 오류: {last_error}", file=sys.stderr)
+sys.exit(1)
