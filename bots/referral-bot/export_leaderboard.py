@@ -1,4 +1,4 @@
-# DB에서 leaderboard.json 생성 후 /tmp/fireant-dashboard에 복사 + git push
+# DB에서 leaderboard.json 생성 후 fireant-dashboard submodule에 복사 + git push
 import sqlite3, json, subprocess, urllib.request
 from datetime import datetime, date
 
@@ -15,7 +15,7 @@ def tg_alert(msg: str):
         pass
 
 DB = '/Users/fireant/.openclaw/workspace/bots/referral-bot/referral.db'
-DASHBOARD = '/tmp/fireant-dashboard'
+DASHBOARD = '/Users/fireant/.openclaw/workspace/fireant-dashboard'
 
 con = sqlite3.connect(DB)
 con.row_factory = sqlite3.Row
@@ -75,10 +75,11 @@ print(f"✅ leaderboard.json 생성 완료 ({len(data['leaderboard'])}명)")
 # ── git push ──────────────────────────────────────────────────
 result = subprocess.run(
     ["bash", "-c",
-     f"cd {DASHBOARD} && git fetch origin main && "
+     f"cd {DASHBOARD} && git fetch origin && "
      f"git add leaderboard.json && "
      f"git diff --cached --quiet || git commit -m '리더보드 자동 업데이트' && "
-     f"git rebase origin/main && git push"],
+     f"git pull --no-rebase origin main -X ours --allow-unrelated-histories 2>/dev/null; "
+     f"git push origin main"],
     capture_output=True, text=True
 )
 print(result.stdout or "up-to-date")
