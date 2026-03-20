@@ -378,11 +378,19 @@ async def cmd_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = update.effective_user.id
 
-    # 이미 제출한 경우 안내
+    # 이미 제출한 경우 완료 메시지 재발송
     with get_db() as conn:
-        existing = conn.execute("SELECT user_id FROM user_info WHERE user_id=?", (user_id,)).fetchone()
+        existing = conn.execute("SELECT email, telegram_id, phone FROM user_info WHERE user_id=?", (user_id,)).fetchone()
     if existing:
-        await update.message.reply_text("✅ 이미 정보를 제출하셨습니다.\n수정이 필요하면 관리자에게 문의해주세요.")
+        await update.message.reply_text(
+            "🎉 *정보 제출 완료!*\n\n"
+            f"📧 이메일: {existing['email']}\n"
+            f"💬 텔레그램: {existing['telegram_id']}\n"
+            f"📱 휴대전화: {existing['phone']}\n\n"
+            "리워드는 순위 확정 후 순차적으로 지급됩니다.\n감사합니다! 🔥\n\n"
+            "당신은 모든 정보를 잘 제출했습니다!",
+            parse_mode="Markdown"
+        )
         return ConversationHandler.END
 
     await update.message.reply_text(
@@ -475,20 +483,31 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         ).fetchone()
         rank = rank_row["rank"] if rank_row else "-"
 
-    # Google Sheets에 기록 (신규 제출 시에만)
+    # Google Sheets에 기록 (신규 제출 시에만) — 실패해도 메시지 전송은 반드시 진행
     if inserted:
-        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        append_to_sheet([now_str, str(user_id), tg, query.from_user.first_name or "", email, phone, points, rank])
+        try:
+            now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            append_to_sheet([now_str, str(user_id), tg, query.from_user.first_name or "", email, phone, points, rank])
+        except Exception as e:
+            logging.getLogger(__name__).error(f"Sheets 기록 예외: {e}")
 
-    await query.edit_message_text(
+    completion_text = (
         "🎉 *정보 제출 완료!*\n\n"
         f"📧 이메일: {email}\n"
         f"💬 텔레그램: {tg}\n"
         f"📱 휴대전화: {phone}\n\n"
         "리워드는 순위 확정 후 순차적으로 지급됩니다.\n감사합니다! 🔥\n\n"
-        "당신은 모든 정보를 잘 제출했습니다!",
-        parse_mode="Markdown"
+        "당신은 모든 정보를 잘 제출했습니다!"
     )
+    try:
+        await query.edit_message_text(completion_text, parse_mode="Markdown")
+    except Exception:
+        # edit_message_text 실패 시 (메시지 없거나 타임아웃 등) send_message로 fallback
+        await query.get_bot().send_message(
+            chat_id=user_id,
+            text=completion_text,
+            parse_mode="Markdown"
+        )
     return ConversationHandler.END
 
 
