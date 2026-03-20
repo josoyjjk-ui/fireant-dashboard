@@ -485,7 +485,8 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         f"📧 이메일: {email}\n"
         f"💬 텔레그램: {tg}\n"
         f"📱 휴대전화: {phone}\n\n"
-        "리워드는 순위 확정 후 순차적으로 지급됩니다.\n감사합니다! 🔥",
+        "리워드는 순위 확정 후 순차적으로 지급됩니다.\n감사합니다! 🔥\n\n"
+        "당신은 모든 정보를 잘 제출했습니다!",
         parse_mode="Markdown"
     )
     return ConversationHandler.END
