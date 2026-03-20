@@ -565,7 +565,8 @@ function closePointLookup() {
 }
 
 function lookupPoint() {
-  const input = document.getElementById('usernameInput').value.trim().replace(/^@/, '').toLowerCase();
+  const raw = document.getElementById('usernameInput').value.trim();
+  const input = raw.replace(/^@/, '').toLowerCase();
   const resultEl = document.getElementById('pointResult');
   if (!input) {
     resultEl.innerHTML = '<div style="color:#ff6b6b;font-size:0.85rem;">아이디를 입력해주세요.</div>';
@@ -573,20 +574,28 @@ function lookupPoint() {
   }
   resultEl.innerHTML = '<div style="color:var(--text-dim);font-size:0.85rem;">조회 중...</div>';
 
-  fetch('leaderboard.json?_=' + Date.now())
+  fetch('../leaderboard.json?_=' + Date.now())
     .then(r => r.json())
     .then(data => {
       const list = data.leaderboard || [];
-      const user = list.find(u => (u.username || '').toLowerCase() === input);
+      // username(대소문자 무시) 또는 first_name(부분일치) 로 검색
+      const user = list.find(u =>
+        (u.username || '').toLowerCase() === input ||
+        (u.first_name || '').toLowerCase() === input
+      );
       if (!user) {
         resultEl.innerHTML = `<div style="color:#ff6b6b;font-size:0.85rem;">@${input} 유저를 찾을 수 없습니다.<br><span style="font-size:0.75rem;color:var(--text-muted)">봇에서 /start를 먼저 눌러주세요.</span></div>`;
         return;
       }
-      const rank = list.findIndex(u => (u.username || '').toLowerCase() === input) + 1;
+      const rank = list.findIndex(u =>
+        (u.username || '').toLowerCase() === input ||
+        (u.first_name || '').toLowerCase() === input
+      ) + 1;
       const name = user.first_name || user.username || '?';
+      const displayId = user.username ? `@${user.username}` : name;
       resultEl.innerHTML = `
         <div style="background:rgba(91,141,239,0.08);border:1px solid rgba(91,141,239,0.2);border-radius:10px;padding:14px;">
-          <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:4px;">@${user.username || input}</div>
+          <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:4px;">${displayId}</div>
           <div style="font-size:1.5rem;font-weight:900;color:#5B8DEF;">${user.points}<span style="font-size:0.9rem;font-weight:400;color:var(--text-dim);margin-left:4px;">점</span></div>
           <div style="margin-top:6px;font-size:0.8rem;color:var(--text-dim);">현재 순위 <span style="color:var(--gold);font-weight:700;">${rank}위</span> / ${list.length}명</div>
         </div>`;
