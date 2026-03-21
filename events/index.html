@@ -354,6 +354,9 @@
   @media (max-width: 420px) {
     .hero h1 { font-size: 1.4rem; }
   }
+
+  #ended-toggle:hover h2 { color: var(--orange); }
+  #ended-events-container { transition: all 0.3s ease; }
 </style>
 </head>
 <body>
@@ -492,10 +495,10 @@
 
   <!-- ── 종료된 이벤트 ── -->
   <div class="section" id="ended-events-section" style="display:none;">
-    <div class="section-head">
-      <h2>⏹ 종료된 이벤트</h2>
+    <div class="section-head" id="ended-toggle" style="cursor:pointer; user-select:none;" onclick="toggleEndedEvents()">
+      <h2>⏹ 종료된 이벤트 <span id="ended-arrow" style="font-size:0.8em; margin-left:6px; transition:transform 0.3s; display:inline-block;">▼</span></h2>
     </div>
-    <div id="ended-events-container"></div>
+    <div id="ended-events-container" style="display:none; overflow:hidden;"></div>
   </div>
 
   <!-- COUPONI BOT STATUS -->
@@ -658,6 +661,15 @@ function updateEventStatuses() {
     el.textContent = txt;
   });
 }
+
+function toggleEndedEvents() {
+  const container = document.getElementById('ended-events-container');
+  const arrow = document.getElementById('ended-arrow');
+  const isHidden = container.style.display === 'none';
+  container.style.display = isHidden ? '' : 'none';
+  arrow.style.transform = isHidden ? 'rotate(180deg)' : '';
+}
+
 updateEventStatuses();
 setInterval(updateEventStatuses, 60000);
 
