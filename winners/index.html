@@ -466,6 +466,7 @@
     <button class="tab-btn" onclick="switchTab('apply')">📬 리워드 신청</button>
   </div>
 
+
   <!-- TAB: 당첨자 조회 -->
   <div class="tab-panel active" id="tab-search">
     <div class="search-wrap">
@@ -596,7 +597,7 @@ function renderCard(w) {
   const tw = w.twitter || '';
   return `
     <div class="winner-card">
-      <span class="winner-event">${escHtml(w.event || '이벤트')}</span>
+      <span class="winner-event">${escHtml(w.event || '이벤트')}${w.prize ? ' · ' + escHtml(w.prize) : ''}</span>
       ${w.note ? `<span style="font-size:0.72rem;color:var(--gold);font-weight:700;margin-bottom:4px;display:block;">(${escHtml(w.note)})</span>` : ''}
       <div class="winner-handles">
         ${tg ? `<span class="winner-handle"><span class="platform">텔레그램</span> ${escHtml(tg)}</span>` : ''}
