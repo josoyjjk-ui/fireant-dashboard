@@ -49,6 +49,55 @@ def append_to_sheet(row: list):
             logging.getLogger(__name__).error(f"Sheets 기록 실패: {e}")
     threading.Thread(target=_write, daemon=True).start()
 
+def delete_from_sheet(user_id: int):
+    """Sheets에서 user_id가 일치하는 행 삭제 (B열 = user_id)"""
+    if not GSHEETS_AVAILABLE:
+        return
+    try:
+        token_path = GSHEETS_TOKEN
+        creds = Credentials.from_authorized_user_file(token_path, GSHEETS_SCOPES)
+        if creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        service = gbuild('sheets', 'v4', credentials=creds)
+
+        # 시트명 파싱 (GSHEETS_RANGE에서 '!' 앞부분)
+        sheet_name = GSHEETS_RANGE.split('!')[0]
+
+        # 전체 데이터 읽기 (A:B)
+        result = service.spreadsheets().values().get(
+            spreadsheetId=GSHEETS_SHEET_ID,
+            range=f'{sheet_name}!A:B'
+        ).execute()
+        values = result.get('values', [])
+
+        # user_id 매칭 행 찾기 (B열 = index 1)
+        rows_to_delete = []
+        for i, row in enumerate(values):
+            if len(row) > 1 and row[1] == str(user_id):
+                rows_to_delete.append(i)
+
+        # 뒤에서부터 삭제 (인덱스 밀림 방지)
+        for row_idx in reversed(rows_to_delete):
+            service.spreadsheets().batchUpdate(
+                spreadsheetId=GSHEETS_SHEET_ID,
+                body={
+                    'requests': [{
+                        'deleteDimension': {
+                            'range': {
+                                'sheetId': 0,
+                                'dimension': 'ROWS',
+                                'startIndex': row_idx,
+                                'endIndex': row_idx + 1
+                            }
+                        }
+                    }]
+                }
+            ).execute()
+        logger.info(f"Sheets 삭제 완료: user_id={user_id}, 삭제 행 수={len(rows_to_delete)}")
+    except Exception as e:
+        logging.getLogger(__name__).error(f"Sheets 삭제 예외: {e}")
+
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Application,
@@ -96,6 +145,7 @@ INF_TG       = 11
 INF_PHONE    = 12
 INF_AGREE    = 13
 INF_REALNAME = 14  # 빗썸 실명 입력 상태
+INF_EDIT_CONFIRM = 20  # 수정 확인 대기 상태
 
 # ── DB ───────────────────────────────────────────────────────────────────────
 @contextmanager
@@ -423,6 +473,9 @@ async def cmd_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ).fetchone()
     if existing:
         real_name = existing['real_name'] or "-"
+        keyboard = InlineKeyboardMarkup([[
+            InlineKeyboardButton("✏️ 정보 수정하기", callback_data="inf_edit_request")
+        ]])
         await update.message.reply_text(
             "🎉 *정보 제출 완료!*\n\n"
             f"📧 이메일: {existing['email']}\n"
@@ -430,8 +483,10 @@ async def cmd_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"📱 휴대전화: {existing['phone']}\n"
             f"👤 빗썸 실명: {real_name}\n\n"
             "리워드는 순위 확정 후 순차적으로 지급됩니다.\n감사합니다! 🔥\n\n"
-            "당신은 모든 정보를 잘 제출했습니다!",
-            parse_mode="Markdown"
+            "당신은 모든 정보를 잘 제출했습니다!\n\n"
+            "💡 정보를 수정하고 싶다면 아래 버튼을 누르세요.",
+            parse_mode="Markdown",
+            reply_markup=keyboard
         )
         return ConversationHandler.END
 
@@ -552,18 +607,77 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         f"📱 휴대전화: {phone}\n"
         f"👤 빗썸 실명: {real_name}\n\n"
         "리워드는 순위 확정 후 순차적으로 지급됩니다.\n감사합니다! 🔥\n\n"
-        "당신은 모든 정보를 잘 제출했습니다!"
+        "당신은 모든 정보를 잘 제출했습니다!\n\n"
+        "💡 정보를 수정하고 싶다면 아래 버튼을 누르세요."
     )
+    edit_keyboard = InlineKeyboardMarkup([[
+        InlineKeyboardButton("✏️ 정보 수정하기", callback_data="inf_edit_request")
+    ]])
     try:
-        await query.edit_message_text(completion_text, parse_mode="Markdown")
+        await query.edit_message_text(completion_text, parse_mode="Markdown", reply_markup=edit_keyboard)
     except Exception:
         # edit_message_text 실패 시 (메시지 없거나 타임아웃 등) send_message로 fallback
         await query.get_bot().send_message(
             chat_id=user_id,
             text=completion_text,
-            parse_mode="Markdown"
+            parse_mode="Markdown",
+            reply_markup=edit_keyboard
         )
     return ConversationHandler.END
+
+
+async def inf_edit_request_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """수정 버튼 클릭 → 확인 절차"""
+    query = update.callback_query
+    await query.answer()
+
+    keyboard = InlineKeyboardMarkup([[
+        InlineKeyboardButton("✅ 삭제 후 재제출", callback_data="inf_edit_confirm"),
+        InlineKeyboardButton("❌ 취소", callback_data="inf_edit_cancel"),
+    ]])
+    await query.edit_message_reply_markup(reply_markup=None)
+    await query.message.reply_text(
+        "⚠️ 기존 제출 정보를 삭제하고 다시 입력하시겠습니까?\n\n"
+        "삭제 후에는 되돌릴 수 없습니다.",
+        reply_markup=keyboard
+    )
+
+
+async def inf_edit_confirm_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """삭제 후 재제출 확인 — inform_conv의 entry_point로 등록"""
+    query = update.callback_query
+    await query.answer()
+    user_id = query.from_user.id
+
+    # DB에서 삭제
+    with get_db() as conn:
+        conn.execute("DELETE FROM user_info WHERE user_id=?", (user_id,))
+
+    # Google Sheets에서도 삭제 (스레드로)
+    threading.Thread(target=delete_from_sheet, args=(user_id,), daemon=True).start()
+
+    await query.edit_message_text("🗑️ 기존 정보가 삭제되었습니다. 다시 입력을 시작합니다.")
+
+    # 정보 입력 플로우 재시작
+    context.user_data.clear()
+    await context.bot.send_message(
+        chat_id=user_id,
+        text=(
+            "📋 *상품 수령 정보 입력*\n\n"
+            "리워드 지급을 위해 아래 정보를 순서대로 입력해주세요.\n\n"
+            "1️⃣ 이메일 주소를 입력해주세요.\n"
+            "예) example@gmail.com"
+        ),
+        parse_mode="Markdown"
+    )
+    return INF_EMAIL
+
+
+async def inf_edit_cancel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """수정 취소"""
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text("❌ 수정이 취소되었습니다.")
 
 
 async def cmd_export_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -936,9 +1050,12 @@ def main():
     )
     app.add_handler(conv)
 
-    # /inform ConversationHandler (독립 - 기존 등록자 재진입용)
+    # /inform ConversationHandler (독립 - 기존 등록자 재진입용 + 수정 플로우)
     inform_conv = ConversationHandler(
-        entry_points=[CommandHandler("inform", cmd_inform)],
+        entry_points=[
+            CommandHandler("inform", cmd_inform),
+            CallbackQueryHandler(inf_edit_confirm_callback, pattern="^inf_edit_confirm$"),
+        ],
         states={
             INF_EMAIL:    [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_email)],
             INF_TG:       [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_tg)],
@@ -966,6 +1083,10 @@ def main():
     app.add_handler(CommandHandler("setperiod", cmd_setperiod))
     app.add_handler(CommandHandler("export_inform", cmd_export_inform))
     app.add_handler(CommandHandler("inform_count", cmd_inform_count))
+
+    # 정보 수정 관련 콜백 (inform_conv entry_point보다 먼저 등록)
+    app.add_handler(CallbackQueryHandler(inf_edit_request_callback, pattern="^inf_edit_request$"))
+    app.add_handler(CallbackQueryHandler(inf_edit_cancel_callback, pattern="^inf_edit_cancel$"))
 
     # 콜백
     app.add_handler(CallbackQueryHandler(callback_handler))
