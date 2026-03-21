@@ -147,6 +147,7 @@ INF_AGREE    = 13
 INF_REALNAME = 14  # 빗썸 실명 입력 상태
 INF_WALLET   = 15  # EVM 지갑주소 입력 상태
 INF_EDIT_CONFIRM = 20  # 수정 확인 대기 상태
+WALLET_INPUT = 21      # /wallet 커맨드 상태
 
 # ── DB ───────────────────────────────────────────────────────────────────────
 @contextmanager
@@ -703,6 +704,81 @@ async def inf_edit_cancel_callback(update: Update, context: ContextTypes.DEFAULT
     await query.edit_message_text("❌ 수정이 취소되었습니다.")
 
 
+async def cmd_wallet(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """EVM 지갑주소 입력/수정"""
+    if update.effective_chat.type != "private":
+        return ConversationHandler.END
+
+    user_id = update.effective_user.id
+
+    with get_db() as conn:
+        existing = conn.execute("SELECT wallet FROM user_info WHERE user_id=? AND agreed=1", (user_id,)).fetchone()
+
+    if not existing:
+        await update.message.reply_text("먼저 /inform 으로 정보를 제출해주세요.")
+        return ConversationHandler.END
+
+    current = existing['wallet'] or '미입력'
+    await update.message.reply_text(
+        f"💎 *EVM 지갑주소 입력*\n\n"
+        f"현재 등록된 주소: `{current}`\n\n"
+        "⚠️ 거래소 지갑은 불가합니다. 반드시 개인 지갑 주소를 입력해주세요!\n"
+        "(MetaMask, Rabby 등 개인 지갑 주소)\n\n"
+        "새 지갑주소를 입력해주세요:\n예) 0x1234...abcd",
+        parse_mode="Markdown"
+    )
+    return WALLET_INPUT
+
+
+async def wallet_receive(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """지갑주소 저장"""
+    wallet = update.message.text.strip()
+    user_id = update.effective_user.id
+
+    with get_db() as conn:
+        conn.execute("UPDATE user_info SET wallet=? WHERE user_id=?", (wallet, user_id))
+
+    # Google Sheets 업데이트 (비동기 스레드)
+    try:
+        def update_sheet():
+            try:
+                SHEET_ID = GSHEETS_SHEET_ID
+                TOKEN = GSHEETS_TOKEN
+                SCOPES = GSHEETS_SCOPES
+                creds = Credentials.from_authorized_user_file(TOKEN, SCOPES)
+                if creds.expired and creds.refresh_token:
+                    creds.refresh(Request())
+                service = gbuild('sheets', 'v4', credentials=creds)
+                sheet_name = GSHEETS_RANGE.split('!')[0]
+                result = service.spreadsheets().values().get(
+                    spreadsheetId=SHEET_ID, range=f'{sheet_name}!B:B'
+                ).execute()
+                values = result.get('values', [])
+                for i, row in enumerate(values):
+                    if row and row[0] == str(user_id):
+                        # H열 (8번째, 1-based) 업데이트
+                        service.spreadsheets().values().update(
+                            spreadsheetId=SHEET_ID,
+                            range=f'{sheet_name}!H{i+1}',
+                            valueInputOption='RAW',
+                            body={'values': [[wallet]]}
+                        ).execute()
+                        break
+            except Exception as e:
+                logging.getLogger(__name__).error(f"Sheets wallet 업데이트 오류: {e}")
+        threading.Thread(target=update_sheet, daemon=True).start()
+    except Exception:
+        pass
+
+    await update.message.reply_text(
+        f"✅ EVM 지갑주소가 등록되었습니다!\n\n"
+        f"💎 `{wallet}`\n\n"
+        "⚠️ 거래소 지갑을 입력하셨다면 /wallet 으로 다시 수정해주세요.",
+        parse_mode="Markdown"
+    )
+    return ConversationHandler.END
+
+
 async def cmd_export_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """관리자 전용: /export_inform — 정보 수집 결과 CSV 다운로드"""
     if update.effective_user.id != ADMIN_ID:
@@ -1094,6 +1170,18 @@ def main():
         per_message=False,
     )
     app.add_handler(inform_conv)
+
+    # /wallet ConversationHandler
+    wallet_conv = ConversationHandler(
+        entry_points=[CommandHandler("wallet", cmd_wallet)],
+        states={
+            WALLET_INPUT: [MessageHandler(filters.TEXT & ~filters.COMMAND, wallet_receive)],
+        },
+        fallbacks=[CommandHandler("cancel", lambda u, c: ConversationHandler.END)],
+        per_user=True,
+        per_chat=True,
+    )
+    app.add_handler(wallet_conv)
 
     # 유저 명령어
     app.add_handler(CommandHandler("points", cmd_points))
