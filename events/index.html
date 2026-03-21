@@ -585,7 +585,7 @@
   <!-- ── 종료된 이벤트 ── -->
   <div class="section" id="ended-events-section" style="display:none;">
     <div class="section-head" id="ended-toggle" style="cursor:pointer; user-select:none;" onclick="toggleEndedEvents()">
-      <h2>⏹ 종료된 이벤트 <span id="ended-arrow" style="font-size:0.8em; margin-left:6px; transition:transform 0.3s; display:inline-block;">▼</span></h2>
+      <h2>⏹ 종료된 이벤트 <span id="ended-count" style="font-size:0.7em; background:rgba(255,255,255,0.08); color:var(--text-muted); padding:2px 10px; border-radius:20px; margin-left:8px; font-weight:600; vertical-align:middle;"></span><span id="ended-arrow" style="font-size:0.8em; margin-left:6px; transition:transform 0.3s; display:inline-block;">▼</span></h2>
     </div>
     <div id="ended-events-container" style="display:none; overflow:hidden;"></div>
   </div>
@@ -714,6 +714,8 @@ function updateEventStatuses() {
 
   if (endedCount > 0) {
     endedSection.style.display = '';
+    const endedCountEl = document.getElementById('ended-count');
+    if (endedCountEl) endedCountEl.textContent = endedCount;
   }
 
   // LIVE count 업데이트
