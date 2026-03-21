@@ -26,7 +26,7 @@ except ImportError:
 GSHEETS_TOKEN   = '/Users/fireant/.openclaw/workspace/secrets/google-token.json'
 GSHEETS_SCOPES  = ['https://www.googleapis.com/auth/spreadsheets']
 GSHEETS_SHEET_ID = '1prtoKycManbOj-HoMnzZ68kl6VEEm3h5vvvTUzK6QHs'
-GSHEETS_RANGE    = '정보수집!A:I'
+GSHEETS_RANGE    = 'Sheet1!A:J'
 
 def append_to_sheet(row: list):
     """Google Sheets에 행 추가 (비동기 스레드로 실행)"""
