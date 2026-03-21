@@ -20,7 +20,7 @@ r1 = service.spreadsheets().values().get(spreadsheetId=SHEET1, range='A:H').exec
 for row in r1.get('values', [])[1:]:
     tg = row[1].strip() if len(row) > 1 else ''
     if tg and tg.startswith('@'):
-        winners.append({"event": "블록스트릿 AMA 리캡 캠페인", "telegram": tg.lower(), "prize": "이벤트 당첨"})
+        winners.append({"event": "Billions Fireweek 야핑캠페인", "telegram": tg.lower(), "prize": "이벤트 당첨"})
 
 # 시트2: C열 텔레그램, F열 이벤트명, I열 상품
 r2 = service.spreadsheets().values().get(spreadsheetId=SHEET2, range='A:I').execute()
