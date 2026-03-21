@@ -25,7 +25,7 @@ except ImportError:
 
 GSHEETS_TOKEN   = '/Users/fireant/.openclaw/workspace/secrets/google-token.json'
 GSHEETS_SCOPES  = ['https://www.googleapis.com/auth/spreadsheets']
-GSHEETS_SHEET_ID = '1VtyzrEuAolk-lqtCIExag5TeguMSbh3PB0p93JdG7Tk'
+GSHEETS_SHEET_ID = '1prtoKycManbOj-HoMnzZ68kl6VEEm3h5vvvTUzK6QHs'
 GSHEETS_RANGE    = '정보수집!A:I'
 
 def append_to_sheet(row: list):
@@ -294,10 +294,10 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 이벤트 공지 — 항상 먼저 표시
     await update.message.reply_text(
-        "📣 현재 진행중인 이벤트는 Billions 채널 / 대화방 입장이벤트 입니다.\n\n"
+        "📣 현재 진행중인 이벤트는 🧩 Eigen Cloud 한국 커뮤니티 릴레이 입장이벤트입니다!\n\n"
         "✅ 아래 채널에 모두 입장해 주세요!\n\n"
-        "👉 Billions 공지채널: https://t.me/Billions_Korea\n"
-        "👉 Billions 대화방: https://t.me/billions_Koreachat\n"
+        "👉 EigenCloud 한국 공지채널: https://t.me/EigenCloudKorea\n"
+        "👉 EigenCloud 한국 커뮤니티: https://t.me/EigenCloud_KR_Community\n"
         "👉 불개미 채널: https://t.me/fireantcrypto\n"
         "👉 불개미 대화방: https://t.me/fireantgroup\n\n"
         "4개 채널 입장 후 아래 절차를 따라주세요!",
@@ -710,7 +710,7 @@ async def cmd_export_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_document(
         document=buf.getvalue().encode("utf-8-sig"),
-        filename="billions_ama_inform.csv",
+        filename="eigencloud_inform.csv",
         caption=f"📋 정보 제출 현황 — 총 {len(rows)}명"
     )
 
@@ -1028,6 +1028,8 @@ async def chat_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 # ── 메인 ─────────────────────────────────────────────────────────────────────
 def main():
     init_db()
+    with get_db() as conn:
+        conn.execute("UPDATE event_period SET start_date='2026-03-21', end_date='2026-04-03' WHERE id=1")
     token = get_token()
 
     app = Application.builder().token(token).build()
