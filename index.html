@@ -753,5 +753,150 @@ themeBtn.addEventListener('click', () => {
     🏆 당첨자 조회 및 신청
   </a>
 
+
+<!-- ── LIGHTBOX ── -->
+<div id="lb-overlay" role="dialog" aria-modal="true" aria-label="이미지 확대 보기" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(0,0,0,0.92); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  align-items:center; justify-content:center;
+  cursor:zoom-out; user-select:none;">
+  <button id="lb-prev" aria-label="이전 이미지" style="
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+    color:#fff; font-size:1.6rem; width:44px; height:44px; border-radius:50%;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:background 0.2s; z-index:2;">‹</button>
+  <img id="lb-img" alt="" style="
+    max-width:90vw; max-height:88vh; border-radius:10px;
+    box-shadow:0 8px 48px rgba(0,0,0,0.7); cursor:default;
+    object-fit:contain; transition:opacity 0.2s; touch-action:pan-y;">
+  <button id="lb-next" aria-label="다음 이미지" style="
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+    color:#fff; font-size:1.6rem; width:44px; height:44px; border-radius:50%;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:background 0.2s; z-index:2;">›</button>
+  <button id="lb-close" aria-label="닫기" style="
+    position:absolute; top:14px; right:14px;
+    background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+    color:#fff; font-size:1.2rem; width:36px; height:36px; border-radius:50%;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:background 0.2s; z-index:2;">✕</button>
+  <div id="lb-counter" style="
+    position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,0.5); font-size:0.78rem; pointer-events:none;"></div>
+</div>
+
+<script>
+(function() {
+  var overlay  = document.getElementById('lb-overlay');
+  var lbImg    = document.getElementById('lb-img');
+  var lbPrev   = document.getElementById('lb-prev');
+  var lbNext   = document.getElementById('lb-next');
+  var lbClose  = document.getElementById('lb-close');
+  var lbCounter= document.getElementById('lb-counter');
+
+  var images   = [];  // { src, alt }
+  var current  = 0;
+
+  // 갤러리 이미지 수집 (data-gallery 속성 또는 #daily-report 내 img)
+  function collectImages() {
+    var imgs = document.querySelectorAll('#daily-report img[src]:not([data-lb-skip])');
+    images = Array.prototype.slice.call(imgs)
+      .filter(function(img) { return img.complete && img.naturalWidth > 0 || img.src; })
+      .map(function(img)    { return { src: img.src, alt: img.alt || '이미지' }; });
+  }
+
+  function showLightbox(idx) {
+    collectImages();
+    if (!images.length) return;
+    current = ((idx % images.length) + images.length) % images.length;
+    lbImg.style.opacity = '0';
+    lbImg.src = images[current].src;
+    lbImg.alt = images[current].alt;
+    lbImg.onload = function() { lbImg.style.opacity = '1'; };
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    updateNav();
+  }
+
+  function hideLightbox() {
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+    lbImg.src = '';
+  }
+
+  function updateNav() {
+    var total = images.length;
+    lbPrev.style.display = total > 1 ? 'flex' : 'none';
+    lbNext.style.display = total > 1 ? 'flex' : 'none';
+    lbCounter.textContent = total > 1 ? (current + 1) + ' / ' + total : '';
+  }
+
+  function navigate(delta) {
+    collectImages();
+    current = ((current + delta) % images.length + images.length) % images.length;
+    lbImg.style.opacity = '0';
+    lbImg.src = images[current].src;
+    lbImg.alt = images[current].alt;
+    lbImg.onload = function() { lbImg.style.opacity = '1'; };
+    updateNav();
+  }
+
+  // 갤러리 이미지 클릭 바인딩
+  function bindGallery() {
+    var imgs = document.querySelectorAll('#daily-report img[src]:not([data-lb-skip])');
+    imgs.forEach(function(img, i) {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', function(e) {
+        e.stopPropagation();
+        collectImages();
+        showLightbox(i);
+      });
+    });
+  }
+
+  // DOM ready 후 바인딩 (스크립트가 body 끝에 있으므로 즉시 실행)
+  bindGallery();
+
+  // ── 닫기 이벤트 ──
+  lbClose.addEventListener('click', hideLightbox);
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) hideLightbox();
+  });
+
+  lbImg.addEventListener('click', function(e) { e.stopPropagation(); });
+  lbPrev.addEventListener('click', function(e) { e.stopPropagation(); navigate(-1); });
+  lbNext.addEventListener('click', function(e) { e.stopPropagation(); navigate(+1); });
+
+  // ── 키보드 ──
+  document.addEventListener('keydown', function(e) {
+    if (overlay.style.display !== 'flex') return;
+    if (e.key === 'Escape')      hideLightbox();
+    if (e.key === 'ArrowLeft')   navigate(-1);
+    if (e.key === 'ArrowRight')  navigate(+1);
+  });
+
+  // ── 터치 스와이프 ──
+  var touchStartX = 0;
+  overlay.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].clientX;
+  }, { passive: true });
+  overlay.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) < 10) { hideLightbox(); return; }  // tap = close
+    if (dx > 40)  navigate(-1);
+    if (dx < -40) navigate(+1);
+  }, { passive: true });
+
+  // 화살표 hover 효과
+  [lbPrev, lbNext, lbClose].forEach(function(btn) {
+    btn.addEventListener('mouseenter', function() { btn.style.background = 'rgba(255,255,255,0.25)'; });
+    btn.addEventListener('mouseleave', function() { btn.style.background = 'rgba(255,255,255,0.12)'; });
+  });
+})();
+</script>
+
 </body>
 </html>
