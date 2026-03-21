@@ -359,16 +359,21 @@
     <div id="rewardCalc" style="margin-top:14px; padding:12px 20px; background:rgba(255,215,64,0.06); border:1px solid rgba(255,215,64,0.2); border-radius:10px; text-align:center; min-width:260px;">
       <div style="font-size:0.78rem; color:var(--text-dim); margin-bottom:4px;">총 누적 포인트</div>
       <div id="totalPointsDisplay" style="font-size:1.4rem; font-weight:900; color:var(--gold);">—</div>
-      <div style="margin-top:10px; display:flex; gap:10px; justify-content:center;">
+      <div style="margin-top:10px; display:flex; gap:8px; justify-content:center;">
         <div style="flex:1; padding:8px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
           <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:3px;">10pt 예상 리워드</div>
           <div id="rewardPerDisplay" style="font-size:1rem; font-weight:700; color:var(--orange);">—</div>
-          <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">500만원 기준</div>
+          <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">100만원 기준</div>
         </div>
         <div style="flex:1; padding:8px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
           <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:3px;">10pt 예상 리워드</div>
           <div id="rewardPerDisplay2" style="font-size:1rem; font-weight:700; color:var(--gold);">—</div>
-          <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">1,000만원 기준</div>
+          <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">200만원 기준</div>
+        </div>
+        <div style="flex:1; padding:8px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:3px;">10pt 예상 리워드</div>
+          <div id="rewardPerDisplay3" style="font-size:1rem; font-weight:700; color:var(--green);">—</div>
+          <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">300만원 기준</div>
         </div>
       </div>
     </div>
@@ -491,15 +496,19 @@ async function loadData() {
     document.getElementById('totalPointsDisplay').textContent =
       totalPoints > 0 ? totalPoints.toLocaleString() + '점' : '0점';
     if (totalPoints > 0) {
-      const rewardPer10 = Math.floor(5000000 / totalPoints * 10);
+      const rewardPer10 = Math.floor(1000000 / totalPoints * 10);
       document.getElementById('rewardPerDisplay').textContent =
         '₩' + rewardPer10.toLocaleString();
-      const rewardPer10b = Math.floor(10000000 / totalPoints * 10);
+      const rewardPer10b = Math.floor(2000000 / totalPoints * 10);
       document.getElementById('rewardPerDisplay2').textContent =
         '₩' + rewardPer10b.toLocaleString();
+      const rewardPer10c = Math.floor(3000000 / totalPoints * 10);
+      document.getElementById('rewardPerDisplay3').textContent =
+        '₩' + rewardPer10c.toLocaleString();
     } else {
       document.getElementById('rewardPerDisplay').textContent = '참여자 대기 중';
       document.getElementById('rewardPerDisplay2').textContent = '참여자 대기 중';
+      document.getElementById('rewardPerDisplay3').textContent = '참여자 대기 중';
     }
 
     // 갱신 시각
