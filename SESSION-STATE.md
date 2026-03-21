@@ -9,8 +9,28 @@
 
 ## ACTIVE
 
-### 서브에이전트 아키텍처 구현 대기
-- 메인(딸수) + 참모(GPT-5.4, 상시) + 공병(Sonnet, 호출형)
-- 해병님 최종 "진행" 대기 중
+### [진행중] Eigen Cloud 친구초대 이벤트
+- 기간: 2026-03-21 ~ 2026-04-03
+- 구글시트: `1prtoKycManbOj-HoMnzZ68kl6VEEm3h5vvvTUzK6QHs`
+- 봇: @mate_ref_bot / 리더보드: https://fireantcrypto.com/leaderboard/
+- 현재 제출자: 52명 (DB + 시트 동기화 완료)
 
+### [대기] 로고 시안 확정
+- v7 시안 해병님 OK → BotFather에서 @mate_ref_bot 프로필 직접 적용 필요
+- 파일: `2026-03-21-referral-bot-logo-v7.png`
 
+### [대기] Gmail 정리
+- 재인증 필요 (`gmail.modify` 스코프 누락) — 수동 정리 or 재인증 선택 대기
+
+## DONE (오늘)
+- Billions DB ↔ 구글시트 대조 완료 (1건 누락 추가) — 1,285건 일치
+- 불개미 게시판 이벤트 페이지: Eigen Cloud 카드 추가, 종료된 이벤트 섹션 분리 (접힘/펼침, 숫자표시)
+- 과거 이벤트 6개 종료 섹션 추가 (BlockStreet/한경TV/Virtuals/SaharaAI/Everything/Billions)
+- 당첨자 조회 페이지: 시트1+시트2 통합, 이벤트명 수정
+- 전체 폰트 Geist + Noto Sans KR로 교체
+- 종료된 이벤트 쿠포니봇 아래로 이동
+
+## 에이전트 체제
+- 딸수(메인): 오케스트레이터 + 직접 대화
+- 참모(chammo): 리서치/콘텐츠
+- 공병(ops): 인프라/자동화
