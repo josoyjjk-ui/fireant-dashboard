@@ -145,6 +145,7 @@ INF_TG       = 11
 INF_PHONE    = 12
 INF_AGREE    = 13
 INF_REALNAME = 14  # 빗썸 실명 입력 상태
+INF_WALLET   = 15  # EVM 지갑주소 입력 상태
 INF_EDIT_CONFIRM = 20  # 수정 확인 대기 상태
 
 # ── DB ───────────────────────────────────────────────────────────────────────
@@ -205,6 +206,11 @@ def init_db():
             conn.execute("ALTER TABLE user_info ADD COLUMN real_name TEXT")
         except sqlite3.OperationalError:
             pass  # 이미 존재
+        # wallet 컬럼 추가 (이미 있으면 무시)
+        try:
+            conn.execute("ALTER TABLE user_info ADD COLUMN wallet TEXT")
+        except Exception:
+            pass  # 이미 존재하면 무시
     logger.info("DB 초기화 완료: %s", DB_PATH)
 
 
@@ -469,10 +475,11 @@ async def cmd_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # 이미 제출한 경우 완료 메시지 재발송
     with get_db() as conn:
         existing = conn.execute(
-            "SELECT email, telegram_id, phone, real_name FROM user_info WHERE user_id=?", (user_id,)
+            "SELECT email, telegram_id, phone, real_name, wallet FROM user_info WHERE user_id=?", (user_id,)
         ).fetchone()
     if existing:
         real_name = existing['real_name'] or "-"
+        wallet = existing['wallet'] or '미입력'
         keyboard = InlineKeyboardMarkup([[
             InlineKeyboardButton("✏️ 정보 수정하기", callback_data="inf_edit_request")
         ]])
@@ -481,7 +488,8 @@ async def cmd_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"📧 이메일: {existing['email']}\n"
             f"💬 텔레그램: {existing['telegram_id']}\n"
             f"📱 휴대전화: {existing['phone']}\n"
-            f"👤 빗썸 실명: {real_name}\n\n"
+            f"👤 빗썸 실명: {real_name}\n"
+            f"💎 EVM 지갑: {wallet}\n\n"
             "리워드는 순위 확정 후 순차적으로 지급됩니다.\n감사합니다! 🔥\n\n"
             "당신은 모든 정보를 잘 제출했습니다!\n\n"
             "💡 정보를 수정하고 싶다면 아래 버튼을 누르세요.",
@@ -543,14 +551,27 @@ async def inf_receive_realname(update: Update, context: ContextTypes.DEFAULT_TYP
     real_name = update.message.text.strip()
     context.user_data["inf_real_name"] = real_name
 
+    await update.message.reply_text(
+        f"✅ 빗썸 실명: {real_name}\n\n"
+        "4️⃣ EVM 지갑주소를 입력해주세요.\n\n"
+        "⚠️ 거래소 지갑은 불가합니다. 반드시 개인 지갑 주소를 입력해주세요!\n"
+        "예) 0x1234...abcd"
+    )
+    return INF_WALLET
+
+
+async def inf_receive_wallet(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    wallet = update.message.text.strip()
+    context.user_data["inf_wallet"] = wallet
+
     keyboard = InlineKeyboardMarkup([[
         InlineKeyboardButton("✅ 동의합니다", callback_data="inf_agree_yes"),
         InlineKeyboardButton("❌ 동의하지 않습니다", callback_data="inf_agree_no"),
     ]])
     await update.message.reply_text(
-        f"✅ 빗썸 실명: {real_name}\n\n"
+        f"✅ EVM 지갑주소: {wallet}\n\n"
         "5️⃣ *개인정보 수집·이용 동의*\n\n"
-        "수집 항목: 이메일, 텔레그램 아이디, 휴대전화 번호, 빗썸 실명\n"
+        "수집 항목: 이메일, 텔레그램 아이디, 휴대전화 번호, 빗썸 실명, EVM 지갑주소\n"
         "수집 목적: 이벤트 리워드 지급\n"
         "보유 기간: 리워드 지급 완료 후 6개월\n\n"
         "위 내용에 동의하십니까?",
@@ -573,6 +594,7 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     tg        = context.user_data.get("inf_tg", "")
     phone     = context.user_data.get("inf_phone", "")
     real_name = context.user_data.get("inf_real_name", "")
+    wallet    = context.user_data.get("inf_wallet", "")
 
     inserted = False
     with get_db() as conn:
@@ -580,8 +602,8 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         existing = conn.execute("SELECT user_id FROM user_info WHERE user_id=?", (user_id,)).fetchone()
         if not existing:
             conn.execute(
-                "INSERT INTO user_info (user_id, email, telegram_id, phone, real_name, agreed) VALUES (?,?,?,?,?,1)",
-                (user_id, email, tg, phone, real_name)
+                "INSERT INTO user_info (user_id, email, telegram_id, phone, real_name, wallet, agreed) VALUES (?,?,?,?,?,?,1)",
+                (user_id, email, tg, phone, real_name, wallet)
             )
             inserted = True
         # 포인트 및 순위 조회
@@ -596,7 +618,7 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if inserted:
         try:
             now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            append_to_sheet([now_str, str(user_id), tg, query.from_user.first_name or "", email, phone, real_name, points, rank])
+            append_to_sheet([now_str, str(user_id), tg, query.from_user.first_name or "", email, phone, real_name, wallet, points, rank])
         except Exception as e:
             logging.getLogger(__name__).error(f"Sheets 기록 예외: {e}")
 
@@ -605,7 +627,8 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         f"📧 이메일: {email}\n"
         f"💬 텔레그램: {tg}\n"
         f"📱 휴대전화: {phone}\n"
-        f"👤 빗썸 실명: {real_name}\n\n"
+        f"👤 빗썸 실명: {real_name}\n"
+        f"💎 EVM 지갑: {wallet}\n\n"
         "리워드는 순위 확정 후 순차적으로 지급됩니다.\n감사합니다! 🔥\n\n"
         "당신은 모든 정보를 잘 제출했습니다!\n\n"
         "💡 정보를 수정하고 싶다면 아래 버튼을 누르세요."
@@ -687,7 +710,7 @@ async def cmd_export_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     with get_db() as conn:
         rows = conn.execute("""
-            SELECT u.username, u.first_name, i.telegram_id, i.email, i.phone, i.real_name, i.submitted_at,
+            SELECT u.username, u.first_name, i.telegram_id, i.email, i.phone, i.real_name, i.wallet, i.submitted_at,
                    u.points,
                    (SELECT COUNT(*) FROM users u2 WHERE u2.referrer_id = u.user_id) as invite_count
             FROM user_info i
@@ -702,11 +725,11 @@ async def cmd_export_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     buf = io.StringIO()
     writer = csv.writer(buf)
-    writer.writerow(["순위", "텔레그램아이디", "이름", "포인트", "초대수", "이메일", "전화번호", "빗썸실명", "제출일시"])
+    writer.writerow(["순위", "텔레그램아이디", "이름", "포인트", "초대수", "이메일", "전화번호", "빗썸실명", "지갑주소", "제출일시"])
     for i, r in enumerate(rows, 1):
         writer.writerow([i, r["telegram_id"] or r["username"], r["first_name"],
                          r["points"], r["invite_count"], r["email"], r["phone"],
-                         r["real_name"] or "", r["submitted_at"]])
+                         r["real_name"] or "", r["wallet"] or "", r["submitted_at"]])
 
     await update.message.reply_document(
         document=buf.getvalue().encode("utf-8-sig"),
@@ -1042,11 +1065,12 @@ def main():
                 CommandHandler("skip", cmd_skip),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, receive_referrer_id),
             ],
-            INF_EMAIL: [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_email)],
-            INF_TG:    [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_tg)],
-            INF_PHONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_phone)],
+            INF_EMAIL:    [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_email)],
+            INF_TG:       [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_tg)],
+            INF_PHONE:    [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_phone)],
             INF_REALNAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_realname)],
-            INF_AGREE: [CallbackQueryHandler(inf_agree_callback, pattern="^inf_agree_")],
+            INF_WALLET:   [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_wallet)],
+            INF_AGREE:    [CallbackQueryHandler(inf_agree_callback, pattern="^inf_agree_")],
         },
         fallbacks=[CommandHandler("skip", cmd_skip)],
     )
@@ -1063,6 +1087,7 @@ def main():
             INF_TG:       [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_tg)],
             INF_PHONE:    [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_phone)],
             INF_REALNAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_realname)],
+            INF_WALLET:   [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_wallet)],
             INF_AGREE:    [CallbackQueryHandler(inf_agree_callback, pattern="^inf_agree_")],
         },
         fallbacks=[CommandHandler("start", cmd_start)],
