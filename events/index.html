@@ -487,6 +487,12 @@
       <a href="https://naver.me/xF4k1iIq" target="_blank" class="ev-btn-outline">응모폼 →</a>
     </div>
 
+    <!-- 종료된 이벤트 섹션 (JS가 카드를 여기로 이동) -->
+    <div class="section-head-sub" id="ended-section" style="display:none; margin-top:32px;">
+      <h3>⏹ 종료된 이벤트</h3>
+    </div>
+    <div id="ended-events-container"></div>
+
   </div>
 
   <!-- COUPONI BOT STATUS -->
@@ -592,6 +598,38 @@ function updateEventStatuses() {
       dot.classList.add('ended');
     }
   });
+
+  // 종료된 ev-card를 ended-events-container로 이동
+  const endedContainer = document.getElementById('ended-events-container');
+  const endedSection = document.getElementById('ended-section');
+  let endedCount = 0;
+
+  document.querySelectorAll('#events > .ev-card[data-end]').forEach(card => {
+    const end = new Date(card.dataset.end).getTime();
+    if (now > end) {
+      if (!card.dataset.movedToEnded) {
+        card.dataset.movedToEnded = '1';
+        // 카드 스타일 dimmed
+        card.style.opacity = '0.5';
+        endedContainer.appendChild(card);
+      }
+      endedCount++;
+    }
+  });
+
+  if (endedCount > 0) {
+    endedSection.style.display = '';
+  }
+
+  // LIVE count 업데이트
+  const liveCards = document.querySelectorAll('#events > .ev-card[data-end]');
+  let liveCount = 0;
+  liveCards.forEach(card => {
+    const end = new Date(card.dataset.end).getTime();
+    if (now <= end) liveCount++;
+  });
+  const liveCountEl = document.querySelector('#events .section-head .count');
+  if (liveCountEl) liveCountEl.textContent = 'LIVE ' + liveCount;
 
   let externalVisible = 0;
   document.querySelectorAll('.ev-card-sm[data-end]').forEach(card => {
