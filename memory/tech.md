@@ -35,3 +35,9 @@
 - 원인: OpenClaw platform이 tool 오류를 채널에 push하는 것으로 보임 (platform 버그)
 - 상태: 미해결 (OpenClaw upstream 이슈)
 - 대응: 중요 편집은 python 스크립트로 처리해 Edit 도구 실패 최소화
+
+## 에이전트 모델 설정 (2026-03-23 확정)
+- 딸수 (main): `anthropic/claude-sonnet-4-6`
+- 참모 (chammo): `anthropic/claude-sonnet-4-6`
+- 공병 (ops): `openai-codex/gpt-5.3-codex`
+- 실제 테스트로 확인 완료
