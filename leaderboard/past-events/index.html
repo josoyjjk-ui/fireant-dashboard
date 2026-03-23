@@ -304,9 +304,9 @@
   <div class="hero">
     <h1>📁 이전 이벤트</h1>
     <div id="eventTitleWrap" style="margin-top:10px; padding:8px 18px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:0.88rem; color:var(--text); font-weight:600; min-width:220px; text-align:center;">
-      <span style="color:var(--orange);">Billions 한국 커뮤니티 친구초대 이벤트</span>
+      <span id="eventTitle" style="color:var(--orange);">Billions 한국 커뮤니티 친구초대 이벤트</span>
     </div>
-    <p class="hero-period" style="margin-top:8px;">이벤트 기간: <span>2026.03.21</span> ~ <span>2026.03.21</span></p>
+    <p class="hero-period" id="eventPeriod" style="margin-top:8px; display:none;"></p>
 
     <!-- 종료 배너 -->
     <div class="ended-banner">
@@ -402,11 +402,36 @@ function formatNum(n) {
   return Number(n).toLocaleString('ko-KR');
 }
 
+function formatDate(value) {
+  if (!value) return '';
+  const s = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return s;
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 async function loadData() {
   try {
-    const res = await fetch('../../leaderboard.json?t=' + Date.now());
+    const res = await fetch('./billions-leaderboard.json?t=' + Date.now());
     if (!res.ok) throw new Error('fetch failed');
     const data = await res.json();
+
+    // 이벤트명/기간
+    if (data.event_name) {
+      document.getElementById('eventTitle').textContent = data.event_name;
+    }
+
+    const periodEl = document.getElementById('eventPeriod');
+    const start = formatDate(data?.period?.start);
+    const end = formatDate(data?.period?.end);
+    if (start || end) {
+      periodEl.innerHTML = `이벤트 기간: <span>${escHtml(start || '—')}</span> ~ <span>${escHtml(end || '—')}</span>`;
+      periodEl.style.display = 'block';
+    }
 
     // 갱신 시각
     document.getElementById('updatedAt').textContent =
