@@ -304,22 +304,22 @@
 </style>
 </head>
 <body>
+
+<div class="nav">
+  <div class="nav-inner">
+    <div class="nav-links">
+      <a href="/" style="color:var(--text);font-weight:800;">불개미 Crypto</a>
+      <a href="feed/" style="color:var(--text-dim);">정기 시장분석</a>
+      <a href="events/" style="color:var(--text-dim);">이벤트</a>
+      <a href="indicators/" style="color:var(--text-dim);">불개미지표</a>
+    </div>
+  </div>
+</div>
+
 <canvas id="particles"></canvas>
 <div class="ambient"></div>
 
 <div class="wrap">
-  <!-- NAV -->
-  <nav class="nav">
-    <div class="nav-inner">
-      <div class="nav-links">
-        <a href="/" style="color:var(--text-dim);">불개미 Crypto</a>
-        <a href="/feed/" style="color:var(--text-dim);">정기 시장분석</a>
-        <a href="/events/" style="color:var(--text-dim);">이벤트</a>
-        <a href="/indicators/" style="color:var(--text-dim);">불개미지표</a>
-      </div>
-      <button class="theme-toggle" id="themeToggle" title="테마 전환">🌙</button>
-    </div>
-  </nav>
 
   <!-- HERO -->
   <div class="hero">
@@ -406,6 +406,11 @@
     <span>1시간마다 자동 업데이트</span>
   </div>
 </div>
+
+  <!-- 하단 테마 토글 -->
+  <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
+    <button id="themeToggle" title="테마 전환" style="background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-dim); padding:6px 14px; cursor:pointer; font-size:0.8rem;">🌙</button>
+  </div>
 
 <script>
 // ── 파티클 ────────────────────────────────────────────────────
