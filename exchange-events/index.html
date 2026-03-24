@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏦 한국거래소 이벤트 — 불개미 Crypto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #09090f; --surface: rgba(255,255,255,0.06); --surface2: rgba(255,255,255,0.03);
+      --border: rgba(255,255,255,0.1); --text: #f0f0f5; --text-dim: rgba(240,240,245,0.55);
+      --text-muted: rgba(240,240,245,0.35); --gold: #FFD740; --green: #48C78E;
+      --radius: 16px; --radius-sm: 10px;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f5f7; --surface: rgba(0,0,0,0.05); --surface2: rgba(0,0,0,0.02);
+        --border: rgba(0,0,0,0.1); --text: #1a1a2e; --text-dim: rgba(26,26,46,0.55);
+        --text-muted: rgba(26,26,46,0.35);
+      }
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Geist', 'Noto Sans KR', sans-serif;
+      font-size: 15px; line-height: 1.6; min-height: 100vh;
+    }
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,8,15,0.85); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px; display: flex; align-items: center;
+    }
+    @media (prefers-color-scheme: light) {
+      .nav { background: rgba(245,245,247,0.9); }
+    }
+    .nav-brand { font-weight: 800; font-size: 0.95rem; text-decoration: none; color: var(--text); margin-right: 12px; }
+    .nav-brand img { width: 28px; height: 28px; border-radius: 50%; }
+    .nav-links { display: flex; gap: 6px; align-items: center; }
+    .nav-links a {
+      color: var(--text-dim); text-decoration: none;
+      font-size: 0.78rem; font-weight: 600;
+      padding: 5px 8px; border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+    .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 16px 60px; }
+    .page-header { padding: 40px 0 28px; }
+    .page-header h1 { font-size: 1.6rem; font-weight: 800; }
+    .page-header .tagline { color: var(--text-dim); font-size: 0.88rem; margin-top: 4px; }
+    .section { margin-top: 32px; }
+    .section-head {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 14px;
+    }
+    .section-head h2 { font-size: 1rem; font-weight: 700; }
+    .section-head .exch-badge {
+      font-size: 0.72rem; font-weight: 700; padding: 2px 9px;
+      border-radius: 20px; background: rgba(255,255,255,0.08); color: var(--text-dim);
+    }
+    /* 거래소별 컬러 */
+    .upbit   { color: #1499DA; }
+    .bithumb { color: #F7981C; }
+    .coinone { color: #0066FF; }
+    .gopax   { color: #00C4B4; }
+    .korbit  { color: #8B5CF6; }
+    /* 이벤트 카드 */
+    .ev-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+      margin-bottom: 10px; position: relative;
+    }
+    .ev-card:last-child { margin-bottom: 0; }
+    .ev-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+    .ev-title a { color: var(--text); text-decoration: none; }
+    .ev-title a:hover { text-decoration: underline; }
+    .ev-meta { font-size: 0.78rem; color: var(--text-dim); display: flex; gap: 12px; flex-wrap: wrap; }
+    .ev-tag {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 6px; margin-right: 4px; margin-bottom: 6px;
+      background: rgba(255,255,255,0.07); color: var(--text-dim);
+    }
+    .ev-empty {
+      text-align: center; padding: 32px 16px;
+      color: var(--text-muted); font-size: 0.88rem;
+      background: var(--surface2); border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .status-dot {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); margin-right: 6px; vertical-align: middle;
+      box-shadow: 0 0 6px rgba(72,199,142,0.6); animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+    .notice {
+      margin-top: 28px; padding: 14px 16px;
+      background: rgba(255,215,64,0.06); border: 1px solid rgba(255,215,64,0.2);
+      border-radius: var(--radius-sm); font-size: 0.82rem; color: var(--text-dim);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-brand">🔥 불개미</a>
+    <div class="nav-links">
+      <a href="/" style="color:var(--text-dim);">불개미 Crypto</a>
+      <a href="/feed/" style="color:var(--text-dim);">정기 시장분석</a>
+      <a href="/events/" style="color:var(--text-dim);">이벤트</a>
+      <a href="/indicators/" style="color:var(--text-dim);">불개미지표</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="page-header">
+      <h1>🏦 한국거래소 이벤트</h1>
+      <p class="tagline">업비트·빗썸·코인원·고팍스·코빗 진행중인 이벤트 모음</p>
+    </div>
+
+    <!-- 업비트 -->
+    <div class="section" id="upbit">
+      <div class="section-head">
+        <h2 class="upbit">🔵 업비트</h2>
+        <span class="exch-badge">Upbit</span>
+      </div>
+      <div class="ev-empty">진행 중인 이벤트가 없습니다.</div>
+    </div>
+
+    <!-- 빗썸 -->
+    <div class="section" id="bithumb">
+      <div class="section-head">
+        <h2 class="bithumb">🟠 빗썸</h2>
+        <span class="exch-badge">Bithumb</span>
+      </div>
+      <div class="ev-empty">진행 중인 이벤트가 없습니다.</div>
+    </div>
+
+    <!-- 코인원 -->
+    <div class="section" id="coinone">
+      <div class="section-head">
+        <h2 class="coinone">🔷 코인원</h2>
+        <span class="exch-badge">Coinone</span>
+      </div>
+      <div class="ev-empty">진행 중인 이벤트가 없습니다.</div>
+    </div>
+
+    <!-- 고팍스 -->
+    <div class="section" id="gopax">
+      <div class="section-head">
+        <h2 class="gopax">🟢 고팍스</h2>
+        <span class="exch-badge">GOPAX</span>
+      </div>
+      <div class="ev-empty">진행 중인 이벤트가 없습니다.</div>
+    </div>
+
+    <!-- 코빗 -->
+    <div class="section" id="korbit">
+      <div class="section-head">
+        <h2 class="korbit">🟣 코빗</h2>
+        <span class="exch-badge">Korbit</span>
+      </div>
+      <div class="ev-empty">진행 중인 이벤트가 없습니다.</div>
+    </div>
+
+    <div class="notice">
+      💡 이벤트 정보는 수동으로 업데이트됩니다. 최신 정보는 각 거래소 공식 채널을 확인해주세요.
+    </div>
+  </div>
+</body>
+</html>
