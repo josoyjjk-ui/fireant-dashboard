@@ -128,6 +128,7 @@
     font-weight: 900; font-size: 1.1rem; color: var(--red);
     text-decoration: none;
   }
+  .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; }
   .nav-links { display: flex; gap: 6px; align-items: center; }
   .nav-links a {
     color: var(--text-dim); text-decoration: none;
@@ -369,12 +370,13 @@
 
   <!-- NAV -->
   <div class="nav">
+    <div class="nav-inner">
       <div class="nav-links">
-      <a href="/" style="color:var(--text-dim);">불개미 Crypto</a>
-      <a href="/feed/" style="color:var(--text-dim);">정기 시장분석</a>
-      <a href="/events/" style="color:var(--text);font-weight:800;">이벤트</a>
-      <a href="/indicators/" style="color:var(--text-dim);">불개미지표</a>
-
+        <a href="/" style="color:var(--text-dim);">불개미 Crypto</a>
+        <a href="/feed/" style="color:var(--text-dim);">정기 시장분석</a>
+        <a href="/events/" style="color:var(--text);font-weight:800;">이벤트</a>
+        <a href="/indicators/" style="color:var(--text-dim);">불개미지표</a>
+      </div>
     </div>
   </div>
 

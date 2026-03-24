@@ -16,6 +16,7 @@
   .wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:0 16px 60px;}
   .nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(12px);padding:10px 16px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);}
   .nav-brand{font-weight:900;font-size:1rem;color:var(--text);}
+  .nav-inner{display:flex;align-items:center;width:100%;max-width:720px;}
   .nav-links{display:flex;gap:6px;align-items:center;}
   .nav-links a{font-size:0.78rem;font-weight:600;color:var(--text-dim);text-decoration:none;padding:5px 10px;border-radius:8px;transition:all 0.2s;}
   .nav-links a:hover{color:var(--text);background:var(--surface);}
@@ -41,12 +42,14 @@
 <canvas id="particles"></canvas>
 
 <div class="nav">
-      <div class="nav-links">
+  <div class="nav-inner">
+    <div class="nav-links">
       <a href="/" style="color:var(--text-dim);">불개미 Crypto</a>
       <a href="/feed/" style="color:var(--text-dim);">정기 시장분석</a>
       <a href="/events/" style="color:var(--text-dim);">이벤트</a>
       <a href="/indicators/" style="color:var(--text);font-weight:800;">불개미지표</a>
     </div>
+  </div>
 </div>
 
 <div class="wrap">
