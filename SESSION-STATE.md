@@ -13,24 +13,23 @@
 - 기간: 2026-03-21 ~ 2026-04-03
 - 구글시트: `1prtoKycManbOj-HoMnzZ68kl6VEEm3h5vvvTUzK6QHs`
 - 봇: @mate_ref_bot / 리더보드: https://fireantcrypto.com/leaderboard/
-- 현재 제출자: 52명 (DB + 시트 동기화 완료)
 
-### [대기] 로고 시안 확정
-- v7 시안 해병님 OK → BotFather에서 @mate_ref_bot 프로필 직접 적용 필요
-- 파일: `2026-03-21-referral-bot-logo-v7.png`
+### [대기] 해병님 직접 처리 필요
+- @mate_ref_bot 로고: BotFather에서 v7 이미지 적용 (`2026-03-21-referral-bot-logo-v7.png`)
+- ETHGAS 구글폼: 6번 항목 → 파일 업로드 타입으로 변경 (편집 링크에서 수동)
 
-### [대기] Gmail 정리
-- 재인증 필요 (`gmail.modify` 스코프 누락) — 수동 정리 or 재인증 선택 대기
-
-## DONE (오늘)
-- Billions DB ↔ 구글시트 대조 완료 (1건 누락 추가) — 1,285건 일치
-- 불개미 게시판 이벤트 페이지: Eigen Cloud 카드 추가, 종료된 이벤트 섹션 분리 (접힘/펼침, 숫자표시)
-- 과거 이벤트 6개 종료 섹션 추가 (BlockStreet/한경TV/Virtuals/SaharaAI/Everything/Billions)
-- 당첨자 조회 페이지: 시트1+시트2 통합, 이벤트명 수정
-- 전체 폰트 Geist + Noto Sans KR로 교체
-- 종료된 이벤트 쿠포니봇 아래로 이동
+## NEXT (내일 우선순위)
+1. 불개미 마켓 지표 배포 — indicators/index.html 실제 데이터 연동
+2. Starchild WOOFi Pro 연결 여부 — Ben Yorke 직접 문의
+3. kr-exchange 이벤트 업데이트 — 업비트 Tron Week 3/26 종료 후 제거
+4. Privy/Ethena 포스트 발행 여부 확인
 
 ## 에이전트 체제
 - 딸수(메인): 오케스트레이터 + 직접 대화
-- 참모(chammo): 리서치/콘텐츠
-- 공병(ops): 인프라/자동화
+- 참모(chammo, claude-sonnet-4-6): 리서치/콘텐츠
+- 공병(ops, gpt-5.3-codex): 인프라/자동화
+
+## 오늘 완료 요약 (2026-03-25)
+- kr-exchange 페이지 신설 — 가나다순 5개 거래소, 이벤트 7개, 카운트다운 타이머, 테마
+- 전체 7개 페이지 nav max-width 720px 통일 (nav-inner)
+- indicators nav padding 5px 8px 수정
