@@ -110,19 +110,13 @@
 
   /* ── NAV ── */
   .nav {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; justify-content: center;
     padding: 16px 0;
     position: sticky; top: 0; z-index: 10;
     background: var(--nav-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    transition: all 0.3s ease;
-  }
-  .nav-brand {
-    display: flex; align-items: center; gap: 8px;
-    font-weight: 900; font-size: 1.1rem; color: var(--red);
-    text-decoration: none;
   }
   .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; }
   .nav-links { display: flex; gap: 6px; align-items: center; }
@@ -132,7 +126,7 @@
     padding: 5px 8px; border-radius: 8px;
     transition: all 0.2s;
   }
-  .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface); }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
 
   /* ── PAGE HEADER ── */
   .page-header {
@@ -444,14 +438,13 @@
   <!-- NAV -->
   <div class="nav">
     <div class="nav-inner">
-      <a href="../" class="nav-brand">🔥 불개미</a>
       <div class="nav-links">
         <a href="/" style="color:var(--text-dim);">불개미 Crypto</a>
         <a href="/feed/" style="color:var(--text-dim);">정기 시장분석</a>
         <a href="/events/" style="color:var(--text-dim);">이벤트</a>
         <a href="/indicators/" style="color:var(--text-dim);">불개미지표</a>
-        <button class="theme-toggle" id="themeToggle" title="테마 전환">🌙</button>
       </div>
+      <button class="theme-toggle" id="themeToggle" title="테마 전환">🌙</button>
     </div>
   </div>
 

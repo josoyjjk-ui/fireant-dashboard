@@ -92,17 +92,12 @@
   /* ── NAV ── */
   .nav {
     display: flex; align-items: center; justify-content: center;
-    padding: 10px 16px;
+    padding: 16px 0;
     position: sticky; top: 0; z-index: 10;
     background: var(--nav-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-  }
-  .nav-brand {
-    display: flex; align-items: center; gap: 8px;
-    font-weight: 900; font-size: 1.1rem; color: var(--red);
-    text-decoration: none;
   }
   .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; }
   .nav-links { display: flex; gap: 6px; align-items: center; }
@@ -112,7 +107,7 @@
     padding: 5px 8px; border-radius: 8px;
     transition: all 0.2s;
   }
-  .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface); }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
 
   .theme-toggle {
     width: 34px; height: 34px;
