@@ -30,10 +30,13 @@
       transition: background 0.3s, color 0.3s;
     }
     .nav {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--nav-bg); backdrop-filter: blur(20px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px 0;
+      position: sticky; top: 0; z-index: 10;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 10px 16px; display: flex; align-items: center; justify-content: center;
     }
     .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; }
     .nav-brand { font-weight: 800; font-size: 0.95rem; text-decoration: none; color: var(--text); margin-right: 12px; }
