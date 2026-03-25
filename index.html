@@ -126,8 +126,8 @@
     font-weight: 900; font-size: 1.25rem; color: var(--red);
   }
   .nav-brand img { width: 28px; height: 28px; border-radius: 50%; }
-  .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; }
-  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; position: relative; }
+  .nav-links { display: flex; gap: 6px; align-items: center; position: absolute; left: 50%; transform: translateX(-50%); }
   .nav-links a {
     color: var(--text-dim); text-decoration: none;
     font-size: 0.78rem; font-weight: 600;
