@@ -301,6 +301,11 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
   }
+  @media (max-width: 600px) {
+    .nav-inner { max-width: 100%; padding: 0 12px; }
+    .nav-links { position: static; transform: none; left: auto; flex-wrap: wrap; justify-content: center; white-space: normal; gap: 4px; width: 100%; }
+    .nav-links a { font-size: 0.8rem; padding: 4px 8px; }
+  }
 </style>
 </head>
 <body>

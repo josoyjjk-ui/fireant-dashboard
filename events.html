@@ -348,6 +348,12 @@
   }
   .footer p { font-size: 0.72rem; color: var(--text-muted); }
 
+  @media (max-width: 600px) {
+    .nav-inner { max-width: 100%; padding: 0 12px; }
+    .nav-links { position: static; transform: none; left: auto; flex-wrap: wrap; justify-content: center; white-space: normal; gap: 4px; width: 100%; }
+    .nav-links a { font-size: 0.8rem; padding: 4px 8px; }
+  }
+
   @media (max-width: 420px) {
     .hero h1 { font-size: 1.4rem; }
   }

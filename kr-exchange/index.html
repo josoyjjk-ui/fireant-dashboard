@@ -128,6 +128,11 @@
     .ev-count.zero { background: rgba(255,255,255,0.08); color: var(--text-muted); }
     .ev-body { display: none; }
     .section.open .ev-body { display: block; }
+  @media (max-width: 600px) {
+    .nav-inner { max-width: 100%; padding: 0 12px; }
+    .nav-links { position: static; transform: none; left: auto; flex-wrap: wrap; justify-content: center; white-space: normal; gap: 4px; width: 100%; }
+    .nav-links a { font-size: 0.8rem; padding: 4px 8px; }
+  }
   </style>
 </head>
 <body>
