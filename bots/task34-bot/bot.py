@@ -378,7 +378,7 @@ def get_user_open_todos(chat_id: int, user_id: int) -> List[sqlite3.Row]:
             SELECT id, task, due_date, created_at
             FROM todos
             WHERE chat_id = ? AND user_id = ? AND done = 0
-            ORDER BY CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date, id
+            ORDER BY CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date ASC, id ASC
             """,
             (chat_id, user_id),
         )
@@ -442,7 +442,7 @@ def get_todo_summary_for_group(chat_id: int, now: datetime) -> Dict[str, List[sq
             SELECT id, user_id, username, task, due_date
             FROM todos
             WHERE chat_id = ? AND done = 0
-            ORDER BY user_id, CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date, id
+            ORDER BY user_id, CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date ASC, id ASC
             """,
             (chat_id,),
         )
@@ -472,6 +472,7 @@ def render_group_todo_reminder(chat_id: int, now: datetime) -> Optional[str]:
                 lines.append(f"  {num}. {row['task']} {badge}")
             else:
                 lines.append(f"  {num}. {row['task']}")
+        lines.append("  ↳ /done N · /del N · /due N 날짜")
         lines.append("")
 
     return "\n".join(lines).strip()
