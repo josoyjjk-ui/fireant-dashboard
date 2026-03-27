@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏦 한국거래소 이벤트 — 불개미 Crypto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="dark"] {
+      --bg: #09090f; --surface: rgba(255,255,255,0.06); --surface2: rgba(255,255,255,0.03);
+      --border: rgba(255,255,255,0.1); --text: #f0f0f5; --text-dim: rgba(240,240,245,0.55);
+      --text-muted: rgba(240,240,245,0.35); --gold: #FFD740; --green: #48C78E; --red: #FF5F5F;
+      --nav-bg: rgba(8,8,15,0.85);
+      --radius: 16px; --radius-sm: 10px;
+    }
+    [data-theme="light"] {
+      --bg: #f5f5f7; --surface: rgba(0,0,0,0.05); --surface2: rgba(0,0,0,0.02);
+      --border: rgba(0,0,0,0.1); --text: #1a1a2e; --text-dim: rgba(26,26,46,0.55);
+      --text-muted: rgba(26,26,46,0.35); --gold: #D4A017; --green: #22A855; --red: #E54848;
+      --nav-bg: rgba(245,245,247,0.9);
+      --radius: 16px; --radius-sm: 10px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Geist', 'Noto Sans KR', sans-serif;
+      font-size: 15px; line-height: 1.6; min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px 0;
+      position: sticky; top: 0; z-index: 10;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; position: relative; }
+    .nav-links { display: flex; gap: 8px; align-items: center; position: absolute; left: 50%; transform: translateX(-50%); flex-wrap: nowrap; white-space: nowrap; }
+    .nav-links a {
+      color: var(--text-dim); text-decoration: none;
+      font-size: 1.00rem; font-weight: 600;
+      padding: 6px 10px; border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+    .theme-btn {
+      margin-left: auto; background: none; border: none; cursor: pointer;
+      font-size: 1rem; padding: 4px 8px; border-radius: 8px;
+      color: var(--text-dim); transition: background 0.2s;
+    }
+    .theme-btn:hover { background: var(--surface); }
+    .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 16px 60px; }
+    .page-header { padding: 40px 0 28px; }
+    .page-header h1 { font-size: 1.6rem; font-weight: 800; }
+    .page-header .tagline { color: var(--text-dim); font-size: 0.88rem; margin-top: 4px; }
+    .section { margin-top: 32px; }
+    .section-head {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 14px;
+    }
+    .section-head h2 { font-size: 1rem; font-weight: 700; }
+    .section-head .exch-badge {
+      font-size: 0.72rem; font-weight: 700; padding: 2px 9px;
+      border-radius: 20px; background: var(--surface); color: var(--text-dim);
+    }
+    .upbit   { color: #1499DA; }
+    .bithumb { color: #F7981C; }
+    .coinone { color: #0066FF; }
+    .gopax   { color: #00C4B4; }
+    .korbit  { color: #8B5CF6; }
+    .ev-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+      margin-bottom: 10px; position: relative;
+    }
+    .ev-card:last-child { margin-bottom: 0; }
+    .ev-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+    .ev-title a { color: var(--text); text-decoration: none; }
+    .ev-title a:hover { text-decoration: underline; }
+    .ev-meta { font-size: 0.78rem; color: var(--text-dim); display: flex; gap: 12px; flex-wrap: wrap; }
+    .ev-tag {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 6px; margin-right: 4px; margin-bottom: 6px;
+      background: var(--surface); color: var(--text-dim);
+    }
+    .ev-empty {
+      text-align: center; padding: 32px 16px;
+      color: var(--text-muted); font-size: 0.88rem;
+      background: var(--surface2); border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .status-dot {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); margin-right: 6px; vertical-align: middle;
+      box-shadow: 0 0 6px rgba(72,199,142,0.6); animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+    .notice {
+      margin-top: 28px; padding: 14px 16px;
+      background: rgba(255,215,64,0.06); border: 1px solid rgba(255,215,64,0.2);
+      border-radius: var(--radius-sm); font-size: 0.82rem; color: var(--text-dim);
+    }
+    .ev-timer {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; font-weight: 700;
+      background: rgba(255,215,64,0.10); border: 1px solid rgba(255,215,64,0.25);
+      color: var(--gold); padding: 3px 10px; border-radius: 20px;
+      margin-top: 8px; letter-spacing: 0.02em;
+    }
+    .ev-timer.urgent {
+      background: rgba(255,59,59,0.12); border-color: rgba(255,59,59,0.3); color: #FF5F5F;
+    }
+    .ev-timer.ended {
+      background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: var(--text-muted);
+    }
+
+    /* Accordion */
+    .section-head { cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px; }
+    .section-head::after { content: '▶'; font-size: 0.7rem; color: var(--text-muted); margin-left: auto; transition: transform 0.2s; }
+    .section.open .section-head::after { transform: rotate(90deg); }
+    .ev-count { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: rgba(255,80,80,0.15); color: var(--red); margin-left: 6px; }
+    .ev-count.zero { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+    .ev-body { display: none; }
+    .section.open .ev-body { display: block; }
+  @media (max-width: 600px) {
+    .nav-inner { max-width: 100%; padding: 0 8px; }
+    .nav-links { position: static; transform: none; left: auto; flex-wrap: nowrap; justify-content: center; white-space: nowrap; gap: 2px; width: 100%; overflow-x: auto; }
+    .nav-links a { font-size: 0.72rem; padding: 4px 6px; }
+  }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="nav-inner">
+      <div class="nav-links">
+        <a href="/" style="color:var(--text);font-weight:800;">불개미 Crypto</a>
+        <a href="feed/" style="color:var(--text-dim);">정기 시장분석</a>
+        <a href="events/" style="color:var(--text-dim);">이벤트</a>
+        <a href="indicators/" style="color:var(--text-dim);">불개미지표</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="page-header">
+      <h1>🏦 한국거래소 이벤트</h1>
+
+      <p style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;">* 가나다 순서로 배치하였습니다.</p>
+    </div>
+
+    <!-- 고팍스 -->
+    <div class="section" id="gopax">
+      <div class="section-head">
+        <img src="logos/gopax.jpg" alt="고팍스" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <h2 class="gopax">고팍스</h2>
+        <span class="exch-badge">GOPAX</span>
+        <span class="ev-count">2개</span>
+      </div>
+      <div class="ev-body">
+        <div class="ev-card">
+          <span class="status-dot"></span>
+          <span class="ev-tag" style="background:rgba(0,196,180,0.12);color:#00C4B4;">트레이딩</span>
+          <div class="ev-title"><a href="https://www.gopax.co.kr/notice/detail?type=3&page=0&id=2368" target="_blank">디젠(DEGEN) 입금왕·데일리 거래왕·매일 거래 N빵 이벤트</a></div>
+          <div class="ev-meta">
+            <span>🎁 총 약 6천만 원 상당 DEGEN</span>
+          </div>
+          <div class="ev-timer" id="timer-gopax-2" data-end="2026-04-07T23:59:00+09:00">⏱ 계산 중...</div>
+        </div>
+        <div class="ev-card">
+          <span class="status-dot"></span>
+          <span class="ev-tag" style="background:rgba(0,196,180,0.12);color:#00C4B4;">트레이딩</span>
+          <div class="ev-title"><a href="https://www.gopax.co.kr/notice/detail?type=3&page=0&id=2369" target="_blank">블록스트릿(BSB) 입금왕·데일리 거래왕 이벤트</a></div>
+          <div class="ev-meta">
+            <span>🎁 총 약 5천만 원 상당 BSB</span>
+          </div>
+          <div class="ev-timer" id="timer-gopax-3" data-end="2026-04-07T23:59:00+09:00">⏱ 계산 중...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 빗썸 -->
+    <div class="section" id="bithumb">
+      <div class="section-head">
+        <img src="logos/bithumb.jpg" alt="빗썸" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <h2 class="bithumb">빗썸</h2>
+        <span class="exch-badge">Bithumb</span>
+        <span class="ev-count zero">0개</span>
+      </div>
+      <div class="ev-body">
+        <div class="ev-empty">진행 중인 이벤트가 없습니다.</div>
+      </div>
+    </div>
+
+    <!-- 업비트 -->
+    <div class="section" id="upbit">
+      <div class="section-head">
+        <img src="logos/upbit.jpg" alt="업비트" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <h2 class="upbit">업비트</h2>
+        <span class="exch-badge">Upbit</span>
+        <span class="ev-count zero">0개</span>
+      </div>
+      <div class="ev-body">
+        <div class="ev-empty">진행 중인 이벤트가 없습니다.</div>
+      </div>
+    </div>
+
+    <!-- 코빗 -->
+    <div class="section" id="korbit">
+      <div class="section-head">
+        <img src="logos/korbit.jpg" alt="코빗" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <h2 class="korbit">코빗</h2>
+        <span class="exch-badge">Korbit</span>
+        <span class="ev-count zero">0개</span>
+      </div>
+      <div class="ev-body">
+        <div class="ev-empty">진행 중인 이벤트가 없습니다.</div>
+      </div>
+    </div>
+
+    <!-- 코인원 -->
+    <div class="section" id="coinone">
+      <div class="section-head">
+        <img src="logos/coinone.jpg" alt="코인원" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <h2 class="coinone">코인원</h2>
+        <span class="exch-badge">Coinone</span>
+        <span class="ev-count">2개</span>
+      </div>
+      <div class="ev-body">
+        <div class="ev-card">
+          <span class="status-dot"></span>
+          <span class="ev-tag" style="background:rgba(0,102,255,0.10);color:#0066FF;">홀더 지원금</span>
+          <div class="ev-title"><a href="https://coinone.co.kr/info/notice/5241" target="_blank">[RLUSD 홀더 지원금] 기간 한정! 연 10%의 혜택을 놓치지 마세요!</a></div>
+          <div class="ev-meta">
+            <span>🎁 연 10% 상당 RLUSD</span>
+          </div>
+          <div class="ev-timer" id="timer-coinone-1" data-end="2026-04-30T23:59:00+09:00">⏱ 계산 중...</div>
+        </div>
+        <div class="ev-card">
+          <span class="status-dot"></span>
+          <span class="ev-tag" style="background:rgba(0,102,255,0.10);color:#0066FF;">트레이딩</span>
+          <div class="ev-title"><a href="https://coinone.co.kr/info/notice/5242" target="_blank">[ZERO 트레이딩 챌린지] 수수료는 빼고 RLUSD 혜택만 담았어요!</a></div>
+          <div class="ev-meta">
+            <span>🎁 RLUSD 지급 (순위 기반)</span>
+          </div>
+          <div class="ev-timer" id="timer-coinone-2" data-end="2026-04-30T23:59:00+09:00">⏱ 계산 중...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notice">
+      💡 이벤트 정보는 수동으로 업데이트됩니다. 최신 정보는 각 거래소 공식 채널을 확인해주세요.
+    </div>
+  </div>
+
+  <!-- 하단 테마 토글 -->
+  <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
+    <button id="themeToggle" title="테마 전환" style="background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-dim); padding:6px 14px; cursor:pointer; font-size:0.8rem;">🌙</button>
+  </div>
+
+  <script>
+    const themeBtn = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    const saved = localStorage.getItem('fa-theme');
+    if (saved) {
+      html.setAttribute('data-theme', saved);
+      themeBtn.textContent = saved === 'light' ? '☀️' : '🌙';
+    }
+    themeBtn.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      themeBtn.textContent = next === 'light' ? '☀️' : '🌙';
+      localStorage.setItem('fa-theme', next);
+    });
+
+    // 카운트다운 타이머
+    function updateTimers() {
+      document.querySelectorAll('.ev-timer[data-end]').forEach(function(el) {
+        var end = new Date(el.getAttribute('data-end')).getTime();
+        var now = Date.now();
+        var diff = end - now;
+        if (diff <= 0) {
+          el.textContent = '종료됨';
+          el.classList.add('ended');
+          el.classList.remove('urgent');
+          return;
+        }
+        var d = Math.floor(diff / 86400000);
+        var h = Math.floor((diff % 86400000) / 3600000);
+        var m = Math.floor((diff % 3600000) / 60000);
+        var s = Math.floor((diff % 60000) / 1000);
+        var txt = '';
+        if (d > 0) txt = d + '일 ' + h + '시간 ' + m + '분';
+        else if (h > 0) txt = h + '시간 ' + m + '분 ' + s + '초';
+        else txt = m + '분 ' + s + '초';
+        el.textContent = '⏱ ' + txt + ' 남음';
+        if (diff < 86400000) {
+          el.classList.add('urgent');
+        } else {
+          el.classList.remove('urgent');
+        }
+      });
+    }
+    updateTimers();
+    setInterval(updateTimers, 1000);
+
+    // Accordion
+    document.querySelectorAll('.section-head').forEach(head => {
+      head.addEventListener('click', () => {
+        head.closest('.section').classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>

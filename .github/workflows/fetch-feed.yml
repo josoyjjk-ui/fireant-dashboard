@@ -1,0 +1,53 @@
+name: Fetch Content Feed
+
+on:
+  schedule:
+    # 30분마다 실행
+    - cron: '*/30 * * * *'
+  workflow_dispatch:  # 수동 실행 허용
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run feed fetcher
+        run: |
+          cd ${{ github.workspace }}
+          python scripts/fetch_feed.py
+
+      - name: Check if feed.json changed
+        id: check_changes
+        run: |
+          git diff --quiet feed.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push feed.json
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add feed.json
+          git commit -m "chore: auto-update feed.json [$(date -u +%Y-%m-%dT%H:%M:%SZ)]"
+          git pull --rebase origin main
+          git push
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot8590572213:AAFP_5xkCqgh2zhK_iPx3KD9C9mLnGSgPCo/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\":\"477743685\",\"text\":\"⚠️ [피드 자동업데이트 실패]\\nGitHub Actions fetch-feed 워크플로우 오류\\n시각: $(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"

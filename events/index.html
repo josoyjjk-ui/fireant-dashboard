@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 불개미 CRYPTO — 이벤트</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap');
+  @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css');
+
+  :root, [data-theme="dark"] {
+    --bg: #08080f;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,68,68,0.4);
+    --red: #FF3B3B;
+    --orange: #FF6B35;
+    --gold: #FFD740;
+    --blue: #5B8DEF;
+    --green: #4ADE80;
+    --text: #E8E8ED;
+    --text-dim: #6B6B80;
+    --text-muted: #3E3E50;
+    --glow-red: rgba(255,59,59,0.15);
+    --glow-orange: rgba(255,107,53,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --nav-bg: rgba(8,8,15,0.85);
+    --particle-opacity: 1;
+    --ambient-opacity: 1;
+  }
+
+  [data-theme="light"] {
+    --bg: #F5F5F7;
+    --surface: rgba(0,0,0,0.03);
+    --surface-hover: rgba(0,0,0,0.06);
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(255,68,68,0.3);
+    --red: #E02020;
+    --orange: #E85D2A;
+    --gold: #D4A017;
+    --blue: #3B6FD4;
+    --green: #22A855;
+    --text: #1A1A2E;
+    --text-dim: #5A5A72;
+    --text-muted: #9E9EB5;
+    --glow-red: rgba(224,32,32,0.08);
+    --glow-orange: rgba(232,93,42,0.06);
+    --nav-bg: rgba(245,245,247,0.9);
+    --particle-opacity: 0.3;
+    --ambient-opacity: 0.4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Geist', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  .ev-card, .ev-card-sm, .insight, .social-card, .nav, .ev-badge,
+  .ev-tag, .ev-countdown, .ev-btn-outline, .footer {
+    transition: all 0.3s ease;
+  }
+
+  canvas#particles {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+    opacity: var(--particle-opacity);
+    transition: opacity 0.4s;
+  }
+
+  .ambient {
+    position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(255,59,59,0.08) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    opacity: var(--ambient-opacity);
+    transition: opacity 0.4s;
+  }
+
+  .theme-toggle {
+    width: 34px; height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    margin-left: 6px;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+    background: var(--surface-hover);
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 16px 60px;
+  }
+
+  /* NAV */
+  .nav {
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px 0;
+    position: sticky; top: 0; z-index: 10;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; position: relative; }
+  .nav-links { display: flex; gap: 8px; align-items: center; position: absolute; left: 50%; transform: translateX(-50%); flex-wrap: nowrap; white-space: nowrap; }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none;
+    font-size: 1.00rem; font-weight: 600;
+    padding: 6px 10px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 40px 0 28px;
+  }
+  .hero h1 {
+    font-size: 1.7rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--red), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+  .hero .tagline {
+    color: var(--text-dim); font-size: 0.85rem;
+    margin-top: 8px;
+  }
+
+  /* SECTION */
+  .section { margin-top: 36px; }
+  .section-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px;
+  }
+  .section-head h2 {
+    font-size: 1rem; font-weight: 800; color: var(--text);
+  }
+  .section-head .count {
+    font-size: 0.7rem; font-weight: 700;
+    color: var(--red); background: var(--glow-red);
+    padding: 2px 8px; border-radius: 6px;
+  }
+
+  /* EVENT CARD */
+  .ev-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  .ev-card:hover {
+    border-color: var(--border-hover);
+    background: var(--surface-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 40px rgba(255,59,59,0.08);
+  }
+  .ev-card .status-dot {
+    position: absolute; top: 20px; right: 20px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(74,222,128,0.5);
+    animation: pulse 2s infinite;
+  }
+  .ev-card .status-dot.ended { background: var(--text-muted); box-shadow: none; animation: none; }
+  .ev-card .status-dot.soon { background: var(--gold); box-shadow: 0 0 8px rgba(255,215,64,0.5); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .ev-tag {
+    display: inline-block;
+    font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 3px 10px; border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .ev-tag.ama { background: rgba(91,141,239,0.15); color: var(--blue); }
+  .ev-tag.fireweek { background: var(--glow-red); color: var(--red); }
+  .ev-tag.event { background: rgba(255,215,64,0.12); color: var(--gold); }
+  .ev-tag.airdrop { background: rgba(74,222,128,0.12); color: var(--green); }
+
+  .ev-title {
+    font-size: 1rem; font-weight: 800;
+    color: var(--text); line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  .ev-title a { color: inherit; text-decoration: none; }
+  .ev-title a:hover { color: var(--orange); }
+
+  .ev-meta {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 12px;
+  }
+  .ev-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.73rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+  }
+  .ev-badge.reward { color: var(--gold); }
+
+  .ev-countdown {
+    font-family: 'Geist', monospace;
+    font-size: 0.82rem; font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 12px;
+  }
+
+  .ev-rewards {
+    display: flex; flex-direction: column; gap: 4px;
+    margin-bottom: 14px;
+  }
+  .ev-reward {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.82rem; color: var(--text-dim);
+  }
+  .ev-reward::before { content: '🎁'; font-size: 0.75rem; }
+
+  .ev-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px;
+    background: linear-gradient(135deg, var(--red), var(--orange));
+    color: #fff; text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem; font-weight: 700;
+    transition: all 0.2s;
+    border: none; cursor: pointer;
+  }
+  .ev-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 20px rgba(255,59,59,0.3);
+  }
+  .ev-btn-outline {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px;
+    background: transparent;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem; font-weight: 700;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    margin-left: 8px;
+  }
+  .ev-btn-outline:hover { border-color: var(--red); color: var(--text); }
+
+  /* EXTERNAL EVENT CARD (compact) */
+  .ev-card-sm {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  .ev-card-sm:hover {
+    border-color: var(--border-hover);
+    background: var(--surface-hover);
+  }
+  .ev-card-sm .status-dot {
+    position: absolute; top: 10px; right: 10px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 5px rgba(74,222,128,0.4);
+    animation: pulse 2s infinite;
+  }
+  .ev-card-sm .status-dot.ended { background: var(--text-muted); box-shadow: none; animation: none; }
+  .ev-card-sm .status-dot.soon { background: var(--gold); box-shadow: 0 0 5px rgba(255,215,64,0.4); }
+  .ev-card-sm .ev-tag {
+    font-size: 0.5rem;
+    padding: 1px 6px;
+    margin-bottom: 3px;
+  }
+  .ev-card-sm .ev-title {
+    font-size: 0.7rem; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .ev-card-sm .ev-meta { margin-bottom: 4px; }
+  .ev-card-sm .ev-badge { font-size: 0.55rem; padding: 2px 6px; }
+  .ev-card-sm .ev-countdown { font-size: 0.6rem; margin-bottom: 4px; }
+  .ev-card-sm .ev-btn {
+    padding: 5px 13px;
+    font-size: 0.6rem;
+  }
+  .ev-card-sm .ev-btn-outline {
+    padding: 5px 13px;
+    font-size: 0.6rem;
+  }
+
+  .section-head-sub {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px; margin-top: 24px;
+  }
+  .section-head-sub h3 {
+    font-size: 0.88rem; font-weight: 700; color: var(--text-dim);
+  }
+  .section-head-sub .count {
+    font-size: 0.65rem; font-weight: 700;
+    color: var(--text-dim); background: rgba(255,255,255,0.06);
+    padding: 2px 7px; border-radius: 5px;
+  }
+
+  /* LIGHT THEME OVERRIDES */
+  [data-theme="light"] .ev-card:hover,
+  [data-theme="light"] .ev-card-sm:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+  [data-theme="light"] .ev-btn {
+    box-shadow: 0 2px 10px rgba(224,32,32,0.2);
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    margin-top: 48px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .footer p { font-size: 0.72rem; color: var(--text-muted); }
+
+  @media (max-width: 600px) {
+    .nav-inner { max-width: 100%; padding: 0 8px; }
+    .nav-links { position: static; transform: none; left: auto; flex-wrap: nowrap; justify-content: center; white-space: nowrap; gap: 2px; width: 100%; overflow-x: auto; }
+    .nav-links a { font-size: 0.72rem; padding: 4px 6px; }
+  }
+
+  @media (max-width: 420px) {
+    .hero h1 { font-size: 1.4rem; }
+  }
+
+  #ended-toggle:hover h2 { color: var(--orange); }
+  #ended-events-container { transition: all 0.3s ease; }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="ambient"></div>
+
+<div class="wrap">
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="nav-inner">
+      <div class="nav-links">
+        <a href="/" style="color:var(--text-dim);">불개미 Crypto</a>
+        <a href="/feed/" style="color:var(--text-dim);">정기 시장분석</a>
+        <a href="/events/" style="color:var(--text);font-weight:800;">이벤트</a>
+        <a href="/indicators/" style="color:var(--text-dim);">불개미지표</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>📌 이벤트</h1>
+    <p class="tagline">불개미 주관 이벤트 및 외부 참여 이벤트</p>
+  </div>
+
+  <!-- 퀵 링크 버튼 그룹 -->
+  <div style="margin-top:20px; margin-bottom:4px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+    <a href="/leaderboard/" style="display:flex; align-items:center; gap:10px; background:rgba(99,179,237,0.08); border:1px solid rgba(99,179,237,0.25); border-radius:14px; padding:14px 16px; text-decoration:none; color:var(--text);">
+      <span style="font-size:1.4rem;">🏆</span>
+      <div>
+        <div style="font-weight:700; font-size:0.88rem;">리더보드</div>
+        <div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px;">이벤트 순위확인</div>
+      </div>
+      <span style="margin-left:auto; color:var(--text-dim); font-size:1rem;">›</span>
+    </a>
+  </div>
+
+  <!-- EVENTS: 불개미 주관 -->
+  <div class="section" id="events">
+    <div class="section-head">
+      <h2>📌 불개미 주관 이벤트</h2>
+      <span class="count">LIVE 4</span>
+    </div>
+
+    <!-- Eigen Cloud 친구초대 이벤트 (3/21~4/3) -->
+    <div class="ev-card" data-start="2026-03-21T00:00:00+09:00" data-end="2026-04-03T23:59:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag event">친구초대</span>
+      <span class="ev-tag" style="background:rgba(99,179,237,0.15); color:#63B3ED;">Eigen Cloud</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto/40312" target="_blank">🧩 Eigen Cloud 한국 커뮤니티 릴레이 입장이벤트</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 3월 21일 ~ 4월 3일</span>
+        <span class="ev-badge reward">🎁 1차 100만원 (1천명↑200만원, 2천명↑300만원)</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-04-03T23:59:00+09:00"></div>
+      <a href="https://t.me/mate_ref_bot" target="_blank" class="ev-btn">🤖 @mate_ref_bot 참여하기 →</a>
+      <a href="/leaderboard/" class="ev-btn-outline">📊 리더보드 →</a>
+    </div>
+
+    <!-- ETHGAS Gwei 매수 캠페인 (3/23~3/31) -->
+    <div class="ev-card" data-start="2026-03-23T00:00:00+09:00" data-end="2026-03-31T23:59:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag event">캠페인</span>
+      <span class="ev-tag" style="background:rgba(255,107,53,0.15); color:#FF6B35;">ETHGAS</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto/40352" target="_blank">🔥 ETHGAS Gwei 매수하면 원금 반환! 4주 릴레이 캠페인 1주차</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 3월 23일 ~ 3월 31일</span>
+        <span class="ev-badge reward">🎁 1주차 300만원 상금 풀</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-31T23:59:00+09:00"></div>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfmEv2KKlnwZrIhOQRclrPEH1eyW1u-AWU-8gnhbhdnlg0hSw/viewform" target="_blank" class="ev-btn">📋 폼 제출하기 →</a>
+      <a href="https://t.me/fireantcrypto/40352" target="_blank" class="ev-btn-outline">📌 공지 보기 →</a>
+    </div>
+
+    <!-- Billions 친구초대 이벤트 (3/13~3/22) -->
+    <div class="ev-card" data-start="2026-03-13T00:00:00+09:00" data-end="2026-03-21T17:00:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag event">친구초대</span>
+      <span class="ev-tag" style="background:rgba(41,98,255,0.15); color:#5B8DEF;">Billions</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto/40185" target="_blank">🔥 Billions 친구초대 이벤트 — 입장만 해도 최대 1천만원</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 3월 13일 ~ 3월 22일</span>
+        <span class="ev-badge reward">🎁 최대 1천만원 리워드 풀 (포인트 분배)</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-22T23:59:00+09:00"></div>
+      <a href="https://t.me/mate_ref_bot" target="_blank" class="ev-btn">🤖 @mate_ref_bot 참여하기 →</a>
+      <a href="leaderboard/" class="ev-btn-outline">📊 리더보드 →</a>
+    </div>
+
+    <!-- Billions Fireweek (3/16~3/20) -->
+    <div class="ev-card" data-start="2026-03-16T00:00:00+09:00" data-end="2026-03-20T23:59:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag event">Fireweek</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto/40140" target="_blank">🔥 Billions Network와 함께하는 Fireweek</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 3월 3주차 (3/16 ~ 3/20)</span>
+        <span class="ev-badge reward">🎁 총 1,000만원 이상 리워드</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-20T23:59:00+09:00"></div>
+      <a href="https://t.me/fireantcrypto/40140" target="_blank" class="ev-btn">자세히 보기 →</a>
+    </div>
+
+    <!-- Billions AMA 교육세션 (3/16 오후 2시) -->
+    <div class="ev-card" data-start="2026-03-16T14:00:00+09:00" data-end="2026-03-16T15:30:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag ama">AMA</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto/40143" target="_blank">📌 Billions Founder Evin과 함께하는 교육세션</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 3월 16일 (월) 오후 2시 KST</span>
+        <span class="ev-badge reward">🎁 5만원(질문당첨) + 3만원 x 100명 + ☕ x 500명</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-16T14:00:00+09:00"></div>
+      <a href="https://t.me/fireantcrypto/40143" target="_blank" class="ev-btn">참여하기 →</a>
+      <a href="https://docs.google.com/forms/d/1RQgAz8fhVrrdLzXz3XPkiy_gpN3DN8MRjGlzCN9-9sg/viewform" target="_blank" class="ev-btn-outline">사전질문 폼 →</a>
+    </div>
+
+    <!-- 블록스트릿 AMA 리캡 캠페인 (~ 3/20) -->
+    <div class="ev-card" data-start="2026-03-10T00:00:00+09:00" data-end="2026-03-20T23:59:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag event">캠페인</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto/40111" target="_blank">📸 블록스트릿 AMA 요점정리 리캡 캠페인</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 ~ 3월 20일 (금) 마감</span>
+        <span class="ev-badge reward">🎁 5만원 x 10명 + 1만원 x 50명 + ☕ x 100명</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-20T23:59:00+09:00"></div>
+      <a href="https://t.me/fireantcrypto/40111" target="_blank" class="ev-btn">참여하기 →</a>
+      <a href="https://docs.google.com/forms/d/1kKP8OXstjmmdKWPsDMG2GJsH5zNO_rz0mWEujFNnch0/viewform" target="_blank" class="ev-btn-outline">제출 폼 →</a>
+    </div>
+
+    <!-- Everything AMA (2026-03-12) -->
+    <div class="ev-card" data-start="2026-03-12T20:00:00+09:00" data-end="2026-03-12T22:00:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag ama">AMA</span>
+      <span class="ev-tag" style="background:rgba(74,222,128,0.12); color:#4ADE80;">Everything</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto/40143" target="_blank">📌 Everything AMA with 불개미</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 3월 12일 (목) 오후 8시 KST</span>
+        <span class="ev-badge reward">🎁 에어드랍 리워드</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-12T22:00:00+09:00"></div>
+    </div>
+
+    <!-- Sahara AI AMA (2026-03-09) -->
+    <div class="ev-card" data-start="2026-03-09T19:00:00+09:00" data-end="2026-03-09T21:00:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag ama">AMA</span>
+      <span class="ev-tag" style="background:rgba(168,85,247,0.15); color:#A855F7;">Sahara AI</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto/40018" target="_blank">📌 Sahara AI AMA with 불개미</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 3월 9일 (일) 오후 7시 KST</span>
+        <span class="ev-badge reward">🎁 200만원 에어드랍 (X Streaming)</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-09T21:00:00+09:00"></div>
+    </div>
+
+    <!-- Virtuals AMA (2026-03-04) -->
+    <div class="ev-card" data-start="2026-03-04T20:00:00+09:00" data-end="2026-03-04T22:00:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag ama">AMA</span>
+      <span class="ev-tag" style="background:rgba(99,179,237,0.15); color:#63B3ED;">Virtuals</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto" target="_blank">📌 Virtuals ACP AMA with 불개미</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 3월 4일 (화) 오후 8시 KST</span>
+        <span class="ev-badge reward">🎁 Virtuals 코인 45만원 x 30명</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-04T22:00:00+09:00"></div>
+    </div>
+
+    <!-- 한국경제TV 출연 기념 에어드랍 (2026-02-23~03-03) -->
+    <div class="ev-card" data-start="2026-02-23T00:00:00+09:00" data-end="2026-03-03T23:59:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag airdrop">에어드랍</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto" target="_blank">🎉 한국경제TV 출연 기념 에어드랍 이벤트</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 2월 23일 ~ 3월 3일</span>
+        <span class="ev-badge reward">🎁 스타벅스 커피 x 200명</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-03T23:59:00+09:00"></div>
+    </div>
+
+    <!-- Block Street AMA (2026-02-25) -->
+    <div class="ev-card" data-start="2026-02-25T20:00:00+09:00" data-end="2026-02-25T23:00:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag ama">AMA</span>
+      <span class="ev-tag" style="background:rgba(255,215,64,0.12); color:#FFD740;">Block Street</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto" target="_blank">📌 Block Street AMA with Hedy</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 2월 25일 (수) 오후 8시 KST</span>
+        <span class="ev-badge reward">🎁 NFT 50개 + 스타벅스 400명</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-02-25T23:00:00+09:00"></div>
+    </div>
+
+    <!-- Block Street Fireweek (2026-02-23~02-27) -->
+    <div class="ev-card" data-start="2026-02-23T00:00:00+09:00" data-end="2026-02-27T23:59:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag event">Fireweek</span>
+      <span class="ev-tag" style="background:rgba(255,215,64,0.12); color:#FFD740;">Block Street</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto" target="_blank">🔥 Block Street와 함께하는 Fireweek</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 2월 23일 ~ 2월 27일</span>
+        <span class="ev-badge reward">🎁 NFT 100개 + 200만원 상품권</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-02-27T23:59:00+09:00"></div>
+    </div>
+
+    <!-- EVENTS: 외부 참여 가능 -->
+    <div class="section-head-sub">
+      <h3>🌐 외부 참여 가능 이벤트</h3>
+      <span class="count">1</span>
+    </div>
+
+    <div class="ev-card-sm" data-start="2026-02-27T00:00:00+09:00" data-end="2026-03-12T23:59:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag event">EVENT</span>
+      <div class="ev-title"><a href="https://t.me/fireantcrypto/39929" target="_blank">Everything 한국 커뮤니티 오픈 기념 이벤트</a></div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 2/27 (금) ~ 3/12 (목)</span>
+        <span class="ev-badge reward">💸 1만원 x 50명 + 5천원 x 200명</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-03-12T23:59:00+09:00"></div>
+      <a href="https://t.me/fireantcrypto/39929" target="_blank" class="ev-btn">참여하기 →</a>
+      <a href="https://naver.me/xF4k1iIq" target="_blank" class="ev-btn-outline">응모폼 →</a>
+    </div>
+
+
+  </div>
+
+  <!-- COUPONI BOT STATUS -->
+  <div class="section" id="couponi">
+    <div class="section-head">
+      <h2>🎁 쿠포니봇 상태</h2>
+    </div>
+    <div class="ev-card" style="position:relative;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <span id="couponi-dot" style="width:10px; height:10px; border-radius:50%; background:#4ADE80; box-shadow:0 0 6px rgba(74,222,128,0.6); display:inline-block;"></span>
+        <span id="couponi-status" style="font-weight:700; font-size:0.9rem; color:var(--green);">🟢 운영 중</span>
+        <a href="https://t.me/Couponybot" target="_blank" style="margin-left:auto; font-size:0.78rem; color:var(--blue); text-decoration:none; font-weight:600;">쿠포니봇 바로가기 →</a>
+      </div>
+      <a href="https://fireantcrypto.com/winners" target="_blank" id="couponi-event" style="display:block; background:var(--surface); border-radius:var(--radius-sm); padding:7px 12px; margin-bottom:8px; text-decoration:none; color:var(--text);">
+        <div style="color:var(--text-dim); font-size:0.7rem; margin-bottom:2px;">📌 지급 대상 이벤트</div>
+        <div id="couponi-event-title" style="font-weight:600; font-size:0.82rem;">Block Street AMA 요점정리 이벤트</div>
+      </a>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+        <div style="background:var(--surface); border-radius:var(--radius-sm); padding:8px; text-align:center;">
+          <div style="color:var(--text-dim); font-size:0.7rem;">상태</div>
+          <div id="couponi-mode" style="font-weight:700; font-size:0.85rem; color:var(--text); margin-top:2px;">정상 가동</div>
+        </div>
+        <div style="background:var(--surface); border-radius:var(--radius-sm); padding:8px; text-align:center;">
+          <div style="color:var(--text-dim); font-size:0.7rem;">남은 시간</div>
+          <div id="couponi-timer" style="font-weight:700; font-size:0.85rem; color:var(--gold); margin-top:2px;">--:--:--</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <a href="https://fireantcrypto.com/winners/#tab-apply" class="ev-btn-outline" style="flex:1; text-align:center; padding:6px 10px; font-size:0.82rem;">⚠️ 오류 신고 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 종료된 이벤트 ── -->
+  <div class="section" id="ended-events-section" style="display:none;">
+    <div class="section-head" id="ended-toggle" style="cursor:pointer; user-select:none;" onclick="toggleEndedEvents()">
+      <h2>⏹ 종료된 이벤트 <span id="ended-count" style="font-size:0.7em; background:rgba(255,255,255,0.08); color:var(--text-muted); padding:2px 10px; border-radius:20px; margin-left:8px; font-weight:600; vertical-align:middle;"></span><span id="ended-arrow" style="font-size:0.8em; margin-left:6px; transition:transform 0.3s; display:inline-block;">▼</span></h2>
+    </div>
+    <div id="ended-events-container" style="display:none; overflow:hidden;"></div>
+  </div>
+
+  <!-- 하단 테마 토글 -->
+  <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
+    <button id="themeToggle" title="테마 전환" style="background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-dim); padding:6px 14px; cursor:pointer; font-size:0.8rem;">🌙</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>© 2026 불개미 CRYPTO · Built with 🔥</p>
+    <p style="font-size: 0.765rem; color: var(--text); margin-top: 8px; font-weight: 600;">Disclaimer: 불개미 Crypto 커뮤니티 및 불개미의 모든 내용은 투자조언이나 매수매도의 추천이나 권유로 해석될 수 없습니다.</p>
+  </div>
+
+</div>
+
+<script>
+// FIRE PARTICLES
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+class Particle {
+  constructor(init) { this.reset(); if (init) { this.y = Math.random() * H; this.life = Math.random() * 120; } }
+  reset() {
+    this.x = Math.random() * W; this.y = H + 5;
+    this.size = Math.random() * 2.5 + 0.5;
+    this.vy = -(Math.random() * 1.2 + 0.2); this.vx = (Math.random() - 0.5) * 0.4;
+    this.opacity = Math.random() * 0.35 + 0.05;
+    this.hue = Math.random() > 0.6 ? 0 : 20;
+    this.life = 0; this.maxLife = Math.random() * 250 + 80;
+  }
+  update() {
+    this.y += this.vy; this.x += this.vx + Math.sin(this.life * 0.015) * 0.2;
+    this.life++; this.opacity *= 0.997;
+    if (this.life > this.maxLife || this.y < -10 || this.opacity < 0.005) this.reset();
+  }
+  draw() {
+    ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${this.hue}, 100%, 55%, ${this.opacity})`; ctx.fill();
+  }
+}
+for (let i = 0; i < 50; i++) particles.push(new Particle(true));
+(function animate() { ctx.clearRect(0, 0, W, H); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); })();
+
+// THEME TOGGLE
+const themeBtn = document.getElementById('themeToggle');
+const html = document.documentElement;
+const saved = localStorage.getItem('fa-theme');
+if (saved) { html.setAttribute('data-theme', saved); themeBtn.textContent = saved === 'light' ? '☀️' : '🌙'; }
+themeBtn.addEventListener('click', () => {
+  const current = html.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  themeBtn.textContent = next === 'light' ? '☀️' : '🌙';
+  localStorage.setItem('fa-theme', next);
+});
+
+// AUTO STATUS + COUNTDOWN
+function updateEventStatuses() {
+  const now = Date.now();
+  document.querySelectorAll('[data-start][data-end]').forEach(card => {
+    const start = new Date(card.dataset.start).getTime();
+    const end = new Date(card.dataset.end).getTime();
+    const dot = card.querySelector('.status-dot');
+    if (!dot) return;
+    dot.classList.remove('soon', 'ended');
+    if (now < start) {
+      dot.classList.add('soon');
+    } else if (now > end) {
+      dot.classList.add('ended');
+    }
+  });
+
+  // 종료된 ev-card를 ended-events-container로 이동
+  const endedContainer = document.getElementById('ended-events-container');
+  const endedSection = document.getElementById('ended-events-section');
+  let endedCount = 0;
+
+  document.querySelectorAll('#events > .ev-card[data-end]').forEach(card => {
+    const end = new Date(card.dataset.end).getTime();
+    if (now > end) {
+      if (!card.dataset.movedToEnded) {
+        card.dataset.movedToEnded = '1';
+        // 카드 스타일 dimmed
+        card.style.opacity = '0.5';
+        endedContainer.appendChild(card);
+      }
+      endedCount++;
+    }
+  });
+
+  if (endedCount > 0) {
+    endedSection.style.display = '';
+    const endedCountEl = document.getElementById('ended-count');
+    if (endedCountEl) endedCountEl.textContent = endedCount;
+  }
+
+  // LIVE count 업데이트
+  const liveCards = document.querySelectorAll('#events > .ev-card[data-end]');
+  let liveCount = 0;
+  liveCards.forEach(card => {
+    const end = new Date(card.dataset.end).getTime();
+    if (now <= end) liveCount++;
+  });
+  const liveCountEl = document.querySelector('#events .section-head .count');
+  if (liveCountEl) liveCountEl.textContent = 'LIVE ' + liveCount;
+
+  let externalVisible = 0;
+  document.querySelectorAll('.ev-card-sm[data-end]').forEach(card => {
+    const end = new Date(card.dataset.end).getTime();
+    const expired = now > end;
+    card.style.display = expired ? 'none' : '';
+    if (!expired) externalVisible += 1;
+  });
+  const externalCountEl = document.querySelector('.section-head-sub .count');
+  if (externalCountEl) externalCountEl.textContent = String(externalVisible);
+
+  document.querySelectorAll('.ev-countdown[data-target]').forEach(el => {
+    const target = new Date(el.dataset.target).getTime();
+    const diff = target - now;
+    if (diff <= 0) { el.textContent = '🔴 종료됨'; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    let txt = '⏰ 종료까지 ';
+    if (d > 0) txt += d + '일 ' + h + '시간';
+    else if (h > 0) txt += h + '시간 ' + m + '분';
+    else txt += m + '분';
+    el.textContent = txt;
+  });
+}
+
+function toggleEndedEvents() {
+  const container = document.getElementById('ended-events-container');
+  const arrow = document.getElementById('ended-arrow');
+  const isHidden = container.style.display === 'none';
+  container.style.display = isHidden ? '' : 'none';
+  arrow.style.transform = isHidden ? 'rotate(180deg)' : '';
+}
+
+updateEventStatuses();
+setInterval(updateEventStatuses, 60000);
+
+// COUPONI BOT TIMER
+(function(){
+  const COUPONI_ACTIVE = true;
+  const COUPONI_START = '2026-03-26T15:44:00+09:00';
+  const COUPONI_END = '2026-03-26T20:00:00+09:00';
+  const COUPONI_LABEL = '정상 가동';
+
+  const dot = document.getElementById('couponi-dot');
+  const status = document.getElementById('couponi-status');
+  const mode = document.getElementById('couponi-mode');
+  const timer = document.getElementById('couponi-timer');
+
+  function updateCouponi(){
+    if(!COUPONI_ACTIVE){
+      dot.style.background = '#FF3B3B';
+      dot.style.boxShadow = '0 0 8px rgba(255,59,59,0.6)';
+      status.textContent = '🔴 오프라인';
+      status.style.color = 'var(--red)';
+      mode.textContent = '운영 예정 없음';
+      timer.textContent = '--:--:--';
+      return;
+    }
+    const now = Date.now();
+    const start = COUPONI_START ? new Date(COUPONI_START).getTime() : 0;
+    const end = COUPONI_END ? new Date(COUPONI_END).getTime() : 0;
+
+    const twoHoursBefore = start ? start - 7200000 : 0;
+    if(start && now < start){
+      if(now >= twoHoursBefore){
+        dot.style.background = '#FFD740';
+        dot.style.boxShadow = '0 0 8px rgba(255,215,64,0.6)';
+        status.textContent = '🟡 대기 중';
+        status.style.color = 'var(--gold)';
+        mode.textContent = COUPONI_LABEL || '시작 대기';
+        const diff = start - now;
+        const h = Math.floor(diff/3600000);
+        const m = Math.floor((diff%3600000)/60000);
+        const s = Math.floor((diff%60000)/1000);
+        timer.textContent = `시작까지 ${h}시간 ${m}분 ${s}초`;
+      } else {
+        dot.style.background = '#FF3B3B';
+        dot.style.boxShadow = '0 0 8px rgba(255,59,59,0.6)';
+        status.textContent = '🔴 오프라인';
+        status.style.color = 'var(--red)';
+        mode.textContent = COUPONI_LABEL || '운영 예정';
+        timer.textContent = '--:--:--';
+      }
+    } else if(end && now > end){
+      dot.style.background = '#FF3B3B';
+      dot.style.boxShadow = '0 0 8px rgba(255,59,59,0.6)';
+      status.textContent = '🔴 오프라인';
+      status.style.color = 'var(--red)';
+      mode.textContent = '운영 종료';
+      timer.textContent = '--:--:--';
+    } else {
+      dot.style.background = '#4ADE80';
+      dot.style.boxShadow = '0 0 8px rgba(74,222,128,0.6)';
+      status.textContent = '🟢 운영 중';
+      status.style.color = 'var(--green)';
+      mode.textContent = COUPONI_LABEL || '정상 가동';
+      if(!end){ timer.textContent = '∞'; return; }
+      const diff = end - now;
+      const h = Math.floor(diff/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      const s = Math.floor((diff%60000)/1000);
+      timer.textContent = `남은시간 ${h}시간 ${m}분 ${s}초`;
+    }
+  }
+  updateCouponi();
+  setInterval(updateCouponi, 1000);
+})();
+</script>
+
+  <!-- 당첨자 조회 플로팅 버튼 -->
+  <a href="/winners/" style="
+    position:fixed; bottom:24px; right:20px; z-index:999;
+    background:var(--orange); color:#fff;
+    padding:10px 16px; border-radius:50px;
+    font-size:0.82rem; font-weight:700;
+    box-shadow:0 4px 18px rgba(255,107,53,0.45);
+    text-decoration:none; display:flex; align-items:center; gap:6px;
+    transition:transform 0.15s, box-shadow 0.15s;
+  " onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 24px rgba(255,107,53,0.6)'"
+     onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 18px rgba(255,107,53,0.45)'">
+    🏆 당첨자 조회 및 신청
+  </a>
+
+</body>
+</html>
