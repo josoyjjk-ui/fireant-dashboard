@@ -714,11 +714,11 @@ def setup_scheduler(app: Application) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler(timezone=KST)
 
     # 기존 캘린더 리마인더 유지
-    scheduler.add_job(lambda: asyncio.create_task(send_reminder_to_all(app)), "cron", hour="9,13,17,21", minute=0)
-    scheduler.add_job(lambda: asyncio.create_task(send_reminder_to_all(app)), "cron", hour="23,0,1,2,3,4,5,6,7,8", minute=0)
+    scheduler.add_job(send_reminder_to_all, "cron", hour="9,13,17,21", minute=0, args=[app])
+    scheduler.add_job(send_reminder_to_all, "cron", hour="23,0,1,2,3,4,5,6,7,8", minute=0, args=[app])
 
     # to-do 리마인더: 매시간 정각
-    scheduler.add_job(lambda: asyncio.create_task(send_todo_reminder_to_all(app)), "cron", minute=0)
+    scheduler.add_job(send_todo_reminder_to_all, "cron", minute=0, args=[app])
 
     scheduler.start()
     return scheduler
