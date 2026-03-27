@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import asyncio
+import pytz
 import json
 import logging
 import re
@@ -21,7 +22,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "task34.db"
 GOOGLE_TOKEN_PATH = Path("/Users/fireant/.openclaw/workspace/secrets/google-bridge34-token.json")
-KST = ZoneInfo("Asia/Seoul")
+KST = pytz.timezone("Asia/Seoul")
 
 logging.basicConfig(
     level=logging.INFO,
