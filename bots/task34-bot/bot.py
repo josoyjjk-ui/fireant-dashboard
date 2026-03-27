@@ -24,6 +24,10 @@ DB_PATH = BASE_DIR / "task34.db"
 GOOGLE_TOKEN_PATH = Path("/Users/fireant/.openclaw/workspace/secrets/google-bridge34-token.json")
 KST = pytz.timezone("Asia/Seoul")
 
+TODO_THREAD_ID = 151
+MAIN_CHAT_ID = -1002585427625
+GENERAL_THREAD_ID = 1
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -488,7 +492,7 @@ async def send_reminder_to_all(app: Application, horizon_days: int = 7) -> None:
             logger.info("활성화된 그룹 채팅이 없습니다.")
             return
         for chat_id in chat_ids:
-            await app.bot.send_message(chat_id=chat_id, text=text)
+            await app.bot.send_message(chat_id=chat_id, text=text, message_thread_id=GENERAL_THREAD_ID)
         logger.info("캘린더 리마인더 전송 완료: %s개 채팅", len(chat_ids))
     except HttpError:
         logger.exception("Google Calendar API 오류")
@@ -509,7 +513,7 @@ async def send_todo_reminder_to_all(app: Application) -> None:
             text = render_group_todo_reminder(chat_id, now)
             if not text:
                 continue
-            await app.bot.send_message(chat_id=chat_id, text=text)
+            await app.bot.send_message(chat_id=chat_id, text=text, message_thread_id=GENERAL_THREAD_ID)
             sent += 1
         logger.info("to-do 리마인더 전송 완료: %s개 채팅", sent)
     except Exception:
@@ -531,6 +535,8 @@ async def reply_and_delete(update, text: str, delay: int = 30) -> None:
     asyncio.create_task(_delete_after(msg, update.message, delay))
 
 async def cmd_remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     """즉시 미완료 업무 현황 출력"""
     chat = update.effective_chat
     now = datetime.now(tz=KST)
@@ -542,12 +548,16 @@ async def cmd_remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     chat = update.effective_chat
     activate_chat(chat.id, chat.title or chat.full_name or str(chat.id))
     await reply_and_delete(update, "✅ Task34 봇 활성화 완료\n이 채팅에 정기 리마인더를 보냅니다.")
 
 
 async def cmd_today(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     now = datetime.now(tz=KST)
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = start + timedelta(days=1)
@@ -556,6 +566,8 @@ async def cmd_today(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_week(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     now = datetime.now(tz=KST)
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = start + timedelta(days=8)
@@ -564,6 +576,8 @@ async def cmd_week(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_map(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     if len(context.args) != 2:
         await reply_and_delete(update, "사용법: /map 이메일 @텔레그램아이디")
         return
@@ -578,6 +592,8 @@ async def cmd_map(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_add(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     now = datetime.now(tz=KST)
     task, due = split_task_and_due(context.args, now)
     if not task:
@@ -609,6 +625,8 @@ async def cmd_add(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     now = datetime.now(tz=KST)
     rows = get_user_open_todos(update.effective_chat.id, update.effective_user.id)
     text = render_user_todo_list(rows, now, title="📋 내 미완료 to-do")
@@ -616,6 +634,8 @@ async def cmd_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     idx = parse_index_arg(context.args)
     if idx is None:
         await reply_and_delete(update, "사용법: /done 번호")
@@ -639,6 +659,8 @@ async def cmd_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_del(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     idx = parse_index_arg(context.args)
     if idx is None:
         await reply_and_delete(update, "사용법: /del 번호")
@@ -662,6 +684,8 @@ async def cmd_del(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_due(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
     if len(context.args) < 2:
         await reply_and_delete(update, "사용법: /due 번호 마감일\n마감일 형식: YYYY-MM-DD | MM/DD | 오늘 | 내일 | 없음")
         return
