@@ -635,6 +635,55 @@ async def cmd_del(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"🗑 삭제됨: {target['task']}")
 
 
+async def cmd_due(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if len(context.args) < 2:
+        await update.message.reply_text("사용법: /due 번호 마감일\n마감일 형식: YYYY-MM-DD | MM/DD | 오늘 | 내일 | 없음")
+        return
+
+    try:
+        idx = int(context.args[0])
+        if idx < 1:
+            raise ValueError
+    except ValueError:
+        await update.message.reply_text("사용법: /due 번호 마감일\n번호는 1 이상의 정수여야 합니다.")
+        return
+
+    due_arg = " ".join(context.args[1:]).strip()
+    if not due_arg:
+        await update.message.reply_text("마감일을 입력해 주세요. 예: /due 2 내일")
+        return
+
+    due: Optional[str]
+    if due_arg.lower() in {"없음", "none", "null", "-"}:
+        due = None
+    else:
+        due = parse_due_text(due_arg, datetime.now(tz=KST))
+        if due is None:
+            await update.message.reply_text("마감일 형식 오류입니다. YYYY-MM-DD | MM/DD | 오늘 | 내일 | 없음")
+            return
+
+    rows = get_user_open_todos(update.effective_chat.id, update.effective_user.id)
+    if idx > len(rows):
+        await update.message.reply_text("해당 번호의 to-do가 없습니다. /list 로 확인해 주세요.")
+        return
+
+    target = rows[idx - 1]
+    conn = db_connect()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE todos SET due_date = ? WHERE id = ?", (due, target["id"]))
+        conn.commit()
+    finally:
+        conn.close()
+
+    if due:
+        await update.message.reply_text(
+            f"📅 마감일 변경: {target['task']} → {datetime.strptime(due, '%Y-%m-%d').strftime('%m/%d')}"
+        )
+    else:
+        await update.message.reply_text(f"📅 마감일 제거: {target['task']}")
+
+
 def setup_scheduler(app: Application) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler(timezone=KST)
 
@@ -667,6 +716,7 @@ async def async_main() -> None:
     app.add_handler(CommandHandler("list", cmd_list))
     app.add_handler(CommandHandler("done", cmd_done))
     app.add_handler(CommandHandler("del", cmd_del))
+    app.add_handler(CommandHandler("due", cmd_due))
 
     logger.info("Task34 bot starting...")
     async with app:
