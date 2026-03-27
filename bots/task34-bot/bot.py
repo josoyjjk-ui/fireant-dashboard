@@ -517,15 +517,18 @@ async def send_todo_reminder_to_all(app: Application) -> None:
 
 
 
-async def reply_and_delete(update, text: str, delay: int = 30) -> None:
-    """메시지 전송 후 delay초 뒤 자동 삭제"""
-    msg = await update.message.reply_text(text)
+async def _delete_after(msg, original_msg, delay: int) -> None:
     await asyncio.sleep(delay)
     try:
         await msg.delete()
-        await update.message.delete()
+        await original_msg.delete()
     except Exception:
         pass
+
+async def reply_and_delete(update, text: str, delay: int = 30) -> None:
+    """메시지 전송 후 delay초 뒤 백그라운드 자동 삭제 (응답 즉시 반환)"""
+    msg = await update.message.reply_text(text)
+    asyncio.create_task(_delete_after(msg, update.message, delay))
 
 async def cmd_remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """즉시 미완료 업무 현황 출력"""
