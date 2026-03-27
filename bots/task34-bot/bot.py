@@ -464,16 +464,14 @@ def render_group_todo_reminder(chat_id: int, now: datetime) -> Optional[str]:
         return None
 
     lines = [f"📋 미완료 업무 현황 ({now.strftime('%m/%d %H:%M')} 기준)", ""]
-    num = 1
     for user, rows in buckets.items():
         lines.append(user)
-        for row in rows:
+        for num, row in enumerate(rows, start=1):
             badge = due_badge(row["due_date"], now)
             if badge:
                 lines.append(f"  {num}. {row['task']} {badge}")
             else:
                 lines.append(f"  {num}. {row['task']}")
-            num += 1
         lines.append("")
 
     return "\n".join(lines).strip()
