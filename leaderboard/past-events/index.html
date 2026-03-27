@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📁 이전 이벤트 — 불개미 Crypto 리더보드</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📁</text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap');
+  @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css');
+
+  :root, [data-theme="dark"] {
+    --bg: #08080f;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,68,68,0.4);
+    --red: #FF3B3B;
+    --orange: #FF6B35;
+    --gold: #FFD740;
+    --blue: #5B8DEF;
+    --green: #4ADE80;
+    --text: #E8E8ED;
+    --text-dim: #6B6B80;
+    --text-muted: #3E3E50;
+    --glow-red: rgba(255,59,59,0.15);
+    --glow-orange: rgba(255,107,53,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --nav-bg: rgba(8,8,15,0.85);
+    --particle-opacity: 1;
+    --ambient-opacity: 1;
+  }
+
+  [data-theme="light"] {
+    --bg: #F5F5F7;
+    --surface: rgba(0,0,0,0.03);
+    --surface-hover: rgba(0,0,0,0.06);
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(255,68,68,0.3);
+    --red: #E02020;
+    --orange: #E85D2A;
+    --gold: #D4A017;
+    --blue: #3B6FD4;
+    --green: #22A855;
+    --text: #1A1A2E;
+    --text-dim: #5A5A72;
+    --text-muted: #9E9EB5;
+    --glow-red: rgba(224,32,32,0.08);
+    --glow-orange: rgba(232,93,42,0.06);
+    --nav-bg: rgba(245,245,247,0.9);
+    --particle-opacity: 0.3;
+    --ambient-opacity: 0.4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Geist', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  canvas#particles {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+    opacity: var(--particle-opacity);
+    transition: opacity 0.4s;
+  }
+
+  .ambient {
+    position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(255,215,64,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    opacity: var(--ambient-opacity);
+    transition: opacity 0.4s;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0 16px 80px;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px 0;
+    position: sticky; top: 0; z-index: 10;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; position: relative; }
+  .nav-links { display: flex; gap: 8px; align-items: center; position: absolute; left: 50%; transform: translateX(-50%); flex-wrap: nowrap; white-space: nowrap; }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none;
+    font-size: 1.00rem; font-weight: 600;
+    padding: 6px 10px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
+
+  .theme-toggle {
+    width: 34px; height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    margin-left: 6px;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { border-color: var(--border-hover); color: var(--text); background: var(--surface-hover); }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 40px 0 28px;
+  }
+  .hero h1 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .hero-period {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .hero-period span {
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  /* ── 뒤로가기 버튼 ── */
+  .back-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.84rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { color: var(--text); border-color: var(--border-hover); background: var(--surface-hover); }
+
+  /* ── 종료 배너 ── */
+  .ended-banner {
+    margin-top: 20px;
+    background: rgba(107,107,128,0.08);
+    border: 1px solid rgba(107,107,128,0.2);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  /* ── 갱신 시각 ── */
+  .update-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .update-time {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* ── 테이블 ── */
+  .lb-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .lb-table thead th {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .lb-table thead th:nth-child(3),
+  .lb-table thead th:nth-child(4) { text-align: right; }
+
+  .lb-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .lb-table tbody tr:last-child { border-bottom: none; }
+  .lb-table tbody tr:hover { background: var(--surface-hover); }
+
+  .lb-table td {
+    padding: 13px 14px;
+    font-size: 0.88rem;
+    vertical-align: middle;
+  }
+  .lb-table td:nth-child(3),
+  .lb-table td:nth-child(4) { text-align: right; }
+
+  /* 순위 셀 */
+  .rank-cell {
+    font-weight: 700;
+    font-size: 1rem;
+    min-width: 40px;
+  }
+  .rank-1 { color: var(--gold); }
+  .rank-2 { color: #C0C0C0; }
+  .rank-3 { color: #CD7F32; }
+  .rank-other { color: var(--text-dim); font-size: 0.85rem; }
+
+  /* 닉네임 */
+  .name-cell { max-width: 180px; }
+  .name-primary {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .name-sub {
+    font-size: 0.73rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 포인트 */
+  .points-cell {
+    font-weight: 700;
+    color: var(--orange);
+    font-size: 0.92rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 초대 수 */
+  .invite-cell {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── 빈 상태 ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+  .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+  @media (max-width: 600px) {
+    .nav-inner { max-width: 100%; padding: 0 8px; }
+    .nav-links { position: static; transform: none; left: auto; flex-wrap: nowrap; justify-content: center; white-space: nowrap; gap: 2px; width: 100%; overflow-x: auto; }
+    .nav-links a { font-size: 0.72rem; padding: 4px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-inner">
+    <div class="nav-links">
+      <a href="/" style="color:var(--text);font-weight:800;">불개미 Crypto</a>
+      <a href="feed/" style="color:var(--text-dim);">정기 시장분석</a>
+      <a href="events/" style="color:var(--text-dim);">이벤트</a>
+      <a href="indicators/" style="color:var(--text-dim);">불개미지표</a>
+    </div>
+  </div>
+</div>
+
+<canvas id="particles"></canvas>
+<div class="ambient"></div>
+
+<div class="wrap">
+
+  <!-- 뒤로가기 -->
+  <div style="text-align:center; padding-top:24px;">
+    <a href="../" class="back-btn">← 현재 이벤트로 돌아가기</a>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>📁 이전 이벤트</h1>
+    <div id="eventTitleWrap" style="margin-top:10px; padding:8px 18px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:0.88rem; color:var(--text); font-weight:600; min-width:220px; text-align:center;">
+      <span id="eventTitle" style="color:var(--orange);">Billions 한국 커뮤니티 친구초대 이벤트</span>
+    </div>
+    <p class="hero-period" id="eventPeriod" style="margin-top:8px; display:none;"></p>
+
+    <!-- 종료 배너 -->
+    <div class="ended-banner">
+      🔒 종료된 이벤트입니다
+    </div>
+  </div>
+
+  <!-- 갱신 시각 -->
+  <div class="update-row">
+    <span class="update-time" id="updatedAt">—</span>
+  </div>
+
+  <!-- 테이블 -->
+  <div id="tableWrap">
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>닉네임</th>
+          <th>포인트</th>
+          <th>초대 수</th>
+        </tr>
+      </thead>
+      <tbody id="lbBody">
+        <tr><td colspan="4"><div class="empty-state"><div class="empty-icon">⏳</div><p>데이터 로딩 중...</p></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  <!-- 하단 테마 토글 -->
+  <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
+    <button id="themeToggle" title="테마 전환" style="background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-dim); padding:6px 14px; cursor:pointer; font-size:0.8rem;">🌙</button>
+  </div>
+
+<script>
+// ── 파티클 ────────────────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let pts = [];
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i = 0; i < 40; i++) {
+    pts.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.2 + 0.3,
+      dx: (Math.random() - 0.5) * 0.3,
+      dy: (Math.random() - 0.5) * 0.3,
+      o: Math.random() * 0.4 + 0.1
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pts.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,107,53,${p.o})`;
+      ctx.fill();
+      p.x += p.dx; p.y += p.dy;
+      if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── 테마 토글 ─────────────────────────────────────────────────
+const themeToggle = document.getElementById('themeToggle');
+const saved = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', saved);
+themeToggle.textContent = saved === 'light' ? '🌙' : '☀️';
+themeToggle.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  themeToggle.textContent = next === 'light' ? '🌙' : '☀️';
+});
+
+// ── 리더보드 로드 ─────────────────────────────────────────────
+const MEDALS = ['🥇', '🥈', '🥉'];
+
+function rankCell(rank) {
+  if (rank <= 3) {
+    return `<span class="rank-${rank}">${MEDALS[rank-1]}</span>`;
+  }
+  return `<span class="rank-other">${rank}</span>`;
+}
+
+function formatNum(n) {
+  return Number(n).toLocaleString('ko-KR');
+}
+
+function formatDate(value) {
+  if (!value) return '';
+  const s = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return s;
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+async function loadData() {
+  try {
+    const res = await fetch('./billions-leaderboard.json?t=' + Date.now());
+    if (!res.ok) throw new Error('fetch failed');
+    const data = await res.json();
+
+    // 이벤트명/기간
+    if (data.event_name) {
+      document.getElementById('eventTitle').textContent = data.event_name;
+    }
+
+    const periodEl = document.getElementById('eventPeriod');
+    const start = formatDate(data?.period?.start);
+    const end = formatDate(data?.period?.end);
+    if (start || end) {
+      periodEl.innerHTML = `이벤트 기간: <span>${escHtml(start || '—')}</span> ~ <span>${escHtml(end || '—')}</span>`;
+      periodEl.style.display = 'block';
+    }
+
+    // 갱신 시각
+    document.getElementById('updatedAt').textContent =
+      '마지막 업데이트: ' + (data.updated_at || '—');
+
+    // 테이블
+    const tbody = document.getElementById('lbBody');
+    const lb = data.leaderboard || [];
+
+    if (lb.length === 0) {
+      tbody.innerHTML = `
+        <tr><td colspan="4">
+          <div class="empty-state">
+            <div class="empty-icon">🌱</div>
+            <p>참여자 데이터가 없습니다.</p>
+          </div>
+        </td></tr>`;
+    } else {
+      tbody.innerHTML = lb.map(r => {
+        const displayName = r.first_name || (r.username ? '@' + r.username : '익명');
+        const subName = r.first_name && r.username ? '@' + r.username : '';
+        return `<tr>
+          <td class="rank-cell">${rankCell(r.rank)}</td>
+          <td class="name-cell">
+            <div class="name-primary">${escHtml(displayName)}</div>
+            ${subName ? `<div class="name-sub">${escHtml(subName)}</div>` : ''}
+          </td>
+          <td class="points-cell">${formatNum(r.points)} pt</td>
+          <td class="invite-cell">${formatNum(r.invite_count)}명</td>
+        </tr>`;
+      }).join('');
+    }
+  } catch (e) {
+    document.getElementById('lbBody').innerHTML = `
+      <tr><td colspan="4">
+        <div class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <p>데이터를 불러오지 못했습니다.</p>
+        </div>
+      </td></tr>`;
+  }
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+loadData();
+</script>
+</body>
+</html>

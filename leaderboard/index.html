@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏆 불개미 Crypto 리더보드</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap');
+  @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css');
+
+  :root, [data-theme="dark"] {
+    --bg: #08080f;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,68,68,0.4);
+    --red: #FF3B3B;
+    --orange: #FF6B35;
+    --gold: #FFD740;
+    --blue: #5B8DEF;
+    --green: #4ADE80;
+    --text: #E8E8ED;
+    --text-dim: #6B6B80;
+    --text-muted: #3E3E50;
+    --glow-red: rgba(255,59,59,0.15);
+    --glow-orange: rgba(255,107,53,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --nav-bg: rgba(8,8,15,0.85);
+    --particle-opacity: 1;
+    --ambient-opacity: 1;
+  }
+
+  [data-theme="light"] {
+    --bg: #F5F5F7;
+    --surface: rgba(0,0,0,0.03);
+    --surface-hover: rgba(0,0,0,0.06);
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(255,68,68,0.3);
+    --red: #E02020;
+    --orange: #E85D2A;
+    --gold: #D4A017;
+    --blue: #3B6FD4;
+    --green: #22A855;
+    --text: #1A1A2E;
+    --text-dim: #5A5A72;
+    --text-muted: #9E9EB5;
+    --glow-red: rgba(224,32,32,0.08);
+    --glow-orange: rgba(232,93,42,0.06);
+    --nav-bg: rgba(245,245,247,0.9);
+    --particle-opacity: 0.3;
+    --ambient-opacity: 0.4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Geist', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  canvas#particles {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+    opacity: var(--particle-opacity);
+    transition: opacity 0.4s;
+  }
+
+  .ambient {
+    position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(255,215,64,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    opacity: var(--ambient-opacity);
+    transition: opacity 0.4s;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0 16px 80px;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px 0;
+    position: sticky; top: 0; z-index: 10;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; position: relative; }
+  .nav-links { display: flex; gap: 8px; align-items: center; position: absolute; left: 50%; transform: translateX(-50%); flex-wrap: nowrap; white-space: nowrap; }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none;
+    font-size: 1.00rem; font-weight: 600;
+    padding: 6px 10px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
+
+  .theme-toggle {
+    width: 34px; height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    margin-left: 6px;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { border-color: var(--border-hover); color: var(--text); background: var(--surface-hover); }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 40px 0 28px;
+  }
+  .hero h1 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .hero-period {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .hero-period span {
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  /* ── 갱신 시각 ── */
+  .update-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .update-time {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+  .refresh-btn {
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover { color: var(--text); border-color: var(--border-hover); }
+  .refresh-btn.spinning { animation: spin 0.7s linear; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── 테이블 ── */
+  .lb-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .lb-table thead th {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .lb-table thead th:nth-child(3),
+  .lb-table thead th:nth-child(4) { text-align: right; }
+
+  .lb-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .lb-table tbody tr:last-child { border-bottom: none; }
+  .lb-table tbody tr:hover { background: var(--surface-hover); }
+
+  .lb-table td {
+    padding: 13px 14px;
+    font-size: 0.88rem;
+    vertical-align: middle;
+  }
+  .lb-table td:nth-child(3),
+  .lb-table td:nth-child(4) { text-align: right; }
+
+  /* 순위 셀 */
+  .rank-cell {
+    font-weight: 700;
+    font-size: 1rem;
+    min-width: 40px;
+  }
+  .rank-1 { color: var(--gold); }
+  .rank-2 { color: #C0C0C0; }
+  .rank-3 { color: #CD7F32; }
+  .rank-other { color: var(--text-dim); font-size: 0.85rem; }
+
+  /* 닉네임 */
+  .name-cell { max-width: 180px; }
+  .name-primary {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .name-sub {
+    font-size: 0.73rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 포인트 */
+  .points-cell {
+    font-weight: 700;
+    color: var(--orange);
+    font-size: 0.92rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 초대 수 */
+  .invite-cell {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── 빈 상태 ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+  .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+
+  /* ── 참여 안내 ── */
+  .join-banner {
+    margin-top: 20px;
+    background: linear-gradient(135deg, rgba(255,107,53,0.1) 0%, rgba(255,215,64,0.07) 100%);
+    border: 1px solid rgba(255,107,53,0.2);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    text-align: center;
+  }
+  .join-banner p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .join-btn {
+    display: inline-block;
+    background: var(--orange);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 9px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .join-btn:hover { opacity: 0.85; }
+
+  /* ── 자동갱신 표시 ── */
+  .auto-refresh-bar {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.72rem; color: var(--text-muted);
+    margin-top: 14px;
+    justify-content: center;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  @media (max-width: 600px) {
+    .nav-inner { max-width: 100%; padding: 0 8px; }
+    .nav-links { position: static; transform: none; left: auto; flex-wrap: nowrap; justify-content: center; white-space: nowrap; gap: 2px; width: 100%; overflow-x: auto; }
+    .nav-links a { font-size: 0.72rem; padding: 4px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-inner">
+    <div class="nav-links">
+      <a href="/" style="color:var(--text);font-weight:800;">불개미 Crypto</a>
+      <a href="feed/" style="color:var(--text-dim);">정기 시장분석</a>
+      <a href="events/" style="color:var(--text-dim);">이벤트</a>
+      <a href="indicators/" style="color:var(--text-dim);">불개미지표</a>
+    </div>
+  </div>
+</div>
+
+<canvas id="particles"></canvas>
+<div class="ambient"></div>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>🏆 불개미 Crypto 리더보드</h1>
+    <p class="hero-period" id="periodText">이벤트 기간 로딩 중...</p>
+    <div id="eventTitleWrap" style="margin-top:10px; padding:8px 18px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:0.88rem; color:var(--text); font-weight:600; min-width:220px; text-align:center;">
+      진행중인 이벤트: <span id="eventTitleText" style="color:var(--orange);">🧩 Eigen Cloud 한국 커뮤니티 릴레이 입장이벤트</span>
+    </div>
+    <div style="margin-top:10px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+      <a href="https://t.me/EigenCloudKorea" target="_blank" style="display:inline-block; padding:8px 20px; background:rgba(255,107,53,0.12); border:1px solid rgba(255,107,53,0.35); border-radius:8px; font-size:0.84rem; font-weight:600; color:var(--orange); text-decoration:none;">
+        🧩 이벤트 참여하기 →
+      </a>
+      <button onclick="openPointLookup()" style="padding:8px 20px; background:rgba(91,141,239,0.12); border:1px solid rgba(91,141,239,0.35); border-radius:8px; font-size:0.84rem; font-weight:600; color:#5B8DEF; cursor:pointer; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+        🔍 내 포인트 조회하기
+      </button>
+      <a href="./past-events/" style="padding:8px 20px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; font-size:0.84rem; font-weight:600; color:var(--text-dim); text-decoration:none; display:inline-block; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+        📁 이전 이벤트
+      </a>
+    </div>
+
+    <!-- 포인트 조회 모달 -->
+    <div id="pointModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:999; align-items:center; justify-content:center;">
+      <div style="background:#12121e; border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:28px 24px; width:90%; max-width:360px; text-align:center; position:relative;">
+        <button onclick="closePointLookup()" style="position:absolute; top:12px; right:16px; background:none; border:none; color:var(--text-dim); font-size:1.2rem; cursor:pointer;">✕</button>
+        <div style="font-size:1rem; font-weight:700; margin-bottom:16px; color:var(--text);">🔍 내 포인트 조회</div>
+        <input id="usernameInput" type="text" placeholder="텔레그램 아이디 입력 (@ 제외)" 
+          style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:var(--text); font-size:0.9rem; box-sizing:border-box; outline:none;"
+          onkeydown="if(event.key==='Enter')lookupPoint()">
+        <button onclick="lookupPoint()" style="margin-top:10px; width:100%; padding:10px; background:rgba(91,141,239,0.2); border:1px solid rgba(91,141,239,0.4); border-radius:8px; color:#5B8DEF; font-weight:700; font-size:0.9rem; cursor:pointer;">조회하기</button>
+        <div id="pointResult" style="margin-top:16px; min-height:48px;"></div>
+      </div>
+    </div>
+
+    <!-- 포인트 리워드 계산기 -->
+    <div id="rewardCalc" style="margin-top:14px; padding:12px 20px; background:rgba(255,215,64,0.06); border:1px solid rgba(255,215,64,0.2); border-radius:10px; text-align:center; min-width:260px;">
+      <div style="font-size:0.78rem; color:var(--text-dim); margin-bottom:4px;">총 누적 포인트</div>
+      <div id="totalPointsDisplay" style="font-size:1.4rem; font-weight:900; color:var(--gold);">—</div>
+      <div style="margin-top:10px; display:flex; gap:8px; justify-content:center;">
+        <div style="flex:1; padding:8px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:3px;">10pt 예상 리워드</div>
+          <div id="rewardPerDisplay" style="font-size:1rem; font-weight:700; color:var(--orange);">—</div>
+          <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">100만원 기준</div>
+        </div>
+        <div style="flex:1; padding:8px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:3px;">10pt 예상 리워드</div>
+          <div id="rewardPerDisplay2" style="font-size:1rem; font-weight:700; color:var(--gold);">—</div>
+          <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">200만원 기준</div>
+        </div>
+        <div style="flex:1; padding:8px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:3px;">10pt 예상 리워드</div>
+          <div id="rewardPerDisplay3" style="font-size:1rem; font-weight:700; color:var(--green);">—</div>
+          <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">300만원 기준</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 갱신 시각 -->
+  <div class="update-row">
+    <span class="update-time" id="updatedAt">—</span>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadData()">⟳ 새로고침</button>
+  </div>
+
+  <!-- 테이블 -->
+  <div id="tableWrap">
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>닉네임</th>
+          <th>포인트</th>
+          <th>초대 수</th>
+        </tr>
+      </thead>
+      <tbody id="lbBody">
+        <tr><td colspan="4"><div class="empty-state"><div class="empty-icon">⏳</div><p>데이터 로딩 중...</p></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+    <!-- 자동갱신 표시 -->
+  <div class="auto-refresh-bar">
+    <span class="dot"></span>
+    <span>1시간마다 자동 업데이트</span>
+  </div>
+</div>
+
+  <!-- 하단 테마 토글 -->
+  <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
+    <button id="themeToggle" title="테마 전환" style="background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-dim); padding:6px 14px; cursor:pointer; font-size:0.8rem;">🌙</button>
+  </div>
+
+<script>
+// ── 파티클 ────────────────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let pts = [];
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i = 0; i < 40; i++) {
+    pts.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.2 + 0.3,
+      dx: (Math.random() - 0.5) * 0.3,
+      dy: (Math.random() - 0.5) * 0.3,
+      o: Math.random() * 0.4 + 0.1
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pts.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,107,53,${p.o})`;
+      ctx.fill();
+      p.x += p.dx; p.y += p.dy;
+      if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── 테마 토글 ─────────────────────────────────────────────────
+const themeToggle = document.getElementById('themeToggle');
+const saved = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', saved);
+themeToggle.textContent = saved === 'light' ? '🌙' : '☀️';
+themeToggle.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  themeToggle.textContent = next === 'light' ? '🌙' : '☀️';
+});
+
+// ── 리더보드 로드 ─────────────────────────────────────────────
+const MEDALS = ['🥇', '🥈', '🥉'];
+
+function rankCell(rank) {
+  if (rank <= 3) {
+    return `<span class="rank-${rank}">${MEDALS[rank-1]}</span>`;
+  }
+  return `<span class="rank-other">${rank}</span>`;
+}
+
+function formatNum(n) {
+  return Number(n).toLocaleString('ko-KR');
+}
+
+async function loadData() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+
+  try {
+    const res = await fetch('../leaderboard.json?t=' + Date.now());
+    if (!res.ok) throw new Error('fetch failed');
+    const data = await res.json();
+
+    // 기간 표시
+    const periodEl = document.getElementById('periodText');
+    if (data.period && data.period.start) {
+      periodEl.innerHTML = `이벤트 기간: <span>${data.period.start}</span> ~ <span>${data.period.end}</span>`;
+    } else {
+      periodEl.textContent = '친구초대 이벤트 진행 중';
+    }
+
+    // 포인트 리워드 계산
+    const totalPoints = data.total_points || 0;
+    document.getElementById('totalPointsDisplay').textContent =
+      totalPoints > 0 ? totalPoints.toLocaleString() + '점' : '0점';
+    if (totalPoints > 0) {
+      const rewardPer10 = Math.floor(1000000 / totalPoints * 10);
+      document.getElementById('rewardPerDisplay').textContent =
+        '₩' + rewardPer10.toLocaleString();
+      const rewardPer10b = Math.floor(2000000 / totalPoints * 10);
+      document.getElementById('rewardPerDisplay2').textContent =
+        '₩' + rewardPer10b.toLocaleString();
+      const rewardPer10c = Math.floor(3000000 / totalPoints * 10);
+      document.getElementById('rewardPerDisplay3').textContent =
+        '₩' + rewardPer10c.toLocaleString();
+    } else {
+      document.getElementById('rewardPerDisplay').textContent = '참여자 대기 중';
+      document.getElementById('rewardPerDisplay2').textContent = '참여자 대기 중';
+      document.getElementById('rewardPerDisplay3').textContent = '참여자 대기 중';
+    }
+
+    // 갱신 시각
+    document.getElementById('updatedAt').textContent =
+      '마지막 업데이트: ' + (data.updated_at || '—');
+
+    // 테이블
+    const tbody = document.getElementById('lbBody');
+    const lb = data.leaderboard || [];
+
+    if (lb.length === 0) {
+      tbody.innerHTML = `
+        <tr><td colspan="4">
+          <div class="empty-state">
+            <div class="empty-icon">🌱</div>
+            <p>아직 참여자가 없습니다.<br>첫 번째 주인공이 되어보세요!</p>
+          </div>
+        </td></tr>`;
+    } else {
+      tbody.innerHTML = lb.map(r => {
+        const displayName = r.first_name || (r.username ? '@' + r.username : '익명');
+        const subName = r.first_name && r.username ? '@' + r.username : '';
+        return `<tr>
+          <td class="rank-cell">${rankCell(r.rank)}</td>
+          <td class="name-cell">
+            <div class="name-primary">${escHtml(displayName)}</div>
+            ${subName ? `<div class="name-sub">${escHtml(subName)}</div>` : ''}
+          </td>
+          <td class="points-cell">${formatNum(r.points)} pt</td>
+          <td class="invite-cell">${formatNum(r.invite_count)}명</td>
+        </tr>`;
+      }).join('');
+    }
+  } catch (e) {
+    document.getElementById('lbBody').innerHTML = `
+      <tr><td colspan="4">
+        <div class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <p>데이터를 불러오지 못했습니다.<br>잠시 후 다시 시도해주세요.</p>
+        </div>
+      </td></tr>`;
+  }
+
+  btn.classList.remove('spinning');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// 첫 로드
+loadData();
+
+// 5분마다 자동 fetch 갱신 (서버 데이터는 1시간, 페이지 자체는 5분마다 체크)
+setInterval(loadData, 5 * 60 * 1000);
+
+function openPointLookup() {
+  document.getElementById('pointModal').style.display = 'flex';
+  document.getElementById('usernameInput').value = '';
+  document.getElementById('pointResult').innerHTML = '';
+  setTimeout(() => document.getElementById('usernameInput').focus(), 100);
+}
+
+function closePointLookup() {
+  document.getElementById('pointModal').style.display = 'none';
+}
+
+function lookupPoint() {
+  const raw = document.getElementById('usernameInput').value.trim();
+  const input = raw.replace(/^@/, '').toLowerCase();
+  const resultEl = document.getElementById('pointResult');
+  if (!input) {
+    resultEl.innerHTML = '<div style="color:#ff6b6b;font-size:0.85rem;">아이디를 입력해주세요.</div>';
+    return;
+  }
+  resultEl.innerHTML = '<div style="color:var(--text-dim);font-size:0.85rem;">조회 중...</div>';
+
+  fetch('../leaderboard.json?_=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      const list = data.leaderboard || [];
+      // username(대소문자 무시) 또는 first_name(부분일치) 로 검색
+      const user = list.find(u =>
+        (u.username || '').toLowerCase() === input ||
+        (u.first_name || '').toLowerCase() === input
+      );
+      if (!user) {
+        resultEl.innerHTML = `<div style="color:#ff6b6b;font-size:0.85rem;">@${input} 유저를 찾을 수 없습니다.<br><span style="font-size:0.75rem;color:var(--text-muted)">봇에서 /start를 먼저 눌러주세요.</span></div>`;
+        return;
+      }
+      const rank = list.findIndex(u =>
+        (u.username || '').toLowerCase() === input ||
+        (u.first_name || '').toLowerCase() === input
+      ) + 1;
+      const name = user.first_name || user.username || '?';
+      const displayId = user.username ? `@${user.username}` : name;
+      resultEl.innerHTML = `
+        <div style="background:rgba(91,141,239,0.08);border:1px solid rgba(91,141,239,0.2);border-radius:10px;padding:14px;">
+          <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:4px;">${displayId}</div>
+          <div style="font-size:1.5rem;font-weight:900;color:#5B8DEF;">${user.points}<span style="font-size:0.9rem;font-weight:400;color:var(--text-dim);margin-left:4px;">점</span></div>
+          <div style="margin-top:6px;font-size:0.8rem;color:var(--text-dim);">현재 순위 <span style="color:var(--gold);font-weight:700;">${rank}위</span> / ${list.length}명</div>
+        </div>`;
+    })
+    .catch(() => {
+      resultEl.innerHTML = '<div style="color:#ff6b6b;font-size:0.85rem;">데이터를 불러올 수 없습니다.</div>';
+    });
+}
+
+// 모달 바깥 클릭 시 닫기
+document.getElementById('pointModal').addEventListener('click', function(e) {
+  if (e.target === this) closePointLookup();
+});
+</script>
+</body>
+</html>
