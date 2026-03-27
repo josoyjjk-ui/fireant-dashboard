@@ -2,12 +2,13 @@
 import asyncio
 import json
 import logging
+import re
 import sqlite3
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo
 
 import requests
@@ -74,6 +75,20 @@ def init_db() -> None:
             )
             """
         )
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS todos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                chat_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                username TEXT,
+                task TEXT NOT NULL,
+                due_date TEXT,
+                done INTEGER DEFAULT 0,
+                created_at TEXT NOT NULL
+            )
+            """
+        )
         conn.commit()
     finally:
         conn.close()
@@ -124,7 +139,7 @@ def build_calendar_service():
 
 
 def calendar_list_events(start: datetime, end: datetime) -> List[dict]:
-    service, access_token = build_calendar_service()
+    _, access_token = build_calendar_service()
     headers = {"Authorization": f"Bearer {access_token}"}
 
     # googleapiclient에서 credentials 없이 build 시 auth header 자동 주입이 없어서 REST fallback 사용
@@ -307,6 +322,158 @@ def render_reminder(events: List[dict], now: datetime) -> str:
     return "\n".join(lines)
 
 
+def parse_due_text(raw: str, now: datetime) -> Optional[str]:
+    s = raw.strip()
+    if not s:
+        return None
+    lower = s.lower()
+    if lower in {"오늘", "today"}:
+        return now.date().isoformat()
+    if lower in {"내일", "tomorrow"}:
+        return (now.date() + timedelta(days=1)).isoformat()
+
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+        try:
+            parsed = datetime.strptime(s, "%Y-%m-%d").date()
+            return parsed.isoformat()
+        except ValueError:
+            return None
+
+    if re.fullmatch(r"\d{1,2}/\d{1,2}", s):
+        try:
+            month, day = map(int, s.split("/"))
+            cand = date(now.year, month, day)
+            if cand < now.date():
+                cand = date(now.year + 1, month, day)
+            return cand.isoformat()
+        except ValueError:
+            return None
+
+    return None
+
+
+def split_task_and_due(args: List[str], now: datetime) -> Tuple[str, Optional[str]]:
+    if not args:
+        return "", None
+    due = parse_due_text(args[-1], now)
+    if due:
+        task = " ".join(args[:-1]).strip()
+    else:
+        task = " ".join(args).strip()
+    return task, due
+
+
+def get_user_open_todos(chat_id: int, user_id: int) -> List[sqlite3.Row]:
+    conn = db_connect()
+    conn.row_factory = sqlite3.Row
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT id, task, due_date, created_at
+            FROM todos
+            WHERE chat_id = ? AND user_id = ? AND done = 0
+            ORDER BY CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date, id
+            """,
+            (chat_id, user_id),
+        )
+        return cur.fetchall()
+    finally:
+        conn.close()
+
+
+def due_badge(due_date: Optional[str], now: datetime) -> str:
+    if not due_date:
+        return ""
+    due = datetime.strptime(due_date, "%Y-%m-%d").date()
+    delta = (due - now.date()).days
+    due_txt = due.strftime("%m/%d")
+    if delta < 0:
+        return f"📅 {due_txt} ❗마감초과"
+    if delta == 0:
+        return f"📅 {due_txt} 🔴D-day"
+    if delta == 1:
+        return f"📅 {due_txt} 🟡D-1"
+    return f"📅 {due_txt} D-{delta}"
+
+
+def render_user_todo_list(rows: List[sqlite3.Row], now: datetime, title: Optional[str] = None) -> str:
+    if not rows:
+        return "미완료 to-do가 없습니다."
+
+    lines = []
+    if title:
+        lines.append(title)
+        lines.append("")
+
+    for idx, row in enumerate(rows, start=1):
+        badge = due_badge(row["due_date"], now)
+        if badge:
+            lines.append(f"{idx}. {row['task']} {badge}")
+        else:
+            lines.append(f"{idx}. {row['task']}")
+    return "\n".join(lines)
+
+
+def parse_index_arg(args: List[str]) -> Optional[int]:
+    if len(args) != 1:
+        return None
+    try:
+        idx = int(args[0])
+        if idx < 1:
+            return None
+        return idx
+    except ValueError:
+        return None
+
+
+def get_todo_summary_for_group(chat_id: int, now: datetime) -> Dict[str, List[sqlite3.Row]]:
+    conn = db_connect()
+    conn.row_factory = sqlite3.Row
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT id, user_id, username, task, due_date
+            FROM todos
+            WHERE chat_id = ? AND done = 0
+            ORDER BY user_id, CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date, id
+            """,
+            (chat_id,),
+        )
+        rows = cur.fetchall()
+    finally:
+        conn.close()
+
+    buckets: Dict[str, List[sqlite3.Row]] = {}
+    for row in rows:
+        username = row["username"] or str(row["user_id"])
+        user_label = f"@{username}"
+        buckets.setdefault(user_label, []).append(row)
+    return buckets
+
+
+def render_group_todo_reminder(chat_id: int, now: datetime) -> Optional[str]:
+    buckets = get_todo_summary_for_group(chat_id, now)
+    if not buckets:
+        return None
+
+    lines = [f"📋 미완료 업무 현황 ({now.strftime('%m/%d %H:%M')} 기준)", ""]
+    num = 1
+    for user, rows in buckets.items():
+        lines.append(user)
+        for row in rows:
+            badge = due_badge(row["due_date"], now)
+            if badge:
+                lines.append(f"  {num}. {row['task']} {badge}")
+            else:
+                lines.append(f"  {num}. {row['task']}")
+            num += 1
+        lines.append("")
+
+    return "\n".join(lines).strip()
+
+
 async def send_reminder_to_all(app: Application, horizon_days: int = 7) -> None:
     now = datetime.now(tz=KST)
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -321,11 +488,31 @@ async def send_reminder_to_all(app: Application, horizon_days: int = 7) -> None:
             return
         for chat_id in chat_ids:
             await app.bot.send_message(chat_id=chat_id, text=text)
-        logger.info("리마인더 전송 완료: %s개 채팅", len(chat_ids))
+        logger.info("캘린더 리마인더 전송 완료: %s개 채팅", len(chat_ids))
     except HttpError:
         logger.exception("Google Calendar API 오류")
     except Exception:
-        logger.exception("리마인더 전송 실패")
+        logger.exception("캘린더 리마인더 전송 실패")
+
+
+async def send_todo_reminder_to_all(app: Application) -> None:
+    now = datetime.now(tz=KST)
+    try:
+        chat_ids = list_active_chats()
+        if not chat_ids:
+            logger.info("활성화된 그룹 채팅이 없습니다.")
+            return
+
+        sent = 0
+        for chat_id in chat_ids:
+            text = render_group_todo_reminder(chat_id, now)
+            if not text:
+                continue
+            await app.bot.send_message(chat_id=chat_id, text=text)
+            sent += 1
+        logger.info("to-do 리마인더 전송 완료: %s개 채팅", sent)
+    except Exception:
+        logger.exception("to-do 리마인더 전송 실패")
 
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -364,12 +551,99 @@ async def cmd_map(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"매핑 저장: {email.lower()} → {username}")
 
 
+async def cmd_add(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    now = datetime.now(tz=KST)
+    task, due = split_task_and_due(context.args, now)
+    if not task:
+        await update.message.reply_text("사용법: /add 할일내용 [마감일]\n마감일 형식: YYYY-MM-DD | MM/DD | 오늘 | 내일")
+        return
+
+    user = update.effective_user
+    chat = update.effective_chat
+    username = user.username or (user.full_name or str(user.id)).replace(" ", "")
+
+    conn = db_connect()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO todos(chat_id, user_id, username, task, due_date, done, created_at)
+            VALUES (?, ?, ?, ?, ?, 0, ?)
+            """,
+            (chat.id, user.id, username, task, due, now.isoformat()),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    if due:
+        await update.message.reply_text(f"✅ 등록됨: {task} (마감 {datetime.strptime(due, '%Y-%m-%d').strftime('%m/%d')})")
+    else:
+        await update.message.reply_text(f"✅ 등록됨: {task}")
+
+
+async def cmd_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    now = datetime.now(tz=KST)
+    rows = get_user_open_todos(update.effective_chat.id, update.effective_user.id)
+    text = render_user_todo_list(rows, now, title="📋 내 미완료 to-do")
+    await update.message.reply_text(text)
+
+
+async def cmd_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    idx = parse_index_arg(context.args)
+    if idx is None:
+        await update.message.reply_text("사용법: /done 번호")
+        return
+
+    rows = get_user_open_todos(update.effective_chat.id, update.effective_user.id)
+    if idx > len(rows):
+        await update.message.reply_text("해당 번호의 to-do가 없습니다. /list 로 확인해 주세요.")
+        return
+
+    target = rows[idx - 1]
+    conn = db_connect()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE todos SET done = 1 WHERE id = ?", (target["id"],))
+        conn.commit()
+    finally:
+        conn.close()
+
+    await update.message.reply_text(f"✅ 완료 처리: {target['task']}")
+
+
+async def cmd_del(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    idx = parse_index_arg(context.args)
+    if idx is None:
+        await update.message.reply_text("사용법: /del 번호")
+        return
+
+    rows = get_user_open_todos(update.effective_chat.id, update.effective_user.id)
+    if idx > len(rows):
+        await update.message.reply_text("해당 번호의 to-do가 없습니다. /list 로 확인해 주세요.")
+        return
+
+    target = rows[idx - 1]
+    conn = db_connect()
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM todos WHERE id = ?", (target["id"],))
+        conn.commit()
+    finally:
+        conn.close()
+
+    await update.message.reply_text(f"🗑 삭제됨: {target['task']}")
+
+
 def setup_scheduler(app: Application) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler(timezone=KST)
 
-    # 주간/주말 동일: 09,13,17,21시 + 23~08 매시간
+    # 기존 캘린더 리마인더 유지
     scheduler.add_job(lambda: asyncio.create_task(send_reminder_to_all(app)), "cron", hour="9,13,17,21", minute=0)
     scheduler.add_job(lambda: asyncio.create_task(send_reminder_to_all(app)), "cron", hour="23,0,1,2,3,4,5,6,7,8", minute=0)
+
+    # to-do 리마인더: 매시간 정각
+    scheduler.add_job(lambda: asyncio.create_task(send_todo_reminder_to_all(app)), "cron", minute=0)
 
     scheduler.start()
     return scheduler
@@ -389,6 +663,10 @@ async def async_main() -> None:
     app.add_handler(CommandHandler("today", cmd_today))
     app.add_handler(CommandHandler("week", cmd_week))
     app.add_handler(CommandHandler("map", cmd_map))
+    app.add_handler(CommandHandler("add", cmd_add))
+    app.add_handler(CommandHandler("list", cmd_list))
+    app.add_handler(CommandHandler("done", cmd_done))
+    app.add_handler(CommandHandler("del", cmd_del))
 
     logger.info("Task34 bot starting...")
     async with app:
@@ -397,14 +675,14 @@ async def async_main() -> None:
         # Run until shutdown
         import signal
         stop_event = asyncio.Event()
-        
+
         def _stop():
             stop_event.set()
-        
+
         loop = asyncio.get_running_loop()
         for sig in (signal.SIGTERM, signal.SIGINT):
             loop.add_signal_handler(sig, _stop)
-        
+
         await stop_event.wait()
         await app.updater.stop()
         await app.stop()
