@@ -519,7 +519,7 @@ async def send_todo_reminder_to_all(app: Application) -> None:
 
 async def reply_and_delete(update, text: str, delay: int = 30) -> None:
     """메시지 전송 후 delay초 뒤 자동 삭제"""
-    msg = await reply_and_delete(update, text)
+    msg = await update.message.reply_text(text)
     await asyncio.sleep(delay)
     try:
         await msg.delete()
