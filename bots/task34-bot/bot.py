@@ -516,6 +516,17 @@ async def send_todo_reminder_to_all(app: Application) -> None:
         logger.exception("to-do 리마인더 전송 실패")
 
 
+
+async def reply_and_delete(update, text: str, delay: int = 30) -> None:
+    """메시지 전송 후 delay초 뒤 자동 삭제"""
+    msg = await reply_and_delete(update, text)
+    await asyncio.sleep(delay)
+    try:
+        await msg.delete()
+        await update.message.delete()
+    except Exception:
+        pass
+
 async def cmd_remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """즉시 미완료 업무 현황 출력"""
     chat = update.effective_chat
@@ -530,7 +541,7 @@ async def cmd_remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
     activate_chat(chat.id, chat.title or chat.full_name or str(chat.id))
-    await update.message.reply_text("✅ Task34 봇 활성화 완료\n이 채팅에 정기 리마인더를 보냅니다.")
+    await reply_and_delete(update, "✅ Task34 봇 활성화 완료\n이 채팅에 정기 리마인더를 보냅니다.")
 
 
 async def cmd_today(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -538,7 +549,7 @@ async def cmd_today(update: Update, context: ContextTypes.DEFAULT_TYPE):
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = start + timedelta(days=1)
     events = calendar_list_events(start, end)
-    await update.message.reply_text(render_reminder(events, now))
+    await reply_and_delete(update, render_reminder(events, now))
 
 
 async def cmd_week(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -546,28 +557,28 @@ async def cmd_week(update: Update, context: ContextTypes.DEFAULT_TYPE):
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = start + timedelta(days=8)
     events = calendar_list_events(start, end)
-    await update.message.reply_text(render_reminder(events, now))
+    await reply_and_delete(update, render_reminder(events, now))
 
 
 async def cmd_map(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) != 2:
-        await update.message.reply_text("사용법: /map 이메일 @텔레그램아이디")
+        await reply_and_delete(update, "사용법: /map 이메일 @텔레그램아이디")
         return
 
     email, username = context.args
     if "@" not in email or not username.startswith("@"):
-        await update.message.reply_text("형식 오류. 예: /map user@company.com @username")
+        await reply_and_delete(update, "형식 오류. 예: /map user@company.com @username")
         return
 
     upsert_email_map(email, username)
-    await update.message.reply_text(f"매핑 저장: {email.lower()} → {username}")
+    await reply_and_delete(update, f"매핑 저장: {email.lower()} → {username}")
 
 
 async def cmd_add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     now = datetime.now(tz=KST)
     task, due = split_task_and_due(context.args, now)
     if not task:
-        await update.message.reply_text("사용법: /add 할일내용 [마감일]\n마감일 형식: YYYY-MM-DD | MM/DD | 오늘 | 내일")
+        await reply_and_delete(update, "사용법: /add 할일내용 [마감일]\n마감일 형식: YYYY-MM-DD | MM/DD | 오늘 | 내일")
         return
 
     user = update.effective_user
@@ -589,27 +600,27 @@ async def cmd_add(update: Update, context: ContextTypes.DEFAULT_TYPE):
         conn.close()
 
     if due:
-        await update.message.reply_text(f"✅ 등록됨: {task} (마감 {datetime.strptime(due, '%Y-%m-%d').strftime('%m/%d')})")
+        await reply_and_delete(update, f"✅ 등록됨: {task} (마감 {datetime.strptime(due, '%Y-%m-%d').strftime('%m/%d')})")
     else:
-        await update.message.reply_text(f"✅ 등록됨: {task}")
+        await reply_and_delete(update, f"✅ 등록됨: {task}")
 
 
 async def cmd_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     now = datetime.now(tz=KST)
     rows = get_user_open_todos(update.effective_chat.id, update.effective_user.id)
     text = render_user_todo_list(rows, now, title="📋 내 미완료 to-do")
-    await update.message.reply_text(text)
+    await reply_and_delete(update, text)
 
 
 async def cmd_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
     idx = parse_index_arg(context.args)
     if idx is None:
-        await update.message.reply_text("사용법: /done 번호")
+        await reply_and_delete(update, "사용법: /done 번호")
         return
 
     rows = get_user_open_todos(update.effective_chat.id, update.effective_user.id)
     if idx > len(rows):
-        await update.message.reply_text("해당 번호의 to-do가 없습니다. /list 로 확인해 주세요.")
+        await reply_and_delete(update, "해당 번호의 to-do가 없습니다. /list 로 확인해 주세요.")
         return
 
     target = rows[idx - 1]
@@ -621,18 +632,18 @@ async def cmd_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
     finally:
         conn.close()
 
-    await update.message.reply_text(f"✅ 완료 처리: {target['task']}")
+    await reply_and_delete(update, f"✅ 완료 처리: {target['task']}")
 
 
 async def cmd_del(update: Update, context: ContextTypes.DEFAULT_TYPE):
     idx = parse_index_arg(context.args)
     if idx is None:
-        await update.message.reply_text("사용법: /del 번호")
+        await reply_and_delete(update, "사용법: /del 번호")
         return
 
     rows = get_user_open_todos(update.effective_chat.id, update.effective_user.id)
     if idx > len(rows):
-        await update.message.reply_text("해당 번호의 to-do가 없습니다. /list 로 확인해 주세요.")
+        await reply_and_delete(update, "해당 번호의 to-do가 없습니다. /list 로 확인해 주세요.")
         return
 
     target = rows[idx - 1]
@@ -644,12 +655,12 @@ async def cmd_del(update: Update, context: ContextTypes.DEFAULT_TYPE):
     finally:
         conn.close()
 
-    await update.message.reply_text(f"🗑 삭제됨: {target['task']}")
+    await reply_and_delete(update, f"🗑 삭제됨: {target['task']}")
 
 
 async def cmd_due(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 2:
-        await update.message.reply_text("사용법: /due 번호 마감일\n마감일 형식: YYYY-MM-DD | MM/DD | 오늘 | 내일 | 없음")
+        await reply_and_delete(update, "사용법: /due 번호 마감일\n마감일 형식: YYYY-MM-DD | MM/DD | 오늘 | 내일 | 없음")
         return
 
     try:
@@ -657,12 +668,12 @@ async def cmd_due(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if idx < 1:
             raise ValueError
     except ValueError:
-        await update.message.reply_text("사용법: /due 번호 마감일\n번호는 1 이상의 정수여야 합니다.")
+        await reply_and_delete(update, "사용법: /due 번호 마감일\n번호는 1 이상의 정수여야 합니다.")
         return
 
     due_arg = " ".join(context.args[1:]).strip()
     if not due_arg:
-        await update.message.reply_text("마감일을 입력해 주세요. 예: /due 2 내일")
+        await reply_and_delete(update, "마감일을 입력해 주세요. 예: /due 2 내일")
         return
 
     due: Optional[str]
@@ -671,12 +682,12 @@ async def cmd_due(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         due = parse_due_text(due_arg, datetime.now(tz=KST))
         if due is None:
-            await update.message.reply_text("마감일 형식 오류입니다. YYYY-MM-DD | MM/DD | 오늘 | 내일 | 없음")
+            await reply_and_delete(update, "마감일 형식 오류입니다. YYYY-MM-DD | MM/DD | 오늘 | 내일 | 없음")
             return
 
     rows = get_user_open_todos(update.effective_chat.id, update.effective_user.id)
     if idx > len(rows):
-        await update.message.reply_text("해당 번호의 to-do가 없습니다. /list 로 확인해 주세요.")
+        await reply_and_delete(update, "해당 번호의 to-do가 없습니다. /list 로 확인해 주세요.")
         return
 
     target = rows[idx - 1]
@@ -689,11 +700,11 @@ async def cmd_due(update: Update, context: ContextTypes.DEFAULT_TYPE):
         conn.close()
 
     if due:
-        await update.message.reply_text(
+        await reply_and_delete(update, 
             f"📅 마감일 변경: {target['task']} → {datetime.strptime(due, '%Y-%m-%d').strftime('%m/%d')}"
         )
     else:
-        await update.message.reply_text(f"📅 마감일 제거: {target['task']}")
+        await reply_and_delete(update, f"📅 마감일 제거: {target['task']}")
 
 
 def setup_scheduler(app: Application) -> AsyncIOScheduler:
