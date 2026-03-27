@@ -7,13 +7,12 @@ import re
 import sqlite3
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo
 
 import requests
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from telegram import Update
@@ -91,6 +90,14 @@ def init_db() -> None:
                 due_date TEXT,
                 done INTEGER DEFAULT 0,
                 created_at TEXT NOT NULL
+            )
+            """
+        )
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS live_message (
+                chat_id INTEGER PRIMARY KEY,
+                message_id INTEGER NOT NULL
             )
             """
         )
@@ -219,6 +226,35 @@ def list_active_chats() -> List[int]:
         cur = conn.cursor()
         cur.execute("SELECT chat_id FROM group_chats")
         return [r[0] for r in cur.fetchall()]
+    finally:
+        conn.close()
+
+
+def get_live_message(chat_id: int) -> Optional[int]:
+    conn = db_connect()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT message_id FROM live_message WHERE chat_id = ?", (chat_id,))
+        row = cur.fetchone()
+        return row[0] if row else None
+    finally:
+        conn.close()
+
+
+def set_live_message(chat_id: int, message_id: int) -> None:
+    conn = db_connect()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO live_message(chat_id, message_id)
+            VALUES (?, ?)
+            ON CONFLICT(chat_id) DO UPDATE SET
+              message_id=excluded.message_id
+            """,
+            (chat_id, message_id),
+        )
+        conn.commit()
     finally:
         conn.close()
 
@@ -478,7 +514,35 @@ def render_group_todo_reminder(chat_id: int, now: datetime) -> Optional[str]:
     return "\n".join(lines).strip()
 
 
-async def send_reminder_to_all(app: Application, horizon_days: int = 7) -> None:
+async def refresh_live_todo(bot, chat_id: int) -> None:
+    now = datetime.now(tz=KST)
+    text = render_group_todo_reminder(chat_id, now)
+    if text is None:
+        text = "✅ 현재 미완료 업무 없음"
+
+    msg_id = get_live_message(chat_id)
+    if msg_id:
+        try:
+            await bot.edit_message_text(
+                chat_id=chat_id,
+                message_id=msg_id,
+                text=text,
+            )
+            return
+        except Exception as e:
+            err = str(e).lower()
+            if "message to edit not found" in err or "message_id_invalid" in err:
+                msg = await bot.send_message(chat_id=chat_id, text=text, message_thread_id=TODO_THREAD_ID)
+                set_live_message(chat_id, msg.message_id)
+                return
+            logger.exception("live to-do 메시지 업데이트 실패: chat_id=%s", chat_id)
+            return
+
+    msg = await bot.send_message(chat_id=chat_id, text=text, message_thread_id=TODO_THREAD_ID)
+    set_live_message(chat_id, msg.message_id)
+
+
+async def send_reminder_to_all(context: ContextTypes.DEFAULT_TYPE, horizon_days: int = 7) -> None:
     now = datetime.now(tz=KST)
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = (start + timedelta(days=horizon_days + 1)).replace(hour=0)
@@ -491,7 +555,7 @@ async def send_reminder_to_all(app: Application, horizon_days: int = 7) -> None:
             logger.info("활성화된 그룹 채팅이 없습니다.")
             return
         for chat_id in chat_ids:
-            await app.bot.send_message(chat_id=chat_id, text=text, message_thread_id=GENERAL_THREAD_ID)
+            await context.bot.send_message(chat_id=chat_id, text=text, message_thread_id=GENERAL_THREAD_ID)
         logger.info("캘린더 리마인더 전송 완료: %s개 채팅", len(chat_ids))
     except HttpError:
         logger.exception("Google Calendar API 오류")
@@ -499,24 +563,18 @@ async def send_reminder_to_all(app: Application, horizon_days: int = 7) -> None:
         logger.exception("캘린더 리마인더 전송 실패")
 
 
-async def send_todo_reminder_to_all(app: Application) -> None:
-    now = datetime.now(tz=KST)
+async def send_todo_reminder_to_all(context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
         chat_ids = list_active_chats()
         if not chat_ids:
             logger.info("활성화된 그룹 채팅이 없습니다.")
             return
 
-        sent = 0
         for chat_id in chat_ids:
-            text = render_group_todo_reminder(chat_id, now)
-            if not text:
-                continue
-            await app.bot.send_message(chat_id=chat_id, text=text, message_thread_id=GENERAL_THREAD_ID)
-            sent += 1
-        logger.info("to-do 리마인더 전송 완료: %s개 채팅", sent)
+            await refresh_live_todo(context.bot, chat_id)
+        logger.info("to-do 라이브 현황판 갱신 완료: %s개 채팅", len(chat_ids))
     except Exception:
-        logger.exception("to-do 리마인더 전송 실패")
+        logger.exception("to-do 라이브 현황판 갱신 실패")
 
 
 
@@ -536,14 +594,8 @@ async def reply_and_delete(update, text: str, delay: int = 30) -> None:
 async def cmd_remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
         return
-    """즉시 미완료 업무 현황 출력"""
-    chat = update.effective_chat
-    now = datetime.now(tz=KST)
-    text = render_group_todo_reminder(chat.id, now)
-    if text:
-        await update.message.reply_text(text)
-    else:
-        await update.message.reply_text("✅ 현재 미완료 업무가 없습니다.")
+    """즉시 미완료 업무 현황 갱신"""
+    await refresh_live_todo(context.bot, update.effective_chat.id)
 
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -621,6 +673,7 @@ async def cmd_add(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await reply_and_delete(update, f"✅ 등록됨: {task} (마감 {datetime.strptime(due, '%Y-%m-%d').strftime('%m/%d')})")
     else:
         await reply_and_delete(update, f"✅ 등록됨: {task}")
+    await refresh_live_todo(context.bot, update.effective_chat.id)
 
 
 async def cmd_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -655,6 +708,7 @@ async def cmd_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
         conn.close()
 
     await reply_and_delete(update, f"✅ 완료 처리: {target['task']}")
+    await refresh_live_todo(context.bot, update.effective_chat.id)
 
 
 async def cmd_del(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -680,6 +734,7 @@ async def cmd_del(update: Update, context: ContextTypes.DEFAULT_TYPE):
         conn.close()
 
     await reply_and_delete(update, f"🗑 삭제됨: {target['task']}")
+    await refresh_live_todo(context.bot, update.effective_chat.id)
 
 
 async def cmd_due(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -731,32 +786,50 @@ async def cmd_due(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     else:
         await reply_and_delete(update, f"📅 마감일 제거: {target['task']}")
+    await refresh_live_todo(context.bot, update.effective_chat.id)
 
 
-def setup_scheduler(app: Application) -> AsyncIOScheduler:
-    scheduler = AsyncIOScheduler(timezone=KST)
-
-    # 기존 캘린더 리마인더 유지
-    scheduler.add_job(send_reminder_to_all, "cron", hour="9,13,17,21", minute=0, args=[app])
-    scheduler.add_job(send_reminder_to_all, "cron", hour="23,0,1,2,3,4,5,6,7,8", minute=0, args=[app])
-
-    # to-do 리마인더: 매시간 정각
-    scheduler.add_job(send_todo_reminder_to_all, "cron", minute=0, args=[app])
-
-    scheduler.start()
-    return scheduler
+def next_top_of_hour(now: Optional[datetime] = None) -> datetime:
+    now = now or datetime.now(tz=KST)
+    return (now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
 
 
 async def post_init(app: Application) -> None:
-    setup_scheduler(app)
-    logger.info("Task34 bot started - scheduler running")
+    if app.bot_data.get("jobqueue_initialized"):
+        return
+
+    jq = app.job_queue
+    if jq is None:
+        logger.error("JobQueue unavailable; reminders are disabled")
+        return
+
+    # 캘린더 리마인더: 23~8시 + 9/13/17/21시 정각
+    reminder_hours = [23, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 17, 21]
+    for hour in reminder_hours:
+        jq.run_daily(
+            callback=send_reminder_to_all,
+            time=time(hour=hour, minute=0, tzinfo=KST),
+            name=f"calendar-reminder-{hour:02d}",
+        )
+
+    next_hour = next_top_of_hour()
+    # to-do 리마인더: 매시간 정각
+    jq.run_repeating(
+        callback=send_todo_reminder_to_all,
+        interval=timedelta(hours=1),
+        first=next_hour,
+        name="todo-reminder-hourly",
+    )
+
+    app.bot_data["jobqueue_initialized"] = True
+    logger.info("Task34 bot started - JobQueue schedules registered (todo next run: %s)", next_hour.isoformat())
 
 
 async def async_main() -> None:
     init_db()
     token = get_bot_token()
 
-    app = Application.builder().token(token).post_init(post_init).build()
+    app = Application.builder().token(token).build()
     app.add_handler(CommandHandler("start", cmd_start))
     app.add_handler(CommandHandler("today", cmd_today))
     app.add_handler(CommandHandler("week", cmd_week))
@@ -771,6 +844,7 @@ async def async_main() -> None:
     logger.info("Task34 bot starting...")
     async with app:
         await app.start()
+        await post_init(app)
         await app.updater.start_polling(allowed_updates=Update.ALL_TYPES)
         # Run until shutdown
         import signal
