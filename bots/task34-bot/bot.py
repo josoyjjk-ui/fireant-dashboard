@@ -516,6 +516,17 @@ async def send_todo_reminder_to_all(app: Application) -> None:
         logger.exception("to-do 리마인더 전송 실패")
 
 
+async def cmd_remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """즉시 미완료 업무 현황 출력"""
+    chat = update.effective_chat
+    now = datetime.now(tz=KST)
+    text = render_group_todo_reminder(chat.id, now)
+    if text:
+        await update.message.reply_text(text)
+    else:
+        await update.message.reply_text("✅ 현재 미완료 업무가 없습니다.")
+
+
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
     activate_chat(chat.id, chat.title or chat.full_name or str(chat.id))
@@ -718,6 +729,7 @@ async def async_main() -> None:
     app.add_handler(CommandHandler("done", cmd_done))
     app.add_handler(CommandHandler("del", cmd_del))
     app.add_handler(CommandHandler("due", cmd_due))
+    app.add_handler(CommandHandler("remind", cmd_remind))
 
     logger.info("Task34 bot starting...")
     async with app:
