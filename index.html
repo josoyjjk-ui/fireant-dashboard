@@ -447,7 +447,7 @@
       </div>
       <div style="padding:0 8px 12px;">
         <img id="daily-report-img"
-             src="assets/daily-report-latest.jpg"
+             src="assets/daily-report-20260328.jpg"
              alt="불개미 일일시황"
              style="width:100%; height:auto; border-radius:10px; display:block;"
              onerror="this.parentElement.innerHTML='<div style=\'padding:24px;text-align:center;color:var(--text-dim);font-size:0.9rem;\'>⏳ 이미지를 불러올 수 없습니다</div>'">
@@ -455,13 +455,21 @@
     </div>
   </div>
   <script>
-    var DAILY_REPORT_IMAGE = 'assets/daily-report-latest.jpg';
     (function() {
       var img = document.getElementById('daily-report-img');
       if (img) {
+        // 날짜별 파일명으로 CDN 캐시 우회 (매일 크론이 새 파일 배포)
         var now = new Date();
-        var v = now.getFullYear() + '' + ('0'+(now.getMonth()+1)).slice(-2) + '' + ('0'+now.getDate()).slice(-2) + '' + now.getHours();
-        img.src = DAILY_REPORT_IMAGE + '?v=' + v;
+        var kst = new Date(now.getTime() + 9*3600*1000);
+        var y = kst.getUTCFullYear();
+        var m = ('0'+(kst.getUTCMonth()+1)).slice(-2);
+        var d = ('0'+kst.getUTCDate()).slice(-2);
+        var dateFile = 'assets/daily-report-' + y + m + d + '.jpg';
+        // fallback: 파일 없으면 latest
+        var testImg = new Image();
+        testImg.onload = function() { img.src = dateFile; };
+        testImg.onerror = function() { img.src = 'assets/daily-report-latest.jpg'; };
+        testImg.src = dateFile;
       }
       var dateEl = document.getElementById('daily-report-date');
       if (dateEl) {
