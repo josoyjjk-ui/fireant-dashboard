@@ -458,7 +458,11 @@
     var DAILY_REPORT_IMAGE = 'assets/daily-report-latest.jpg';
     (function() {
       var img = document.getElementById('daily-report-img');
-      if (img) img.src = DAILY_REPORT_IMAGE;
+      if (img) {
+        var now = new Date();
+        var v = now.getFullYear() + '' + ('0'+(now.getMonth()+1)).slice(-2) + '' + ('0'+now.getDate()).slice(-2) + '' + now.getHours();
+        img.src = DAILY_REPORT_IMAGE + '?v=' + v;
+      }
       var dateEl = document.getElementById('daily-report-date');
       if (dateEl) {
         var now = new Date();
