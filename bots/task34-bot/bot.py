@@ -33,6 +33,30 @@ logging.basicConfig(
 )
 logger = logging.getLogger("task34bot")
 
+PROJECT_KEYWORD_MAP = [
+    ("eigen", "#EigenCloud"),
+    ("d3", "#D3Exchange"),
+    ("infinit", "#INFINIT"),
+    ("monday", "#MondayTrade"),
+    ("ethgas", "#Ethgas"),
+    ("blockstreet", "#BlockStreet"),
+    ("virtuals", "#Virtuals"),
+    ("ethena", "#Ethena"),
+    ("everything", "#Everything"),
+    ("kgen", "#KGEN"),
+    ("pharos", "#Pharos"),
+    ("aligned", "#Aligned"),
+    ("stable", "#Stable"),
+]
+
+
+def detect_project(task_text: str) -> str:
+    lower = (task_text or "").lower()
+    for keyword, project in PROJECT_KEYWORD_MAP:
+        if keyword in lower:
+            return project
+    return "#기타"
+
 
 @dataclass
 class TaskItem:
@@ -93,6 +117,16 @@ def init_db() -> None:
             )
             """
         )
+
+        cur.execute("PRAGMA table_info(todos)")
+        todo_columns = {row[1] for row in cur.fetchall()}
+        if "completed_at" not in todo_columns:
+            cur.execute("ALTER TABLE todos ADD COLUMN completed_at TEXT")
+        if "project" not in todo_columns:
+            cur.execute("ALTER TABLE todos ADD COLUMN project TEXT")
+        if "priority" not in todo_columns:
+            cur.execute("ALTER TABLE todos ADD COLUMN priority INTEGER DEFAULT 2")
+
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS live_message (
@@ -655,15 +689,17 @@ async def cmd_add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
     username = user.username or (user.full_name or str(user.id)).replace(" ", "")
 
+    project = detect_project(task)
+
     conn = db_connect()
     try:
         cur = conn.cursor()
         cur.execute(
             """
-            INSERT INTO todos(chat_id, user_id, username, task, due_date, done, created_at)
-            VALUES (?, ?, ?, ?, ?, 0, ?)
+            INSERT INTO todos(chat_id, user_id, username, task, due_date, done, created_at, project, priority)
+            VALUES (?, ?, ?, ?, ?, 0, ?, ?, 2)
             """,
-            (chat.id, user.id, username, task, due, now.isoformat()),
+            (chat.id, user.id, username, task, due, now.isoformat(), project),
         )
         conn.commit()
     finally:
@@ -702,7 +738,10 @@ async def cmd_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
     conn = db_connect()
     try:
         cur = conn.cursor()
-        cur.execute("UPDATE todos SET done = 1 WHERE id = ?", (target["id"],))
+        cur.execute(
+            "UPDATE todos SET done = 1, completed_at = datetime('now', '+9 hours') WHERE id = ?",
+            (target["id"],),
+        )
         conn.commit()
     finally:
         conn.close()
@@ -789,6 +828,136 @@ async def cmd_due(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await refresh_live_todo(context.bot, update.effective_chat.id)
 
 
+async def cmd_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
+
+    chat_id = update.effective_chat.id
+    user = update.effective_user
+    now = datetime.now(tz=KST)
+    today = now.strftime("%Y-%m-%d")
+
+    conn = db_connect()
+    try:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT COUNT(*) AS total,
+                   SUM(CASE WHEN done = 1 THEN 1 ELSE 0 END) AS done,
+                   SUM(CASE WHEN done = 0 THEN 1 ELSE 0 END) AS pending
+            FROM todos
+            WHERE chat_id = ? AND user_id = ?
+            """,
+            (chat_id, user.id),
+        )
+        summary = cur.fetchone()
+
+        cur.execute(
+            """
+            SELECT task
+            FROM todos
+            WHERE chat_id = ? AND user_id = ? AND done = 1
+              AND substr(COALESCE(completed_at, created_at), 1, 10) = ?
+            ORDER BY COALESCE(completed_at, created_at) DESC, id DESC
+            """,
+            (chat_id, user.id, today),
+        )
+        today_done_rows = cur.fetchall()
+    finally:
+        conn.close()
+
+    total = int(summary["total"] or 0)
+    done = int(summary["done"] or 0)
+    pending = int(summary["pending"] or 0)
+    rate = (done / total * 100) if total else 0.0
+
+    username = user.username or (user.full_name or str(user.id))
+    lines = [
+        f"📊 @{username} 개인 성과",
+        f"- 전체: {total}",
+        f"- 완료: {done}",
+        f"- 미완료: {pending}",
+        f"- 완료율: {rate:.1f}%",
+        "",
+        f"✅ 오늘 완료 ({len(today_done_rows)}건)",
+    ]
+
+    if today_done_rows:
+        lines.extend([f"  • {row['task']}" for row in today_done_rows[:20]])
+        if len(today_done_rows) > 20:
+            lines.append(f"  • ...외 {len(today_done_rows)-20}건")
+    else:
+        lines.append("  • 없음")
+
+    await reply_and_delete(update, "\n".join(lines))
+
+
+async def cmd_report(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id == MAIN_CHAT_ID and update.message.message_thread_id != TODO_THREAD_ID:
+        return
+
+    chat_id = update.effective_chat.id
+    now = datetime.now(tz=KST)
+    today = now.strftime("%Y-%m-%d")
+
+    conn = db_connect()
+    try:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT user_id,
+                   COALESCE(NULLIF(username, ''), CAST(user_id AS TEXT)) AS username,
+                   COUNT(*) AS total,
+                   SUM(CASE WHEN done = 1 THEN 1 ELSE 0 END) AS done,
+                   SUM(CASE WHEN done = 0 THEN 1 ELSE 0 END) AS pending
+            FROM todos
+            WHERE chat_id = ?
+            GROUP BY user_id, username
+            ORDER BY done DESC, total DESC, username ASC
+            """,
+            (chat_id,),
+        )
+        rows = cur.fetchall()
+
+        cur.execute(
+            """
+            SELECT COALESCE(NULLIF(username, ''), CAST(user_id AS TEXT)) AS username, task
+            FROM todos
+            WHERE chat_id = ? AND done = 1
+              AND substr(COALESCE(completed_at, created_at), 1, 10) = ?
+            ORDER BY COALESCE(completed_at, created_at) DESC, id DESC
+            """,
+            (chat_id, today),
+        )
+        today_done_rows = cur.fetchall()
+    finally:
+        conn.close()
+
+    lines = ["📈 전체 담당자 성과 요약", ""]
+    if not rows:
+        lines.append("등록된 업무가 없습니다.")
+    else:
+        for row in rows:
+            total = int(row["total"] or 0)
+            done = int(row["done"] or 0)
+            pending = int(row["pending"] or 0)
+            rate = (done / total * 100) if total else 0.0
+            lines.append(f"- @{row['username']}: {done}/{total} ({rate:.1f}%) · 미완료 {pending}")
+
+    lines.extend(["", f"✅ 오늘 완료 업무 ({len(today_done_rows)}건)"])
+    if today_done_rows:
+        for row in today_done_rows[:30]:
+            lines.append(f"  • @{row['username']}: {row['task']}")
+        if len(today_done_rows) > 30:
+            lines.append(f"  • ...외 {len(today_done_rows)-30}건")
+    else:
+        lines.append("  • 없음")
+
+    await reply_and_delete(update, "\n".join(lines), delay=45)
+
+
 def next_top_of_hour(now: Optional[datetime] = None) -> datetime:
     now = now or datetime.now(tz=KST)
     return (now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
@@ -839,6 +1008,8 @@ async def async_main() -> None:
     app.add_handler(CommandHandler("done", cmd_done))
     app.add_handler(CommandHandler("del", cmd_del))
     app.add_handler(CommandHandler("due", cmd_due))
+    app.add_handler(CommandHandler("stats", cmd_stats))
+    app.add_handler(CommandHandler("report", cmd_report))
     app.add_handler(CommandHandler("remind", cmd_remind))
 
     logger.info("Task34 bot starting...")
