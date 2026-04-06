@@ -612,6 +612,7 @@ function renderCard(w) {
         ${tw ? `<span class="winner-handle"><span class="platform">트위터</span> ${escHtml(tw)}</span>` : ''}
       </div>
       <div class="winner-reward">${escHtml(w.reward || '리워드 미정')}</div>
+      ${w.points ? `<div style="margin-top:8px;font-size:0.82rem;font-weight:700;color:var(--gold);">🏅 포인트: ${escHtml(w.points)}점</div>` : ''}
     </div>`;
 }
 
