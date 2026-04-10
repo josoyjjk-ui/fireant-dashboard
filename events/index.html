@@ -942,5 +942,26 @@ setInterval(updateEventStatuses, 60000);
     🏆 당첨자 조회 및 신청
   </a>
 
+
+<script>
+(function(){
+  const eventsRoot = document.getElementById('events');
+  if (!eventsRoot) return;
+
+  eventsRoot.querySelectorAll('.ev-card, .ev-card-sm').forEach(el => el.remove());
+
+  const liveCount = eventsRoot.querySelector('.section-head .count');
+  if (liveCount) liveCount.textContent = 'LIVE 0';
+
+  const subCount = eventsRoot.querySelector('.section-head-sub .count');
+  if (subCount) subCount.textContent = '0';
+
+  const msg = document.createElement('div');
+  msg.className = 'ev-card';
+  msg.innerHTML = '<div style="text-align:center;color:var(--text-dim);line-height:1.8;padding:14px 8px;">현재 진행 중인 이벤트가 없습니다.<br>새 이벤트 오픈 시 업데이트됩니다.</div>';
+  eventsRoot.appendChild(msg);
+})();
+</script>
+
 </body>
 </html>
