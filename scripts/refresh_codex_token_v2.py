@@ -19,7 +19,7 @@ CLIENT_ID = '***REMOVED***'
 THRESHOLD_WARN = 5 * 86400   # 5일 — 알림 발송
 THRESHOLD_REFRESH = 3 * 86400  # 3일 — 갱신 실행
 
-BOT_TOKEN = "***REMOVED***"
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = "477743685"
 
 def tg(msg):

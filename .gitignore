@@ -20,10 +20,26 @@ render_*.py
 generate_*.py
 *_banner_*
 *_masterpiece_*
-# Secrets
+# Secrets & credentials
 .env
 .env.*
 *.key
 *.pem
 credentials/
 auth.json
+token.json
+*credentials*.json
+*client_secret*.json
+*service_account*.json
+
+# Databases (may contain PII)
+*.db
+*.db-shm
+*.db-wal
+*.db.bak*
+*.sqlite
+*.sqlite3
+memory-system/
+
+# Node modules (redundant safety)
+node_modules/

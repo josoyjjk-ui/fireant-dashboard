@@ -2,7 +2,7 @@
 import sqlite3, json, subprocess, urllib.request
 from datetime import datetime, date
 
-BOT_TOKEN = "***REMOVED***"
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = "477743685"
 
 def tg_alert(msg: str):
