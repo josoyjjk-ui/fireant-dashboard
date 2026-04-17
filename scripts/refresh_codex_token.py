@@ -7,7 +7,7 @@ import urllib.request, json, time, sys
 
 AUTH_PATH = '/Users/fireant/.openclaw/agents/main/agent/auth.json'
 PROF_PATH = '/Users/fireant/.openclaw/agents/main/agent/auth-profiles.json'
-CLIENT_ID = '***REMOVED***'
+CLIENT_ID = os.environ.get('CODEX_CLIENT_ID', '')
 THRESHOLD = 2 * 86400  # 2일 (초)
 
 def refresh_token(refresh_tok):

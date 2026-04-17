@@ -15,7 +15,7 @@ POSSIBLE = [
 ]
 AUTH_PATH = next((p for p in POSSIBLE if os.path.exists(p)), None)
 
-CLIENT_ID = '***REMOVED***'
+CLIENT_ID = os.environ.get('CODEX_CLIENT_ID', '')
 THRESHOLD_WARN = 5 * 86400   # 5일 — 알림 발송
 THRESHOLD_REFRESH = 3 * 86400  # 3일 — 갱신 실행
 
