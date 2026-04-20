@@ -414,6 +414,22 @@
       <span class="count">LIVE 6</span>
     </div>
 
+    <!-- Codex 샘플 업데이트 검증 이벤트 -->
+    <div class="ev-card" data-start="2026-04-21T00:00:00+09:00" data-end="2026-05-31T23:59:00+09:00">
+      <div class="status-dot"></div>
+      <span class="ev-tag event">검증</span>
+      <span class="ev-tag" style="background:rgba(255,215,64,0.12); color:#FFD740;">Codex</span>
+      <div class="ev-title">
+        <a href="https://t.me/fireantcrypto" target="_blank">🧪 Codex 샘플 반영 확인용 이벤트</a>
+      </div>
+      <div class="ev-meta">
+        <span class="ev-badge">🗓 4월 21일 ~ 5월 31일</span>
+        <span class="ev-badge reward">🎁 샘플 반영 검증</span>
+      </div>
+      <div class="ev-countdown" data-target="2026-05-31T23:59:00+09:00"></div>
+      <a href="https://t.me/fireantcrypto" target="_blank" class="ev-btn">📌 안내 보기 →</a>
+    </div>
+
     <!-- Eigen 2차 캠페인 — 토큰 매수&홀딩 이벤트 -->
     <div class="ev-card" data-start="2026-04-09T00:00:00+09:00" data-end="2099-12-31T23:59:00+09:00">
       <div class="status-dot"></div>
@@ -943,25 +959,7 @@ setInterval(updateEventStatuses, 60000);
   </a>
 
 
-<script>
-(function(){
-  const eventsRoot = document.getElementById('events');
-  if (!eventsRoot) return;
 
-  eventsRoot.querySelectorAll('.ev-card, .ev-card-sm').forEach(el => el.remove());
-
-  const liveCount = eventsRoot.querySelector('.section-head .count');
-  if (liveCount) liveCount.textContent = 'LIVE 0';
-
-  const subCount = eventsRoot.querySelector('.section-head-sub .count');
-  if (subCount) subCount.textContent = '0';
-
-  const msg = document.createElement('div');
-  msg.className = 'ev-card';
-  msg.innerHTML = '<div style="text-align:center;color:var(--text-dim);line-height:1.8;padding:14px 8px;">현재 진행 중인 이벤트가 없습니다.<br>새 이벤트 오픈 시 업데이트됩니다.</div>';
-  eventsRoot.appendChild(msg);
-})();
-</script>
 
 </body>
 </html>
