@@ -26,7 +26,23 @@ except ImportError:
 GSHEETS_TOKEN   = '/Users/fireant/.openclaw/workspace/secrets/google-token.json'
 GSHEETS_SCOPES  = ['https://www.googleapis.com/auth/spreadsheets']
 GSHEETS_SHEET_ID = '1prtoKycManbOj-HoMnzZ68kl6VEEm3h5vvvTUzK6QHs'
-GSHEETS_RANGE    = 'Sheet1!A:J'
+
+def get_active_event_sheet_tab() -> str:
+    """활성 이벤트의 sheet_tab 값 반환. 없으면 'Sheet1' 기본값."""
+    try:
+        with get_db() as conn:
+            row = conn.execute(
+                "SELECT sheet_tab FROM events WHERE is_active=1 ORDER BY id DESC LIMIT 1"
+            ).fetchone()
+            if row and row["sheet_tab"]:
+                return row["sheet_tab"]
+    except Exception:
+        pass
+    return "Sheet1"
+
+def get_gsheets_range() -> str:
+    """현재 활성 이벤트 기반 동적 Sheets 범위 반환. 예: 'MegaETH!A:J'"""
+    return f"{get_active_event_sheet_tab()}!A:J"
 
 def append_to_sheet(row: list):
     """Google Sheets에 행 추가 (비동기 스레드로 실행)"""
@@ -40,7 +56,7 @@ def append_to_sheet(row: list):
             service = gbuild('sheets', 'v4', credentials=creds)
             service.spreadsheets().values().append(
                 spreadsheetId=GSHEETS_SHEET_ID,
-                range=GSHEETS_RANGE,
+                range=get_gsheets_range(),
                 valueInputOption='USER_ENTERED',
                 insertDataOption='INSERT_ROWS',
                 body={'values': [row]}
@@ -60,8 +76,8 @@ def delete_from_sheet(user_id: int):
             creds.refresh(Request())
         service = gbuild('sheets', 'v4', credentials=creds)
 
-        # 시트명 파싱 (GSHEETS_RANGE에서 '!' 앞부분)
-        sheet_name = GSHEETS_RANGE.split('!')[0]
+        # 활성 이벤트 기반 시트명
+        sheet_name = get_active_event_sheet_tab()
 
         # 전체 데이터 읽기 (A:B)
         result = service.spreadsheets().values().get(
@@ -201,6 +217,28 @@ def init_db():
                 agreed      INTEGER DEFAULT 0,
                 submitted_at TEXT DEFAULT (datetime('now', 'localtime'))
             );
+
+            CREATE TABLE IF NOT EXISTS events (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                name        TEXT NOT NULL,
+                start_date  TEXT,
+                end_date    TEXT,
+                is_active   INTEGER DEFAULT 0,
+                created_at  TEXT DEFAULT (datetime('now', 'localtime'))
+            );
+
+            CREATE TABLE IF NOT EXISTS event_points (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id     INTEGER NOT NULL,
+                event_id    INTEGER NOT NULL,
+                points      INTEGER DEFAULT 0,
+                FOREIGN KEY (user_id) REFERENCES users(user_id),
+                FOREIGN KEY (event_id) REFERENCES events(id),
+                UNIQUE(user_id, event_id)
+            );
+
+            INSERT OR IGNORE INTO events (id, name, start_date, end_date, is_active)
+            VALUES (1, '메가이더 한국 커뮤니티 친구초대 이벤트', '2026-04-24', '2026-05-31', 1);
         """)
         # real_name 컬럼 추가 (이미 있으면 무시)
         try:
@@ -210,6 +248,12 @@ def init_db():
         # wallet 컬럼 추가 (이미 있으면 무시)
         try:
             conn.execute("ALTER TABLE user_info ADD COLUMN wallet TEXT")
+        except Exception:
+            pass  # 이미 존재하면 무시
+        # sheet_tab 컬럼 추가 (이미 있으면 무시)
+        try:
+            conn.execute("ALTER TABLE events ADD COLUMN sheet_tab TEXT")
+            conn.execute("UPDATE events SET sheet_tab='MegaETH' WHERE id=1 AND sheet_tab IS NULL")
         except Exception:
             pass  # 이미 존재하면 무시
     logger.info("DB 초기화 완료: %s", DB_PATH)
@@ -225,6 +269,15 @@ def is_event_active() -> bool:
     start = row["start_date"] or "0000-00-00"
     end   = row["end_date"]   or "9999-12-31"
     return start <= now <= end
+
+
+def get_active_event_id():
+    """현재 활성 이벤트 ID 반환. 없으면 None."""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT id FROM events WHERE is_active=1 ORDER BY id DESC LIMIT 1"
+        ).fetchone()
+    return row["id"] if row else None
 
 
 def get_user(user_id: int):
@@ -244,11 +297,19 @@ def register_user(user_id: int, username: str, first_name: str) -> bool:
                 "UPDATE users SET username=?, first_name=?, points=10, ever_registered=1 WHERE user_id=?",
                 (username, first_name, user_id)
             )
-            return True
-        conn.execute(
-            "INSERT INTO users (user_id, username, first_name, points, ever_registered) VALUES (?,?,?,10,1)",
-            (user_id, username, first_name)
-        )
+        else:
+            conn.execute(
+                "INSERT INTO users (user_id, username, first_name, points, ever_registered) VALUES (?,?,?,10,1)",
+                (user_id, username, first_name)
+            )
+        # 이벤트 포인트 분리 적립
+        event_id = get_active_event_id()
+        if event_id:
+            conn.execute(
+                "INSERT INTO event_points (user_id, event_id, points) VALUES (?,?,10) "
+                "ON CONFLICT(user_id, event_id) DO UPDATE SET points=points+10",
+                (user_id, event_id)
+            )
     return True
 
 
@@ -273,11 +334,28 @@ def set_referrer(user_id: int, referrer_input: str) -> tuple[bool, str, int]:
         conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (referrer["user_id"],))  # 초대자 +10
         conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (user_id,))              # 피초대자 +10
         new_points = referrer["points"] + 10
+        # 이벤트 포인트 분리 적립
+        event_id = get_active_event_id()
+        if event_id:
+            for uid in [referrer["user_id"], user_id]:
+                conn.execute(
+                    "INSERT INTO event_points (user_id, event_id, points) VALUES (?,?,10) "
+                    "ON CONFLICT(user_id, event_id) DO UPDATE SET points=points+10",
+                    (uid, event_id)
+                )
     return True, referrer["first_name"], referrer["user_id"], new_points
 
 
 def get_leaderboard(limit: int = 10):
+    event_id = get_active_event_id()
     with get_db() as conn:
+        if event_id:
+            return conn.execute(
+                "SELECT u.user_id, u.username, u.first_name, ep.points "
+                "FROM event_points ep JOIN users u ON ep.user_id=u.user_id "
+                "WHERE ep.event_id=? ORDER BY ep.points DESC LIMIT ?",
+                (event_id, limit)
+            ).fetchall()
         return conn.execute(
             "SELECT user_id, username, first_name, points FROM users ORDER BY points DESC LIMIT ?",
             (limit,)
@@ -301,12 +379,14 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 이벤트 공지 — 항상 먼저 표시
     await update.message.reply_text(
-        "📣 현재 진행중인 이벤트는 🧩 Eigen Cloud 한국 커뮤니티 릴레이 입장이벤트입니다!\n\n"
-        "✅ 아래 채널에 모두 입장해 주세요!\n\n"
-        "👉 EigenCloud 한국 공지채널: https://t.me/EigenCloudKorea\n"
-        "👉 EigenCloud 한국 커뮤니티: https://t.me/EigenCloud_KR_Community\n"
-        "👉 불개미 채널: https://t.me/fireantcrypto\n"
-        "👉 불개미 대화방: https://t.me/fireantgroup\n\n"
+        "🔥 MegaETH 한국 커뮤니티 친구초대 이벤트\n"
+        "📅 기간: 2026.04.23 ~ 2026.05.31\n"
+        "💰 보상: 총 150만원 / 300만원 리워드 풀\n\n"
+        "✅ 아래 4개 채널에 모두 입장해 주세요!\n\n"
+        "1️⃣ MegaETH 공지방: https://t.me/MegaETH_KR\n"
+        "2️⃣ MegaETH 대화방: https://t.me/MegaETH_KR_CHAT\n"
+        "3️⃣ 불개미 채널: https://t.me/fireant_crypto\n"
+        "4️⃣ 불개미 대화방: https://t.me/+TJiyAYXhs6XXp_N3\n\n"
         "4개 채널 입장 후 아래 절차를 따라주세요!",
         disable_web_page_preview=True
     )
@@ -315,10 +395,10 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if is_new:
         await update.message.reply_text(
-            "🔥 친구초대 이벤트 진행 중!\n\n"
+            "🔥 MegaETH 한국 커뮤니티 친구초대 이벤트\n\n"
             "친구를 초대하면 나와 친구 모두 10포인트씩 지급됩니다.\n"
             "포인트는 이벤트 종료 후 리워드로 환산됩니다.\n\n"
-            "👇 아래에 초대한 분의 아이디를 입력해주세요!"
+            "👇 나를 이곳에 초대한 사람의 @유저네임을 입력해주세요!"
         )
         await update.message.reply_text(
             f"✅ 환영합니다, {user.first_name}님!\n"
@@ -610,9 +690,22 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         # 포인트 및 순위 조회
         user_row = conn.execute("SELECT points FROM users WHERE user_id=?", (user_id,)).fetchone()
         points = user_row["points"] if user_row else 0
-        rank_row = conn.execute(
-            "SELECT COUNT(*)+1 as rank FROM users WHERE points > ?", (points,)
-        ).fetchone()
+        # 이벤트 포인트 기준 순위 계산
+        active_event_id = get_active_event_id()
+        if active_event_id:
+            ep_row = conn.execute(
+                "SELECT points FROM event_points WHERE user_id=? AND event_id=?",
+                (user_id, active_event_id)
+            ).fetchone()
+            points = ep_row["points"] if ep_row else 0
+            rank_row = conn.execute(
+                "SELECT COUNT(*)+1 as rank FROM event_points WHERE event_id=? AND points > ?",
+                (active_event_id, points)
+            ).fetchone()
+        else:
+            rank_row = conn.execute(
+                "SELECT COUNT(*)+1 as rank FROM users WHERE points > ?", (points,)
+            ).fetchone()
         rank = rank_row["rank"] if rank_row else "-"
 
     # Google Sheets에 기록 (신규 제출 시에만) — 실패해도 메시지 전송은 반드시 진행
@@ -749,7 +842,7 @@ async def wallet_receive(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 if creds.expired and creds.refresh_token:
                     creds.refresh(Request())
                 service = gbuild('sheets', 'v4', credentials=creds)
-                sheet_name = GSHEETS_RANGE.split('!')[0]
+                sheet_name = get_active_event_sheet_tab()
                 result = service.spreadsheets().values().get(
                     spreadsheetId=SHEET_ID, range=f'{sheet_name}!B:B'
                 ).execute()
@@ -833,9 +926,19 @@ async def cmd_points(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not row:
         await update.message.reply_text("아직 등록되지 않았습니다. /start 로 시작해주세요.")
         return
+    event_id = get_active_event_id()
+    if event_id:
+        with get_db() as conn:
+            ep_row = conn.execute(
+                "SELECT points FROM event_points WHERE user_id=? AND event_id=?",
+                (user.id, event_id)
+            ).fetchone()
+        points = ep_row["points"] if ep_row else 0
+    else:
+        points = row["points"]
     await update.message.reply_text(
         f"🏆 {user.first_name}님의 포인트\n"
-        f"현재 포인트: {row['points']}점"
+        f"현재 포인트: {points}점"
     )
 
 
@@ -1103,15 +1206,31 @@ async def chat_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
             if user_row:
                 referrer_id = user_row["referrer_id"]
 
-                # 해당 유저 포인트 0 초기화
+                # 해당 유저 포인트 0 초기화 (users + event_points)
                 conn.execute("UPDATE users SET points=0 WHERE user_id=?", (user_id,))
+                # 현재 활성 이벤트의 포인트만 초기화 (다른 이벤트 포인트 보호)
+                active_eid = get_active_event_id()
+                if active_eid:
+                    conn.execute("UPDATE event_points SET points=0 WHERE user_id=? AND event_id=?", (user_id, active_eid))
+                else:
+                    conn.execute("UPDATE event_points SET points=0 WHERE user_id=?", (user_id,))
 
-                # 초대자에게 지급됐던 10포인트 회수
+                # 초대자에게 지급됐던 10포인트 회수 (users + event_points)
                 if referrer_id:
                     conn.execute(
                         "UPDATE users SET points = MAX(0, points - 10) WHERE user_id=?",
                         (referrer_id,)
                     )
+                    if active_eid:
+                        conn.execute(
+                            "UPDATE event_points SET points = MAX(0, points - 10) WHERE user_id=? AND event_id=?",
+                            (referrer_id, active_eid)
+                        )
+                    else:
+                        conn.execute(
+                            "UPDATE event_points SET points = MAX(0, points - 10) WHERE user_id=?",
+                            (referrer_id,)
+                        )
                     logger.info("초대자 포인트 회수 referrer_id=%s", referrer_id)
 
         # 퇴장 유저에게 DM
@@ -1124,16 +1243,70 @@ async def chat_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
             logger.warning("퇴장 DM 발송 실패 (user_id=%s): %s", user_id, e)
 
 
+# ── 에러 핸들러 ─────────────────────────────────────────────────────────────
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
+    error = context.error
+    logger.error("핸들러 예외 발생: %s", error, exc_info=error)
+
+    # Conflict(409) 감지: 다중 인스턴스 충돌 → 무한 루프 방지를 위해 5초 대기 후 재시도
+    if error and "Conflict" in str(error) and "getUpdates" in str(error):
+        import asyncio
+        logger.warning("409 Conflict 감지 — 다른 인스턴스와 충돌. 5초 대기 후 재시도...")
+        await asyncio.sleep(5)
+
+
 # ── 메인 ─────────────────────────────────────────────────────────────────────
+def _kill_stale_instances():
+    """시작 전 기존 봇 프로세스 정리 (다중 인스턴스 충돌 방지)."""
+    import signal
+    my_pid = os.getpid()
+    try:
+        result = subprocess.run(
+            ["pgrep", "-f", "referral-bot/bot.py"],
+            capture_output=True, text=True
+        )
+        pids = [int(p) for p in result.stdout.strip().split() if p.strip()]
+        for pid in pids:
+            if pid != my_pid:
+                logger.info(f"기존 봇 인스턴스 종료: PID {pid}")
+                try:
+                    os.kill(pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+        if len(pids) > 1:
+            import time
+            time.sleep(2)  # 기존 인스턴스 완전 종료 대기
+    except Exception as e:
+        logger.warning(f"기존 프로세스 정리 중 오류: {e}")
+
+
 def main():
+    _kill_stale_instances()
     init_db()
-    with get_db() as conn:
-        conn.execute("UPDATE event_period SET start_date='2026-03-21', end_date='2026-04-03' WHERE id=1")
     token = get_token()
 
-    app = Application.builder().token(token).build()
+    app = (
+        Application.builder()
+        .token(token)
+        .connect_timeout(30)
+        .read_timeout(30)
+        .write_timeout(30)
+        .post_init(None)
+        .build()
+    )
 
     # ConversationHandler: /start → 초대자 입력 → 당첨자 정보 수집
+    # timeout 만료 시 사용자 알림 콜백
+    async def conv_timeout_notify(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        try:
+            if update and update.effective_chat:
+                await context.bot.send_message(
+                    chat_id=update.effective_chat.id,
+                    text="⏰ 입력 시간이 초과되었습니다. 다시 시작하려면 /start 를 입력해주세요."
+                )
+        except Exception:
+            pass
+
     conv = ConversationHandler(
         entry_points=[CommandHandler("start", cmd_start)],
         states={
@@ -1149,6 +1322,9 @@ def main():
             INF_AGREE:    [CallbackQueryHandler(inf_agree_callback, pattern="^inf_agree_")],
         },
         fallbacks=[CommandHandler("skip", cmd_skip)],
+        conversation_timeout=300,
+        per_user=True,
+        per_chat=True,
     )
     app.add_handler(conv)
 
@@ -1168,6 +1344,7 @@ def main():
         },
         fallbacks=[CommandHandler("start", cmd_start)],
         per_message=False,
+        conversation_timeout=300,
     )
     app.add_handler(inform_conv)
 
@@ -1180,6 +1357,7 @@ def main():
         fallbacks=[CommandHandler("cancel", lambda u, c: ConversationHandler.END)],
         per_user=True,
         per_chat=True,
+        conversation_timeout=300,
     )
     app.add_handler(wallet_conv)
 
@@ -1209,8 +1387,14 @@ def main():
     # 채널 멤버 변경 이벤트
     app.add_handler(ChatMemberHandler(chat_member_handler, ChatMemberHandler.CHAT_MEMBER))
 
+    # 글로벌 에러 핸들러
+    app.add_error_handler(error_handler)
+
     logger.info("🤖 Referral Bot 시작!")
-    app.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+    app.run_polling(
+        allowed_updates=Update.ALL_TYPES,
+        drop_pending_updates=True,
+    )
 
 
 if __name__ == "__main__":
