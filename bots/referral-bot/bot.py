@@ -379,12 +379,12 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 이벤트 공지 — 항상 먼저 표시
     await update.message.reply_text(
-        "🔥 MegaETH 한국 커뮤니티 친구초대 이벤트\n"
-        "📅 기간: 2026.04.23 ~ 2026.05.31\n"
+        "🔥 KGeN 한국 커뮤니티 친구초대 이벤트\n"
+        "📅 기간: 2026.04.23 ~ 2026.05.03\n"
         "💰 보상: 총 150만원 / 300만원 리워드 풀\n\n"
         "✅ 아래 4개 채널에 모두 입장해 주세요!\n\n"
-        "1️⃣ MegaETH 공지방: https://t.me/MegaETH_KR\n"
-        "2️⃣ MegaETH 대화방: https://t.me/MegaETH_KR_CHAT\n"
+        "1️⃣ KGeN 공지방: https://t.me/kgenkr_official\n"
+        "2️⃣ KGeN 대화방: https://t.me/kgenkrcommunity\n"
         "3️⃣ 불개미 채널: https://t.me/fireant_crypto\n"
         "4️⃣ 불개미 대화방: https://t.me/+TJiyAYXhs6XXp_N3\n\n"
         "4개 채널 입장 후 아래 절차를 따라주세요!",
@@ -395,7 +395,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if is_new:
         await update.message.reply_text(
-            "🔥 MegaETH 한국 커뮤니티 친구초대 이벤트\n\n"
+            "🔥 KGeN 한국 커뮤니티 친구초대 이벤트\n\n"
             "친구를 초대하면 나와 친구 모두 10포인트씩 지급됩니다.\n"
             "포인트는 이벤트 종료 후 리워드로 환산됩니다.\n\n"
             "👇 나를 이곳에 초대한 사람의 @유저네임을 입력해주세요!"
