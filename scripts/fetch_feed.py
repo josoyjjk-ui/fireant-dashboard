@@ -17,7 +17,7 @@ FEEDS = {
     "youtube": "https://www.youtube.com/feeds/videos.xml?channel_id=UCIf165OxaJWen5QbbETQcEw",
     "naver":   "https://rss.blog.naver.com/fireant_korea",
     "telegram": [
-        "https://rsshub.app/telegram/channel/fireantcrypto",
+        "https://rsshub.app/telegram/channel/fireant_crypto",
         "https://rss.app/feeds/_PLACEHOLDER_NOOP",  # fallback placeholder (skip)
     ],
 }
@@ -33,7 +33,7 @@ NS = {
 }
 
 
-def fetch_xml(url: str) -> ET.Element | None:
+def fetch_xml(url: str):
     try:
         req = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(req, timeout=15) as resp:
@@ -107,7 +107,7 @@ def parse_rss(root: ET.Element, base_url: str = "") -> list[dict]:
 
 
 # ─── Telegram fallback: public page scrape ────────────────────────────────
-def scrape_telegram(channel: str = "fireantcrypto", limit: int = 5) -> list[dict]:
+def scrape_telegram(channel: str = "fireant_crypto", limit: int = 5) -> list[dict]:
     """
     t.me/s/<channel> 퍼블릭 미러에서 최신 포스트 스크레이핑.
     JavaScript 렌더링 없이 정적 HTML만 파싱.
@@ -179,7 +179,7 @@ def main():
         print(f"   ✅ RSSHub: {len(tg_items)} items")
     if not tg_items:
         print("   🔄 RSSHub failed, trying t.me/s scrape…")
-        tg_items = scrape_telegram("fireantcrypto")
+        tg_items = scrape_telegram("fireant_crypto")
         print(f"   {'✅' if tg_items else '❌'} Scrape: {len(tg_items)} items")
     result["telegram"] = tg_items
 
