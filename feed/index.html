@@ -332,9 +332,7 @@
     font-size: 0.82rem; font-weight: 600;
     color: var(--text);
     overflow: hidden; text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    white-space: nowrap;
     line-height: 1.4;
     margin-bottom: 3px;
   }
@@ -557,7 +555,7 @@ btn.addEventListener('click',()=>{const c=html2.getAttribute('data-theme')||'dar
       <a href="${it.url}" target="_blank" rel="noopener" class="feed-card">
         <div class="feed-card-icon">${icon}</div>
         <div class="feed-card-body">
-          <div class="feed-card-title">${escHtml(it.title)}</div>
+          <div class="feed-card-title">${escHtml(it.title.split(/\n/)[0].trim())}</div>
           <div class="feed-card-date">${fmtDate(it.published)}</div>
         </div>
         <span class="feed-card-arrow">→</span>
