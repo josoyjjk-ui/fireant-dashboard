@@ -555,7 +555,7 @@ btn.addEventListener('click',()=>{const c=html2.getAttribute('data-theme')||'dar
       <a href="${it.url}" target="_blank" rel="noopener" class="feed-card">
         <div class="feed-card-icon">${icon}</div>
         <div class="feed-card-body">
-          <div class="feed-card-title">${escHtml(it.title.split(/\n/)[0].trim())}</div>
+          <div class="feed-card-title">${escHtml((function(t){var first=t.split(/\n/)[0].trim();var m=first.match(/^(.*?[.!?])\s/);return m?m[1]:first;})(it.title))}</div>
           <div class="feed-card-date">${fmtDate(it.published)}</div>
         </div>
         <span class="feed-card-arrow">→</span>
