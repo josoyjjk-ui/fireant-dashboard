@@ -245,6 +245,19 @@
     font-size: 0.82rem; color: var(--text-dim);
   }
   .ev-reward::before { content: '🎁'; font-size: 0.75rem; }
+  .ev-info {
+    display: flex; flex-direction: column; gap: 4px;
+    margin-bottom: 14px;
+  }
+  .ev-period {
+    font-size: 0.82rem; color: var(--text-dim);
+    margin: 0;
+  }
+  .ev-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--gold); text-decoration: none;
+    font-size: 0.9rem; font-weight: 700;
+  }
 
   .ev-btn {
     display: inline-flex; align-items: center; gap: 6px;
@@ -419,16 +432,12 @@
     <div class="ev-card" data-start="2026-04-27T00:00:00+09:00" data-end="2026-05-03T23:59:00+09:00">
       <div class="status-dot"></div>
       <span class="ev-tag event">Fireweek</span>
-      <span class="ev-tag" style="background:rgba(99,179,237,0.15); color:#63B3ED;">MegaETH</span>
-      <div class="ev-title">
-        <a href="https://t.me/fireant_crypto/41005" target="_blank">🔥 MegaETH와 함께하는 Fireweek (총 300만원 상당)</a>
+      <h3 class="ev-title">MegaETH Fireweek</h3>
+      <div class="ev-info">
+        <p class="ev-period">기간: 4/27 ~ 5/3</p>
+        <p class="ev-reward">보상: 300만원 상당 리워드</p>
       </div>
-      <div class="ev-meta">
-        <span class="ev-badge">🗓 4월 27일(월) ~ 5월 3일(일)</span>
-        <span class="ev-badge reward">🎁 총 보상 300만원 상당</span>
-      </div>
-      <div class="ev-countdown" data-target="2026-05-03T23:59:00+09:00"></div>
-      <a href="https://t.me/fireant_crypto/41005" target="_blank" class="ev-btn">📌 공지 보기 →</a>
+      <a href="https://t.me/fireant_crypto/41005" class="ev-link" target="_blank">공지 확인하기</a>
     </div>
 
     <!-- MegaETH Founder Shuyao 교육세션 (4/28) -->
