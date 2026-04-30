@@ -332,7 +332,7 @@
     <h1>🏆 불개미 Crypto 리더보드</h1>
     <p class="hero-period" id="periodText">이벤트 기간 로딩 중...</p>
     <div id="eventTitleWrap" style="margin-top:10px; padding:8px 18px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:0.88rem; color:var(--text); font-weight:600; min-width:220px; text-align:center;">
-      진행중인 이벤트: <span id="eventTitleText" style="color:var(--orange);">🔥 KGeN 한국 커뮤니티 친구초대 이벤트</span>
+      진행중인 이벤트: <span id="eventTitleText" style="color:var(--orange);">🔥 메가이더 한국 커뮤니티 친구초대 이벤트 - feat. 불개미</span>
     </div>
     <div style="margin-top:10px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
       <a href="https://t.me/fireant_crypto/40955" target="_blank" style="display:inline-block; padding:8px 20px; background:rgba(255,107,53,0.12); border:1px solid rgba(255,107,53,0.35); border-radius:8px; font-size:0.84rem; font-weight:600; color:var(--orange); text-decoration:none;">
@@ -486,6 +486,12 @@ async function loadData() {
     const res = await fetch('../leaderboard.json?t=' + Date.now());
     if (!res.ok) throw new Error('fetch failed');
     const data = await res.json();
+
+    // 이벤트 타이틀 업데이트
+    const titleEl = document.getElementById('eventTitleText');
+    if (titleEl && data.event_name) {
+      titleEl.textContent = '🔥 ' + data.event_name;
+    }
 
     // 기간 표시
     const periodEl = document.getElementById('periodText');
