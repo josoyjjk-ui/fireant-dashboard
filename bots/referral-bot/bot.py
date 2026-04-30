@@ -44,6 +44,21 @@ def get_gsheets_range() -> str:
     """현재 활성 이벤트 기반 동적 Sheets 범위 반환. 예: 'MegaETH!A:J'"""
     return f"{get_active_event_sheet_tab()}!A:J"
 
+def _get_or_create_sheet_id(service, sheet_name: str) -> int:
+    """시트(탭)가 없으면 생성하고 sheetId를 반환한다."""
+    meta = service.spreadsheets().get(spreadsheetId=GSHEETS_SHEET_ID).execute()
+    for s in meta.get('sheets', []):
+        if s['properties']['title'] == sheet_name:
+            return s['properties']['sheetId']
+    # 탭이 없으면 생성
+    resp = service.spreadsheets().batchUpdate(
+        spreadsheetId=GSHEETS_SHEET_ID,
+        body={'requests': [{'addSheet': {'properties': {'title': sheet_name}}}]}
+    ).execute()
+    new_id = resp['replies'][0]['addSheet']['properties']['sheetId']
+    logging.getLogger(__name__).info(f"Sheets 탭 생성: '{sheet_name}' (sheetId={new_id})")
+    return new_id
+
 def append_to_sheet(row: list):
     """Google Sheets에 행 추가 (비동기 스레드로 실행)"""
     if not GSHEETS_AVAILABLE:
@@ -54,9 +69,11 @@ def append_to_sheet(row: list):
             if creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             service = gbuild('sheets', 'v4', credentials=creds)
+            sheet_name = get_active_event_sheet_tab()
+            _get_or_create_sheet_id(service, sheet_name)  # 탭 없으면 자동 생성
             service.spreadsheets().values().append(
                 spreadsheetId=GSHEETS_SHEET_ID,
-                range=get_gsheets_range(),
+                range=f'{sheet_name}!A:J',
                 valueInputOption='USER_ENTERED',
                 insertDataOption='INSERT_ROWS',
                 body={'values': [row]}
@@ -76,8 +93,9 @@ def delete_from_sheet(user_id: int):
             creds.refresh(Request())
         service = gbuild('sheets', 'v4', credentials=creds)
 
-        # 활성 이벤트 기반 시트명
+        # 활성 이벤트 기반 시트명 + sheetId 조회 (없으면 생성)
         sheet_name = get_active_event_sheet_tab()
+        sheet_id = _get_or_create_sheet_id(service, sheet_name)
 
         # 전체 데이터 읽기 (A:B)
         result = service.spreadsheets().values().get(
@@ -100,7 +118,7 @@ def delete_from_sheet(user_id: int):
                     'requests': [{
                         'deleteDimension': {
                             'range': {
-                                'sheetId': 0,
+                                'sheetId': sheet_id,
                                 'dimension': 'ROWS',
                                 'startIndex': row_idx,
                                 'endIndex': row_idx + 1
@@ -238,7 +256,11 @@ def init_db():
             );
 
             INSERT OR IGNORE INTO events (id, name, start_date, end_date, is_active)
-            VALUES (1, '메가이더 한국 커뮤니티 친구초대 이벤트', '2026-04-24', '2026-05-31', 1);
+            VALUES (1, '메가이더 한국 커뮤니티 친구초대 이벤트', '2026-04-29', '2026-05-03', 1);
+
+            -- MegaETH 친구초대 이벤트 (event_id=3)
+            INSERT OR IGNORE INTO events (id, name, start_date, end_date, is_active, sheet_tab)
+            VALUES (3, '메가이더 한국 커뮤니티 친구초대 이벤트', '2026-04-29', '2026-05-03', 1, 'MegaETH_0429');
         """)
         # real_name 컬럼 추가 (이미 있으면 무시)
         try:
@@ -253,7 +275,8 @@ def init_db():
         # sheet_tab 컬럼 추가 (이미 있으면 무시)
         try:
             conn.execute("ALTER TABLE events ADD COLUMN sheet_tab TEXT")
-            conn.execute("UPDATE events SET sheet_tab='MegaETH' WHERE id=1 AND sheet_tab IS NULL")
+            conn.execute("UPDATE events SET sheet_tab='MegaETH_0429' WHERE id=1 AND sheet_tab IS NULL")
+            conn.execute("UPDATE events SET sheet_tab='MegaETH_0429' WHERE id=3 AND sheet_tab IS NULL")
         except Exception:
             pass  # 이미 존재하면 무시
     logger.info("DB 초기화 완료: %s", DB_PATH)
@@ -333,9 +356,9 @@ def set_referrer(user_id: int, referrer_input: str) -> tuple[bool, str, int]:
         conn.execute("UPDATE users SET referrer_id=? WHERE user_id=?", (referrer["user_id"], user_id))
         conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (referrer["user_id"],))  # 초대자 +10
         conn.execute("UPDATE users SET points = points + 10 WHERE user_id=?", (user_id,))              # 피초대자 +10
-        new_points = referrer["points"] + 10
         # 이벤트 포인트 분리 적립
         event_id = get_active_event_id()
+        new_points = 0
         if event_id:
             for uid in [referrer["user_id"], user_id]:
                 conn.execute(
@@ -343,6 +366,11 @@ def set_referrer(user_id: int, referrer_input: str) -> tuple[bool, str, int]:
                     "ON CONFLICT(user_id, event_id) DO UPDATE SET points=points+10",
                     (uid, event_id)
                 )
+            row = conn.execute(
+                "SELECT points FROM event_points WHERE user_id=? AND event_id=?",
+                (referrer["user_id"], event_id)
+            ).fetchone()
+            new_points = row["points"] if row else 10
     return True, referrer["first_name"], referrer["user_id"], new_points
 
 
@@ -379,14 +407,16 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 이벤트 공지 — 항상 먼저 표시
     await update.message.reply_text(
-        "🔥 KGeN 한국 커뮤니티 친구초대 이벤트\n"
-        "📅 기간: 2026.04.23 ~ 2026.05.03\n"
-        "💰 보상: 총 150만원 / 300만원 리워드 풀\n\n"
+        "🔥 메가이더 한국 커뮤니티 친구초대 이벤트 - feat. 불개미\n"
+        "📅 기간: 2026-04-29 ~ 2026-05-03 23:59 KST\n"
+        "💰 보상:\n"
+        "  - 참여 인원 1,500명 이하: 150만원 리워드 풀\n"
+        "  - 참여 인원 1,500명 초과: 300만원 리워드 풀\n\n"
         "✅ 아래 4개 채널에 모두 입장해 주세요!\n\n"
-        "1️⃣ KGeN 공지방: https://t.me/kgenkr_official\n"
-        "2️⃣ KGeN 대화방: https://t.me/kgenkrcommunity\n"
+        "1️⃣ MegaETH 공지방: https://t.me/MegaETH_KR\n"
+        "2️⃣ MegaETH 대화방: https://t.me/MegaETH_KR_CHAT\n"
         "3️⃣ 불개미 채널: https://t.me/fireant_crypto\n"
-        "4️⃣ 불개미 대화방: https://t.me/+TJiyAYXhs6XXp_N3\n\n"
+        "4️⃣ 불개미 대화방: https://t.me/+5oI-Md6VLVtmM2U1\n\n"
         "4개 채널 입장 후 아래 절차를 따라주세요!",
         disable_web_page_preview=True
     )
@@ -395,7 +425,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if is_new:
         await update.message.reply_text(
-            "🔥 KGeN 한국 커뮤니티 친구초대 이벤트\n\n"
+            "🔥 메가이더 한국 커뮤니티 친구초대 이벤트 - feat. 불개미\n\n"
             "친구를 초대하면 나와 친구 모두 10포인트씩 지급됩니다.\n"
             "포인트는 이벤트 종료 후 리워드로 환산됩니다.\n\n"
             "👇 나를 이곳에 초대한 사람의 @유저네임을 입력해주세요!"
@@ -843,6 +873,7 @@ async def wallet_receive(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     creds.refresh(Request())
                 service = gbuild('sheets', 'v4', credentials=creds)
                 sheet_name = get_active_event_sheet_tab()
+                _get_or_create_sheet_id(service, sheet_name)  # 탭 없으면 자동 생성
                 result = service.spreadsheets().values().get(
                     spreadsheetId=SHEET_ID, range=f'{sheet_name}!B:B'
                 ).execute()

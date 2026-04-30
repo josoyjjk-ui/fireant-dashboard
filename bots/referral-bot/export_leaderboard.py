@@ -87,9 +87,10 @@ print(f"✅ leaderboard.json 생성 완료 ({total_participants}명, 이벤트: 
 result = subprocess.run(
     ["bash", "-c",
      f"cd {DASHBOARD} && git fetch origin && "
+     f"git fetch origin && "
+     f"git reset --hard origin/main && "
      f"git add leaderboard.json leaderboard/index.html && "
      f"git diff --cached --quiet || git commit -m '리더보드 자동 업데이트 [{event_name}]' && "
-     f"git pull --rebase origin main 2>/dev/null; "
      f"git push origin main"],
     capture_output=True, text=True
 )
