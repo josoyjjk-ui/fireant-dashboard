@@ -478,14 +478,14 @@
         type="text"
         class="search-input"
         id="searchInput"
-        placeholder="@텔레그램핸들"
+        placeholder="@텔레그램 핸들 or @트위터 유저네임"
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
       >
     </div>
-    <p class="search-hint">@ 포함하여 입력 · 대소문자 구분 없음 · 텔레그램 닉네임만 조회</p>
+    <p class="search-hint">@ 포함하여 입력 · 대소문자 구분 없음 · 텔레그램 / 트위터 닉네임 조회</p>
 
     <div id="searchResults"></div>
     <div id="allWinners"></div>
@@ -693,7 +693,8 @@ function runSearch(query) {
     return;
   }
   const hits = winnersData.filter(w =>
-    normalize(w.telegram) === q || normalize(w.telegram).includes(q)
+    normalize(w.telegram) === q || normalize(w.telegram).includes(q) ||
+    normalize(w.twitter) === q || normalize(w.twitter).includes(q)
   );
 
   if (hits.length === 0) {
