@@ -35,21 +35,13 @@ event_name = event["name"]
 start_date = event["start_date"]
 end_date   = event["end_date"]
 
-# 기간 체크
-if start_date and end_date:
-    today = date.today()
-    start = date.fromisoformat(start_date)
-    end   = date.fromisoformat(end_date)
-    if not (start <= today <= end):
-        print(f"⏸ 이벤트 기간 외 ({start_date} ~ {end_date}), 종료.")
-        con.close()
-        exit(0)
 
 # ── 리더보드 쿼리 (event_points 기준) ────────────────────────
 rows = con.execute("""
     SELECT ROW_NUMBER() OVER (ORDER BY ep.points DESC, u.registered_at ASC) as rank,
            u.username, u.first_name, ep.points,
-           (SELECT COUNT(*) FROM users u2 WHERE u2.referrer_id = u.user_id) as invite_count
+           (SELECT COUNT(*) FROM event_points ep2 JOIN users u2 ON ep2.user_id=u2.user_id
+            WHERE u2.referrer_id=u.user_id AND ep2.event_id=ep.event_id) as invite_count
     FROM event_points ep
     JOIN users u ON ep.user_id = u.user_id
     WHERE ep.event_id = ? AND ep.points > 0
@@ -77,6 +69,13 @@ data = {
     ]
 }
 
+# ── git reset 먼저 (원격 최신 상태로) ───────────────────────
+subprocess.run(
+    ["bash", "-c", f"cd {DASHBOARD} && git fetch origin && git reset --hard origin/main"],
+    capture_output=True, text=True
+)
+
+# ── JSON 파일 쓰기 (reset 이후) ──────────────────────────────
 out = f"{DASHBOARD}/leaderboard.json"
 with open(out, 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
@@ -86,10 +85,8 @@ print(f"✅ leaderboard.json 생성 완료 ({total_participants}명, 이벤트: 
 # ── git push ──────────────────────────────────────────────────
 result = subprocess.run(
     ["bash", "-c",
-     f"cd {DASHBOARD} && git fetch origin && "
-     f"git fetch origin && "
-     f"git reset --hard origin/main && "
-     f"git add leaderboard.json leaderboard/index.html && "
+     f"cd {DASHBOARD} && "
+     f"git add leaderboard.json && "
      f"git diff --cached --quiet || git commit -m '리더보드 자동 업데이트 [{event_name}]' && "
      f"git push origin main"],
     capture_output=True, text=True

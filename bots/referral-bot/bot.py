@@ -23,9 +23,9 @@ try:
 except ImportError:
     GSHEETS_AVAILABLE = False
 
-GSHEETS_TOKEN   = '/Users/fireant/.openclaw/workspace/secrets/google-token.json'
+GSHEETS_TOKEN   = '/Users/fireant/.openclaw/workspace/secrets/google-bridge34-token.json'
 GSHEETS_SCOPES  = ['https://www.googleapis.com/auth/spreadsheets']
-GSHEETS_SHEET_ID = '1prtoKycManbOj-HoMnzZ68kl6VEEm3h5vvvTUzK6QHs'
+GSHEETS_SHEET_ID = '1iN5hppiLxSP2OoVRZvl6RGfLfo98PkOF8IPIcZl-0Sw'
 
 def get_active_event_sheet_tab() -> str:
     """활성 이벤트의 sheet_tab 값 반환. 없으면 'Sheet1' 기본값."""
@@ -41,8 +41,8 @@ def get_active_event_sheet_tab() -> str:
     return "Sheet1"
 
 def get_gsheets_range() -> str:
-    """현재 활성 이벤트 기반 동적 Sheets 범위 반환. 예: 'MegaETH!A:J'"""
-    return f"{get_active_event_sheet_tab()}!A:J"
+    """현재 활성 이벤트 기반 동적 Sheets 범위 반환. 예: 'MegaETH!A:L'"""
+    return f"{get_active_event_sheet_tab()}!A:L"
 
 def _get_or_create_sheet_id(service, sheet_name: str) -> int:
     """시트(탭)가 없으면 생성하고 sheetId를 반환한다."""
@@ -73,7 +73,7 @@ def append_to_sheet(row: list):
             _get_or_create_sheet_id(service, sheet_name)  # 탭 없으면 자동 생성
             service.spreadsheets().values().append(
                 spreadsheetId=GSHEETS_SHEET_ID,
-                range=f'{sheet_name}!A:J',
+                range=f'{sheet_name}!A:L',
                 valueInputOption='USER_ENTERED',
                 insertDataOption='INSERT_ROWS',
                 body={'values': [row]}
@@ -170,6 +170,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ConversationHandler 상태
+WAITING_PRIVACY  = 0   # 개인정보 수집 동의 대기 (인라인 버튼)
+WAITING_PHONE_ONBOARD = 3   # 온보딩 전화번호 입력
+WAITING_EMAIL_ONBOARD = 4   # 온보딩 이메일 입력
 WAITING_REFERRER = 1
 WAITING_RESET_CONFIRM = 2
 
@@ -260,7 +263,11 @@ def init_db():
 
             -- MegaETH 친구초대 이벤트 (event_id=3)
             INSERT OR IGNORE INTO events (id, name, start_date, end_date, is_active, sheet_tab)
-            VALUES (3, '메가이더 한국 커뮤니티 친구초대 이벤트', '2026-04-29', '2026-05-03', 1, 'MegaETH_0429');
+            VALUES (3, '메가이더 한국 커뮤니티 친구초대 이벤트', '2026-04-29', '2026-05-03', 0, 'MegaETH_0429');
+
+            -- MEMELAND 친구초대 이벤트 (event_id=5)
+            INSERT OR IGNORE INTO events (id, name, start_date, end_date, is_active, sheet_tab)
+            VALUES (5, 'MEMELAND 한국 커뮤니티 친구초대 이벤트', '2026-05-12', '2026-05-20 23:59:59', 1, 'MEMELAND_0513');
         """)
         # real_name 컬럼 추가 (이미 있으면 무시)
         try:
@@ -279,6 +286,17 @@ def init_db():
             conn.execute("UPDATE events SET sheet_tab='MegaETH_0429' WHERE id=3 AND sheet_tab IS NULL")
         except Exception:
             pass  # 이미 존재하면 무시
+        # 온보딩 개인정보 컬럼 추가 (이미 있으면 무시)
+        for col_def in [
+            "ALTER TABLE users ADD COLUMN phone TEXT",
+            "ALTER TABLE users ADD COLUMN email TEXT",
+            "ALTER TABLE users ADD COLUMN privacy_agreed INTEGER DEFAULT 0",
+            "ALTER TABLE users ADD COLUMN privacy_agreed_at TEXT",
+        ]:
+            try:
+                conn.execute(col_def)
+            except sqlite3.OperationalError:
+                pass  # 이미 존재
     logger.info("DB 초기화 완료: %s", DB_PATH)
 
 
@@ -407,38 +425,202 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 이벤트 공지 — 항상 먼저 표시
     await update.message.reply_text(
-        "🔥 메가이더 한국 커뮤니티 친구초대 이벤트 - feat. 불개미\n"
-        "📅 기간: 2026-04-29 ~ 2026-05-03 23:59 KST\n"
-        "💰 보상:\n"
-        "  - 참여 인원 1,500명 이하: 150만원 리워드 풀\n"
-        "  - 참여 인원 1,500명 초과: 300만원 리워드 풀\n\n"
+        "🔥 MEMELAND 한국 커뮤니티 친구초대 이벤트 - feat. 불개미\n"
+        "📅 기간: 2026-05-12 ~ 2026-05-20 23:59 KST\n"
+        "💰 보상: 총 200만원 상당 리워드\n\n"
         "✅ 아래 4개 채널에 모두 입장해 주세요!\n\n"
-        "1️⃣ MegaETH 공지방: https://t.me/MegaETH_KR\n"
-        "2️⃣ MegaETH 대화방: https://t.me/MegaETH_KR_CHAT\n"
+        "1️⃣ MEMELAND 공지방: https://t.me/MEMELAND_KR\n"
+        "2️⃣ MEMELAND 대화방: https://t.me/MEMELAND_KR1\n"
         "3️⃣ 불개미 채널: https://t.me/fireant_crypto\n"
         "4️⃣ 불개미 대화방: https://t.me/+5oI-Md6VLVtmM2U1\n\n"
         "4개 채널 입장 후 아래 절차를 따라주세요!",
         disable_web_page_preview=True
     )
 
+    # 이미 등록된 유저 여부 확인 (users 테이블 기준)
+    with get_db() as conn:
+        existing_user = conn.execute(
+            "SELECT ever_registered, phone, email, privacy_agreed FROM users WHERE user_id=?",
+            (user.id,)
+        ).fetchone()
+
+    # 기존 이벤트 등록 여부 확인
+    event_id = get_active_event_id()
+    has_event_points = False
+    if event_id and existing_user:
+        with get_db() as conn:
+            ep = conn.execute(
+                "SELECT points FROM event_points WHERE user_id=? AND event_id=?",
+                (user.id, event_id)
+            ).fetchone()
+        has_event_points = (ep is not None)
+
+    # ── 개인정보 수집 단계 건너뛸 조건 ──
+    # phone, email, privacy_agreed 모두 있으면 개인정보 단계 생략
+    has_privacy_info = (
+        existing_user is not None
+        and existing_user["privacy_agreed"] == 1
+        and existing_user["phone"]
+        and existing_user["email"]
+    )
+
+    if not has_privacy_info:
+        # 개인정보 수집 동의 요청
+        keyboard = InlineKeyboardMarkup([[
+            InlineKeyboardButton("동의합니다 ✅", callback_data="onboard_privacy_yes"),
+            InlineKeyboardButton("동의하지 않습니다 ❌", callback_data="onboard_privacy_no"),
+        ]])
+        await update.message.reply_text(
+            "📋 *개인정보 수집·이용 동의*\n\n"
+            "수집 항목: 휴대전화번호, 이메일\n"
+            "수집 목적: 이벤트 리워드 지급 및 당첨자 연락\n"
+            "보유 기간: 리워드 지급 완료 후 6개월\n\n"
+            "위 내용에 동의하십니까?",
+            parse_mode="Markdown",
+            reply_markup=keyboard
+        )
+        # user_data에 현재 유저 상태 저장
+        context.user_data["_start_user_id"] = user.id
+        context.user_data["_start_username"] = user.username or ""
+        context.user_data["_start_first_name"] = user.first_name or ""
+        return WAITING_PRIVACY
+
+    # 개인정보가 이미 있으면 — 이벤트 등록 단계로 바로 진행
+    return await _start_event_flow(update, context, user, existing_user, has_event_points, event_id)
+
+
+async def onboard_privacy_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """개인정보 동의 콜백 (온보딩 중)"""
+    query = update.callback_query
+    await query.answer()
+    user = query.from_user
+
+    if query.data == "onboard_privacy_no":
+        await query.edit_message_text(
+            "서비스 이용을 위해 개인정보 수집 동의가 필요합니다.\n"
+            "다시 시작하려면 /start 를 입력해주세요."
+        )
+        return ConversationHandler.END
+
+    # 동의 → 전화번호 입력 요청
+    await query.edit_message_text(
+        "✅ 개인정보 수집에 동의하셨습니다.\n\n"
+        "📱 휴대전화번호를 입력해주세요.\n"
+        "예) 010-1234-5678"
+    )
+    return WAITING_PHONE_ONBOARD
+
+
+async def onboard_receive_phone(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """온보딩 전화번호 입력"""
+    import re
+    phone = update.message.text.strip()
+    # 숫자와 하이픈만 허용, 길이 11~13
+    cleaned = re.sub(r"[^0-9]", "", phone)
+    if not re.match(r"^01[0-9]{8,9}$", cleaned):
+        await update.message.reply_text(
+            "❌ 올바른 휴대전화번호 형식이 아닙니다.\n"
+            "예) 010-1234-5678 또는 01012345678"
+        )
+        return WAITING_PHONE_ONBOARD
+
+    context.user_data["_onboard_phone"] = phone
+    await update.message.reply_text(
+        f"✅ 휴대전화번호: {phone}\n\n"
+        "📧 이메일 주소를 입력해주세요.\n"
+        "예) example@gmail.com"
+    )
+    return WAITING_EMAIL_ONBOARD
+
+
+async def onboard_receive_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """온보딩 이메일 입력 → 이벤트 플로우로 진입"""
+    import re
+    email = update.message.text.strip()
+    if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+        await update.message.reply_text(
+            "❌ 올바른 이메일 형식이 아닙니다.\n"
+            "예) example@gmail.com"
+        )
+        return WAITING_EMAIL_ONBOARD
+
+    user = update.effective_user
+    phone = context.user_data.get("_onboard_phone", "")
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # DB에 저장 (users 테이블)
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE users SET phone=?, email=?, privacy_agreed=1, privacy_agreed_at=? WHERE user_id=?",
+            (phone, email, now_str, user.id)
+        )
+        # 아직 users 레코드가 없는 신규 유저라면 INSERT 후 UPDATE
+        affected = conn.execute("SELECT changes()").fetchone()[0]
+        if not affected:
+            conn.execute(
+                "INSERT OR IGNORE INTO users (user_id, username, first_name, phone, email, privacy_agreed, privacy_agreed_at) "
+                "VALUES (?,?,?,?,?,1,?)",
+                (user.id, user.username or "", user.first_name or "", phone, email, now_str)
+            )
+
+    await update.message.reply_text(f"✅ 이메일: {email}\n\n이벤트 등록을 계속합니다...")
+
+    # 이벤트 플로우로 진입
+    with get_db() as conn:
+        existing_user = conn.execute(
+            "SELECT ever_registered, phone, email, privacy_agreed FROM users WHERE user_id=?",
+            (user.id,)
+        ).fetchone()
+    event_id = get_active_event_id()
+    has_event_points = False
+    if event_id:
+        with get_db() as conn:
+            ep = conn.execute(
+                "SELECT points FROM event_points WHERE user_id=? AND event_id=?",
+                (user.id, event_id)
+            ).fetchone()
+        has_event_points = (ep is not None)
+
+    return await _start_event_flow(update, context, user, existing_user, has_event_points, event_id)
+
+
+async def _start_event_flow(update, context, user, existing_user, has_event_points, event_id):
+    """이벤트 등록 플로우 (개인정보 수집 후 또는 기존 유저 재진입)"""
     is_new = register_user(user.id, user.username or "", user.first_name or "")
 
+    # 기존 유저라도 현재 이벤트에 event_points 없으면 신규 등록 처리
+    if not is_new and event_id and not has_event_points:
+        with get_db() as conn:
+            conn.execute(
+                "INSERT INTO event_points (user_id, event_id, points) VALUES (?,?,10) "
+                "ON CONFLICT(user_id, event_id) DO UPDATE SET points=points+10",
+                (user.id, event_id)
+            )
+            conn.execute(
+                "UPDATE users SET points=points+10 WHERE user_id=?", (user.id,)
+            )
+            conn.execute("UPDATE users SET referrer_id=NULL WHERE user_id=?", (user.id,))
+        is_new = True
+
+    # 메시지 기준 (update.message or query)
+    msg_obj = update.message if update.message else (update.callback_query.message if update.callback_query else None)
+
     if is_new:
-        await update.message.reply_text(
-            "🔥 메가이더 한국 커뮤니티 친구초대 이벤트 - feat. 불개미\n\n"
-            "친구를 초대하면 나와 친구 모두 10포인트씩 지급됩니다.\n"
-            "포인트는 이벤트 종료 후 리워드로 환산됩니다.\n\n"
-            "👇 나를 이곳에 초대한 사람의 @유저네임을 입력해주세요!"
-        )
-        await update.message.reply_text(
-            f"✅ 환영합니다, {user.first_name}님!\n"
-            f"🎉 기본 +10 포인트가 지급됐습니다!\n\n"
-            f"나를 이곳에 초대한 사람의 텔레그램 @유저네임을 입력하면\n"
-            f"👉 나에게 +10포인트 추가 지급\n"
-            f"👉 초대한 친구에게도 +10포인트 지급\n\n"
-            f"(예: @fireantico)\n"
-            f"없으면 /skip 입력"
-        )
+        if msg_obj:
+            await msg_obj.reply_text(
+                "🔥 MEMELAND 한국 커뮤니티 친구초대 이벤트 - feat. 불개미\n\n"
+                "친구를 초대하면 나와 친구 모두 10포인트씩 지급됩니다.\n"
+                "포인트는 이벤트 종료 후 리워드로 환산됩니다."
+            )
+            await msg_obj.reply_text(
+                f"✅ 환영합니다, {user.first_name}님!\n"
+                f"🎉 기본 +10 포인트가 지급됐습니다!\n\n"
+                f"나를 이곳에 초대한 사람의 텔레그램 @유저네임을 입력하면\n"
+                f"👉 나에게 +10포인트 추가 지급\n"
+                f"👉 초대한 친구에게도 +10포인트 지급\n\n"
+                f"(예: @fireantico)\n"
+                f"없으면 /skip 입력"
+            )
         return WAITING_REFERRER
     else:
         # 이미 등록된 유저 — user_info 제출 여부 확인
@@ -447,19 +629,18 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "SELECT user_id FROM user_info WHERE user_id=? AND agreed=1", (user.id,)
             ).fetchone()
 
-        if info:
-            # 정보도 이미 제출함
-            await update.message.reply_text(
-                f"이미 등록된 유저입니다, {user.first_name}님!\n"
-                f"/points 로 포인트를 확인하세요."
-            )
-        else:
-            # 등록은 됐지만 정보 미제출
-            await update.message.reply_text(
-                f"이미 등록된 유저입니다, {user.first_name}님!\n\n"
-                f"📋 아직 당첨자 정보를 제출하지 않으셨습니다.\n"
-                f"/inform 을 입력해 정보를 제출해주세요."
-            )
+        if msg_obj:
+            if info:
+                await msg_obj.reply_text(
+                    f"이미 등록된 유저입니다, {user.first_name}님!\n"
+                    f"/points 로 포인트를 확인하세요."
+                )
+            else:
+                await msg_obj.reply_text(
+                    f"이미 등록된 유저입니다, {user.first_name}님!\n\n"
+                    f"📋 아직 당첨자 정보를 제출하지 않으셨습니다.\n"
+                    f"/inform 을 입력해 정보를 제출해주세요."
+                )
         return ConversationHandler.END
 
 
@@ -467,11 +648,18 @@ async def receive_referrer_id(update: Update, context: ContextTypes.DEFAULT_TYPE
     user = update.effective_user
     text = update.message.text.strip()
 
-    if not text or text.startswith("/"):
+    if not text:
         await update.message.reply_text(
             "@유저네임을 입력해주세요. (예: @fireantico)\n없으면 /skip"
         )
         return WAITING_REFERRER
+
+    if text.startswith("/"):
+        # 명령어 입력 시 상태 해소 (stuck 방지)
+        await update.message.reply_text(
+            "초대자 입력이 취소되었습니다. 명령어를 다시 실행해주세요."
+        )
+        return ConversationHandler.END
 
     result = set_referrer(user.id, text)
     if len(result) == 4:
@@ -742,7 +930,9 @@ async def inf_agree_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if inserted:
         try:
             now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            append_to_sheet([now_str, str(user_id), tg, query.from_user.first_name or "", email, phone, real_name, wallet, points, rank])
+            tg_username = f"@{query.from_user.username}" if query.from_user.username else ""
+            # 컬럼: 날짜시각, user_id, 텔레그램ID(/inform 입력), 이름, 이메일, 전화번호, 빗썸실명, 지갑주소, 포인트, 순위, 텔레그램username, 개인정보동의
+            append_to_sheet([now_str, str(user_id), tg, query.from_user.first_name or "", email, phone, real_name, wallet, points, rank, tg_username, "동의"])
         except Exception as e:
             logging.getLogger(__name__).error(f"Sheets 기록 예외: {e}")
 
@@ -933,7 +1123,7 @@ async def cmd_export_inform(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_document(
         document=buf.getvalue().encode("utf-8-sig"),
-        filename="eigencloud_inform.csv",
+        filename="megaeth_inform.csv",
         caption=f"📋 정보 제출 현황 — 총 {len(rows)}명"
     )
 
@@ -1341,6 +1531,15 @@ def main():
     conv = ConversationHandler(
         entry_points=[CommandHandler("start", cmd_start)],
         states={
+            WAITING_PRIVACY: [
+                CallbackQueryHandler(onboard_privacy_callback, pattern="^onboard_privacy_"),
+            ],
+            WAITING_PHONE_ONBOARD: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, onboard_receive_phone),
+            ],
+            WAITING_EMAIL_ONBOARD: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, onboard_receive_email),
+            ],
             WAITING_REFERRER: [
                 CommandHandler("skip", cmd_skip),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, receive_referrer_id),
@@ -1352,7 +1551,11 @@ def main():
             INF_WALLET:   [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_wallet)],
             INF_AGREE:    [CallbackQueryHandler(inf_agree_callback, pattern="^inf_agree_")],
         },
-        fallbacks=[CommandHandler("skip", cmd_skip)],
+        fallbacks=[
+            CommandHandler("skip", cmd_skip),
+            CommandHandler("cancel", lambda u, c: ConversationHandler.END),
+            CommandHandler("start", cmd_start),
+        ],
         conversation_timeout=300,
         per_user=True,
         per_chat=True,
@@ -1373,7 +1576,10 @@ def main():
             INF_WALLET:   [MessageHandler(filters.TEXT & ~filters.COMMAND, inf_receive_wallet)],
             INF_AGREE:    [CallbackQueryHandler(inf_agree_callback, pattern="^inf_agree_")],
         },
-        fallbacks=[CommandHandler("start", cmd_start)],
+        fallbacks=[
+            CommandHandler("cancel", lambda u, c: ConversationHandler.END),
+            CommandHandler("start", cmd_start),
+        ],
         per_message=False,
         conversation_timeout=300,
     )
