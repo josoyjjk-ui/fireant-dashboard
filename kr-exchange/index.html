@@ -47,19 +47,12 @@
       transition: all 0.2s;
     }
     .nav-links a:hover { color: var(--text); background: var(--surface); }
-    .theme-btn {
-      margin-left: auto; background: none; border: none; cursor: pointer;
-      font-size: 1rem; padding: 4px 8px; border-radius: 8px;
-      color: var(--text-dim); transition: background 0.2s;
-    }
-    .theme-btn:hover { background: var(--surface); }
     .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 16px 60px; }
     .page-header { padding: 40px 0 28px; }
     .page-header h1 { font-size: 1.6rem; font-weight: 800; }
-    .page-header .tagline { color: var(--text-dim); font-size: 0.88rem; margin-top: 4px; }
     .section { margin-top: 32px; }
     .section-head {
-      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px;
       padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 14px;
     }
     .section-head h2 { font-size: 1rem; font-weight: 700; }
@@ -67,6 +60,8 @@
       font-size: 0.72rem; font-weight: 700; padding: 2px 9px;
       border-radius: 20px; background: var(--surface); color: var(--text-dim);
     }
+    .section-head::after { content: '▶'; font-size: 0.7rem; color: var(--text-muted); margin-left: auto; transition: transform 0.2s; }
+    .section.open .section-head::after { transform: rotate(90deg); }
     .upbit   { color: #1499DA; }
     .bithumb { color: #F7981C; }
     .coinone { color: #0066FF; }
@@ -98,9 +93,7 @@
       background: var(--green); margin-right: 6px; vertical-align: middle;
       box-shadow: 0 0 6px rgba(72,199,142,0.6); animation: pulse 2s infinite;
     }
-    @keyframes pulse {
-      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
-    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
     .notice {
       margin-top: 28px; padding: 14px 16px;
       background: rgba(255,215,64,0.06); border: 1px solid rgba(255,215,64,0.2);
@@ -113,26 +106,17 @@
       color: var(--gold); padding: 3px 10px; border-radius: 20px;
       margin-top: 8px; letter-spacing: 0.02em;
     }
-    .ev-timer.urgent {
-      background: rgba(255,59,59,0.12); border-color: rgba(255,59,59,0.3); color: #FF5F5F;
-    }
-    .ev-timer.ended {
-      background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: var(--text-muted);
-    }
-
-    /* Accordion */
-    .section-head { cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px; }
-    .section-head::after { content: '▶'; font-size: 0.7rem; color: var(--text-muted); margin-left: auto; transition: transform 0.2s; }
-    .section.open .section-head::after { transform: rotate(90deg); }
+    .ev-timer.urgent { background: rgba(255,59,59,0.12); border-color: rgba(255,59,59,0.3); color: #FF5F5F; }
+    .ev-timer.ended { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: var(--text-muted); }
     .ev-count { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: rgba(255,80,80,0.15); color: var(--red); margin-left: 6px; }
     .ev-count.zero { background: rgba(255,255,255,0.08); color: var(--text-muted); }
     .ev-body { display: none; }
     .section.open .ev-body { display: block; }
-  @media (max-width: 600px) {
-    .nav-inner { max-width: 100%; padding: 0 8px; }
-    .nav-links { position: static; transform: none; left: auto; flex-wrap: nowrap; justify-content: center; white-space: nowrap; gap: 2px; width: 100%; overflow-x: auto; }
-    .nav-links a { font-size: 0.72rem; padding: 4px 6px; }
-  }
+    @media (max-width: 600px) {
+      .nav-inner { max-width: 100%; padding: 0 8px; }
+      .nav-links { position: static; transform: none; left: auto; flex-wrap: nowrap; justify-content: center; white-space: nowrap; gap: 2px; width: 100%; overflow-x: auto; }
+      .nav-links a { font-size: 0.72rem; padding: 4px 6px; }
+    }
   </style>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="97eb5034-8d7d-4c30-a7ef-53d73cfe8298"></script>
 </head>
@@ -140,10 +124,10 @@
   <div class="nav">
     <div class="nav-inner">
       <div class="nav-links">
-        <a href="/" style="color:var(--text-dim);">불개미 Crypto</a>
-        <a href="/feed/" style="color:var(--text-dim);">정기 시장분석</a>
-        <a href="/events/" style="color:var(--text-dim);">이벤트</a>
-        <a href="/indicators/" style="color:var(--text-dim);">불개미지표</a>
+        <a href="/">불개미 Crypto</a>
+        <a href="/feed/">정기 시장분석</a>
+        <a href="/events/">이벤트</a>
+        <a href="/indicators/">불개미지표</a>
       </div>
     </div>
   </div>
@@ -151,7 +135,6 @@
   <div class="wrap">
     <div class="page-header">
       <h1>🏦 한국거래소 이벤트</h1>
-
       <p style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;">* 가나다 순서로 배치하였습니다.</p>
     </div>
 
@@ -161,7 +144,7 @@
         <img src="logos/gopax.jpg" alt="고팍스" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
         <h2 class="gopax">고팍스</h2>
         <span class="exch-badge">GOPAX</span>
-        <span class="ev-count">5개</span>
+        <span class="ev-count">3개</span>
       </div>
       <div class="ev-body">
         <div class="ev-card">
@@ -169,49 +152,32 @@
           <span class="ev-tag" style="background:rgba(0,196,180,0.12);color:#00C4B4;">추천</span>
           <div class="ev-title"><a href="https://www.gopax.co.kr/invitation-event" target="_blank">친구 초대 이벤트</a></div>
           <div class="ev-meta">
-            <span>🗓 상시</span>
+            <span>🗓 상시 (종료일 미정)</span>
             <span>🎁 초대자/피초대자 각 10,000원</span>
+          </div>
+          <div class="ev-meta" style="margin-top:4px;">
+            <span>• 초대코드 입력 가입 → 전북은행 계좌 등록 → 첫 거래 완료</span>
           </div>
         </div>
         <div class="ev-card">
           <span class="status-dot"></span>
           <span class="ev-tag" style="background:rgba(0,196,180,0.12);color:#00C4B4;">거래지원</span>
-          <div class="ev-title"><a href="https://t.me/s/gopaxkr_official" target="_blank">휴머니티 프로토콜(H) 거래지원 이벤트</a></div>
+          <div class="ev-title"><a href="https://www.gopax.co.kr/notice/detail?id=2418" target="_blank">휴머니티 프로토콜(H) 거래지원 기념 이벤트</a></div>
           <div class="ev-meta">
-            <span>🗓 4/30 ~</span>
+            <span>🗓 2026.04.30 11:00 ~ (종료일 미확인)</span>
             <span>🎁 H 토큰 분배</span>
           </div>
           <div class="ev-meta" style="margin-top:4px;">
-            <span>• 순입금 이벤트 + 데일리 거래왕 + 매일 딸깍</span>
-          </div>
-        </div>
-        <div class="ev-card">
-          <span class="status-dot"></span>
-          <span class="ev-tag" style="background:rgba(0,196,180,0.12);color:#00C4B4;">리뉴얼</span>
-          <div class="ev-title"><a href="https://t.me/s/gopaxkr_official" target="_blank">TTC 리뉴얼 기념 이벤트</a></div>
-          <div class="ev-meta">
-            <span>🗓 진행 중</span>
-            <span>🎁 TTC 토큰 분배</span>
-          </div>
-          <div class="ev-meta" style="margin-top:4px;">
-            <span>• 일별 거래왕 + 누적 거래왕 + 일별 10만원↑ 거래 시 분할 지급</span>
+            <span>• 순입금: 총 26,800 H / 데일리 거래왕: 일별 8,900 H / 매일 딸깍: 일별 11,500 H</span>
           </div>
         </div>
         <div class="ev-card">
           <span class="status-dot"></span>
           <span class="ev-tag" style="background:rgba(0,196,180,0.12);color:#00C4B4;">수수료</span>
-          <div class="ev-title"><a href="https://t.me/s/gopaxkr_official" target="_blank">BTC 수수료 우대 이벤트</a></div>
+          <div class="ev-title"><a href="https://www.gopax.co.kr/notice/detail?id=2419" target="_blank">BTC 수수료 우대 이벤트 — 총 13,000 USDT</a></div>
           <div class="ev-meta">
-            <span>🗓 진행 중</span>
-            <span>🎁 Maker -0.03% / 총 13,000 USDT</span>
-          </div>
-        </div>
-        <div class="ev-card">
-          <span class="status-dot"></span>
-          <span class="ev-tag" style="background:rgba(0,196,180,0.12);color:#00C4B4;">거래지원</span>
-          <div class="ev-title"><a href="https://www.gopax.co.kr/trading-challenge" target="_blank">트레이딩 챌린지</a></div>
-          <div class="ev-meta">
-            <span>🗓 진행 중</span>
+            <span>🗓 진행 중 (종료일 미확인)</span>
+            <span>🎁 Maker -0.03% / Taker 0.05% + 누적 거래 기여율 차등 지급</span>
           </div>
         </div>
       </div>
@@ -223,7 +189,7 @@
         <img src="logos/bithumb.jpg" alt="빗썸" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
         <h2 class="bithumb">빗썸</h2>
         <span class="exch-badge">Bithumb</span>
-        <span class="ev-count">4개</span>
+        <span class="ev-count">2개</span>
       </div>
       <div class="ev-body">
         <div class="ev-card">
@@ -231,45 +197,23 @@
           <span class="ev-tag" style="background:rgba(247,152,28,0.12);color:#F7981C;">혜택</span>
           <div class="ev-title"><a href="https://www.bithumb.com/react/event/e202602_newsignup" target="_blank">신규회원 최대 7만원 혜택</a></div>
           <div class="ev-meta">
-            <span>🗓 상시</span>
-            <span>🎁 투자지원금 2만원 + BTC 5만원</span>
+            <span>🗓 상시 (예산 소진 시 조기 종료)</span>
+            <span>🎁 투자지원금 2만원 + BTC 5만원 상당</span>
           </div>
           <div class="ev-meta" style="margin-top:4px;">
-            <span>• 생애 첫 가입 → 계좌 연결 → 원화마켓 1건↑ 거래 (모바일 전용)</span>
+            <span>• 생애 첫 가입 → KB국민은행 계좌 연결 → 원화마켓 1건↑ 거래 (모바일 전용)</span>
           </div>
         </div>
         <div class="ev-card">
           <span class="status-dot"></span>
           <span class="ev-tag" style="background:rgba(247,152,28,0.12);color:#F7981C;">혜택</span>
-          <div class="ev-title"><a href="https://www.fnnews.com/news/202605121041073411" target="_blank">빗썸 캠퍼스 투어 2026 — 전국 12개 대학</a></div>
+          <div class="ev-title"><a href="https://feed.bithumb.com/notice" target="_blank">캠퍼스 투어 2026 — 전국 12개 대학</a></div>
           <div class="ev-meta">
-            <span>🗓 5월 중 순회</span>
-            <span>🎁 현장가입 7만원 + 키캡 키링</span>
+            <span>🗓 2026.05.06 ~ 5월 말 (대학별 축제 일정)</span>
+            <span>🎁 현장가입 7만원 + 키캡 키링 (선착순)</span>
           </div>
           <div class="ev-meta" style="margin-top:4px;">
-            <span>• 대학 축제 부스 방문, 사전/현장 신규가입</span>
-          </div>
-        </div>
-        <div class="ev-card">
-          <span class="status-dot"></span>
-          <span class="ev-tag" style="background:rgba(247,152,28,0.12);color:#F7981C;">혜택</span>
-          <div class="ev-title"><a href="https://www.newsquest.co.kr/news/articleView.html?idxno=206537" target="_blank">NH농협은행 연계 신규 입금 이벤트</a></div>
-          <div class="ev-meta">
-            <span>🗓 ~ 5/31</span>
-            <span>🎁 2만원</span>
-          </div>
-          <div class="ev-meta" style="margin-top:4px;">
-            <span>• 신규가입 → NH농협 계좌 등록 → 1원↑ 입금</span>
-          </div>
-          <div class="ev-timer" id="timer-bithumb-1" data-end="2026-05-31T23:59:00+09:00">⏱ 계산 중...</div>
-        </div>
-        <div class="ev-card">
-          <span class="status-dot"></span>
-          <span class="ev-tag" style="background:rgba(247,152,28,0.12);color:#F7981C;">리워드</span>
-          <div class="ev-title"><a href="https://www.bithumb.com/drops/drops_home" target="_blank">마일리지 드롭스</a></div>
-          <div class="ev-meta">
-            <span>🗓 상시</span>
-            <span>🎁 수수료 3% 마일리지 적립</span>
+            <span>• 5/6 단국대+조선대 (완료) → 5/12 서울대 (완료) → 5/27 한양대 (예정)</span>
           </div>
         </div>
       </div>
@@ -281,38 +225,21 @@
         <img src="logos/upbit.jpg" alt="업비트" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
         <h2 class="upbit">업비트</h2>
         <span class="exch-badge">Upbit</span>
-        <span class="ev-count">3개</span>
+        <span class="ev-count">1개</span>
       </div>
       <div class="ev-body">
         <div class="ev-card">
           <span class="status-dot"></span>
           <span class="ev-tag" style="background:rgba(20,153,218,0.12);color:#1499DA;">혜택</span>
-          <div class="ev-title"><a href="https://www.upbit.com/service_center/notice?id=6182" target="_blank">2026 피자데이 — 비트코인 코인모으기 이벤트</a></div>
+          <div class="ev-title"><a href="https://upbit.com/service_center/notice?id=6182" target="_blank">2026 피자데이 — 비트코인 코인모으기 이벤트</a></div>
           <div class="ev-meta">
-            <span>🗓 ~ 5/19 마감</span>
-            <span>🎁 2,026명 추첨 4만원 피자세트</span>
+            <span>🗓 ~ 2026.05.19 23:59 (오늘 마감)</span>
+            <span>🎁 2,026명 추첨 4만원 파파존스 피자세트</span>
           </div>
           <div class="ev-meta" style="margin-top:4px;">
-            <span>• 5/19까지 BTC 적립식 투자 신규 신청 + 1회↑ 매수</span>
+            <span>• BTC 코인모으기 신규 신청 + 1회↑ 매수 완료</span>
           </div>
           <div class="ev-timer" id="timer-upbit-1" data-end="2026-05-19T23:59:00+09:00">⏱ 계산 중...</div>
-        </div>
-        <div class="ev-card">
-          <span class="status-dot"></span>
-          <span class="ev-tag" style="background:rgba(20,153,218,0.12);color:#1499DA;">혜택</span>
-          <div class="ev-title"><a href="https://upbit.com/service_center/notice?id=5664" target="_blank">한경TV 실전투자대회 기념 신규가입 이벤트</a></div>
-          <div class="ev-meta">
-            <span>🗓 진행 중</span>
-            <span>🎁 3만원 상당</span>
-          </div>
-        </div>
-        <div class="ev-card">
-          <span class="status-dot"></span>
-          <span class="ev-tag" style="background:rgba(20,153,218,0.12);color:#1499DA;">혜택</span>
-          <div class="ev-title"><a href="https://kakaostock-static.dunamu.com/upbit_cross_event/htm/upbit_cross_event.html" target="_blank">증권플러스 업비트 크로스 이벤트</a></div>
-          <div class="ev-meta">
-            <span>🗓 상시</span>
-          </div>
         </div>
       </div>
     </div>
@@ -323,7 +250,7 @@
         <img src="logos/korbit.jpg" alt="코빗" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
         <h2 class="korbit">코빗</h2>
         <span class="exch-badge">Korbit</span>
-        <span class="ev-count">4개</span>
+        <span class="ev-count">2개</span>
       </div>
       <div class="ev-body">
         <div class="ev-card">
@@ -331,34 +258,22 @@
           <span class="ev-tag" style="background:rgba(139,92,246,0.12);color:#8B5CF6;">혜택</span>
           <div class="ev-title"><a href="https://exchange.korbit.co.kr/events/new-join/" target="_blank">웰컴 리워드 — 최대 10,000원</a></div>
           <div class="ev-meta">
-            <span>🗓 상시</span>
-            <span>🎁 가입+계좌연동 5,000원 + 첫거래 5,000원</span>
+            <span>🗓 상시 (2023.02.01 이후 신규 가입자)</span>
+            <span>🎁 가입+신한은행 계좌연동 5,000원 + 첫 1만원↑ 매수 5,000원</span>
           </div>
         </div>
         <div class="ev-card">
           <span class="status-dot"></span>
           <span class="ev-tag" style="background:rgba(139,92,246,0.12);color:#8B5CF6;">혜택</span>
-          <div class="ev-title"><a href="https://www.korbit.co.kr/events" target="_blank">신한카드 Point Plan — 100,000원</a></div>
+          <div class="ev-title"><a href="https://www.korbit.co.kr/events" target="_blank">비트코인 피자데이 기념 이벤트 — 총 156명</a></div>
           <div class="ev-meta">
-            <span>🗓 진행 중 추정</span>
-            <span>🎁 10만원</span>
+            <span>🗓 2026.05.19 ~ 2026.05.25</span>
+            <span>🎁 도미노 피자 기프티콘</span>
           </div>
-        </div>
-        <div class="ev-card">
-          <span class="status-dot"></span>
-          <span class="ev-tag" style="background:rgba(139,92,246,0.12);color:#8B5CF6;">거래지원</span>
-          <div class="ev-title"><a href="https://www.korbit.co.kr/notice/detail/?noticeId=r4gdVdoddpHUBXz5JXd0H" target="_blank">MORPHO 신규 거래지원 이벤트</a></div>
-          <div class="ev-meta">
-            <span>🗓 기간 미확인</span>
+          <div class="ev-meta" style="margin-top:4px;">
+            <span>• 퀴즈+BTC 52,200원↑ 거래 (52명) / 신규가입+거래 (52명) / 7일 연속거래 (52명)</span>
           </div>
-        </div>
-        <div class="ev-card">
-          <span class="status-dot"></span>
-          <span class="ev-tag" style="background:rgba(139,92,246,0.12);color:#8B5CF6;">거래지원</span>
-          <div class="ev-title"><a href="https://www.korbit.co.kr/notice/?noticeId=2AyLA7AseI34vlPpTntwwC" target="_blank">WCT 신규 거래지원 이벤트</a></div>
-          <div class="ev-meta">
-            <span>🗓 기간 미확인</span>
-          </div>
+          <div class="ev-timer" id="timer-korbit-1" data-end="2026-05-25T23:59:00+09:00">⏱ 계산 중...</div>
         </div>
       </div>
     </div>
@@ -369,57 +284,57 @@
         <img src="logos/coinone.jpg" alt="코인원" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
         <h2 class="coinone">코인원</h2>
         <span class="exch-badge">Coinone</span>
-        <span class="ev-count">5개</span>
+        <span class="ev-count">4개</span>
       </div>
       <div class="ev-body">
         <div class="ev-card">
           <span class="status-dot"></span>
           <span class="ev-tag" style="background:rgba(0,102,255,0.12);color:#0066FF;">혜택</span>
-          <div class="ev-title"><a href="https://coinone.co.kr/info/notice/5357" target="_blank">5월 신규가입 시드머니 이벤트</a></div>
+          <div class="ev-title"><a href="https://coinone.co.kr/info/notice/5357" target="_blank">5월 신규가입 시드머니 — 행운의 시드머니 드려요!</a></div>
           <div class="ev-meta">
-            <span>🗓 ~ 5/31</span>
-            <span>🎁 2~5만원 상당</span>
+            <span>🗓 2026.04.30 ~ 2027.04.29</span>
+            <span>🎁 시드머니 지급 (최대 5만원 상당)</span>
           </div>
-          <div class="ev-timer" id="timer-coinone-1" data-end="2026-05-31T23:59:00+09:00">⏱ 계산 중...</div>
+          <div class="ev-meta" style="margin-top:4px;">
+            <span>• 신규 가입 + 이벤트/혜택 알림 수신 동의. 예산 소진 시 조기 종료</span>
+          </div>
         </div>
         <div class="ev-card">
           <span class="status-dot"></span>
           <span class="ev-tag" style="background:rgba(0,102,255,0.12);color:#0066FF;">혜택</span>
           <div class="ev-title"><a href="https://coinone.co.kr/info/notice/5370" target="_blank">5월 자동투자 보너스 — 최대 3만 포인트</a></div>
           <div class="ev-meta">
-            <span>🗓 5월 중</span>
+            <span>🗓 2026년 5월 중 (정확한 종료일 미확인)</span>
             <span>🎁 최대 30,000P (1P=1원)</span>
+          </div>
+          <div class="ev-meta" style="margin-top:4px;">
+            <span>• 트레이딩뱅크 자동투자 활성화</span>
           </div>
         </div>
         <div class="ev-card">
           <span class="status-dot"></span>
           <span class="ev-tag" style="background:rgba(0,102,255,0.12);color:#0066FF;">거래지원</span>
-          <div class="ev-title"><a href="https://decenter.kr/NewsView/2GSS6G9XDC/GZ03" target="_blank">목요 코인 페스타</a></div>
+          <div class="ev-title"><a href="https://coinone.co.kr/info/notice/4332" target="_blank">코인원데이 (상시)</a></div>
           <div class="ev-meta">
-            <span>🗓 매주 목~일</span>
-            <span>🎁 거래량 순위 차등 지급</span>
+            <span>🗓 상시 (매주 특정 요일, 사전 고지 없이 미진행 가능)</span>
+            <span>🎁 거래대금 10만원↑ 시 코인 지급</span>
           </div>
           <div class="ev-meta" style="margin-top:4px;">
-            <span>• 매주 새 종목 선정, 1회↑ 거래 시 참여</span>
+            <span>• 이벤트 코드 입력 + 혜택 알림 수신 동의 필수</span>
           </div>
         </div>
         <div class="ev-card">
           <span class="status-dot"></span>
           <span class="ev-tag" style="background:rgba(0,102,255,0.12);color:#0066FF;">혜택</span>
-          <div class="ev-title"><a href="https://coinone.co.kr/info/notice/5297" target="_blank">트레이딩뱅크 자동투자 지원금</a></div>
+          <div class="ev-title"><a href="https://coinone.co.kr/info/notice/4744" target="_blank">비트코인 피자데이 — 비트를 피자로 말해요</a></div>
           <div class="ev-meta">
-            <span>🗓 ~ 2027/4/6</span>
-            <span>🎁 자동투자 지원금 (포인트)</span>
+            <span>🗓 2026.05.19 ~ 2026.05.25 (지급: 06.04)</span>
+            <span>🎁 파파존스 피자(L) 교환권 — 총 110명</span>
           </div>
-        </div>
-        <div class="ev-card">
-          <span class="status-dot"></span>
-          <span class="ev-tag" style="background:rgba(0,102,255,0.12);color:#0066FF;">거래지원</span>
-          <div class="ev-title"><a href="https://coinone.co.kr/info/notice/4332" target="_blank">코인원데이</a></div>
-          <div class="ev-meta">
-            <span>🗓 상시</span>
-            <span>🎁 거래 시 코인 지급 (10만원↑)</span>
+          <div class="ev-meta" style="margin-top:4px;">
+            <span>• 이벤트코드 2505PIZZA 등록 + 커뮤니티 BTC 수익률 인증</span>
           </div>
+          <div class="ev-timer" id="timer-coinone-1" data-end="2026-05-25T23:59:00+09:00">⏱ 계산 중...</div>
         </div>
       </div>
     </div>
@@ -430,7 +345,6 @@
     </div>
   </div>
 
-  <!-- 하단 테마 토글 -->
   <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
     <button id="themeToggle" title="테마 전환" style="background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-dim); padding:6px 14px; cursor:pointer; font-size:0.8rem;">🌙</button>
   </div>
@@ -450,19 +364,12 @@
       themeBtn.textContent = next === 'light' ? '☀️' : '🌙';
       localStorage.setItem('fa-theme', next);
     });
-
-    // 카운트다운 타이머
     function updateTimers() {
       document.querySelectorAll('.ev-timer[data-end]').forEach(function(el) {
         var end = new Date(el.getAttribute('data-end')).getTime();
         var now = Date.now();
         var diff = end - now;
-        if (diff <= 0) {
-          el.textContent = '종료됨';
-          el.classList.add('ended');
-          el.classList.remove('urgent');
-          return;
-        }
+        if (diff <= 0) { el.textContent = '종료됨'; el.classList.add('ended'); el.classList.remove('urgent'); return; }
         var d = Math.floor(diff / 86400000);
         var h = Math.floor((diff % 86400000) / 3600000);
         var m = Math.floor((diff % 3600000) / 60000);
@@ -472,21 +379,13 @@
         else if (h > 0) txt = h + '시간 ' + m + '분 ' + s + '초';
         else txt = m + '분 ' + s + '초';
         el.textContent = '⏱ ' + txt + ' 남음';
-        if (diff < 86400000) {
-          el.classList.add('urgent');
-        } else {
-          el.classList.remove('urgent');
-        }
+        if (diff < 86400000) el.classList.add('urgent'); else el.classList.remove('urgent');
       });
     }
     updateTimers();
     setInterval(updateTimers, 1000);
-
-    // Accordion
     document.querySelectorAll('.section-head').forEach(head => {
-      head.addEventListener('click', () => {
-        head.closest('.section').classList.toggle('open');
-      });
+      head.addEventListener('click', () => { head.closest('.section').classList.toggle('open'); });
     });
   </script>
 </body>
