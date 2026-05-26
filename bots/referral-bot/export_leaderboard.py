@@ -14,6 +14,12 @@ def tg_alert(msg: str):
     except Exception:
         pass
 
+def run_dashboard(args):
+    return subprocess.run(args, cwd=DASHBOARD, capture_output=True, text=True)
+
+def failed_result(message: str, code: int = 1):
+    return subprocess.CompletedProcess(args=[], returncode=code, stdout="", stderr=message)
+
 DB = '/Users/fireant/.openclaw/workspace/bots/referral-bot/referral.db'
 DASHBOARD = '/Users/fireant/fireant-dashboard'
 
@@ -69,13 +75,33 @@ data = {
     ]
 }
 
-# ── git reset 먼저 (원격 최신 상태로) ───────────────────────
-subprocess.run(
-    ["bash", "-c", f"cd {DASHBOARD} && git fetch origin && git reset --hard origin/main"],
-    capture_output=True, text=True
-)
+# ── 원격 최신 상태 확인. 로컬 커밋/수정은 절대 덮어쓰지 않음 ─────────────
+base = run_dashboard(["git", "fetch", "origin"])
+if base.returncode == 0:
+    dirty = run_dashboard(["git", "diff", "--quiet"])
+    staged = run_dashboard(["git", "diff", "--cached", "--quiet"])
+    if dirty.returncode != 0 or staged.returncode != 0:
+        base = failed_result("Tracked local changes present; refusing to overwrite.", 10)
 
-# ── JSON 파일 쓰기 (reset 이후) ──────────────────────────────
+if base.returncode == 0:
+    head = run_dashboard(["git", "rev-parse", "HEAD"])
+    remote = run_dashboard(["git", "rev-parse", "origin/main"])
+    if head.returncode != 0 or remote.returncode != 0:
+        base = failed_result((head.stderr or remote.stderr or "Unable to resolve git refs").strip())
+    elif head.stdout.strip() != remote.stdout.strip():
+        ancestor = run_dashboard(["git", "merge-base", "--is-ancestor", head.stdout.strip(), remote.stdout.strip()])
+        if ancestor.returncode != 0:
+            base = failed_result("Local branch has unpushed or diverged commits; refusing to reset.", 11)
+        else:
+            base = run_dashboard(["git", "merge", "--ff-only", "origin/main"])
+
+if base.returncode != 0:
+    err = (base.stderr or base.stdout or "unknown git sync error")[:300]
+    tg_alert(f"⚠️ [리더보드 동기화 중단]\n{err}")
+    print(f"ALERT SENT: {err}")
+    exit(base.returncode)
+
+# ── JSON 파일 쓰기 ──────────────────────────────────────────
 out = f"{DASHBOARD}/leaderboard.json"
 with open(out, 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
@@ -83,17 +109,21 @@ with open(out, 'w', encoding='utf-8') as f:
 print(f"✅ leaderboard.json 생성 완료 ({total_participants}명, 이벤트: {event_name})")
 
 # ── git push ──────────────────────────────────────────────────
-result = subprocess.run(
-    ["bash", "-c",
-     f"cd {DASHBOARD} && "
-     f"git add leaderboard.json && "
-     f"git diff --cached --quiet || git commit -m '리더보드 자동 업데이트 [{event_name}]' && "
-     f"git push origin main"],
-    capture_output=True, text=True
-)
+result = run_dashboard(["git", "add", "leaderboard.json"])
+if result.returncode == 0:
+    result = run_dashboard(["git", "diff", "--cached", "--quiet"])
+    if result.returncode == 0:
+        print("up-to-date")
+        exit(0)
+    result = run_dashboard(["git", "commit", "-m", f"리더보드 자동 업데이트 [{event_name}]"])
+if result.returncode == 0:
+    result = run_dashboard(["git", "pull", "--rebase", "origin", "main"])
+if result.returncode == 0:
+    result = run_dashboard(["git", "push", "origin", "main"])
+
 print(result.stdout or "up-to-date")
 if result.returncode != 0:
-    err = result.stderr[:300] if result.stderr else "unknown error"
+    err = (result.stderr or result.stdout or "unknown error")[:300]
     tg_alert(f"⚠️ [리더보드 동기화 실패]\n{err}")
     print(f"ALERT SENT: {err}")
 else:

@@ -8,7 +8,7 @@ from googleapiclient.discovery import build as gbuild
 TOKEN = '/Users/fireant/.openclaw/workspace/secrets/google-token.json'
 SHEET1 = '17YubNG1RbcLNBN6wxrh2CcWClSFltRNkEYHyL82xo9E'
 SHEET2 = '12GOhLde_pI1gGRQJXWOMzt-yTkxXVo-GrVaYM6B8gqA'
-OUT = Path('/Users/fireant/.openclaw/workspace/fireant-dashboard/winners.json')
+OUT = Path(__file__).resolve().parents[1] / 'winners.json'
 
 creds = Credentials.from_authorized_user_file(TOKEN)
 service = gbuild('sheets', 'v4', credentials=creds)
