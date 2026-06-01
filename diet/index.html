@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>🥗 불개미 다이어트 트래커</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{--bg:#0d1117;--card:#161b22;--line:#30363d;--text:#e6edf3;--dim:#8b949e;
+        --gold:#f0b90b;--green:#26a69a;--red:#ef5350;--blue:#58a6ff;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,"Apple SD Gothic Neo",sans-serif;padding:16px;max-width:900px;margin:0 auto}
+  .head{border-top:4px solid var(--gold);padding:18px 4px 14px;display:flex;align-items:center;gap:12px}
+  .head h1{font-size:1.35rem}
+  .head .sub{font-size:0.8rem;color:var(--dim);margin-top:3px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 12px;text-align:center}
+  .stat .l{font-size:0.72rem;color:var(--dim)}
+  .stat .v{font-size:1.4rem;font-weight:800;margin-top:4px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+  .card h2{font-size:1rem;margin-bottom:12px;color:var(--gold)}
+  table{width:100%;border-collapse:collapse;font-size:0.82rem}
+  th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--dim);font-weight:600}
+  .pos{color:var(--green)}.neg{color:var(--red)}
+  .empty{text-align:center;color:var(--dim);padding:40px 0}
+  @media(max-width:560px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+  <div class="head">
+    <span style="font-size:2rem">🥗</span>
+    <div><h1>불개미 다이어트 트래커</h1><div class="sub" id="sub">로딩 중…</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="stat"><div class="l">시작 체중</div><div class="v" id="s-start">—</div></div>
+    <div class="stat"><div class="l">현재 체중</div><div class="v" id="s-now">—</div></div>
+    <div class="stat"><div class="l">실제 감량</div><div class="v" id="s-lost">—</div></div>
+    <div class="stat"><div class="l">예상 감량</div><div class="v" id="s-exp">—</div></div>
+  </div>
+
+  <div class="card">
+    <h2>📊 오늘</h2>
+    <div class="grid" style="margin:0">
+      <div class="stat"><div class="l">섭취</div><div class="v" id="t-in">—</div></div>
+      <div class="stat"><div class="l">총 소모</div><div class="v" id="t-burn">—</div></div>
+      <div class="stat"><div class="l">일일 적자</div><div class="v" id="t-def">—</div></div>
+      <div class="stat"><div class="l">단백질</div><div class="v" id="t-pro">—</div></div>
+    </div>
+  </div>
+
+  <div class="card"><h2>📈 일일 적자 & 체중 추이</h2><canvas id="chart" height="120"></canvas></div>
+
+  <div class="card">
+    <h2>📅 기록</h2>
+    <div id="tableWrap"><div class="empty">기록이 없습니다. 텔레그램으로 “오늘 먹은거 / 운동 / 체중”을 보내면 채워집니다.</div></div>
+  </div>
+
+<script>
+const fmt=n=>n==null?'—':Math.round(n).toLocaleString();
+fetch('diet.json?t='+Date.now()).then(r=>r.json()).then(d=>{
+  const TDEE=d.tdee||2700, KPK=d.kcal_per_kg||7700, PT=d.protein_target||165;
+  const logs=(d.logs||[]).slice().sort((a,b)=>a.date<b.date?-1:1);
+  document.getElementById('s-start').textContent=(d.start_weight||0)+'kg';
+  let cum=0; const rows=logs.map(l=>{
+    const burn=(TDEE)+(l.burn||0); const def=burn-(l.intake||0); cum+=def;
+    return {...l, total_burn:burn, deficit:def, cum};
+  });
+  const last=rows[rows.length-1];
+  const curW = [...rows].reverse().find(r=>r.weight)?.weight;
+  document.getElementById('s-now').textContent=curW?curW+'kg':'—';
+  document.getElementById('s-lost').textContent=curW?((d.start_weight-curW).toFixed(1)+'kg'):'—';
+  document.getElementById('s-exp').textContent=(cum/KPK).toFixed(2)+'kg';
+  document.getElementById('sub').textContent=`시작 ${d.start_weight}kg · TDEE ${TDEE} · 누적적자 ${fmt(cum)}kcal · ${rows.length}일 기록`;
+  if(last){
+    document.getElementById('t-in').textContent=fmt(last.intake)+'kcal';
+    document.getElementById('t-burn').textContent=fmt(last.total_burn)+'kcal';
+    const dn=document.getElementById('t-def'); dn.textContent=(last.deficit>=0?'+':'')+fmt(last.deficit); dn.className='v '+(last.deficit>=0?'pos':'neg');
+    const pr=document.getElementById('t-pro'); pr.textContent=fmt(last.protein)+'/'+PT+'g'; pr.className='v '+((last.protein||0)>=PT?'pos':'');
+  }
+  // 차트
+  if(rows.length){
+    new Chart(document.getElementById('chart'),{
+      data:{labels:rows.map(r=>r.date.slice(5)),
+        datasets:[
+          {type:'bar',label:'일일 적자',data:rows.map(r=>r.deficit),yAxisID:'y',
+           backgroundColor:rows.map(r=>r.deficit>=0?'rgba(38,166,154,.7)':'rgba(239,83,80,.7)')},
+          {type:'line',label:'체중(kg)',data:rows.map(r=>r.weight||null),yAxisID:'y1',
+           borderColor:'#f0b90b',backgroundColor:'#f0b90b',tension:.3,spanGaps:true}
+        ]},
+      options:{responsive:true,plugins:{legend:{labels:{color:'#8b949e'}}},
+        scales:{y:{position:'left',ticks:{color:'#8b949e'},grid:{color:'rgba(139,148,158,.1)'}},
+                y1:{position:'right',ticks:{color:'#f0b90b'},grid:{drawOnChartArea:false}},
+                x:{ticks:{color:'#8b949e'},grid:{color:'rgba(139,148,158,.05)'}}}}
+    });
+  }
+  // 테이블
+  if(rows.length){
+    let h='<table><tr><th>날짜</th><th>섭취</th><th>소모</th><th>적자</th><th>체중</th><th>단백질</th></tr>';
+    [...rows].reverse().forEach(r=>{
+      h+=`<tr><td>${r.date}</td><td>${fmt(r.intake)}</td><td>${fmt(r.total_burn)}</td>
+      <td class="${r.deficit>=0?'pos':'neg'}">${r.deficit>=0?'+':''}${fmt(r.deficit)}</td>
+      <td>${r.weight||'—'}</td><td>${fmt(r.protein)}g</td></tr>`;
+    });
+    h+='</table>';
+    document.getElementById('tableWrap').innerHTML=h;
+  }
+}).catch(e=>{document.getElementById('sub').textContent='데이터 로드 실패';});
+</script>
+</body>
+</html>
