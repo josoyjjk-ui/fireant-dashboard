@@ -45,47 +45,51 @@ function nowCard(l, v, chg) {
   return `<div class="nowcard"><div class="l">${l}</div><div class="v mono">${v}</div>${ctxt}</div>`;
 }
 
+// Binance 24h(BTC/ETH) — 모바일 네트워크에서도 접근 가능. 실시간 오버레이용.
+const BN_24H = 'https://api.binance.com/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22%2C%22ETHUSDT%22%5D';
+let MN = null;  // 최신 market_now.json 보관(급등급락 공유)
+
 async function loadMarketLive() {
   try {
-    // 1) CoinGecko: 가격(24h 변동) + 글로벌(도미넌스·시총)
-    const [mk, gl, fg, kimchi] = await Promise.all([
-      getJSON("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum&price_change_percentage=24h").catch(() => null),
-      getJSON("https://api.coingecko.com/api/v3/global").catch(() => null),
-      getJSON("https://api.alternative.me/fng/?limit=1").catch(() => null),
-      calcKimchi().catch(() => null),
-    ]);
-    const btc = mk && mk.find((x) => x.id === "bitcoin");
-    const eth = mk && mk.find((x) => x.id === "ethereum");
-    const dom = gl && gl.data ? gl.data.market_cap_percentage.btc : null;
-    const mcap = gl && gl.data ? gl.data.total_market_cap.usd : null;
-    let fgv = null, fgc = null;
-    if (fg && fg.data && fg.data[0]) { fgv = +fg.data[0].value; fgc = fg.data[0].value_classification; }
+    // 데이터는 서버 cron(market_now.json)에서 — CoinGecko/업비트 직접호출이 일부 한국 모바일망에서 차단되는 문제 회피
+    const d = await getJSON(`${BASE}/market_now.json?t=${Date.now()}`);
+    MN = d;
+    // BTC/ETH는 Binance로 실시간 오버레이(접근 가능 시), 실패하면 JSON값
+    let bnMap = {};
+    try { const bn = await getJSON(BN_24H); if (Array.isArray(bn)) bn.forEach((x) => bnMap[x.symbol] = x); } catch {}
+    const live = bnMap.BTCUSDT && bnMap.ETHUSDT;
+    const btcP = bnMap.BTCUSDT ? +bnMap.BTCUSDT.lastPrice : (d.btc && d.btc.price);
+    const btcC = bnMap.BTCUSDT ? +bnMap.BTCUSDT.priceChangePercent : (d.btc && d.btc.chg);
+    const ethP = bnMap.ETHUSDT ? +bnMap.ETHUSDT.lastPrice : (d.eth && d.eth.price);
+    const ethC = bnMap.ETHUSDT ? +bnMap.ETHUSDT.priceChangePercent : (d.eth && d.eth.chg);
+    const fgv = d.fear_greed ? d.fear_greed.value : null;
 
     let html = "";
-    html += nowCard("BTC", btc ? "$" + comma(btc.current_price) : "—", btc ? btc.price_change_percentage_24h : null);
-    html += nowCard("ETH", eth ? "$" + comma(eth.current_price) : "—", eth ? eth.price_change_percentage_24h : null);
-    html += nowCard("BTC 도미넌스", dom != null ? dom.toFixed(1) + "%" : "—", null);
-    html += nowCard("총 시총", mcap != null ? fmtUSD(mcap).replace("+", "") : "—", null);
-    html += nowCard("김치 프리미엄", kimchi != null ? (kimchi >= 0 ? "+" : "") + kimchi.toFixed(2) + "%" : "—", null);
+    html += nowCard("BTC", btcP != null ? "$" + comma(btcP) : "—", btcC);
+    html += nowCard("ETH", ethP != null ? "$" + comma(ethP) : "—", ethC);
+    html += nowCard("BTC 도미넌스", d.btc_dominance != null ? d.btc_dominance.toFixed(1) + "%" : "—", null);
+    html += nowCard("총 시총", d.total_mcap != null ? fmtUSD(d.total_mcap).replace("+", "") : "—", null);
+    html += nowCard("김치 프리미엄", d.kimchi != null ? (d.kimchi >= 0 ? "+" : "") + d.kimchi.toFixed(2) + "%" : "—", null);
     let fgColor = "#3a1c1c", fgText = "#ff6b6b";
     if (fgv != null) { if (fgv >= 55) { fgColor = "#0f2a1c"; fgText = "#21d07a"; } else if (fgv >= 45) { fgColor = "#2a2410"; fgText = "#ffb547"; } }
-    const fgLabel = fgv != null ? `${fgv} · ${fgKo(fgc)}` : "—";
+    const fgLabel = fgv != null ? `${fgv} · ${fgKo(d.fear_greed.class)}` : "—";
     html += `<div class="nowcard"><div class="l">공포·탐욕</div><div class="v"><span class="fg" style="background:${fgColor};color:${fgText}">${fgLabel}</span></div></div>`;
     $("nowGrid").innerHTML = html;
-    $("marketAge").textContent = "실시간 · 방금 갱신";
-    // 국내수급 위젯 (업비트 실데이터)
-    const dm = window.__domestic;
+    $("marketAge").textContent = live ? "실시간 · 방금 갱신" : "준실시간 · " + (d.generated_at || "").slice(11, 16);
+    // 국내수급 위젯
+    const dm = d.domestic;
     if (dm) {
       const kp = $("kimchi");
-      if (kp) { kp.textContent = kimchi != null ? (kimchi >= 0 ? "+" : "") + kimchi.toFixed(2) + "%" : "—"; kp.className = "mono " + (kimchi >= 0 ? "up" : "down"); }
-      if ($("usdkrw")) $("usdkrw").textContent = "₩" + comma(dm.usdKrw);
+      if (kp) { kp.textContent = d.kimchi != null ? (d.kimchi >= 0 ? "+" : "") + d.kimchi.toFixed(2) + "%" : "—"; kp.className = "mono " + (d.kimchi >= 0 ? "up" : "down"); }
+      if ($("usdkrw")) $("usdkrw").textContent = dm.usdKrw ? "₩" + comma(dm.usdKrw) : "—";
       if ($("btckrw")) $("btckrw").textContent = dm.btcKrw ? "₩" + comma(dm.btcKrw) : "—";
       if ($("ethkrw")) $("ethkrw").textContent = dm.ethKrw ? "₩" + comma(dm.ethKrw) : "—";
       if ($("upbitVol")) $("upbitVol").textContent = dm.btcVol ? "₩" + fmtKRW(dm.btcVol) : "—";
     }
+    loadMovers();  // 같은 데이터로 급등급락 렌더
   } catch (e) {
     if ($("nowGrid").innerHTML.trim() === "" || $("nowGrid").querySelector(".skel"))
-      $("nowGrid").innerHTML = `<div class="err">⚠️ 실시간 시세 일시 오류 (재시도 중)</div>`;
+      $("nowGrid").innerHTML = `<div class="err">⚠️ 시세 일시 오류 (재시도 중)</div>`;
   }
 }
 
@@ -93,39 +97,17 @@ function fgKo(c) {
   return { "Extreme Fear": "극단공포", "Fear": "공포", "Neutral": "중립", "Greed": "탐욕", "Extreme Greed": "극단탐욕" }[c] || c || "";
 }
 
-// 김치 프리미엄: Upbit(KRW) vs Binance(USD) × 환율. Upbit는 60초 폴링이라 10초제한 내.
-async function calcKimchi() {
-  const [up, bn, fx] = await Promise.all([
-    getJSON("https://api.upbit.com/v1/ticker?markets=KRW-BTC,KRW-ETH"),
-    getJSON("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"),
-    getJSON("https://open.er-api.com/v6/latest/USD"),
-  ]);
-  const ub = Object.fromEntries(up.map((x) => [x.market, x]));
-  const btcKrw = ub["KRW-BTC"].trade_price;
-  const ethKrw = ub["KRW-ETH"] ? ub["KRW-ETH"].trade_price : null;
-  const usd = +bn.price, rate = fx.rates.KRW;
-  // 국내수급 위젯용 값 보관
-  window.__domestic = { btcKrw, ethKrw, usdKrw: rate, btcVol: ub["KRW-BTC"].acc_trade_price_24h };
-  return (btcKrw / (usd * rate) - 1) * 100;
-}
-
-/* ---------------- 실시간 급등·급락 TOP 10 (CoinGecko, 60초) ---------------- */
-const STABLE = new Set(["usdt", "usdc", "dai", "fdusd", "tusd", "usde", "usds", "busd", "pyusd", "usdd"]);
+/* ---------------- 실시간 급등·급락 TOP 10 (market_now.json 공유) ---------------- */
 function moverRow(c, i) {
-  const v = c.price_change_percentage_24h;
+  const v = c.chg;
   return `<div class="li mv"><div class="mvn"><span class="rk">${i + 1}</span><img src="${safeURL(c.image)}" alt="" loading="lazy"><span class="nm">${esc(c.name)}</span><span class="sym">${esc(c.symbol)}</span></div>
-    <div class="mvp"><span class="mono">$${comma(c.current_price, c.current_price < 1 ? 4 : 2)}</span><span class="${cls(v)} chg">${v >= 0 ? "+" : ""}${v.toFixed(2)}%</span></div></div>`;
+    <div class="mvp"><span class="mono">$${comma(c.price, c.price < 1 ? 4 : 2)}</span><span class="${cls(v)} chg">${v >= 0 ? "+" : ""}${v.toFixed(2)}%</span></div></div>`;
 }
-async function loadMovers() {
-  try {
-    const mk = await getJSON("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&price_change_percentage=24h");
-    const list = (mk || []).filter((c) => c.price_change_percentage_24h != null && c.total_volume > 5e6 && !STABLE.has((c.symbol || "").toLowerCase()));
-    const up = [...list].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h).slice(0, 10);
-    const down = [...list].sort((a, b) => a.price_change_percentage_24h - b.price_change_percentage_24h).slice(0, 10);
-    if ($("topGainers")) $("topGainers").innerHTML = up.map(moverRow).join("");
-    if ($("topLosers")) $("topLosers").innerHTML = down.map(moverRow).join("");
-    if ($("moversAge")) $("moversAge").textContent = "실시간 · 방금 갱신";
-  } catch (e) { /* 유지 */ }
+function loadMovers() {
+  if (!MN) return;
+  if ($("topGainers") && MN.gainers) $("topGainers").innerHTML = MN.gainers.map(moverRow).join("");
+  if ($("topLosers") && MN.losers) $("topLosers").innerHTML = MN.losers.map(moverRow).join("");
+  if ($("moversAge")) $("moversAge").textContent = "갱신 " + (MN.generated_at || "").slice(11, 16);
 }
 
 /* ---------------- Daily Signature (5분) ---------------- */
