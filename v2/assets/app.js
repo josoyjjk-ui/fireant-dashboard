@@ -16,6 +16,7 @@ const fmtUSD = (v) => {
 };
 const cls = (v) => (v == null ? "" : v < 0 ? "down" : "up");
 const comma = (n, d = 0) => n == null ? "—" : Number(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtKRW = (v) => { if (v == null) return "—"; const a = Math.abs(v); if (a >= 1e12) return (a / 1e12).toFixed(1) + "조"; if (a >= 1e8) return Math.round(a / 1e8).toLocaleString() + "억"; return comma(v); };
 
 async function getJSON(url, opts) {
   const r = await fetch(url, { cache: "no-store", ...opts });
@@ -70,8 +71,16 @@ async function loadMarketLive() {
     html += `<div class="nowcard"><div class="l">공포·탐욕</div><div class="v"><span class="fg" style="background:${fgColor};color:${fgText}">${fgLabel}</span></div></div>`;
     $("nowGrid").innerHTML = html;
     $("marketAge").textContent = "실시간 · 방금 갱신";
-    // 국내수급(대략)
-    if (btc) { $("btckrw").textContent = "—"; }
+    // 국내수급 위젯 (업비트 실데이터)
+    const dm = window.__domestic;
+    if (dm) {
+      const kp = $("kimchi");
+      if (kp) { kp.textContent = kimchi != null ? (kimchi >= 0 ? "+" : "") + kimchi.toFixed(2) + "%" : "—"; kp.className = "mono " + (kimchi >= 0 ? "up" : "down"); }
+      if ($("usdkrw")) $("usdkrw").textContent = "₩" + comma(dm.usdKrw);
+      if ($("btckrw")) $("btckrw").textContent = dm.btcKrw ? "₩" + comma(dm.btcKrw) : "—";
+      if ($("ethkrw")) $("ethkrw").textContent = dm.ethKrw ? "₩" + comma(dm.ethKrw) : "—";
+      if ($("upbitVol")) $("upbitVol").textContent = dm.btcVol ? "₩" + fmtKRW(dm.btcVol) : "—";
+    }
   } catch (e) {
     if ($("nowGrid").innerHTML.trim() === "" || $("nowGrid").querySelector(".skel"))
       $("nowGrid").innerHTML = `<div class="err">⚠️ 실시간 시세 일시 오류 (재시도 중)</div>`;
@@ -85,14 +94,17 @@ function fgKo(c) {
 // 김치 프리미엄: Upbit(KRW) vs Binance(USD) × 환율. Upbit는 60초 폴링이라 10초제한 내.
 async function calcKimchi() {
   const [up, bn, fx] = await Promise.all([
-    getJSON("https://api.upbit.com/v1/ticker?markets=KRW-BTC"),
+    getJSON("https://api.upbit.com/v1/ticker?markets=KRW-BTC,KRW-ETH"),
     getJSON("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"),
     getJSON("https://open.er-api.com/v6/latest/USD"),
   ]);
-  const krw = up[0].trade_price;
-  const usd = +bn.price;
-  const rate = fx.rates.KRW;
-  return (krw / (usd * rate) - 1) * 100;
+  const ub = Object.fromEntries(up.map((x) => [x.market, x]));
+  const btcKrw = ub["KRW-BTC"].trade_price;
+  const ethKrw = ub["KRW-ETH"] ? ub["KRW-ETH"].trade_price : null;
+  const usd = +bn.price, rate = fx.rates.KRW;
+  // 국내수급 위젯용 값 보관
+  window.__domestic = { btcKrw, ethKrw, usdKrw: rate, btcVol: ub["KRW-BTC"].acc_trade_price_24h };
+  return (btcKrw / (usd * rate) - 1) * 100;
 }
 
 /* ---------------- Daily Signature (5분) ---------------- */
