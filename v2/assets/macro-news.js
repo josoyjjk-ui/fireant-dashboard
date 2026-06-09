@@ -17,7 +17,8 @@ function render() {
   const items = FILTER === "all" ? ALL : ALL.filter((x) => x.category === FILTER);
   $("list").innerHTML = items.map((x) =>
     `<a class="item" href="${esc(x.link)}" target="_blank" rel="noopener">
-      <div class="ti">${esc(x.title)}</div>
+      <div class="ti">${esc(x.title_ko || x.title)}</div>
+      ${x.title_ko && x.title_ko !== x.title ? `<div style="font-size:11.5px;color:var(--dim);margin-top:3px;">${esc(x.title)}</div>` : ""}
       <div class="meta"><span class="cat ${x.category}">${x.category}</span><span>${esc(x.source)}</span><span>${ago(x.iso)}</span></div>
     </a>`).join("") || '<div style="color:var(--dim);padding:14px;">표시할 뉴스가 없습니다.</div>';
 }
