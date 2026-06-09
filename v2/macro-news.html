@@ -1,37 +1,54 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🔥 불개미 CRYPTO — 📰 매크로 뉴스</title>
-<meta name="description" content="Fed·CPI·고용 등 매크로와 크립토 뉴스를 AI 요약으로.">
+<title>🔥 불개미 CRYPTO — 매크로 뉴스</title>
+<meta name="description" content="거시경제·크립토 속보 — 코인텔레그래프·Investing.com 큐레이션.">
 <link rel="canonical" href="https://fireantcrypto.com/v2/macro-news.html">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo','Pretendard',sans-serif;}
-:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff7a1a;--accent2:#ffb547;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff7a1a;--accent2:#ffb547;--live:#3aa0ff;}
 body{background:var(--bg);color:var(--txt);}
 .nav{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
 .logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
 .tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}.tab.on{background:var(--accent);color:#0a0c10;}
 .btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
-.main{padding:48px 24px;max-width:900px;margin:0 auto;text-align:center;}
-.hero{font-size:34px;font-weight:900;margin-bottom:12px;}
-.lead{font-size:16px;color:var(--dim);line-height:1.7;margin-bottom:28px;}
-.soon{display:inline-block;padding:8px 18px;border-radius:30px;background:#231a0c;color:var(--accent2);font-weight:800;font-size:14px;}
-.back{display:inline-block;margin-top:30px;color:var(--accent);text-decoration:none;font-weight:700;}
-.foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:60px;}
+.main{padding:22px 24px;max-width:900px;margin:0 auto;}
+.head h1{font-size:24px;font-weight:900;}.head .sub{color:var(--dim);font-size:14px;margin-top:4px;}
+.filters{display:flex;gap:8px;margin:16px 0;}
+.fbtn{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:700;border:1px solid var(--line);background:transparent;color:var(--dim);cursor:pointer;}
+.fbtn.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+.item{display:block;padding:15px 18px;background:var(--card);border:1px solid var(--line);border-radius:13px;margin-bottom:10px;text-decoration:none;color:var(--txt);}
+.item:hover{border-color:var(--accent);}
+.item .ti{font-size:15px;font-weight:700;line-height:1.4;}
+.item .meta{font-size:12px;color:var(--dim);margin-top:6px;display:flex;gap:10px;align-items:center;}
+.cat{font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;}
+.cat.크립토{background:#0e2236;color:var(--live);}.cat.거시{background:#231a0c;color:var(--accent2);}
+.foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:30px;}
 @media(max-width:560px){.tabs{display:none;}}
 </style></head>
 <body>
   <div class="nav">
     <div class="logo">🔥 불개미<span> CRYPTO</span></div>
-    <div class="tabs"><a class="tab" href="./">대시보드</a><a class="tab" href="market.html">마켓</a><a class="tab on" href="macro-news.html">매크로뉴스</a><a class="tab" href="indices.html">주요주가지수</a><a class="tab" href="events.html">이벤트모음</a><a class="tab" href="signals.html">시장지표</a></div>
+    <div class="tabs">
+      <a class="tab" href="./">대시보드</a>
+      <a class="tab" href="market.html">마켓</a>
+      <a class="tab on" href="macro-news.html">매크로뉴스</a>
+      <a class="tab" href="indices.html">주요주가지수</a>
+      <a class="tab" href="events.html">이벤트모음</a>
+      <a class="tab" href="signals.html">시장지표</a>
+    </div>
     <a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
   </div>
   <div class="main">
-    <div class="hero">📰 매크로 뉴스</div>
-    <div class="lead">글로벌 거시경제 · 크립토 속보<br>Fed·CPI·고용 등 매크로와 크립토 뉴스를 AI 요약으로.</div>
-    <span class="soon">🛠️ 준비 중 — 곧 제공됩니다</span>
-    <br><a class="back" href="./">← 대시보드로 돌아가기</a>
+    <div class="head"><h1>📰 매크로 뉴스</h1><div class="sub">거시경제·크립토 속보 · <span id="age">로딩…</span></div></div>
+    <div class="filters">
+      <button class="fbtn on" data-f="all">전체</button>
+      <button class="fbtn" data-f="크립토">크립토</button>
+      <button class="fbtn" data-f="거시">거시경제</button>
+    </div>
+    <div id="list"></div>
   </div>
-  <div class="foot">🔥 FIRE ANT CRYPTO · fireantcrypto.com · 투자 권유가 아닙니다</div>
+  <div class="foot">🔥 FIRE ANT CRYPTO · 출처 코인텔레그래프·Investing.com · 투자 권유 아님</div>
+<script src="assets/macro-news.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/auth.js"></script>
 </body></html>
