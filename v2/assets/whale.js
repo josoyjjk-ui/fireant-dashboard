@@ -55,9 +55,21 @@
   }
 
   /* ---- WS: 청산 · 고래체결 ---- */
-  let ws = null, reconnect = null;
+  let ws = null, reconnect = null, healthTimer = null;
+  let msgCount = 0, wsConnectedAt = 0;
   const liq = [], whaleLiq = [], trades = [];
   let longLiq = 0, shortLiq = 0;  // 세션 누적(청산 분포용)
+
+  function setStat(html) { const el = $("wsStat"); if (el) el.innerHTML = html; }
+  function updateHealth() {
+    if (!ws || ws.readyState !== 1) { setStat('<span style="color:var(--accent2)">🟡 연결 중…</span>'); return; }
+    if (msgCount > 0) { setStat('<span style="color:var(--up)">🟢 실시간 연결됨</span>'); return; }
+    if (Date.now() - wsConnectedAt > 15000) {
+      setStat('<span style="color:var(--down)">🔴 Binance 선물 스트림 연결 불가</span>');
+      const hint = '<div class="feedempty">⚠️ 이 네트워크/지역에서 Binance 선물 실시간 스트림에 연결되지 않습니다. VPN 또는 다른 네트워크에서 확인해 주세요.</div>';
+      ["liqFeed", "whaleLiq", "whaleTrades"].forEach((id) => { const el = $(id); if (el && !el.dataset.hasdata) el.innerHTML = hint; });
+    }
+  }
 
   function pushRow(arr, row) { arr.unshift(row); if (arr.length > MAXROW) arr.pop(); }
 
@@ -97,29 +109,32 @@
 
   function onMsg(raw) {
     let m; try { m = JSON.parse(raw); } catch { return; }
+    msgCount++;
     const d = m.data || m; const ev = d.e;
     if (ev === "forceOrder") {
       const o = d.o; const sym = (o.s || "").replace("USDT", "");
       const usd = (+o.p) * (+o.q); const long = o.S === "SELL";  // SELL=롱청산
       const row = { t: hhmmss(o.T || Date.now()), sym, usd, long };
-      pushRow(liq, row); renderLiq();
+      pushRow(liq, row); const lf = $("liqFeed"); if (lf) lf.dataset.hasdata = "1"; renderLiq();
       if (long) longLiq += usd; else shortLiq += usd; renderMap();
-      if (usd >= WHALE_LIQ) { pushRow(whaleLiq, row); renderWhaleLiq(); }
+      if (usd >= WHALE_LIQ) { pushRow(whaleLiq, row); const wl = $("whaleLiq"); if (wl) wl.dataset.hasdata = "1"; renderWhaleLiq(); }
     } else if (ev === "aggTrade") {
       const usd = (+d.p) * (+d.q);
       if (usd >= WHALE_TRADE) {
         const sym = (d.s || "").replace("USDT", "");
         pushRow(trades, { t: hhmmss(d.T || Date.now()), sym, usd, buy: !d.m });  // m=true→매수자 메이커→매도공격
-        renderTrades();
+        const wt = $("whaleTrades"); if (wt) wt.dataset.hasdata = "1"; renderTrades();
       }
     }
   }
 
   function wsOpen() {
     wsClose();
+    msgCount = 0; wsConnectedAt = Date.now();
     const streams = ["btcusdt@forceOrder", "ethusdt@forceOrder", "btcusdt@aggTrade", "ethusdt@aggTrade"].join("/");
     try { ws = new WebSocket(`wss://fstream.binance.com/stream?streams=${streams}`); }
     catch { return; }
+    ws.onopen = () => { wsConnectedAt = Date.now(); updateHealth(); };
     ws.onmessage = (e) => onMsg(e.data);
     ws.onclose = () => { if (!document.hidden) { clearTimeout(reconnect); reconnect = setTimeout(wsOpen, 3000); } };
     ws.onerror = () => { try { ws.close(); } catch {} };
@@ -132,8 +147,10 @@
     loadDeriv(); fundTimer = setInterval(loadDeriv, 30000);
     renderLiq(); renderWhaleLiq(); renderTrades(); renderMap();
     wsOpen();
+    setStat('<span style="color:var(--accent2)">🟡 연결 중…</span>');
+    healthTimer = setInterval(updateHealth, 5000);
   }
-  function stopT() { clearInterval(fundTimer); wsClose(); }
+  function stopT() { clearInterval(fundTimer); clearInterval(healthTimer); wsClose(); }
 
   if (!window.__whaleInit) {
     window.__whaleInit = true;
