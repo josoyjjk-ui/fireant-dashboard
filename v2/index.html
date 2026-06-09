@@ -45,6 +45,26 @@ body{background:var(--bg);color:var(--txt);}
 .err{color:var(--down);font-size:12px;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;}
 .banner{display:none;background:#2a1116;color:#ffb1ba;font-size:12px;font-weight:700;text-align:center;padding:8px;}
+.r3{grid-template-columns:1fr 1fr 1fr;}
+.mv{align-items:center;}
+.mvn{display:flex;align-items:center;gap:8px;min-width:0;}
+.mvn .rk{font-size:11px;color:var(--dim);font-weight:800;width:18px;text-align:center;flex-shrink:0;}
+.mvn img{width:20px;height:20px;border-radius:50%;flex-shrink:0;}
+.mvn .nm{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mvn .sym{color:var(--dim);font-size:11px;text-transform:uppercase;flex-shrink:0;}
+.mvp{display:flex;align-items:center;gap:9px;flex-shrink:0;}.mvp .chg{font-weight:800;font-size:13px;min-width:62px;text-align:right;}
+.feedwrap{max-height:300px;overflow-y:auto;}
+.feedrow{display:grid;grid-template-columns:62px 40px 1fr auto;gap:8px;align-items:center;padding:6px 2px;border-bottom:1px solid var(--line);font-size:12.5px;}
+.feedrow:last-child{border:none;}
+.ftime{color:var(--dim);font-size:11px;font-variant-numeric:tabular-nums;}
+.fsym{font-weight:800;font-size:11px;}.fside{font-weight:700;font-size:12px;}.famt{font-weight:800;text-align:right;}
+.feedempty{color:var(--dim);font-size:12px;padding:14px 2px;}
+.mapbar{display:flex;height:26px;border-radius:7px;overflow:hidden;margin:8px 0;background:#0e1116;}
+.mapseg{height:100%;}.mapseg.up{background:linear-gradient(90deg,#0f2a1c,#21d07a55);}.mapseg.down{background:linear-gradient(90deg,#ff4d5e55,#2a1116);}
+.maplabels{display:flex;justify-content:space-between;font-size:12px;font-weight:800;}
+.mapnote{font-size:11px;color:var(--dim);margin-top:8px;}
+.flowsoon{color:var(--dim);font-size:12.5px;line-height:1.6;padding:6px 2px;}
+@media(max-width:920px){.r3{grid-template-columns:1fr;}}
 @media(max-width:560px){.tabs{display:none;}.main{padding:14px;}.now-grid{grid-template-columns:repeat(2,1fr);gap:8px;}.sig-grid{grid-template-columns:1fr;gap:10px;}.r2{grid-template-columns:1fr;}.daily-r{flex-direction:column;}.daily-r .img{width:100%;}}
 </style></head>
 <body>
@@ -65,6 +85,12 @@ body{background:var(--bg);color:var(--txt);}
     <div class="seclabel"><h2>📈 Market Now</h2><span class="now"><span class="pulse"></span><span id="marketAge">로딩…</span></span></div>
     <div class="now-grid" id="nowGrid"></div>
 
+    <div class="seclabel"><h2>🚀 실시간 급등·급락 TOP 10</h2><span class="now"><span class="pulse"></span><span id="moversAge">로딩…</span></span></div>
+    <div class="row r2">
+      <div class="card"><div class="ch"><h3 class="up">📈 급등 TOP 10</h3><span class="meta">24h · 시총 250위 내</span></div><div id="topGainers"></div></div>
+      <div class="card"><div class="ch"><h3 class="down">📉 급락 TOP 10</h3><span class="meta">24h · 시총 250위 내</span></div><div id="topLosers"></div></div>
+    </div>
+
     <div class="seclabel"><h2>⭐ 불개미 시그니처 수급 보드</h2><span class="daily" id="sigAsof">로딩…</span></div>
     <div class="sig-grid" id="sigGrid"></div>
 
@@ -73,7 +99,7 @@ body{background:var(--bg);color:var(--txt);}
       <div class="daily-r"><img class="img" id="dailyImg" alt="일일시황" src="../daily-report-latest-v2.png" onerror="this.style.display='none'"><div class="sum" id="dailySum">로딩…</div></div>
     </div></div>
 
-    <div class="row r2">
+    <div class="row r3">
       <div class="card"><div class="ch"><h3>🇰🇷 국내 수급</h3><span class="meta">준실시간</span></div>
         <div class="li"><div>김치 프리미엄</div><div class="mono" id="kimchi">—</div></div>
         <div class="li"><div>USD/KRW</div><div class="mono" id="usdkrw">—</div></div>
@@ -81,13 +107,31 @@ body{background:var(--bg);color:var(--txt);}
         <div class="li"><div>ETH (업비트 KRW)</div><div class="mono" id="ethkrw">—</div></div>
         <div class="li"><div>업비트 BTC 24h 거래대금</div><div class="mono" id="upbitVol">—</div></div>
       </div>
-      <div class="card"><div class="ch"><h3>📅 이벤트·언락 캘린더</h3><span class="meta" id="calMeta">다가오는 일정</span></div>
-        <div id="calWrap"></div>
+      <div class="card"><div class="ch"><h3>📅 이벤트 캘린더</h3><span class="meta">CPI·FOMC·IPO 등</span></div>
+        <div id="calEvent"></div>
+      </div>
+      <div class="card"><div class="ch"><h3>🔓 언락 캘린더</h3><span class="meta">토큰 언락 일정</span></div>
+        <div id="calUnlock"></div>
+      </div>
+    </div>
+
+    <div class="seclabel"><h2>🐋 파생·고래 시그널</h2><span class="now"><span class="pulse"></span><span id="derivAge">로딩…</span></span></div>
+    <div class="now-grid" id="derivGrid"></div>
+    <div class="row r3">
+      <div class="card"><div class="ch"><h3>💥 실시간 청산</h3><span class="meta">BTC·ETH 선물</span></div><div class="feedwrap" id="liqFeed"></div></div>
+      <div class="card"><div class="ch"><h3>🐋 고래 청산</h3><span class="meta">≥ $100K</span></div><div class="feedwrap" id="whaleLiq"></div></div>
+      <div class="card"><div class="ch"><h3>🐋 고래 체결</h3><span class="meta">≥ $500K</span></div><div class="feedwrap" id="whaleTrades"></div></div>
+    </div>
+    <div class="row r2">
+      <div class="card"><div class="ch"><h3>💥 실시간 청산 분포(맵)</h3><span class="meta">세션 누적</span></div><div id="liqMap"></div></div>
+      <div class="card"><div class="ch"><h3>🏦 고래 입출금</h3><span class="meta">거래소 유출입</span></div>
+        <div class="flowsoon">🔧 <b>준비중</b> — 거래소 온체인 유출입은 Whale Alert 등 유료 데이터가 필요합니다.<br>추후 불개미 지갑 추적봇(<b>@fireant_wallet_track_bot</b>)과 연동 예정입니다.</div>
       </div>
     </div>
   </div>
-  <div class="foot">🔥 FIRE ANT CRYPTO · Market Now=준실시간 / Signature=일일 · 본 정보는 투자 권유가 아닙니다 · <span id="genAt"></span></div>
+  <div class="foot">🔥 FIRE ANT CRYPTO · Market Now·파생/고래=실시간(Binance) / Signature=일일 · 본 정보는 투자 권유가 아닙니다 · <span id="genAt"></span></div>
 <script src="assets/app.js"></script>
+<script src="assets/whale.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/auth.js"></script>
 </body></html>

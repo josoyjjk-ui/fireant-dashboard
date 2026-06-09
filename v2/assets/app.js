@@ -4,6 +4,8 @@
  */
 const BASE = "../data/v1";
 const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch { return ""; } };
 
 const fmtUSD = (v) => {
   if (v == null) return "—";
@@ -107,6 +109,25 @@ async function calcKimchi() {
   return (btcKrw / (usd * rate) - 1) * 100;
 }
 
+/* ---------------- 실시간 급등·급락 TOP 10 (CoinGecko, 60초) ---------------- */
+const STABLE = new Set(["usdt", "usdc", "dai", "fdusd", "tusd", "usde", "usds", "busd", "pyusd", "usdd"]);
+function moverRow(c, i) {
+  const v = c.price_change_percentage_24h;
+  return `<div class="li mv"><div class="mvn"><span class="rk">${i + 1}</span><img src="${safeURL(c.image)}" alt="" loading="lazy"><span class="nm">${esc(c.name)}</span><span class="sym">${esc(c.symbol)}</span></div>
+    <div class="mvp"><span class="mono">$${comma(c.current_price, c.current_price < 1 ? 4 : 2)}</span><span class="${cls(v)} chg">${v >= 0 ? "+" : ""}${v.toFixed(2)}%</span></div></div>`;
+}
+async function loadMovers() {
+  try {
+    const mk = await getJSON("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&price_change_percentage=24h");
+    const list = (mk || []).filter((c) => c.price_change_percentage_24h != null && c.total_volume > 5e6 && !STABLE.has((c.symbol || "").toLowerCase()));
+    const up = [...list].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h).slice(0, 10);
+    const down = [...list].sort((a, b) => a.price_change_percentage_24h - b.price_change_percentage_24h).slice(0, 10);
+    if ($("topGainers")) $("topGainers").innerHTML = up.map(moverRow).join("");
+    if ($("topLosers")) $("topLosers").innerHTML = down.map(moverRow).join("");
+    if ($("moversAge")) $("moversAge").textContent = "실시간 · 방금 갱신";
+  } catch (e) { /* 유지 */ }
+}
+
 /* ---------------- Daily Signature (5분) ---------------- */
 function spark(id, hist, color) {
   const el = $(id);
@@ -153,31 +174,39 @@ async function loadSignature() {
   } catch (e) { /* 유지 */ }
 }
 
-/* ---------------- 이벤트·언락 캘린더 ---------------- */
+/* ---------------- 캘린더(이벤트 / 언락 분리) ---------------- */
+const CAL_ICON = { unlock: "🔓", macro: "📊", ipo: "🚀", event: "🎉" };
+function calRowHTML(x, today) {
+  const dd = Math.round((x._d - today) / 86400000);
+  const dlabel = dd === 0 ? "D-DAY" : `D-${dd}`;
+  const amt = x.amount ? ` <span style="color:var(--dim)">· ${esc(x.amount)}</span>` : "";
+  const hot = x.importance === "high" ? "color:#ff4d5e;" : "";
+  const md = x.date.slice(5).replace("-", ".");
+  const when = x.time ? `${md} ${esc(x.time)} KST` : md;
+  return `<div class="li"><div>${CAL_ICON[x.type] || "•"} ${esc(x.title)}${amt}<div style="font-size:11px;color:var(--dim);margin-top:2px;">🕐 ${when}</div></div><span class="when" style="${hot}">${dlabel}</span></div>`;
+}
 async function loadCalendar() {
-  const wrap = $("calWrap");
-  if (!wrap) return;
-  const ICON = { unlock: "🔓", macro: "📊", ipo: "🚀", event: "🎉" };
+  const ev = $("calEvent"), ul = $("calUnlock");
+  if (!ev && !ul) return;
   try {
     const cal = await getJSON(`${BASE}/calendar.json?t=${Date.now()}`);
     const today = new Date(); today.setHours(0, 0, 0, 0);
-    const items = (cal.items || [])
+    const all = (cal.items || [])
       .map((x) => ({ ...x, _d: new Date(x.date + "T00:00:00+09:00") }))
       .filter((x) => !isNaN(x._d) && x._d >= today)
-      .sort((a, b) => a._d - b._d)
-      .slice(0, 6);
-    if (!items.length) { wrap.innerHTML = '<div class="li"><div style="color:var(--dim)">예정된 일정이 없습니다.</div></div>'; return; }
-    wrap.innerHTML = items.map((x) => {
-      const dd = Math.round((x._d - today) / 86400000);
-      const dlabel = dd === 0 ? "D-DAY" : `D-${dd}`;
-      const amt = x.amount ? ` <span style="color:var(--dim)">· ${x.amount}</span>` : "";
-      const hot = x.importance === "high" ? "color:#ff4d5e;" : "";
-      const md = `${x.date.slice(5).replace("-", ".")}`;            // MM.DD
-      const when = x.time ? `${md} ${x.time} KST` : `${md}`;          // 시간 있으면 병기
-      return `<div class="li"><div>${ICON[x.type] || "•"} ${x.title}${amt}<div style="font-size:11px;color:var(--dim);margin-top:2px;">🕐 ${when}</div></div><span class="when" style="${hot}">${dlabel}</span></div>`;
-    }).join("");
+      .sort((a, b) => a._d - b._d);
+    const empty = '<div class="li"><div style="color:var(--dim)">예정된 일정이 없습니다.</div></div>';
+    if (ev) {
+      const evItems = all.filter((x) => x.type !== "unlock").slice(0, 6);
+      ev.innerHTML = evItems.length ? evItems.map((x) => calRowHTML(x, today)).join("") : empty;
+    }
+    if (ul) {
+      const ulItems = all.filter((x) => x.type === "unlock").slice(0, 6);
+      ul.innerHTML = ulItems.length ? ulItems.map((x) => calRowHTML(x, today)).join("") : empty;
+    }
   } catch (e) {
-    wrap.innerHTML = `<div class="li"><div style="color:var(--down)">캘린더 로드 실패</div></div>`;
+    if (ev) ev.innerHTML = `<div class="li"><div style="color:var(--down)">캘린더 로드 실패</div></div>`;
+    if (ul) ul.innerHTML = `<div class="li"><div style="color:var(--down)">캘린더 로드 실패</div></div>`;
   }
 }
 
@@ -188,14 +217,15 @@ $("sigGrid").innerHTML = Array(4).fill('<div class="sigcard"><div class="big ske
 // 타이머 가드 — 중복 로드 방지 + 탭 비활성 시 폴링 정지(누수·rate-limit 방지)
 if (!window.__hubInit) {
   window.__hubInit = true;
-  let mTimer = null, sTimer = null;
+  let mTimer = null, sTimer = null, vTimer = null;
   function start() {
     stop();
     loadMarketLive(); mTimer = setInterval(loadMarketLive, 60000);   // 실시간 60초
+    loadMovers();     vTimer = setInterval(loadMovers, 60000);       // 급등급락 60초
     loadSignature();  sTimer = setInterval(loadSignature, 300000);   // 5분
     loadCalendar();   // 캘린더(저빈도, 1회면 충분)
   }
-  function stop() { clearInterval(mTimer); clearInterval(sTimer); }
+  function stop() { clearInterval(mTimer); clearInterval(sTimer); clearInterval(vTimer); }
   document.addEventListener("visibilitychange", () => { document.hidden ? stop() : start(); });
   start();
 }
