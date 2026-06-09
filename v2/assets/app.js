@@ -141,6 +141,32 @@ async function loadSignature() {
   } catch (e) { /* 유지 */ }
 }
 
+/* ---------------- 이벤트·언락 캘린더 ---------------- */
+async function loadCalendar() {
+  const wrap = $("calWrap");
+  if (!wrap) return;
+  const ICON = { unlock: "🔓", macro: "📊", ipo: "🚀", event: "🎉" };
+  try {
+    const cal = await getJSON(`${BASE}/calendar.json?t=${Date.now()}`);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const items = (cal.items || [])
+      .map((x) => ({ ...x, _d: new Date(x.date + "T00:00:00+09:00") }))
+      .filter((x) => !isNaN(x._d) && x._d >= today)
+      .sort((a, b) => a._d - b._d)
+      .slice(0, 6);
+    if (!items.length) { wrap.innerHTML = '<div class="li"><div style="color:var(--dim)">예정된 일정이 없습니다.</div></div>'; return; }
+    wrap.innerHTML = items.map((x) => {
+      const dd = Math.round((x._d - today) / 86400000);
+      const dlabel = dd === 0 ? "D-DAY" : `D-${dd}`;
+      const amt = x.amount ? ` <span style="color:var(--dim)">· ${x.amount}</span>` : "";
+      const hot = x.importance === "high" ? "color:#ff4d5e;" : "";
+      return `<div class="li"><div>${ICON[x.type] || "•"} ${x.title}${amt}</div><span class="when" style="${hot}">${dlabel}</span></div>`;
+    }).join("");
+  } catch (e) {
+    wrap.innerHTML = `<div class="li"><div style="color:var(--down)">캘린더 로드 실패</div></div>`;
+  }
+}
+
 /* ---------------- init ---------------- */
 $("nowGrid").innerHTML = Array(6).fill('<div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div>').join("");
 $("sigGrid").innerHTML = Array(4).fill('<div class="sigcard"><div class="big skel">·····</div></div>').join("");
@@ -153,6 +179,7 @@ if (!window.__hubInit) {
     stop();
     loadMarketLive(); mTimer = setInterval(loadMarketLive, 60000);   // 실시간 60초
     loadSignature();  sTimer = setInterval(loadSignature, 300000);   // 5분
+    loadCalendar();   // 캘린더(저빈도, 1회면 충분)
   }
   function stop() { clearInterval(mTimer); clearInterval(sTimer); }
   document.addEventListener("visibilitychange", () => { document.hidden ? stop() : start(); });
