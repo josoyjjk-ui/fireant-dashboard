@@ -64,8 +64,32 @@ body{background:var(--bg);color:var(--txt);}
 .maplabels{display:flex;justify-content:space-between;font-size:12px;font-weight:800;}
 .mapnote{font-size:11px;color:var(--dim);margin-top:8px;}
 .flowsoon{color:var(--dim);font-size:12.5px;line-height:1.6;padding:6px 2px;}
-@media(max-width:920px){.r3{grid-template-columns:1fr;}}
-@media(max-width:560px){.tabs{display:none;}.main{padding:14px;}.now-grid{grid-template-columns:repeat(2,1fr);gap:8px;}.sig-grid{grid-template-columns:1fr;gap:10px;}.r2{grid-template-columns:1fr;}.daily-r{flex-direction:column;}.daily-r .img{width:100%;}}
+@media(max-width:920px){.r3{grid-template-columns:1fr;}.now-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:560px){
+  .nav{flex-wrap:wrap;padding:12px 14px;gap:9px;}
+  .logo{font-size:20px;}
+  .tabs{display:flex;order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;gap:6px;padding-bottom:3px;-webkit-overflow-scrolling:touch;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{flex:0 0 auto;font-size:14px;padding:8px 13px;}
+  .main{padding:14px;}
+  .seclabel h2{font-size:19px;}.seclabel .now,.seclabel .daily{font-size:12px;}
+  .now-grid{grid-template-columns:repeat(2,1fr);gap:9px;}
+  .nowcard{padding:13px 14px;}
+  .nowcard .l{font-size:13px;}.nowcard .v{font-size:22px;}.nowcard .c{font-size:13px;}
+  .sig-grid{grid-template-columns:1fr;gap:11px;}
+  .sigcard{min-height:auto;}
+  .sigcard .t{font-size:14px;}.sigcard .big{font-size:30px;}.sigcard .sub{font-size:12.5px;}
+  .r2,.r3{grid-template-columns:1fr;}
+  .ch h3{font-size:16px;}.ch .meta{font-size:12px;}
+  .li{font-size:15px;padding:10px 0;}.when{font-size:13px;}.tag{font-size:12px;}
+  .daily-r{flex-direction:column;}.daily-r .img{width:100%;height:200px;}.daily-r .sum{font-size:15px;}
+  .mvn .nm{font-size:15px;}.mvn .sym{font-size:12px;}.mvn img{width:24px;height:24px;}.mvn .rk{font-size:13px;}
+  .mvp .chg{font-size:15px;min-width:66px;}.mvp .mono{font-size:14px;}
+  .feedrow{font-size:14px;grid-template-columns:56px 38px 1fr auto;gap:7px;}
+  .ftime{font-size:12px;}.fsym{font-size:12px;}.fside{font-size:13px;}
+  .feedwrap{max-height:340px;}
+  .maplabels{font-size:13px;}.mapnote{font-size:12px;}.flowsoon{font-size:13.5px;}
+}
 </style></head>
 <body>
   <div id="staleBanner" class="banner"></div>
