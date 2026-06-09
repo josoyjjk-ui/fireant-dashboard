@@ -32,10 +32,11 @@ async function getJSON(p) {
 
 function chart(canvas, hist, unit) {
   if (!window.Chart || !hist || hist.length === 0) return false;
+  if (canvas._chart) canvas._chart.destroy();
   const labels = hist.map((h) => h.date);
   const data = hist.map((h) => h.value);
   const color = data[data.length - 1] < 0 ? "#ff4d5e" : "#21d07a";
-  new Chart(canvas, {
+  canvas._chart = new Chart(canvas, {
     type: "line",
     data: { labels, datasets: [{ data, borderColor: color, backgroundColor: color + "22", borderWidth: 2, fill: true, pointRadius: hist.length <= 12 ? 3 : 0, tension: 0.3 }] },
     options: {

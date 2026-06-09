@@ -2,6 +2,7 @@
 const $ = (id) => document.getElementById(id);
 
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : "#"; } catch { return "#"; } };
 
 function classify(ev, now) {
   const start = ev.startDate ? new Date(ev.startDate).getTime() : null;
@@ -22,7 +23,7 @@ function evCard(ev, state) {
   const label = { active: "진행중", soon: "예정", ended: "종료" }[state];
   const cls = { active: "b-active", soon: "b-soon", ended: "b-ended" }[state];
   const period = [fmtDate(ev.startDate), fmtDate(ev.endDate)].filter(Boolean).join(" ~ ");
-  const link = ev.link ? `<a class="go" href="${esc(ev.link)}">바로가기 →</a>` : "";
+  const link = ev.link ? `<a class="go" href="${safeURL(ev.link)}">바로가기 →</a>` : "";
   return `<div class="ev">
     <div class="top"><div class="ti">${esc(ev.title)}</div><span class="badge ${cls}">${label}</span></div>
     <div class="desc">${esc(ev.description || "")}</div>

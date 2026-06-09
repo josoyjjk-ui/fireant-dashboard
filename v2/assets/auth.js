@@ -37,9 +37,12 @@
       sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href.split("#")[0] } });
   }
 
+  const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch { return ""; } };
+
   function renderLoggedIn(slot, profile, user) {
-    const name = (profile && profile.full_name) || user.email || "회원";
-    const avatar = (profile && profile.avatar_url) || (user.user_metadata && user.user_metadata.avatar_url) || "";
+    const name = esc((profile && profile.full_name) || user.email || "회원");
+    const avatar = safeURL((profile && profile.avatar_url) || (user.user_metadata && user.user_metadata.avatar_url) || "");
     const tier = (profile && profile.tier) || "free";
     const tierBadge = tier === "premium"
       ? '<span style="font-size:10px;font-weight:800;color:#ffb547;background:#2a1c0a;padding:2px 7px;border-radius:6px;">PREMIUM</span>'

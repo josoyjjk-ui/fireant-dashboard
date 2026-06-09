@@ -1,5 +1,7 @@
 /* 마켓 — CoinGecko 코인 시세(top N) + 글로벌 요약, 60초 실시간 */
 const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch { return ""; } };
 
 const fmtUSD = (v) => {
   if (v == null) return "—";
@@ -41,7 +43,7 @@ async function load() {
     // 테이블
     $("rows").innerHTML = coins.map((c, i) => `<tr>
       <td>${i + 1}</td>
-      <td><div class="coin"><img src="${c.image}" alt=""><span class="nm">${c.name}</span> <span class="sym">${c.symbol}</span></div></td>
+      <td><div class="coin"><img src="${safeURL(c.image)}" alt="" loading="lazy"><span class="nm">${esc(c.name)}</span> <span class="sym">${esc(c.symbol)}</span></div></td>
       <td class="mono">${price(c.current_price)}</td>
       <td class="mono">${pct(c.price_change_percentage_24h_in_currency)}</td>
       <td class="mono">${pct(c.price_change_percentage_7d_in_currency)}</td>
@@ -54,5 +56,12 @@ async function load() {
 }
 
 $("summary").innerHTML = Array(4).fill('<div class="sc"><div class="l skel">··</div><div class="v skel">····</div></div>').join("");
-load();
-setInterval(load, 60000);
+
+if (!window.__marketInit) {
+  window.__marketInit = true;
+  let timer = null;
+  const start = () => { stop(); load(); timer = setInterval(load, 60000); };
+  const stop = () => clearInterval(timer);
+  document.addEventListener("visibilitychange", () => { document.hidden ? stop() : start(); });
+  start();
+}

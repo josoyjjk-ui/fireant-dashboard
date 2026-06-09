@@ -1,6 +1,7 @@
 /* 매크로 뉴스 — data/v1/news.json (cron RSS 수집), 카테고리 필터 */
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : "#"; } catch { return "#"; } };
 let ALL = [], FILTER = "all";
 
 function ago(iso) {
@@ -16,7 +17,7 @@ function ago(iso) {
 function render() {
   const items = FILTER === "all" ? ALL : ALL.filter((x) => x.category === FILTER);
   $("list").innerHTML = items.map((x) =>
-    `<a class="item" href="${esc(x.link)}" target="_blank" rel="noopener">
+    `<a class="item" href="${safeURL(x.link)}" target="_blank" rel="noopener">
       <div class="ti">${esc(x.title_ko || x.title)}</div>
       ${x.title_ko && x.title_ko !== x.title ? `<div style="font-size:11.5px;color:var(--dim);margin-top:3px;">${esc(x.title)}</div>` : ""}
       <div class="meta"><span class="cat ${x.category}">${x.category}</span><span>${esc(x.source)}</span><span>${ago(x.iso)}</span></div>

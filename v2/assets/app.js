@@ -144,5 +144,17 @@ async function loadSignature() {
 /* ---------------- init ---------------- */
 $("nowGrid").innerHTML = Array(6).fill('<div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div>').join("");
 $("sigGrid").innerHTML = Array(4).fill('<div class="sigcard"><div class="big skel">·····</div></div>').join("");
-loadMarketLive(); setInterval(loadMarketLive, 60000);      // 실시간 60초
-loadSignature(); setInterval(loadSignature, 300000);        // 5분
+
+// 타이머 가드 — 중복 로드 방지 + 탭 비활성 시 폴링 정지(누수·rate-limit 방지)
+if (!window.__hubInit) {
+  window.__hubInit = true;
+  let mTimer = null, sTimer = null;
+  function start() {
+    stop();
+    loadMarketLive(); mTimer = setInterval(loadMarketLive, 60000);   // 실시간 60초
+    loadSignature();  sTimer = setInterval(loadSignature, 300000);   // 5분
+  }
+  function stop() { clearInterval(mTimer); clearInterval(sTimer); }
+  document.addEventListener("visibilitychange", () => { document.hidden ? stop() : start(); });
+  start();
+}
