@@ -1,4 +1,5 @@
-/* 마켓 — CoinGecko 코인 시세(top N) + 글로벌 요약, 60초 실시간 */
+/* 마켓 — 서버 JSON(market_now.json)에서 시세·요약, 60초 갱신
+   (CoinGecko 클라 직접호출이 일부 한국 모바일망에서 차단되어 서버 수집으로 전환) */
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch { return ""; } };
@@ -26,40 +27,31 @@ async function getJSON(u) {
 
 async function load() {
   try {
-    const [coins, gl, cr] = await Promise.all([
-      getJSON("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&price_change_percentage=24h,7d"),
-      getJSON("https://api.coingecko.com/api/v3/global").catch(() => null),
-      getJSON("../data/v1/cr_market.json?t=" + Date.now()).catch(() => null),
-    ]);
-    const crMap = (cr && cr.items) || {};
+    const d = await getJSON("../data/v1/market_now.json?t=" + Date.now());
     // 요약
-    if (gl && gl.data) {
-      const d = gl.data;
-      $("summary").innerHTML = [
-        ["총 시가총액", fmtUSD(d.total_market_cap.usd)],
-        ["24h 거래량", fmtUSD(d.total_volume.usd)],
-        ["BTC 도미넌스", d.market_cap_percentage.btc.toFixed(1) + "%"],
-        ["ETH 도미넌스", d.market_cap_percentage.eth.toFixed(1) + "%"],
-      ].map(([l, v]) => `<div class="sc"><div class="l">${l}</div><div class="v mono">${v}</div></div>`).join("");
-    }
+    $("summary").innerHTML = [
+      ["총 시가총액", d.total_mcap != null ? fmtUSD(d.total_mcap) : "—"],
+      ["24h 거래량", d.total_vol != null ? fmtUSD(d.total_vol) : "—"],
+      ["BTC 도미넌스", d.btc_dominance != null ? d.btc_dominance.toFixed(1) + "%" : "—"],
+      ["ETH 도미넌스", d.eth_dominance != null ? d.eth_dominance.toFixed(1) + "%" : "—"],
+    ].map(([l, v]) => `<div class="sc"><div class="l">${l}</div><div class="v mono">${v}</div></div>`).join("");
     // 테이블
-    $("rows").innerHTML = coins.map((c, i) => {
-      const x = crMap[(c.symbol || "").toUpperCase()] || {};
-      const athTxt = x.athChange != null
-        ? `<span class="down">${x.athChange.toFixed(1)}%</span>` : `<span class="dim">—</span>`;
+    const rows = d.markets || [];
+    $("rows").innerHTML = rows.map((c, i) => {
+      const athTxt = c.athChg != null ? `<span class="down">${c.athChg.toFixed(1)}%</span>` : `<span class="dim">—</span>`;
       return `<tr>
-      <td>${i + 1}</td>
-      <td><div class="coin"><img src="${safeURL(c.image)}" alt="" loading="lazy"><span class="nm">${esc(c.name)}</span> <span class="sym">${esc(c.symbol)}</span></div></td>
-      <td class="mono">${price(c.current_price)}</td>
-      <td class="mono">${pct(c.price_change_percentage_24h_in_currency)}</td>
-      <td class="mono">${pct(c.price_change_percentage_7d_in_currency)}</td>
+      <td>${c.rank || i + 1}</td>
+      <td><div class="coin"><img src="${safeURL(c.image)}" alt="" loading="lazy" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span> <span class="sym">${esc(c.symbol)}</span></div></td>
+      <td class="mono">${price(c.price)}</td>
+      <td class="mono">${pct(c.chg24h)}</td>
+      <td class="mono">${pct(c.chg7d)}</td>
       <td class="mono">${athTxt}</td>
-      <td class="mono">${fmtUSD(c.market_cap)}</td>
-      <td class="mono">${x.fdv != null ? fmtUSD(x.fdv) : fmtUSD(c.fully_diluted_valuation)}</td></tr>`;
+      <td class="mono">${fmtUSD(c.mcap)}</td>
+      <td class="mono">${fmtUSD(c.fdv)}</td></tr>`;
     }).join("");
-    $("age").textContent = "실시간 · 방금 갱신";
+    $("age").textContent = "갱신 " + (d.generated_at || "").slice(11, 16);
   } catch (e) {
-    if (!$("rows").children.length) $("rows").innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--down)">시세 일시 오류 (재시도 중) — ${e.message}</td></tr>`;
+    if (!$("rows").children.length) $("rows").innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--down)">시세 일시 오류 (재시도 중) — ${esc(e.message)}</td></tr>`;
   }
 }
 

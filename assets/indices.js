@@ -26,15 +26,18 @@ async function getJSON(u) {
   return r.json();
 }
 
-const COINS = "bitcoin,ethereum,solana,ripple,binancecoin";
-const COIN_NAME = { bitcoin: "비트코인 (BTC)", ethereum: "이더리움 (ETH)", solana: "솔라나 (SOL)", ripple: "리플 (XRP)", binancecoin: "BNB" };
+// 코인은 서버 JSON(market_now.json)에서 — CoinGecko 클라 직접호출이 일부 한국 모바일망에서 차단됨
+const COIN_NAME = { BTC: "비트코인 (BTC)", ETH: "이더리움 (ETH)", SOL: "솔라나 (SOL)", XRP: "리플 (XRP)", BNB: "BNB" };
+const COIN_ORDER = ["BTC", "ETH", "SOL", "XRP", "BNB"];
 
 async function loadCoins() {
   try {
-    const d = await getJSON(`https://api.coingecko.com/api/v3/simple/price?ids=${COINS}&vs_currencies=usd&include_24hr_change=true`);
-    return Object.keys(COIN_NAME).filter((id) => d[id]).map((id) => ({
-      name: COIN_NAME[id], group: "코인", unit: "$",
-      price: d[id].usd, change_pct: d[id].usd_24h_change,
+    const d = await getJSON("../data/v1/market_now.json?t=" + Date.now());
+    const bySym = {};
+    (d.coins || []).forEach((c) => { bySym[(c.symbol || "").toUpperCase()] = c; });
+    return COIN_ORDER.filter((s) => bySym[s]).map((s) => ({
+      name: COIN_NAME[s], group: "코인", unit: "$",
+      price: bySym[s].price, change_pct: bySym[s].chg,
     }));
   } catch { return []; }
 }
