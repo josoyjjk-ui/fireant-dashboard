@@ -13,7 +13,11 @@ function card(x) {
   const c = x.change_pct;
   const cls = c == null ? "" : c < 0 ? "down" : "up";
   const arr = c == null ? "" : c < 0 ? "▼" : "▲";
-  const cTxt = c == null ? "—" : `${arr} ${Math.abs(c).toFixed(2)}%`;
+  // 국채 금리(unit="%")는 시장 표준대로 bp(=수익률 변동×100)로 표기
+  let cTxt;
+  if (c == null) cTxt = "—";
+  else if (x.unit === "%" && x.change != null) cTxt = `${arr} ${Math.abs(x.change * 100).toFixed(1)}bp`;
+  else cTxt = `${arr} ${Math.abs(c).toFixed(2)}%`;
   const prefix = x.unit === "$" ? "$" : "";
   return `<div class="idx"><div class="n">${esc(x.name)}</div>
     <div class="p mono">${prefix}${fmtNum(x.price, x.unit)}</div>

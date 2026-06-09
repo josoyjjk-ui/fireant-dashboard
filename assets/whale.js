@@ -26,7 +26,7 @@
   let fundTimer = null;
   async function loadDeriv() {
     try {
-      const get = (u) => fetch(u, { cache: "no-store" }).then((r) => r.json());
+      const get = async (u) => { const r = await fetch(u, { cache: "no-store" }); if (!r.ok) throw new Error(u + " " + r.status); return r.json(); };
       const [fB, fE, oiB, oiE] = await Promise.all([
         get("https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT"),
         get("https://fapi.binance.com/fapi/v1/premiumIndex?symbol=ETHUSDT"),
@@ -35,7 +35,10 @@
       ]);
       const bMark = +fB.markPrice, eMark = +fE.markPrice;
       const frB = +fB.lastFundingRate * 100, frE = +fE.lastFundingRate * 100;
-      const oiBUsd = +oiB.openInterest * bMark, oiEUsd = +oiE.openInterest * eMark;
+      const oiB_ = +oiB.openInterest, oiE_ = +oiE.openInterest;
+      // 429/451 등 에러 응답(JSON code) 방어 — 숫자 유효성 검증, NaN 렌더 방지
+      if (![bMark, eMark, frB, frE, oiB_, oiE_].every(Number.isFinite)) throw new Error("invalid futures numbers");
+      const oiBUsd = oiB_ * bMark, oiEUsd = oiE_ * eMark;
       const mins = Math.max(0, Math.round((fB.nextFundingTime - Date.now()) / 60000));
       const nextTxt = `다음 정산 ${Math.floor(mins / 60)}시간 ${mins % 60}분 후`;
       const fcard = (label, fr, sub) => {
@@ -46,8 +49,8 @@
       $("derivGrid").innerHTML =
         fcard("BTC 펀딩비율", frB, nextTxt) +
         fcard("ETH 펀딩비율", frE, nextTxt) +
-        ocard("BTC 미결제약정", oiBUsd, +oiB.openInterest, "BTC") +
-        ocard("ETH 미결제약정", oiEUsd, +oiE.openInterest, "ETH");
+        ocard("BTC 미결제약정", oiBUsd, oiB_, "BTC") +
+        ocard("ETH 미결제약정", oiEUsd, oiE_, "ETH");
       $("derivAge").textContent = "실시간 · 방금 갱신";
     } catch (e) {
       if ($("derivGrid").querySelector(".skel")) $("derivGrid").innerHTML = `<div class="err">⚠️ 선물 지표 일시 오류 (재시도 중)</div>`;
@@ -115,14 +118,17 @@
     const d = m.data || m; const ev = d.e;
     if (ev === "forceOrder") {
       const o = d.o; const sym = (o.s || "").replace("USDT", "");
-      const usd = (+o.p) * (+o.q); const long = o.S === "SELL";  // SELL=롱청산
+      // 체결 notional = 평균가(ap) × 누적체결량(z). 미체결분 제외, p·q는 폴백.
+      const px = +o.ap || +o.p, qty = +o.z || +o.q;
+      const usd = px * qty; const long = o.S === "SELL";  // SELL=롱청산
+      if (!Number.isFinite(usd) || usd <= 0) return;
       const row = { t: hhmmss(o.T || Date.now()), sym, usd, long };
       pushRow(liq, row); const lf = $("liqFeed"); if (lf) lf.dataset.hasdata = "1"; renderLiq();
       if (long) longLiq += usd; else shortLiq += usd; renderMap();
       if (usd >= WHALE_LIQ) { pushRow(whaleLiq, row); const wl = $("whaleLiq"); if (wl) wl.dataset.hasdata = "1"; renderWhaleLiq(); }
     } else if (ev === "aggTrade") {
       const usd = (+d.p) * (+d.q);
-      if (usd >= WHALE_TRADE) {
+      if (Number.isFinite(usd) && usd >= WHALE_TRADE) {
         const sym = (d.s || "").replace("USDT", "");
         pushRow(trades, { t: hhmmss(d.T || Date.now()), sym, usd, buy: !d.m });  // m=true→매수자 메이커→매도공격
         const wt = $("whaleTrades"); if (wt) wt.dataset.hasdata = "1"; renderTrades();
