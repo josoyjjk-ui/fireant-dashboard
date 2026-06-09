@@ -56,19 +56,21 @@
 
   /* ---- WS: 청산 · 고래체결 ---- */
   let ws = null, reconnect = null, healthTimer = null;
-  let msgCount = 0, wsConnectedAt = 0;
+  let msgCount = 0, wsConnectedAt = 0, sessionStartAt = 0;  // sessionStartAt은 재연결에도 리셋 안 함
   const liq = [], whaleLiq = [], trades = [];
   let longLiq = 0, shortLiq = 0;  // 세션 누적(청산 분포용)
 
   function setStat(html) { const el = $("wsStat"); if (el) el.innerHTML = html; }
   function updateHealth() {
-    if (!ws || ws.readyState !== 1) { setStat('<span style="color:var(--accent2)">🟡 연결 중…</span>'); return; }
     if (msgCount > 0) { setStat('<span style="color:var(--up)">🟢 실시간 연결됨</span>'); return; }
-    if (Date.now() - wsConnectedAt > 15000) {
-      setStat('<span style="color:var(--down)">🔴 Binance 선물 스트림 연결 불가</span>');
-      const hint = '<div class="feedempty">⚠️ 이 네트워크/지역에서 Binance 선물 실시간 스트림에 연결되지 않습니다. VPN 또는 다른 네트워크에서 확인해 주세요.</div>';
+    // 세션 시작 후 18초간 단 한 건도 못 받으면 차단으로 판정(재연결 무관)
+    if (sessionStartAt && Date.now() - sessionStartAt > 18000) {
+      setStat('<span style="color:var(--down)">🔴 선물 스트림 연결 불가</span>');
+      const hint = '<div class="feedempty">⚠️ 이 네트워크/지역에서 Binance 선물 실시간 스트림에 연결되지 않습니다. 펀딩·OI 지표는 정상입니다. VPN/다른 네트워크에서 청산·체결 피드가 표시됩니다.</div>';
       ["liqFeed", "whaleLiq", "whaleTrades"].forEach((id) => { const el = $(id); if (el && !el.dataset.hasdata) el.innerHTML = hint; });
+      return;
     }
+    setStat('<span style="color:var(--accent2)">🟡 연결 중…</span>');
   }
 
   function pushRow(arr, row) { arr.unshift(row); if (arr.length > MAXROW) arr.pop(); }
@@ -144,11 +146,12 @@
   /* ---- 생명주기 ---- */
   function start() {
     stopT();
+    sessionStartAt = Date.now();
     loadDeriv(); fundTimer = setInterval(loadDeriv, 30000);
     renderLiq(); renderWhaleLiq(); renderTrades(); renderMap();
     wsOpen();
     setStat('<span style="color:var(--accent2)">🟡 연결 중…</span>');
-    healthTimer = setInterval(updateHealth, 5000);
+    healthTimer = setInterval(updateHealth, 3000);
   }
   function stopT() { clearInterval(fundTimer); clearInterval(healthTimer); wsClose(); }
 
