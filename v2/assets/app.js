@@ -160,7 +160,9 @@ async function loadCalendar() {
       const dlabel = dd === 0 ? "D-DAY" : `D-${dd}`;
       const amt = x.amount ? ` <span style="color:var(--dim)">· ${x.amount}</span>` : "";
       const hot = x.importance === "high" ? "color:#ff4d5e;" : "";
-      return `<div class="li"><div>${ICON[x.type] || "•"} ${x.title}${amt}</div><span class="when" style="${hot}">${dlabel}</span></div>`;
+      const md = `${x.date.slice(5).replace("-", ".")}`;            // MM.DD
+      const when = x.time ? `${md} ${x.time} KST` : `${md}`;          // 시간 있으면 병기
+      return `<div class="li"><div>${ICON[x.type] || "•"} ${x.title}${amt}<div style="font-size:11px;color:var(--dim);margin-top:2px;">🕐 ${when}</div></div><span class="when" style="${hot}">${dlabel}</span></div>`;
     }).join("");
   } catch (e) {
     wrap.innerHTML = `<div class="li"><div style="color:var(--down)">캘린더 로드 실패</div></div>`;
