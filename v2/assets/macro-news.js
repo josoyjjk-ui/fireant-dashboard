@@ -1,4 +1,4 @@
-/* 매크로 뉴스 — data/v1/news.json (cron RSS 수집), 카테고리 필터 */
+/* 매크로 뉴스 — data/v1/news.json (고속 cron 수집), 카테고리 필터 + 60초 자동갱신 */
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : "#"; } catch { return "#"; } };
@@ -16,12 +16,14 @@ function ago(iso) {
 
 function render() {
   const items = FILTER === "all" ? ALL : ALL.filter((x) => x.category === FILTER);
-  $("list").innerHTML = items.map((x) =>
-    `<a class="item" href="${safeURL(x.link)}" target="_blank" rel="noopener">
-      <div class="ti">${esc(x.title_ko || x.title)}</div>
-      ${x.title_ko && x.title_ko !== x.title ? `<div style="font-size:11.5px;color:var(--dim);margin-top:3px;">${esc(x.title)}</div>` : ""}
-      <div class="meta"><span class="cat ${x.category}">${x.category}</span><span>${esc(x.source)}</span><span>${ago(x.iso)}</span></div>
-    </a>`).join("") || '<div style="color:var(--dim);padding:14px;">표시할 뉴스가 없습니다.</div>';
+  $("list").innerHTML = items.map((x) => {
+    const fresh = x.iso && (Date.now() - new Date(x.iso).getTime()) < 600000; // 10분 내 = 🔴
+    return `<a class="item" href="${safeURL(x.link)}" target="_blank" rel="noopener">
+      <div class="ti">${fresh ? '<span class="dot"></span>' : ""}${esc(x.title_ko || x.title)}</div>
+      ${x.title_ko && x.title_ko !== x.title ? `<div class="orig">${esc(x.title)}</div>` : ""}
+      <div class="meta"><span class="cat ${esc(x.category)}">${esc(x.category)}</span><span>${esc(x.source)}</span><span>${ago(x.iso)}</span></div>
+    </a>`;
+  }).join("") || '<div style="color:var(--dim);padding:14px;">표시할 뉴스가 없습니다.</div>';
 }
 
 document.querySelectorAll(".fbtn").forEach((b) => b.onclick = () => {
@@ -29,14 +31,23 @@ document.querySelectorAll(".fbtn").forEach((b) => b.onclick = () => {
   b.classList.add("on"); FILTER = b.dataset.f; render();
 });
 
-(async function () {
+async function load() {
   try {
     const r = await fetch("../data/v1/news.json?t=" + Date.now(), { cache: "no-store" });
     const d = await r.json();
     ALL = d.items || [];
-    $("age").textContent = "최근 갱신 " + (d.generated_at || "").slice(0, 16) + ` · ${ALL.length}건`;
+    $("age").textContent = "최근 갱신 " + (d.generated_at || "").slice(0, 16).replace("T", " ") + ` · ${ALL.length}건 · 60초 자동갱신`;
     render();
   } catch (e) {
-    $("list").innerHTML = `<div style="color:var(--down);padding:14px;">뉴스 로드 실패: ${e.message}</div>`;
+    if (!ALL.length) $("list").innerHTML = `<div style="color:var(--down);padding:14px;">뉴스 로드 실패: ${esc(e.message)}</div>`;
   }
-})();
+}
+
+if (!window.__newsInit) {
+  window.__newsInit = true;
+  let timer = null;
+  const start = () => { stop(); load(); timer = setInterval(load, 60000); };
+  const stop = () => clearInterval(timer);
+  document.addEventListener("visibilitychange", () => { document.hidden ? stop() : start(); });
+  start();
+}
