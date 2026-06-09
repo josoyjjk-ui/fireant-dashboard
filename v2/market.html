@@ -28,7 +28,7 @@ th:nth-child(2),td:nth-child(2){text-align:left;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:30px;}
 .skel{color:transparent;background:linear-gradient(90deg,#1a1f28,#222936,#1a1f28);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:6px;}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
-@media(max-width:760px){.tabs{display:none;}.summary{grid-template-columns:1fr 1fr;}th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:none;}}
+@media(max-width:760px){.tabs{display:none;}.summary{grid-template-columns:1fr 1fr;}th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(8),td:nth-child(8){display:none;}}
 </style></head>
 <body>
   <div class="nav">
@@ -47,7 +47,7 @@ th:nth-child(2),td:nth-child(2){text-align:left;}
     <div class="head"><h1>📊 마켓</h1><div class="sub">코인 시세·시가총액·24h 변동 · <span id="age">실시간 (60초)</span></div></div>
     <div class="summary" id="summary"></div>
     <table>
-      <thead><tr><th>#</th><th>코인</th><th>가격</th><th>24h</th><th>7d</th><th>시가총액</th><th>거래량(24h)</th></tr></thead>
+      <thead><tr><th>#</th><th>코인</th><th>가격</th><th>24h</th><th>7d</th><th>ATH대비</th><th>시가총액</th><th>FDV</th></tr></thead>
       <tbody id="rows"></tbody>
     </table>
   </div>

@@ -26,10 +26,12 @@ async function getJSON(u) {
 
 async function load() {
   try {
-    const [coins, gl] = await Promise.all([
-      getJSON("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30&page=1&price_change_percentage=24h,7d"),
+    const [coins, gl, cr] = await Promise.all([
+      getJSON("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&price_change_percentage=24h,7d"),
       getJSON("https://api.coingecko.com/api/v3/global").catch(() => null),
+      getJSON("../data/v1/cr_market.json?t=" + Date.now()).catch(() => null),
     ]);
+    const crMap = (cr && cr.items) || {};
     // 요약
     if (gl && gl.data) {
       const d = gl.data;
@@ -41,14 +43,20 @@ async function load() {
       ].map(([l, v]) => `<div class="sc"><div class="l">${l}</div><div class="v mono">${v}</div></div>`).join("");
     }
     // 테이블
-    $("rows").innerHTML = coins.map((c, i) => `<tr>
+    $("rows").innerHTML = coins.map((c, i) => {
+      const x = crMap[(c.symbol || "").toUpperCase()] || {};
+      const athTxt = x.athChange != null
+        ? `<span class="down">${x.athChange.toFixed(1)}%</span>` : `<span class="dim">—</span>`;
+      return `<tr>
       <td>${i + 1}</td>
       <td><div class="coin"><img src="${safeURL(c.image)}" alt="" loading="lazy"><span class="nm">${esc(c.name)}</span> <span class="sym">${esc(c.symbol)}</span></div></td>
       <td class="mono">${price(c.current_price)}</td>
       <td class="mono">${pct(c.price_change_percentage_24h_in_currency)}</td>
       <td class="mono">${pct(c.price_change_percentage_7d_in_currency)}</td>
+      <td class="mono">${athTxt}</td>
       <td class="mono">${fmtUSD(c.market_cap)}</td>
-      <td class="mono">${fmtUSD(c.total_volume)}</td></tr>`).join("");
+      <td class="mono">${x.fdv != null ? fmtUSD(x.fdv) : fmtUSD(c.fully_diluted_valuation)}</td></tr>`;
+    }).join("");
     $("age").textContent = "실시간 · 방금 갱신";
   } catch (e) {
     if (!$("rows").children.length) $("rows").innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--down)">시세 일시 오류 (재시도 중) — ${e.message}</td></tr>`;
