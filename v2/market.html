@@ -1,37 +1,58 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🔥 불개미 CRYPTO — 📊 마켓</title>
-<meta name="description" content="BTC·ETH·주요 알트 실시간 시세와 파생 지표를 한 곳에서.">
+<title>🔥 불개미 CRYPTO — 마켓</title>
+<meta name="description" content="코인 시세·시가총액·24h 변동 — 실시간 마켓.">
 <link rel="canonical" href="https://fireantcrypto.com/v2/market.html">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo','Pretendard',sans-serif;}
-:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff7a1a;--accent2:#ffb547;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#21d07a;--down:#ff4d5e;--accent:#ff7a1a;--accent2:#ffb547;--live:#3aa0ff;}
 body{background:var(--bg);color:var(--txt);}
 .nav{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
 .logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
 .tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}.tab.on{background:var(--accent);color:#0a0c10;}
 .btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
-.main{padding:48px 24px;max-width:900px;margin:0 auto;text-align:center;}
-.hero{font-size:34px;font-weight:900;margin-bottom:12px;}
-.lead{font-size:16px;color:var(--dim);line-height:1.7;margin-bottom:28px;}
-.soon{display:inline-block;padding:8px 18px;border-radius:30px;background:#231a0c;color:var(--accent2);font-weight:800;font-size:14px;}
-.back{display:inline-block;margin-top:30px;color:var(--accent);text-decoration:none;font-weight:700;}
-.foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:60px;}
-@media(max-width:560px){.tabs{display:none;}}
+.main{padding:22px 24px;max-width:1240px;margin:0 auto;}
+.head h1{font-size:24px;font-weight:900;}.head .sub{color:var(--dim);font-size:14px;margin-top:4px;}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0 20px;}
+.sc{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px 16px;}
+.sc .l{font-size:12px;color:var(--dim);font-weight:700;}.sc .v{font-size:20px;font-weight:900;margin-top:4px;}
+.up{color:var(--up);}.down{color:var(--down);}.mono{font-variant-numeric:tabular-nums;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:11px 12px;text-align:right;font-size:14px;border-bottom:1px solid var(--line);}
+th{color:var(--dim);font-weight:700;font-size:12px;text-align:right;}
+th:nth-child(1),td:nth-child(1){text-align:center;width:40px;color:var(--dim);}
+th:nth-child(2),td:nth-child(2){text-align:left;}
+.coin{display:flex;align-items:center;gap:9px;}
+.coin img{width:24px;height:24px;border-radius:50%;}
+.coin .nm{font-weight:700;}.coin .sym{color:var(--dim);font-size:12px;text-transform:uppercase;}
+.foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:30px;}
+.skel{color:transparent;background:linear-gradient(90deg,#1a1f28,#222936,#1a1f28);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:6px;}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@media(max-width:760px){.tabs{display:none;}.summary{grid-template-columns:1fr 1fr;}th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){display:none;}}
 </style></head>
 <body>
   <div class="nav">
     <div class="logo">🔥 불개미<span> CRYPTO</span></div>
-    <div class="tabs"><a class="tab" href="./">대시보드</a><a class="tab on" href="market.html">마켓</a><a class="tab" href="macro-news.html">매크로뉴스</a><a class="tab" href="indices.html">주요주가지수</a><a class="tab" href="events.html">이벤트모음</a><a class="tab" href="signals.html">시장지표</a></div>
+    <div class="tabs">
+      <a class="tab" href="./">대시보드</a>
+      <a class="tab on" href="market.html">마켓</a>
+      <a class="tab" href="macro-news.html">매크로뉴스</a>
+      <a class="tab" href="indices.html">주요주가지수</a>
+      <a class="tab" href="events.html">이벤트모음</a>
+      <a class="tab" href="signals.html">시장지표</a>
+    </div>
     <a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
   </div>
   <div class="main">
-    <div class="hero">📊 마켓</div>
-    <div class="lead">코인 시세 · 도미넌스 · 섹터 · 파생(OI·펀딩·청산)<br>BTC·ETH·주요 알트 실시간 시세와 파생 지표를 한 곳에서.</div>
-    <span class="soon">🛠️ 준비 중 — 곧 제공됩니다</span>
-    <br><a class="back" href="./">← 대시보드로 돌아가기</a>
+    <div class="head"><h1>📊 마켓</h1><div class="sub">코인 시세·시가총액·24h 변동 · <span id="age">실시간 (60초)</span></div></div>
+    <div class="summary" id="summary"></div>
+    <table>
+      <thead><tr><th>#</th><th>코인</th><th>가격</th><th>24h</th><th>7d</th><th>시가총액</th><th>거래량(24h)</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
   </div>
-  <div class="foot">🔥 FIRE ANT CRYPTO · fireantcrypto.com · 투자 권유가 아닙니다</div>
+  <div class="foot">🔥 FIRE ANT CRYPTO · 출처 CoinGecko · 60초 실시간 · 투자 권유 아님</div>
+<script src="assets/market.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/auth.js"></script>
 </body></html>
