@@ -23,7 +23,7 @@ body{background:var(--bg);color:var(--txt);}
 .item .meta{font-size:12px;color:var(--dim);margin-top:6px;display:flex;gap:10px;align-items:center;}
 .cat{font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;}
 .cat.크립토{background:#0e2236;color:var(--live);}.cat.거시{background:#231a0c;color:var(--accent2);}
-.cat.속보{background:#2a1116;color:var(--down);}
+.cat.한국주식{background:#0e2a1a;color:var(--up);}
 .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--down);box-shadow:0 0 7px var(--down);margin-right:7px;vertical-align:middle;animation:bl 1.3s infinite;}
 @keyframes bl{50%{opacity:.35}}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:30px;}
@@ -43,16 +43,16 @@ body{background:var(--bg);color:var(--txt);}
     <a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
   </div>
   <div class="main">
-    <div class="head"><h1>📰 매크로 뉴스</h1><div class="sub">전세계 크립토·거시 속보를 실시간 집계 · <span id="age">로딩…</span></div></div>
+    <div class="head"><h1>📰 매크로 뉴스</h1><div class="sub">전세계 속보를 실시간 집계해 크립토·거시·한국주식으로 자동분류 · <span id="age">로딩…</span></div></div>
     <div class="filters">
-      <button class="fbtn on" data-f="all">전체</button>
-      <button class="fbtn" data-f="속보">🔴 속보</button>
+      <button class="fbtn on" data-f="all">🔴 속보(전체)</button>
       <button class="fbtn" data-f="크립토">크립토</button>
       <button class="fbtn" data-f="거시">거시경제</button>
+      <button class="fbtn" data-f="한국주식">한국주식</button>
     </div>
     <div id="list"></div>
   </div>
-  <div class="foot">🔥 FIRE ANT CRYPTO · 출처 Tree News·코인텔레그래프·CoinDesk·The Block·Decrypt·Investing·WSJ·CNBC 외 · 투자 권유 아님</div>
+  <div class="foot">🔥 FIRE ANT CRYPTO · 출처 Tree News·코인텔레그래프·CoinDesk·The Block·Decrypt·Investing·WSJ·CNBC·한국경제 외 · 투자 권유 아님</div>
 <script src="assets/macro-news.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/auth.js"></script>
