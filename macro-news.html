@@ -18,8 +18,12 @@ body{background:var(--bg);color:var(--txt);}
 .fbtn.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
 .item{display:block;padding:15px 18px;background:var(--card);border:1px solid var(--line);border-radius:13px;margin-bottom:10px;text-decoration:none;color:var(--txt);}
 .item:hover{border-color:var(--accent);}
+.item.hi{border-color:#5a2230;}
 .item .ti{font-size:15px;font-weight:700;line-height:1.4;}
-.item .orig{font-size:11.5px;color:var(--dim);margin-top:3px;}
+.item .impbadge{display:inline-block;font-size:10px;font-weight:900;color:#fff;background:var(--down);padding:1px 7px;border-radius:5px;margin-right:7px;vertical-align:middle;}
+.item .sum{margin:7px 0 2px;padding-left:16px;}
+.item .sum li{font-size:13px;color:#cdd6e0;line-height:1.55;margin-bottom:2px;}
+.item .orig{font-size:11.5px;color:var(--dim);margin-top:5px;}
 .item .meta{font-size:12px;color:var(--dim);margin-top:6px;display:flex;gap:10px;align-items:center;}
 .cat{font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;}
 .cat.크립토{background:#0e2236;color:var(--live);}.cat.거시{background:#231a0c;color:var(--accent2);}
@@ -36,6 +40,7 @@ body{background:var(--bg);color:var(--txt);}
   .filters{flex-wrap:wrap;gap:7px;}.fbtn{font-size:13.5px;padding:8px 15px;}
   .item{padding:15px 16px;}
   .item .ti{font-size:16px;line-height:1.45;}.item .orig{font-size:12.5px;}
+  .item .sum li{font-size:14px;}
   .item .meta{font-size:12.5px;}.cat{font-size:11px;}
 }
 </style></head>
@@ -55,14 +60,15 @@ body{background:var(--bg);color:var(--txt);}
   <div class="main">
     <div class="head"><h1>📰 매크로 뉴스</h1><div class="sub">전세계 속보를 실시간 집계해 크립토·거시·한국주식으로 자동분류 · <span id="age">로딩…</span></div></div>
     <div class="filters">
-      <button class="fbtn on" data-f="all">🔴 속보(전체)</button>
-      <button class="fbtn" data-f="크립토">크립토</button>
+      <button class="fbtn on" data-f="all">전체</button>
+      <button class="fbtn" data-f="high">🔴 중요속보</button>
+      <button class="fbtn" data-f="크립토">코인</button>
       <button class="fbtn" data-f="거시">거시경제</button>
       <button class="fbtn" data-f="한국주식">한국주식</button>
     </div>
     <div id="list"></div>
   </div>
-  <div class="foot">🔥 FIRE ANT CRYPTO · 출처 Tree News·코인텔레그래프·CoinDesk·The Block·Decrypt·Investing·WSJ·CNBC·한국경제 외 · 투자 권유 아님</div>
+  <div class="foot">🔥 FIRE ANT CRYPTO · 출처 Walter Bloomberg·Tree News·Phoenix·Financial Juice·코인텔레그래프·CoinDesk·WSJ·CNBC·한국경제·이데일리 외 · AI 요약 · 투자 권유 아님</div>
 <script src="assets/macro-news.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/auth.js"></script>
