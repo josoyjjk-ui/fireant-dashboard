@@ -100,7 +100,7 @@ function fgKo(c) {
 /* ---------------- 실시간 급등·급락 TOP 10 (market_now.json 공유) ---------------- */
 function moverRow(c, i) {
   const v = c.chg;
-  return `<div class="li mv"><div class="mvn"><span class="rk">${i + 1}</span><img src="${safeURL(c.image)}" alt="" loading="lazy"><span class="nm">${esc(c.name)}</span><span class="sym">${esc(c.symbol)}</span></div>
+  return `<div class="li mv"><div class="mvn"><span class="rk">${i + 1}</span><img src="${safeURL(c.image)}" alt="" loading="lazy" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span><span class="sym">${esc(c.symbol)}</span></div>
     <div class="mvp"><span class="mono">$${comma(c.price, c.price < 1 ? 4 : 2)}</span><span class="${cls(v)} chg">${v >= 0 ? "+" : ""}${v.toFixed(2)}%</span></div></div>`;
 }
 function loadMovers() {
