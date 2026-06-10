@@ -49,7 +49,9 @@ body{background:var(--bg);color:var(--txt);}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .err{color:var(--down);font-size:12px;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;}
-.tagline{color:var(--dim);font-size:13px;font-weight:700;margin:2px 2px 16px;}
+.brand{display:flex;align-items:center;gap:13px;}
+.lede{color:var(--dim);font-size:13.5px;font-weight:700;white-space:nowrap;}
+@media(max-width:820px){.lede{display:none;}}
 .banner{display:none;background:#2a1116;color:#ffb1ba;font-size:12px;font-weight:700;text-align:center;padding:8px;}
 .r3{grid-template-columns:1fr 1fr 1fr;}
 .mv{align-items:center;}
@@ -104,7 +106,7 @@ body{background:var(--bg);color:var(--txt);}
 <body>
   <div id="staleBanner" class="banner"></div>
   <div class="nav">
-    <a class="logo" href="/" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:36px;display:block"></a>
+    <div class="brand"><a class="logo" href="/" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:36px;display:block"></a><span class="lede">개미투자자들이 필요한 모든 정보</span></div>
     <div class="tabs">
       <a class="tab on" href="./">대시보드</a>
       <a class="tab" href="market.html">마켓</a>
@@ -116,7 +118,6 @@ body{background:var(--bg);color:var(--txt);}
     <a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
   </div>
   <div class="main">
-    <div class="tagline">개미들이 필요한 모든 투자정보</div>
     <div class="seclabel"><h2>📈 Market Now</h2><span class="now"><span class="pulse"></span><span id="marketAge">로딩…</span></span></div>
     <div class="now-grid" id="nowGrid"></div>
 
