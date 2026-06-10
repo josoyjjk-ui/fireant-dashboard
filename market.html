@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ANTINFO — 마켓</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:image" content="https://antinfo.io/assets/og-image.png">
 <meta name="description" content="코인 시세·시가총액·24h 변동 — 실시간 마켓.">
 <link rel="canonical" href="https://antinfo.io/market">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo','Pretendard',sans-serif;}
-:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#21d07a;--down:#ff4d5e;--accent:#ff7a1a;--accent2:#ffb547;--live:#3aa0ff;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff5d6c;--down:#4d9bff;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;}
 body{background:var(--bg);color:var(--txt);}
+html,body{overflow-x:hidden;}
 .nav{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
 .logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
 .tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}.tab.on{background:var(--accent);color:#0a0c10;}
@@ -34,15 +36,19 @@ th:nth-child(2),td:nth-child(2){text-align:left;}
 @media(max-width:760px){.summary{grid-template-columns:1fr 1fr;}th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(8),td:nth-child(8){display:none;}}
 @media(max-width:600px){
   body{font-size:16px;}
-  .nav{flex-wrap:wrap;padding:13px 15px;gap:10px;}.logo{font-size:22px;}
+  .nav{flex-wrap:wrap;padding:13px 15px;gap:8px;}.logo{font-size:22px;}
+  #authSlot{flex-shrink:1;min-width:0;}
+  #authSlot a,#authSlot button{font-size:12px;padding:7px 10px;white-space:nowrap;}
   .tabs{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;gap:7px;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
   .tabs::-webkit-scrollbar{display:none;}.tab{flex:0 0 auto;font-size:15.5px;padding:9px 15px;}
-  .btn{font-size:14px;padding:9px 15px;}
+  .btn{font-size:13px;padding:8px 12px;white-space:nowrap;flex-shrink:0;}
   .main{padding:16px 14px;}
   .head h1{font-size:24px;}.head .sub{font-size:14px;}
   .summary{grid-template-columns:1fr 1fr;gap:11px;}.sc{padding:15px 16px;}.sc .l{font-size:13.5px;}.sc .v{font-size:21px;}
-  th,td{padding:12px 8px;font-size:15.5px;}th{font-size:13px;}
-  .coin .nm{font-size:15.5px;}.coin .sym{font-size:12.5px;}.coin img{width:26px;height:26px;}
+  table{width:100%;}
+  th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(8),td:nth-child(8){display:none;}
+  th,td{padding:10px 6px;font-size:14px;}th{font-size:12px;}
+  .coin .nm{font-size:14px;}.coin .sym{font-size:11.5px;}.coin img{width:24px;height:24px;}
 }
 </style></head>
 <body>
