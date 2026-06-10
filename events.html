@@ -29,6 +29,12 @@ body{background:var(--bg);color:var(--txt);}
 .winrow a{color:var(--accent);text-decoration:none;font-weight:700;font-size:13px;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:40px;}
 .empty{color:var(--dim);font-size:13px;padding:14px;}
+.krx{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#13233a,#101620);border:1px solid #20344e;border-radius:16px;padding:18px 20px;text-decoration:none;color:var(--txt);margin-bottom:8px;}
+.krx .ic{font-size:34px;flex-shrink:0;}
+.krx .tx .t1{font-size:17px;font-weight:800;}
+.krx .tx .t2{font-size:13px;color:var(--dim);margin-top:4px;}
+.krx .go{margin-left:auto;font-size:14px;font-weight:800;color:var(--live);white-space:nowrap;}
+.krx:hover{border-color:var(--live);}
 @media(max-width:680px){.cards{grid-template-columns:1fr;}}
 @media(max-width:600px){
   body{font-size:16px;}
@@ -58,6 +64,12 @@ body{background:var(--bg);color:var(--txt);}
   </div>
   <div class="main">
     <div class="head"><h1>🎉 이벤트 모음</h1><div class="sub">진행/예정 이벤트와 당첨자 발표를 한 곳에서</div></div>
+    <div class="seclabel">🏦 한국 거래소 이벤트</div>
+    <a class="krx" href="kr-exchange/">
+      <span class="ic">🏦</span>
+      <span class="tx"><span class="t1">업비트 · 빗썸 · 코인원 · 코빗 · 고팍스 진행중 이벤트</span><span class="t2">5대 원화거래소 리테일 이벤트 · 매일 자동 갱신</span></span>
+      <span class="go">전체 보기 →</span>
+    </a>
     <div class="seclabel">🔥 진행중 · 예정</div>
     <div class="cards" id="activeWrap"></div>
     <div class="seclabel">🏆 당첨자 발표</div>
