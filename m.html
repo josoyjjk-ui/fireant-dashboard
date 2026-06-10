@@ -65,6 +65,11 @@ body{background:var(--bg);color:var(--txt);padding-bottom:20px;font-weight:600;}
 .nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--gray);font-size:12px;font-weight:700;}
 .nav a .ic{font-size:23px;}.nav a.on{color:var(--blue);}
 .skel{background:rgba(127,127,127,.18);color:transparent;border-radius:7px;}
+@keyframes fUp{0%{color:#ff5d6c}100%{color:inherit}}
+@keyframes fDn{0%{color:#4d9bff}100%{color:inherit}}
+.flash-up{animation:fUp .7s ease-out;}
+.flash-down{animation:fDn .7s ease-out;}
+.top .t{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
 .foot{text-align:center;color:var(--gray);font-size:12.5px;padding:14px;line-height:1.6;}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;}
 .btext{display:flex;flex-direction:column;gap:1px;min-width:0;}
@@ -142,8 +147,10 @@ async function loadHome(){
     let bn={};try{const a=await getJSON('https://api.binance.com/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22%2C%22ETHUSDT%22%5D');if(Array.isArray(a))a.forEach(x=>bn[x.symbol]=x);}catch{}
     const bp=bn.BTCUSDT?+bn.BTCUSDT.lastPrice:(d.btc&&d.btc.price),bc=bn.BTCUSDT?+bn.BTCUSDT.priceChangePercent:(d.btc&&d.btc.chg);
     const ep=bn.ETHUSDT?+bn.ETHUSDT.lastPrice:(d.eth&&d.eth.price),ec=bn.ETHUSDT?+bn.ETHUSDT.priceChangePercent:(d.eth&&d.eth.chg);
-    $("btcPx").classList.remove("skel");$("btcPx").textContent="$"+comma(bp);$("btcChg").textContent=pc(bc);setCell("btcCell",dir(bc));
-    $("ethPx").classList.remove("skel");$("ethPx").textContent="$"+comma(ep);$("ethChg").textContent=pc(ec);setCell("ethCell",dir(ec));
+    if(Date.now()-wsLast>8000){   // WS 살아있으면 BTC/ETH는 WS가 주도(덮어쓰기 방지)
+      $("btcPx").classList.remove("skel");animNum($("btcPx"),bp,fUSD);$("btcChg").textContent=pc(bc);setCell("btcCell",dir(bc));
+      $("ethPx").classList.remove("skel");animNum($("ethPx"),ep,fUSD);$("ethChg").textContent=pc(ec);setCell("ethCell",dir(ec));
+    }
     const fg=d.fear_greed||{};const fgko={"Extreme Fear":"극단공포","Fear":"공포","Neutral":"중립","Greed":"탐욕","Extreme Greed":"극단탐욕"};
     const fgcls=fg.value==null?"plain":(fg.value>=55?"pos":(fg.value<45?"neg":"plain"));
     const cells=[
@@ -153,7 +160,7 @@ async function loadHome(){
       ["총 시가총액",usd(d.total_mcap),"plain"],
     ];
     $("stats").innerHTML=cells.map(([l,v,c])=>`<div class="s tile ${c}"><div class="l">${l}</div><div class="v mono">${v}</div></div>`).join("");
-    $("ageT").textContent="갱신 "+(d.generated_at||"").slice(11,16);
+    lastFetch=Date.now();
     renderMovers();
   }catch(e){if($("btcChg"))$("btcChg").textContent="재시도…";}
 }
@@ -173,9 +180,14 @@ async function loadSig(){
   }catch(e){$("sig").innerHTML='';}
 }
 $("sig").innerHTML=Array(4).fill('<div class="c tile plain"><div class="big skel">····</div></div>').join("");
-let timer=null,sigTimer=null;
-function start(){stop();loadHome();timer=setInterval(loadHome,60000);loadSig();sigTimer=setInterval(loadSig,600000);}
-function stop(){clearInterval(timer);clearInterval(sigTimer);}
+const fUSD=v=>"$"+comma(v);
+function animNum(el,to,fmt){if(!el)return;const from=el._v==null?to:el._v;el._v=to;if(from===to){el.textContent=fmt(to);return;}el.classList.remove("flash-up","flash-down");void el.offsetWidth;el.classList.add(to>=from?"flash-up":"flash-down");const dur=600,t0=performance.now();function step(t){const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*e);if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
+let lastFetch=0,wsLast=0,ws=null;
+function tickAge(){if(!lastFetch)return;const s=Math.max(0,Math.round((Date.now()-lastFetch)/1000));$("ageT").textContent=s<5?"🟢 방금 갱신":(s<60?`🟢 ${s}초 전`:`🟢 ${Math.floor(s/60)}분 전`);}
+function startWS(){try{ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/ethusdt@ticker");ws.onmessage=function(ev){try{const m=JSON.parse(ev.data).data;if(!m||!m.s)return;wsLast=Date.now();const price=+m.c,chg=+m.P;if(m.s==="BTCUSDT"){$("btcPx").classList.remove("skel");animNum($("btcPx"),price,fUSD);$("btcChg").textContent=pc(chg);setCell("btcCell",dir(chg));}else if(m.s==="ETHUSDT"){$("ethPx").classList.remove("skel");animNum($("ethPx"),price,fUSD);$("ethChg").textContent=pc(chg);setCell("ethCell",dir(chg));}}catch(e){}};ws.onclose=function(){ws=null;setTimeout(function(){if(!document.hidden)startWS();},5000);};ws.onerror=function(){try{ws.close();}catch(e){}};}catch(e){}}
+let timer=null,sigTimer=null,ageTimer=null;
+function start(){stop();loadHome();timer=setInterval(loadHome,30000);loadSig();sigTimer=setInterval(loadSig,600000);startWS();ageTimer=setInterval(tickAge,1000);}
+function stop(){clearInterval(timer);clearInterval(sigTimer);clearInterval(ageTimer);try{if(ws)ws.close();}catch(e){}ws=null;}
 document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
 start();
 </script>
