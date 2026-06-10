@@ -60,14 +60,14 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .head h1{font-size:24px;}.head .sub{font-size:14px;}
   .summary{grid-template-columns:1fr 1fr;gap:11px;}.sc{padding:15px 16px;}.sc .l{font-size:13.5px;}.sc .v{font-size:21px;}
   /* 모바일: 테이블을 flex 행으로 — 코인·가격·24h 3개만, 확실히 폭 맞춤 */
-  table,tbody{display:block;width:100%;}
+  table,#rows{display:block;width:100%;max-width:100%;}
   thead{display:none;}
-  #rows tr{display:flex;align-items:center;gap:8px;padding:11px 2px;border-bottom:1px solid var(--line);}
-  #rows td{display:block;border:none;padding:0;font-size:13px;}
+  #rows tr{display:grid;grid-template-columns:minmax(0,1fr) auto 54px;gap:8px;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);width:100%;}
+  #rows td{border:none;padding:0;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   #rows td:nth-child(1),#rows td:nth-child(5),#rows td:nth-child(6),#rows td:nth-child(7),#rows td:nth-child(8){display:none;}
-  #rows td:nth-child(2){flex:1;min-width:0;text-align:left;overflow:hidden;}
-  #rows td:nth-child(3){flex:0 0 auto;text-align:right;white-space:nowrap;}
-  #rows td:nth-child(4){flex:0 0 58px;text-align:right;white-space:nowrap;}
+  #rows td:nth-child(2){text-align:left;}
+  #rows td:nth-child(3){text-align:right;}
+  #rows td:nth-child(4){text-align:right;}
   .coin{flex-wrap:nowrap;gap:6px;min-width:0;}.coin img{width:18px;height:18px;}
   .coin .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .coin .sym{font-size:11px;}
