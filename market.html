@@ -118,4 +118,5 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
+<script>/*DEBUG-OVERFLOW*/setTimeout(function(){var vw=document.documentElement.clientWidth,worst="",ww=0;document.querySelectorAll("body *").forEach(function(el){var r=el.getBoundingClientRect();if(r.right>vw+0.5&&r.width>ww){ww=r.width;worst=(el.tagName+"."+(el.className||"")).slice(0,40)+"@"+Math.round(r.left)+"+"+Math.round(r.width);}});var s=document.querySelector(".head .sub");if(s)s.textContent="vw="+vw+" SW="+document.documentElement.scrollWidth+" WORST="+worst;},2500);</script>
 </body></html>
