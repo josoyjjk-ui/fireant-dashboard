@@ -150,7 +150,7 @@ async function loadSignature() {
       const v = (M[defs[i].k] || {}).value;
       spark(`sk${i}`, hist, v != null && v < 0 ? "#ff4d5e" : "#21d07a");
     }
-    $("sigAsof").textContent = `🟢 ${sigT} 갱신 · OI·CB 실시간 / ETF·DAT ${sig.data_date || ""} 기준`;
+    $("sigAsof").textContent = `🟢 ${sigT} 갱신 · ETF 당일·OI·CB 실시간`;
     $("dailySum").textContent = sig.summary || "시황 요약 준비중";
     $("dailyMeta").textContent = sig.data_date || "—";
   } catch (e) { /* 유지 */ }
