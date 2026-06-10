@@ -5,6 +5,9 @@
 <script>/* 모바일 기기 → 토스형 모바일 홈(/m). ?pc 로 데스크톱 강제 가능 */
 (function(){try{var ua=navigator.userAgent||"";var mob=/Android|iPhone|iPod|iPad|IEMobile|BlackBerry|Opera Mini|Mobile/i.test(ua);var w=Math.min(window.innerWidth||9999,(screen&&screen.width)||9999);if(mob&&w<=820&&location.search.indexOf("pc")<0){location.replace("/m.html");}}catch(e){}})();</script>
 <title>ANTINFO — 개미투자자들의 투자정보</title>
+<link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:image" content="https://antinfo.io/assets/og-image.png">
 <meta name="description" content="개미투자자들의 투자정보 — 실시간 마켓·급등급락·시그니처 수급·매크로 뉴스·주가지수·파생/고래 시그널을 한 곳에서.">
 <meta property="og:title" content="ANTINFO">
 <meta property="og:description" content="개미투자자들의 투자정보 — 실시간 마켓·급등급락·수급·매크로뉴스·파생/고래 시그널">
@@ -100,7 +103,7 @@ body{background:var(--bg);color:var(--txt);}
 <body>
   <div id="staleBanner" class="banner"></div>
   <div class="nav">
-    <div class="logo" style="color:#ff3b30">🐜 ANTINFO</div>
+    <a class="logo" href="/" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:36px;display:block"></a>
     <div class="tabs">
       <a class="tab on" href="./">대시보드</a>
       <a class="tab" href="market.html">마켓</a>
