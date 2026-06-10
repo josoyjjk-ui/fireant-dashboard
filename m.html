@@ -108,7 +108,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   <a class="sub" href="events"><span class="ic">📅</span>캘린더</a>
   <a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>
 </aside>
-  <div class="top"><div class="topL"><button class="ham" type="button" aria-label="메뉴">☰</button><div class="brand"><a class="logo" href="/" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="개미투자정보 ANTINFO" style="height:30px;display:block"></a><div class="btext"><span class="bname">개미투자정보</span><span class="lede">개미투자자들이 필요한 모든 정보</span></div></div></div><div class="t" id="ageT">로딩…</div></div>
+  <div class="top"><div class="topL"><button class="ham" type="button" aria-label="메뉴">☰</button><div class="brand"><a class="logo" href="/" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="개미투자정보 ANTINFO" style="height:30px;display:block"></a><div class="btext"><span class="bname">개미투자정보</span><span class="lede">개미투자자들이 필요한 모든 정보</span></div></div></div></div>
   <div class="wrap">
     <div class="hero">
       <div class="cell tile" id="btcCell"><div class="lab">BTC 비트코인</div><div class="px mono skel" id="btcPx">·····</div><div class="chg" id="btcChg">—</div></div>
@@ -191,8 +191,8 @@ let lastFetch=0,wsLast=0,ws=null;
 function tickAge(){if(!lastFetch)return;const s=Math.max(0,Math.round((Date.now()-lastFetch)/1000));$("ageT").textContent=s<5?"🟢 방금 갱신":(s<60?`🟢 ${s}초 전`:`🟢 ${Math.floor(s/60)}분 전`);}
 function startWS(){try{ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/ethusdt@ticker");ws.onmessage=function(ev){try{const m=JSON.parse(ev.data).data;if(!m||!m.s)return;wsLast=Date.now();const price=+m.c,chg=+m.P;if(m.s==="BTCUSDT"){$("btcPx").classList.remove("skel");animNum($("btcPx"),price,fUSD);$("btcChg").textContent=pc(chg);setCell("btcCell",dir(chg));}else if(m.s==="ETHUSDT"){$("ethPx").classList.remove("skel");animNum($("ethPx"),price,fUSD);$("ethChg").textContent=pc(chg);setCell("ethCell",dir(chg));}}catch(e){}};ws.onclose=function(){ws=null;setTimeout(function(){if(!document.hidden)startWS();},5000);};ws.onerror=function(){try{ws.close();}catch(e){}};}catch(e){}}
 let timer=null,sigTimer=null,ageTimer=null;
-function start(){stop();loadHome();timer=setInterval(loadHome,30000);loadSig();sigTimer=setInterval(loadSig,600000);startWS();ageTimer=setInterval(tickAge,1000);}
-function stop(){clearInterval(timer);clearInterval(sigTimer);clearInterval(ageTimer);try{if(ws)ws.close();}catch(e){}ws=null;}
+function start(){stop();loadHome();timer=setInterval(loadHome,30000);loadSig();sigTimer=setInterval(loadSig,600000);startWS();}
+function stop(){clearInterval(timer);clearInterval(sigTimer);try{if(ws)ws.close();}catch(e){}ws=null;}
 document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
 start();
 </script>

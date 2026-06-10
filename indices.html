@@ -55,13 +55,14 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .btn{font-size:13px;padding:8px 12px;white-space:nowrap;flex-shrink:0;}
   .main{padding:16px 14px;}
   .head h1{font-size:24px;}.head .sub{font-size:14px;}.seclabel{font-size:18px;}
-  .idx{padding:16px 17px;}.idx .n{font-size:15.5px;}.idx .p{font-size:25px;}.idx .c{font-size:15.5px;}
+  .sector-box{padding:14px 14px;}.grid{gap:10px;}
+  .idx{padding:13px 12px;min-width:0;overflow:hidden;}.idx .n{font-size:12.5px;}.idx .p{font-size:20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.idx .c{font-size:12.5px;}
   .ham{display:inline-flex;}
   .tabs{display:none !important;}
   .nav>.btn{display:none;}
   .nav{justify-content:flex-start;gap:10px;}
 }
-@media(max-width:360px){.grid{grid-template-columns:1fr;}}
+@media(max-width:360px){.idx .p{font-size:18px;}.idx .n,.idx .c{font-size:12px;}}
 </style></head>
 <body>
 <div class="backdrop"></div>
