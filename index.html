@@ -4,10 +4,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script>/* 모바일 기기 → 토스형 모바일 홈(/m). ?pc 로 데스크톱 강제 가능 */
 (function(){try{var ua=navigator.userAgent||"";var mob=/Android|iPhone|iPod|iPad|IEMobile|BlackBerry|Opera Mini|Mobile/i.test(ua);var w=Math.min(window.innerWidth||9999,(screen&&screen.width)||9999);if(mob&&w<=820&&location.search.indexOf("pc")<0){location.replace("/m.html");}}catch(e){}})();</script>
-<title>개미들의 투자 개미굴 — 불개미 CRYPTO</title>
-<meta name="description" content="개미들의 투자 개미굴 — 실시간 마켓·급등급락·시그니처 수급·매크로 뉴스·주가지수·파생/고래 시그널을 한 곳에서.">
-<meta property="og:title" content="개미들의 투자 개미굴">
-<meta property="og:description" content="개미들의 투자 개미굴 — 실시간 마켓·급등급락·수급·매크로뉴스·파생/고래 시그널">
+<title>ANTINFO — 개미투자자들의 투자정보</title>
+<meta name="description" content="개미투자자들의 투자정보 — 실시간 마켓·급등급락·시그니처 수급·매크로 뉴스·주가지수·파생/고래 시그널을 한 곳에서.">
+<meta property="og:title" content="ANTINFO">
+<meta property="og:description" content="개미투자자들의 투자정보 — 실시간 마켓·급등급락·수급·매크로뉴스·파생/고래 시그널">
 <meta property="og:type" content="website">
 <link rel="canonical" href="https://fireantcrypto.com/">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
@@ -100,7 +100,7 @@ body{background:var(--bg);color:var(--txt);}
 <body>
   <div id="staleBanner" class="banner"></div>
   <div class="nav">
-    <div class="logo">🔥 불개미<span> CRYPTO</span></div>
+    <div class="logo" style="color:#ff3b30">🐜 ANTINFO</div>
     <div class="tabs">
       <a class="tab on" href="./">대시보드</a>
       <a class="tab" href="market.html">마켓</a>
@@ -115,7 +115,7 @@ body{background:var(--bg);color:var(--txt);}
     <div class="seclabel"><h2>📈 Market Now</h2><span class="now"><span class="pulse"></span><span id="marketAge">로딩…</span></span></div>
     <div class="now-grid" id="nowGrid"></div>
 
-    <div class="seclabel"><h2>⭐ 불개미 시그니처 수급 보드</h2><span class="daily" id="sigAsof">로딩…</span></div>
+    <div class="seclabel"><h2>⭐ ANTINFO 시그니처 수급 보드</h2><span class="daily" id="sigAsof">로딩…</span></div>
     <div class="sig-grid" id="sigGrid"></div>
 
     <div class="seclabel"><h2>🚀 실시간 급등·급락 TOP 10</h2><span class="now"><span class="pulse"></span><span id="moversAge">로딩…</span></span></div>
@@ -125,7 +125,7 @@ body{background:var(--bg);color:var(--txt);}
     </div>
 
     <div class="row"><div class="card">
-      <div class="ch"><h3>🔥 불개미 일일시황</h3><span class="meta" id="dailyMeta">—</span></div>
+      <div class="ch"><h3>🐜 ANTINFO 일일시황</h3><span class="meta" id="dailyMeta">—</span></div>
       <div class="daily-r"><img class="img" id="dailyImg" alt="일일시황" src="daily-report-latest.png" onerror="this.style.display='none'"><div class="sum" id="dailySum">로딩…</div></div>
     </div></div>
 
@@ -155,11 +155,11 @@ body{background:var(--bg);color:var(--txt);}
     <div class="row r2">
       <div class="card"><div class="ch"><h3>💥 실시간 청산 분포(맵)</h3><span class="meta">세션 누적</span></div><div id="liqMap"></div></div>
       <div class="card"><div class="ch"><h3>🏦 고래 입출금</h3><span class="meta">거래소 유출입</span></div>
-        <div class="flowsoon">🔧 <b>준비중</b> — 거래소 온체인 유출입은 Whale Alert 등 유료 데이터가 필요합니다.<br>추후 불개미 지갑 추적봇(<b>@fireant_wallet_track_bot</b>)과 연동 예정입니다.</div>
+        <div class="flowsoon">🔧 <b>준비중</b> — 거래소 온체인 유출입은 Whale Alert 등 유료 데이터가 필요합니다.<br>추후 ANTINFO 지갑 추적봇(<b>@fireant_wallet_track_bot</b>)과 연동 예정입니다.</div>
       </div>
     </div>
   </div>
-  <div class="foot">🔥 FIRE ANT CRYPTO · Market Now·파생/고래=실시간(Binance) / Signature=일일 · 본 정보는 투자 권유가 아닙니다 · <span id="genAt"></span></div>
+  <div class="foot">🐜 ANTINFO · 개미투자자들의 투자정보 · Market Now·파생/고래=실시간(Binance) / Signature=일일 · 본 정보는 투자 권유가 아닙니다 · <span id="genAt"></span></div>
 <script src="assets/app.js"></script>
 <script src="assets/whale.js"></script>
 <script src="assets/vendor/supabase.js"></script>
