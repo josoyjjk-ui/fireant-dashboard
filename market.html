@@ -59,18 +59,15 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .main{padding:16px 14px;}
   .head h1{font-size:24px;}.head .sub{font-size:14px;}
   .summary{grid-template-columns:1fr 1fr;gap:11px;}.sc{padding:15px 16px;}.sc .l{font-size:13.5px;}.sc .v{font-size:21px;}
-  /* 모바일: 코인·가격·24h 3컬럼만, 나머지 숨김 */
-  table{width:100%;table-layout:fixed;}
-  #rows td:nth-child(1),table thead th:nth-child(1){display:none;}
-  #rows td:nth-child(5),table thead th:nth-child(5){display:none;}
-  #rows td:nth-child(6),table thead th:nth-child(6){display:none;}
-  #rows td:nth-child(7),table thead th:nth-child(7){display:none;}
-  #rows td:nth-child(8),table thead th:nth-child(8){display:none;}
-  th,td{padding:9px 6px;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;}th{font-size:11.5px;}
-  /* 3컬럼 명시 너비로 고정(24h 잘림 방지) */
-  thead th:nth-child(2),#rows td:nth-child(2){width:48%;}
-  thead th:nth-child(3),#rows td:nth-child(3){width:30%;}
-  thead th:nth-child(4),#rows td:nth-child(4){width:22%;}
+  /* 모바일: 테이블을 flex 행으로 — 코인·가격·24h 3개만, 확실히 폭 맞춤 */
+  table,tbody{display:block;width:100%;}
+  thead{display:none;}
+  #rows tr{display:flex;align-items:center;gap:8px;padding:11px 2px;border-bottom:1px solid var(--line);}
+  #rows td{display:block;border:none;padding:0;font-size:13px;}
+  #rows td:nth-child(1),#rows td:nth-child(5),#rows td:nth-child(6),#rows td:nth-child(7),#rows td:nth-child(8){display:none;}
+  #rows td:nth-child(2){flex:1;min-width:0;text-align:left;overflow:hidden;}
+  #rows td:nth-child(3){flex:0 0 auto;text-align:right;white-space:nowrap;}
+  #rows td:nth-child(4){flex:0 0 58px;text-align:right;white-space:nowrap;}
   .coin{flex-wrap:nowrap;gap:6px;min-width:0;}.coin img{width:18px;height:18px;}
   .coin .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .coin .sym{font-size:11px;}
