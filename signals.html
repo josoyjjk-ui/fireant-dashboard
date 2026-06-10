@@ -30,7 +30,30 @@ body{background:var(--bg);color:var(--txt);}
 .empty{color:var(--dim);font-size:12px;text-align:center;padding:70px 0;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:40px;}
 .err{color:var(--down);font-size:13px;}
-@media(max-width:760px){.grid{grid-template-columns:1fr;}}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px;margin-top:16px;max-width:440px;}
+.seg button{flex:1;border:none;background:transparent;color:var(--dim);font-weight:800;font-size:15px;padding:11px 0;border-radius:9px;cursor:pointer;}
+.seg button.on{background:#ff3b30;color:#fff;}
+.pane{display:none;}.pane.on{display:block;}
+.seclabel{display:flex;align-items:center;gap:10px;margin:18px 0 12px;flex-wrap:wrap;}
+.seclabel h2{font-size:17px;font-weight:900;}
+.pulse{width:7px;height:7px;border-radius:50%;background:#3aa0ff;box-shadow:0 0 8px #3aa0ff;}
+.nowi{font-size:11px;font-weight:800;color:#3aa0ff;background:#0e2236;padding:3px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;}
+.wsstat{font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;background:#11161f;color:var(--accent2);}
+.now-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px;}
+.nowcard{background:linear-gradient(180deg,#141a24,#10141b);border:1px solid #1e2c3c;border-radius:13px;padding:13px 15px;}
+.nowcard .l{font-size:12px;color:var(--dim);font-weight:700;}.nowcard .v{font-size:19px;font-weight:800;margin-top:4px;}.nowcard .c{font-size:12px;font-weight:700;margin-top:2px;}
+.row{display:grid;gap:14px;margin-bottom:14px;}.r2{grid-template-columns:1.3fr 1fr;}.r3{grid-template-columns:1fr 1fr 1fr;}
+.ch h3{font-size:15px;font-weight:800;}.ch .meta{font-size:11px;color:var(--dim);}
+.feedwrap{max-height:300px;overflow-y:auto;}
+.feedrow{display:grid;grid-template-columns:62px 40px 1fr auto;gap:8px;align-items:center;padding:6px 2px;border-bottom:1px solid var(--line);font-size:12.5px;}
+.feedrow:last-child{border:none;}
+.ftime{color:var(--dim);font-size:11px;}.fsym{font-weight:800;font-size:11px;}.fside{font-weight:700;font-size:12px;}.famt{font-weight:800;text-align:right;}
+.feedempty{color:var(--dim);font-size:12px;padding:14px 2px;}
+.mapbar{display:flex;height:26px;border-radius:7px;overflow:hidden;margin:8px 0;background:#0e1116;}
+.mapseg{height:100%;}.mapseg.up{background:linear-gradient(90deg,#0f2a1c,#21d07a55);}.mapseg.down{background:linear-gradient(90deg,#ff4d5e55,#2a1116);}
+.maplabels{display:flex;justify-content:space-between;font-size:12px;font-weight:800;}.mapnote{font-size:11px;color:var(--dim);margin-top:8px;}
+.flowsoon{color:var(--dim);font-size:12.5px;line-height:1.6;padding:6px 2px;}
+@media(max-width:760px){.grid{grid-template-columns:1fr;}.now-grid{grid-template-columns:repeat(3,1fr);}.r2,.r3{grid-template-columns:1fr;}}
 @media(max-width:600px){
   body{font-size:16px;}
   .nav{flex-wrap:wrap;padding:13px 15px;gap:10px;}.logo{font-size:22px;}
@@ -57,13 +80,33 @@ body{background:var(--bg);color:var(--txt);}
   </div>
   <div class="main">
     <div class="head">
-      <h1>⭐ 시장지표 — ANTINFO 시그니처</h1>
-      <div class="sub">ETF · DAT · OI · 코인베이스 프리미엄의 시계열 추세 · <span id="genAt">로딩…</span></div>
+      <h1>📡 시그널</h1>
+      <div class="sub">시그니처 수급 · 파생·고래 시그널 · <span id="genAt">로딩…</span></div>
     </div>
-    <div class="grid" id="grid"></div>
+    <div class="seg"><button id="segSig" class="on" type="button">⭐ 시그니처 수급</button><button id="segWhale" type="button">🐋 파생·고래</button></div>
+    <div class="pane on" id="paneSig"><div class="grid" id="grid"></div></div>
+    <div class="pane" id="paneWhale">
+      <div class="seclabel"><h2>🐋 파생·고래 시그널</h2><span class="nowi"><span class="pulse"></span><span id="derivAge">로딩…</span></span><span class="wsstat" id="wsStat">🟡 연결 중…</span></div>
+      <div class="now-grid" id="derivGrid"></div>
+      <div class="row r3">
+        <div class="card"><div class="ch"><h3>💥 실시간 청산</h3><span class="meta">BTC·ETH 선물</span></div><div class="feedwrap" id="liqFeed"></div></div>
+        <div class="card"><div class="ch"><h3>🐋 고래 청산</h3><span class="meta">≥ $100K</span></div><div class="feedwrap" id="whaleLiq"></div></div>
+        <div class="card"><div class="ch"><h3>🐋 고래 체결</h3><span class="meta">≥ $500K</span></div><div class="feedwrap" id="whaleTrades"></div></div>
+      </div>
+      <div class="row r2">
+        <div class="card"><div class="ch"><h3>💥 실시간 청산 분포(맵)</h3><span class="meta">세션 누적</span></div><div id="liqMap"></div></div>
+        <div class="card"><div class="ch"><h3>🏦 고래 입출금</h3><span class="meta">거래소 유출입</span></div><div class="flowsoon">🔧 <b>준비중</b> — 거래소 온체인 유출입은 유료 데이터가 필요합니다. 추후 <b>@fireant_wallet_track_bot</b> 연동 예정.</div></div>
+      </div>
+    </div>
   </div>
   <div class="foot">🐜 ANTINFO · 개미투자자들의 투자정보 · 일 1회(14:30 KST) 갱신 · 데이터가 누적될수록 추세가 풍부해집니다 · 투자 권유 아님</div>
 <script src="assets/signals.js"></script>
+<script src="assets/whale.js"></script>
+<script>
+(function(){var ss=document.getElementById('segSig'),sw=document.getElementById('segWhale'),ps=document.getElementById('paneSig'),pw=document.getElementById('paneWhale');
+function show(w){ps.classList.toggle('on',!w);pw.classList.toggle('on',w);ss.classList.toggle('on',!w);sw.classList.toggle('on',w);}
+if(ss&&sw){ss.onclick=function(){show(false)};sw.onclick=function(){show(true)};}})();
+</script>
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js"></script>
 </body></html>
