@@ -15,10 +15,10 @@ body{background:var(--bg);color:var(--txt);padding-bottom:78px;}
 .up{color:var(--up);}.down{color:var(--down);}.mono{font-variant-numeric:tabular-nums;}
 
 /* Hero */
-.hero{background:linear-gradient(165deg,#171f2a,#0f141b);border:1px solid #223141;border-radius:26px;padding:26px 24px;margin-bottom:18px;}
+.hero{background:linear-gradient(165deg,#171f2a,#0f141b);border:1px solid #223141;border-radius:24px;padding:24px 22px;margin-bottom:14px;}
 .hero .row1{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
-.hero .coin{font-size:18px;color:var(--label);font-weight:900;letter-spacing:.3px;}
-.hero .px{font-size:60px;font-weight:900;letter-spacing:-2px;line-height:1;margin-top:6px;}
+.hero .coin{font-size:20px;color:var(--label);font-weight:900;letter-spacing:.3px;}
+.hero .px{font-size:62px;font-weight:900;letter-spacing:-2px;line-height:1;margin-top:7px;}
 .hero .chg{font-size:21px;font-weight:900;margin-top:12px;display:inline-block;padding:6px 15px;border-radius:13px;}
 .chg.up,.p2.up,.e3.up{background:rgba(34,208,122,.18);}.chg.down,.p2.down,.e3.down{background:rgba(255,77,94,.18);}
 .fg{text-align:center;flex-shrink:0;}
@@ -29,34 +29,34 @@ body{background:var(--bg);color:var(--txt);padding-bottom:78px;}
 .hero .eth .e2{font-size:29px;font-weight:900;}.hero .eth .e3{font-size:20px;font-weight:900;margin-left:auto;padding:4px 12px;border-radius:10px;}
 
 /* chips — 2열 큰 카드 그리드(토스식) */
-.chips{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:26px;}
-.chip{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;}
-.chip .l{font-size:16px;color:var(--label);font-weight:800;}
-.chip .v{font-size:27px;font-weight:900;margin-top:7px;}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:20px;}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px 18px;display:flex;flex-direction:column;justify-content:center;min-height:92px;}
+.chip .l{font-size:18px;color:var(--label);font-weight:800;}
+.chip .v{font-size:32px;font-weight:900;margin-top:8px;}
 
-.sec{display:flex;align-items:center;justify-content:space-between;margin:14px 4px 16px;}
-.sec h2{font-size:27px;font-weight:900;color:#fff;}
+.sec{display:flex;align-items:center;justify-content:space-between;margin:8px 4px 13px;}
+.sec h2{font-size:30px;font-weight:900;color:#fff;letter-spacing:-.5px;}
 .sec a{font-size:14px;color:var(--accent);font-weight:800;text-decoration:none;}
 .live{font-size:13px;font-weight:800;color:var(--live);background:#0e2236;padding:6px 13px;border-radius:20px;}
 
 /* signature 2x2 */
-.sig{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:30px;}
-.sigc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;}
-.sigc .t{font-size:17px;color:var(--label);font-weight:800;}
-.sigc .big{font-size:34px;font-weight:900;margin-top:11px;letter-spacing:-.5px;}
-.sigc .sub{font-size:14px;color:var(--dim);margin-top:8px;}
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:20px;}
+.sigc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;justify-content:center;min-height:128px;}
+.sigc .t{font-size:18px;color:var(--label);font-weight:800;}
+.sigc .big{font-size:39px;font-weight:900;margin-top:10px;letter-spacing:-.5px;}
+.sigc .sub{font-size:14px;color:var(--dim);margin-top:9px;}
 
 /* movers — 큰 카드 하나로 묶음(토스식) */
 .toggle{display:flex;background:var(--card);border:1px solid var(--line);border-radius:15px;padding:5px;margin-bottom:14px;}
 .toggle button{flex:1;border:none;background:none;color:var(--dim);font-size:19px;font-weight:800;padding:15px;border-radius:12px;}
 .toggle button.on{background:var(--accent);color:#0a0c10;}
-.block{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:6px 18px;margin-bottom:26px;}
+.block{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:4px 18px;margin-bottom:20px;}
 /* 바로가기 메뉴(토스식 아이콘+라벨+꺾쇠) */
-.menu{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:4px 18px;margin-bottom:26px;}
+.menu{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:4px 18px;margin-bottom:22px;}
 .mitem{display:flex;align-items:center;gap:15px;padding:19px 2px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--txt);}
 .mitem:last-child{border:none;}
-.mitem .mi{font-size:27px;width:32px;text-align:center;}
-.mitem .ml{font-size:19px;font-weight:800;}
+.mitem .mi{font-size:28px;width:34px;text-align:center;}
+.mitem .ml{font-size:20px;font-weight:800;}
 .mitem .md{font-size:13.5px;color:var(--dim);font-weight:600;margin-top:2px;}
 .mitem .mc{margin-left:auto;color:var(--dim);font-size:26px;font-weight:400;}
 .mrow{display:flex;align-items:center;gap:14px;padding:18px 2px;border-bottom:1px solid var(--line);}
