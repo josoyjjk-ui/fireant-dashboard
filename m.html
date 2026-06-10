@@ -51,6 +51,14 @@ body{background:var(--bg);color:var(--txt);padding-bottom:78px;}
 .toggle button{flex:1;border:none;background:none;color:var(--dim);font-size:19px;font-weight:800;padding:15px;border-radius:12px;}
 .toggle button.on{background:var(--accent);color:#0a0c10;}
 .block{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:6px 18px;margin-bottom:26px;}
+/* 바로가기 메뉴(토스식 아이콘+라벨+꺾쇠) */
+.menu{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:4px 18px;margin-bottom:26px;}
+.mitem{display:flex;align-items:center;gap:15px;padding:19px 2px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--txt);}
+.mitem:last-child{border:none;}
+.mitem .mi{font-size:27px;width:32px;text-align:center;}
+.mitem .ml{font-size:19px;font-weight:800;}
+.mitem .md{font-size:13.5px;color:var(--dim);font-weight:600;margin-top:2px;}
+.mitem .mc{margin-left:auto;color:var(--dim);font-size:26px;font-weight:400;}
 .mrow{display:flex;align-items:center;gap:14px;padding:18px 2px;border-bottom:1px solid var(--line);}
 .mrow:last-child{border:none;}
 .mrow .rk{font-size:18px;color:var(--dim);font-weight:900;width:24px;text-align:center;}
@@ -90,6 +98,14 @@ body{background:var(--bg);color:var(--txt);padding-bottom:78px;}
     <div class="sec"><h2>🚀 급등·급락</h2><span class="live">● 실시간</span></div>
     <div class="toggle"><button class="on" data-m="g">📈 급등</button><button data-m="l">📉 급락</button></div>
     <div class="block"><div id="movers"></div></div>
+
+    <div class="sec"><h2>🔗 바로가기</h2></div>
+    <div class="menu">
+      <a class="mitem" href="events.html"><span class="mi">🎉</span><div><div class="ml">이벤트·당첨자</div><div class="md">진행 이벤트와 당첨 발표</div></div><span class="mc">›</span></a>
+      <a class="mitem" href="signals.html"><span class="mi">⭐</span><div><div class="ml">시장지표 시계열</div><div class="md">ETF·DAT·OI·코인베이스 추세</div></div><span class="mc">›</span></a>
+      <a class="mitem" href="indices.html"><span class="mi">📈</span><div><div class="ml">주요 주가지수</div><div class="md">미국·한국 증시·국채·매크로</div></div><span class="mc">›</span></a>
+      <a class="mitem" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="mi">✈️</span><div><div class="ml">텔레그램 채널</div><div class="md">불개미 실시간 시그널</div></div><span class="mc">›</span></a>
+    </div>
 
     <div class="foot">🔥 모바일 프로토타입 · 데이터 동일(market_now/signature) · 투자 권유 아님</div>
   </div>
