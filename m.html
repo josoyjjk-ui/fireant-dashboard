@@ -138,7 +138,7 @@ function renderMovers(){
 async function loadSig(){
   try{
     const s=await getJSON("data/v1/signature.json"),M=s.metrics||{};
-    const defs=[["btc_etf","💵 BTC ETF 순유입",1],["dat_weekly","🏦 DAT 트레저리",1],["btc_oi_24h","📊 BTC 미결제약정",0],["cb_premium","🇺🇸 코인베이스 프리미엄",0]];
+    const defs=[["btc_etf","💵 BTC ETF 순유입",1],["eth_etf","💵 ETH ETF 순유입",1],["btc_oi_24h","📊 BTC 미결제약정",0],["cb_premium","🇺🇸 코인베이스 프리미엄",0]];
     $("sig").innerHTML=defs.map(([k,t,money])=>{const m=M[k]||{},val=m.value;const disp=money?usd(val):(m.raw??(val!=null?val+"%":"—"));const c=dir(val);return `<div class="c tile ${c}"><div class="t">${t}</div><div class="big mono">${disp}</div><div class="sub">${esc((m.basis||m.as_of||"").slice(0,22))}</div></div>`;}).join("");
   }catch(e){$("sig").innerHTML='';}
 }
