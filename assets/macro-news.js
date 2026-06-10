@@ -16,18 +16,16 @@ function ago(iso) {
 
 function matchFilter(x) {
   if (FILTER === "all") return true;
-  if (FILTER === "high") return x.importance === "high";
   return x.category === FILTER;
 }
 function render() {
   const items = ALL.filter(matchFilter);
   $("list").innerHTML = items.map((x) => {
     const fresh = x.iso && (Date.now() - new Date(x.iso).getTime()) < 600000; // 10분 내 = 🔴
-    const hi = x.importance === "high";
     const sum = (x.summary && x.summary.length)
       ? `<ul class="sum">${x.summary.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : "";
-    return `<a class="item${hi ? " hi" : ""}" href="${safeURL(x.link)}" target="_blank" rel="noopener">
-      <div class="ti">${fresh ? '<span class="dot"></span>' : ""}${hi ? '<span class="impbadge">속보</span>' : ""}${esc(x.title_ko || x.title)}</div>
+    return `<a class="item" href="${safeURL(x.link)}" target="_blank" rel="noopener">
+      <div class="ti">${fresh ? '<span class="dot"></span>' : ""}${esc(x.title_ko || x.title)}</div>
       ${sum}
       ${x.title_ko && x.title_ko !== x.title ? `<div class="orig">${esc(x.title)}</div>` : ""}
       <div class="meta"><span class="cat ${esc(x.category)}">${esc(x.category)}</span><span>${esc(x.source)}</span><span>${ago(x.iso)}</span></div>
