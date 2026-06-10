@@ -24,7 +24,7 @@ html{background:var(--bg);}body{background:var(--bg);color:var(--txt);padding-bo
 .tile.pos{background:var(--posBg);border-color:var(--posBd);}
 .tile.neg{background:var(--negBg);border-color:var(--negBd);}
 
-.hero{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.hero{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
 .hero .cell{border-radius:24px;padding:18px 12px;text-align:center;min-width:0;overflow:hidden;}
 .hero .lab{font-size:clamp(15px,4.6vw,18px);color:rgba(255,255,255,.82);font-weight:800;}
 .hero .px{font-size:clamp(22px,8vw,35px);font-weight:800;margin-top:12px;line-height:1;white-space:nowrap;}
@@ -32,13 +32,13 @@ html{background:var(--bg);}body{background:var(--bg);color:var(--txt);padding-bo
 
 .sec{display:flex;align-items:center;justify-content:space-between;margin:0 4px 14px;}
 .sec h2{font-size:clamp(19px,6vw,24px);font-weight:800;}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
 .stats .s{border-radius:24px;padding:16px 10px;text-align:center;min-width:0;overflow:hidden;}
 .stats .s .l{font-size:clamp(14px,4.3vw,17px);color:rgba(255,255,255,.82);font-weight:800;}
 .stats .s .v{font-size:clamp(19px,6.8vw,28px);font-weight:800;margin-top:9px;}
 .stats .s.plain .l{color:var(--gray);}
 
-.sig{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.sig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
 .sig .c{border-radius:24px;padding:16px 10px;min-height:120px;min-width:0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
 .sig .c .t{font-size:clamp(14px,4.4vw,17px);color:rgba(255,255,255,.82);font-weight:800;}
 .sig .c.plain .t{color:var(--gray);}
@@ -46,7 +46,7 @@ html{background:var(--bg);}body{background:var(--bg);color:var(--txt);padding-bo
 .sig .c .sub{font-size:14px;color:rgba(255,255,255,.6);font-weight:600;margin-top:11px;}
 
 /* 급등/급락 좌우 2단 */
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
 .duo .col{background:var(--card);border-radius:24px;padding:6px 12px 8px;min-width:0;overflow:hidden;}
 .duo .colh{text-align:center;font-size:18px;font-weight:900;padding:14px 0 10px;}
 .duo .colh.up{color:var(--redText);}.duo .colh.down{color:var(--blueText);}
@@ -69,16 +69,17 @@ html{background:var(--bg);}body{background:var(--bg);color:var(--txt);padding-bo
 @keyframes fDn{0%{color:#4d9bff}100%{color:inherit}}
 .flash-up{animation:fUp .7s ease-out;}
 .flash-down{animation:fDn .7s ease-out;}
-.top .t{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.top .t{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;}
 .foot{text-align:center;color:var(--gray);font-size:12.5px;padding:14px;line-height:1.6;}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;}
 .btext{display:flex;flex-direction:column;gap:1px;min-width:0;}
 .bname{color:#fff;font-size:15px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}
-.lede{font-size:10.5px;color:var(--gray);font-weight:700;line-height:1.2;white-space:nowrap;}
+.lede{font-size:10.5px;color:var(--gray);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ham{font-size:25px;background:none;border:none;color:#fff;font-weight:800;line-height:1;cursor:pointer;padding:0 2px;}
-.topL{display:flex;align-items:center;gap:12px;}
+.topL{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 auto;}
 .drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:50;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
-body.navopen .drawer{transform:none;}
+.drawer{visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s;}
+body.navopen .drawer{transform:none;visibility:visible;transition:transform .25s ease;}
 .drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 14px;}
 .drawer .dh .dlogo{font-size:20px;font-weight:900;color:#ff3b30;}
 .drawer .x{font-size:20px;color:var(--gray);background:none;border:none;cursor:pointer;}
@@ -89,6 +90,10 @@ body.navopen .drawer{transform:none;}
 .drawer a.sub{font-size:15px;font-weight:700;color:var(--gray);}
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40;}
 body.navopen .backdrop{opacity:1;pointer-events:auto;}
+#authSlot{flex:0 1 auto !important;min-width:0 !important;max-width:34vw;overflow:hidden;}
+#authSlot button{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;}
+#authSlot img{flex:0 0 auto;}
+@media(max-width:380px){#authSlot{max-width:30vw;margin-left:6px !important;}}
 </style></head><body>
 <div class="backdrop"></div>
 <aside class="drawer">
