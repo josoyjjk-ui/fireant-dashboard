@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ANTINFO — 개미투자자들의 투자정보</title>
+<title>ANTINFO — 개미들이 필요한 모든 투자정보</title>
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:image" content="https://antinfo.io/assets/og-image.png">
@@ -66,6 +66,7 @@ body{background:var(--bg);color:var(--txt);padding-bottom:20px;font-weight:600;}
 .nav a .ic{font-size:23px;}.nav a.on{color:var(--blue);}
 .skel{background:rgba(127,127,127,.18);color:transparent;border-radius:7px;}
 .foot{text-align:center;color:var(--gray);font-size:12.5px;padding:14px;line-height:1.6;}
+.tagline{text-align:center;color:var(--gray);font-size:13.5px;font-weight:700;padding:2px 0 18px;}
 .ham{font-size:25px;background:none;border:none;color:#fff;font-weight:800;line-height:1;cursor:pointer;padding:0 2px;}
 .topL{display:flex;align-items:center;gap:12px;}
 .drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:50;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
@@ -96,6 +97,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 </aside>
   <div class="top"><div class="topL"><button class="ham" type="button" aria-label="메뉴">☰</button><a class="logo" href="/" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:34px;display:block"></a></div><div class="t" id="ageT">로딩…</div></div>
   <div class="wrap">
+    <div class="tagline">개미들이 필요한 모든 투자정보</div>
     <div class="hero">
       <div class="cell tile" id="btcCell"><div class="lab">BTC 비트코인</div><div class="px mono skel" id="btcPx">·····</div><div class="chg" id="btcChg">—</div></div>
       <div class="cell tile" id="ethCell"><div class="lab">ETH 이더리움</div><div class="px mono skel" id="ethPx">·····</div><div class="chg" id="ethChg">—</div></div>
@@ -115,7 +117,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
       <a class="mitem" href="indices.html"><span class="mi">📈</span><div><div class="ml">주요 주가지수</div><div class="md">미국·한국·국채</div></div><span class="mc">›</span></a>
       <a class="mitem" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="mi">✈️</span><div><div class="ml">텔레그램 채널</div><div class="md">실시간 시그널</div></div><span class="mc">›</span></a>
     </div>
-    <div class="foot">🐜 ANTINFO · 개미투자자들의 투자정보 · 상승=빨강·하락=파랑 · 투자 권유 아님</div>
+    <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 상승=빨강·하락=파랑 · 투자 권유 아님</div>
   </div>
 <script>
 document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});

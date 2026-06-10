@@ -4,13 +4,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script>/* 모바일 기기 → 토스형 모바일 홈(/m). ?pc 로 데스크톱 강제 가능 */
 (function(){try{var ua=navigator.userAgent||"";var mob=/Android|iPhone|iPod|iPad|IEMobile|BlackBerry|Opera Mini|Mobile/i.test(ua);var w=Math.min(window.innerWidth||9999,(screen&&screen.width)||9999);if(mob&&w<=820&&location.search.indexOf("pc")<0){location.replace("/m.html");}}catch(e){}})();</script>
-<title>ANTINFO — 개미투자자들의 투자정보</title>
+<title>ANTINFO — 개미들이 필요한 모든 투자정보</title>
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:image" content="https://antinfo.io/assets/og-image.png">
-<meta name="description" content="개미투자자들의 투자정보 — 실시간 마켓·급등급락·시그니처 수급·매크로 뉴스·주가지수·파생/고래 시그널을 한 곳에서.">
+<meta name="description" content="개미들이 필요한 모든 투자정보 — 실시간 마켓·급등급락·시그니처 수급·매크로 뉴스·주가지수·파생/고래 시그널을 한 곳에서.">
 <meta property="og:title" content="ANTINFO">
-<meta property="og:description" content="개미투자자들의 투자정보 — 실시간 마켓·급등급락·수급·매크로뉴스·파생/고래 시그널">
+<meta property="og:description" content="개미들이 필요한 모든 투자정보 — 실시간 마켓·급등급락·수급·매크로뉴스·파생/고래 시그널">
 <meta property="og:type" content="website">
 <link rel="canonical" href="https://antinfo.io/">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
@@ -49,6 +49,7 @@ body{background:var(--bg);color:var(--txt);}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .err{color:var(--down);font-size:12px;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;}
+.tagline{color:var(--dim);font-size:13px;font-weight:700;margin:2px 2px 16px;}
 .banner{display:none;background:#2a1116;color:#ffb1ba;font-size:12px;font-weight:700;text-align:center;padding:8px;}
 .r3{grid-template-columns:1fr 1fr 1fr;}
 .mv{align-items:center;}
@@ -115,6 +116,7 @@ body{background:var(--bg);color:var(--txt);}
     <a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
   </div>
   <div class="main">
+    <div class="tagline">개미들이 필요한 모든 투자정보</div>
     <div class="seclabel"><h2>📈 Market Now</h2><span class="now"><span class="pulse"></span><span id="marketAge">로딩…</span></span></div>
     <div class="now-grid" id="nowGrid"></div>
 
@@ -162,7 +164,7 @@ body{background:var(--bg);color:var(--txt);}
       </div>
     </div>
   </div>
-  <div class="foot">🐜 ANTINFO · 개미투자자들의 투자정보 · Market Now·파생/고래=실시간(Binance) / Signature=일일 · 본 정보는 투자 권유가 아닙니다 · <span id="genAt"></span></div>
+  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · Market Now·파생/고래=실시간(Binance) / Signature=일일 · 본 정보는 투자 권유가 아닙니다 · <span id="genAt"></span></div>
 <script src="assets/app.js"></script>
 <script src="assets/whale.js"></script>
 <script src="assets/vendor/supabase.js"></script>
