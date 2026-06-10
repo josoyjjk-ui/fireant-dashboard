@@ -50,8 +50,8 @@ async function getJSON(p) {
   } catch (e) {
     $("activeWrap").innerHTML = `<div class="empty">이벤트 로드 실패: ${e.message}</div>`;
   }
-  // 당첨자 (winners.json event별 집계)
-  try {
+  // 당첨자 (winners.json event별 집계) — 섹션 제거 시 스킵
+  if ($("winnersWrap")) try {
     const wins = await getJSON("../winners.json");
     const byEvent = {};
     wins.forEach((w) => { const k = w.event || "기타"; byEvent[k] = (byEvent[k] || 0) + 1; });
