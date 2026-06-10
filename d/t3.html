@@ -143,9 +143,9 @@ async function loadSig(){
   }catch(e){$("sig").innerHTML='';}
 }
 $("sig").innerHTML=Array(4).fill('<div class="c tile plain"><div class="big skel">····</div></div>').join("");
-let timer=null;
-function start(){stop();loadHome();loadSig();timer=setInterval(loadHome,60000);}
-function stop(){clearInterval(timer);}
+let timer=null,sigTimer=null;
+function start(){stop();loadHome();timer=setInterval(loadHome,60000);loadSig();sigTimer=setInterval(loadSig,600000);}
+function stop(){clearInterval(timer);clearInterval(sigTimer);}
 document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
 start();
 </script>
