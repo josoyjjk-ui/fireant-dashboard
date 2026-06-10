@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>개미 터미널 — 모바일 2안</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo','Pretendard',-apple-system,sans-serif;-webkit-tap-highlight-color:transparent;}
+:root{--bg:#0a0c10;--card:#14181f;--line:#252c39;--txt:#f1f5fa;--label:#dbe3ed;--dim:#8a94a3;--up:#22d07a;--down:#ff4d5e;--accent:#ff7a1a;--live:#3aa0ff;}
+body{background:var(--bg);color:var(--txt);padding-bottom:80px;}
+.up{color:var(--up);}.down{color:var(--down);}.mono{font-variant-numeric:tabular-nums;}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:rgba(10,12,16,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.top .logo{font-size:23px;font-weight:900;color:var(--accent);}.top .logo span{color:#fff;}
+.top .t{font-size:13.5px;color:var(--dim);font-weight:700;}
+.wrap{padding:16px 16px 0;}
+
+/* mood hero — F&G 색으로 배경이 바뀜 */
+.hero{border-radius:26px;padding:24px 22px;margin-bottom:14px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08);}
+.hero .verdict{font-size:21px;font-weight:900;display:flex;align-items:center;gap:8px;}
+.hero .vsub{font-size:14px;font-weight:700;opacity:.85;margin-top:3px;}
+.hero .px{font-size:64px;font-weight:900;letter-spacing:-2px;line-height:1;margin-top:18px;}
+.hero .chg{font-size:22px;font-weight:900;margin-top:10px;display:inline-block;padding:6px 16px;border-radius:14px;background:rgba(0,0,0,.28);}
+.hero .eth{display:flex;align-items:center;gap:9px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.13);}
+.hero .eth .e1{font-size:18px;font-weight:900;opacity:.9;}.hero .eth .e2{font-size:28px;font-weight:900;}.hero .eth .e3{font-size:20px;font-weight:900;margin-left:auto;}
+.hero .fgnum{position:absolute;top:20px;right:22px;text-align:center;}
+.hero .fgnum b{font-size:40px;font-weight:900;display:block;line-height:1;}
+.hero .fgnum span{font-size:12px;font-weight:800;opacity:.85;}
+
+/* 3-stat strip */
+.strip{display:flex;gap:10px;margin-bottom:24px;}
+.strip .s{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 10px;text-align:center;}
+.strip .s .l{font-size:14px;color:var(--label);font-weight:800;}
+.strip .s .v{font-size:23px;font-weight:900;margin-top:7px;}
+
+.sec{display:flex;align-items:center;justify-content:space-between;margin:6px 4px 14px;}
+.sec h2{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px;}
+.sec .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:3px;}
+.sec .seg button{border:none;background:none;color:var(--dim);font-size:15px;font-weight:800;padding:7px 14px;border-radius:8px;}
+.sec .seg button.on{background:var(--accent);color:#0a0c10;}
+
+/* 급등 가로 스와이프 카드 */
+.caro{display:flex;gap:12px;overflow-x:auto;padding:0 4px 6px;margin-bottom:26px;scroll-snap-type:x mandatory;}
+.caro::-webkit-scrollbar{display:none;}
+.gcard{flex:0 0 auto;width:150px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;scroll-snap-align:start;}
+.gcard img{width:46px;height:46px;border-radius:50%;}
+.gcard .nm{font-size:18px;font-weight:800;margin-top:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gcard .sy{font-size:13px;color:var(--dim);font-weight:700;text-transform:uppercase;}
+.gcard .pr{font-size:19px;font-weight:900;margin-top:12px;}
+.gcard .pct{font-size:21px;font-weight:900;margin-top:5px;}
+
+/* 시그니처 2x2 */
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:26px;}
+.sigc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;min-height:126px;display:flex;flex-direction:column;justify-content:center;}
+.sigc .t{font-size:18px;color:var(--label);font-weight:800;}
+.sigc .big{font-size:38px;font-weight:900;margin-top:10px;letter-spacing:-.5px;}
+.sigc .sub{font-size:13.5px;color:var(--dim);margin-top:8px;}
+
+/* 2-up 컬러 타일 */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:26px;}
+.tile{border-radius:22px;padding:22px 20px;text-decoration:none;color:#fff;min-height:128px;display:flex;flex-direction:column;justify-content:space-between;}
+.tile .ic{font-size:34px;}
+.tile .tl{font-size:20px;font-weight:900;line-height:1.3;}
+.tile.t1{background:linear-gradient(150deg,#2a1c0a,#3a2a12);border:1px solid #4a3414;}
+.tile.t2{background:linear-gradient(150deg,#0e2236,#13304a);border:1px solid #1d4566;}
+
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:rgba(13,16,21,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:9px 0 calc(9px + env(safe-area-inset-bottom));}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--dim);font-size:12.5px;font-weight:700;}
+.nav a .ic{font-size:25px;}.nav a.on{color:var(--accent);}
+.skel{background:linear-gradient(90deg,#1a1f28,#222936,#1a1f28);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:8px;color:transparent;}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.foot{text-align:center;color:var(--dim);font-size:13px;padding:18px;line-height:1.6;}
+</style></head>
+<body>
+  <div class="top"><div class="logo">🔥 개미<span> 터미널</span></div><div class="t" id="ageT">로딩…</div></div>
+  <div class="wrap">
+
+    <div class="hero" id="hero" style="background:linear-gradient(160deg,#2a1116,#14181f);">
+      <div class="verdict" id="verdict">시황 로딩…</div>
+      <div class="vsub" id="vsub">공포·탐욕 지수 기준</div>
+      <div class="fgnum"><b id="fgNum">–</b><span>F&amp;G</span></div>
+      <div class="px skel" id="btcPx">·······</div>
+      <div class="chg" id="btcChg">—</div>
+      <div class="eth"><div class="e1">ETH</div><div class="e2" id="ethPx">—</div><div class="e3" id="ethChg">—</div></div>
+    </div>
+
+    <div class="strip" id="strip"></div>
+
+    <div class="sec"><h2>🚀 급등·급락</h2><div class="seg"><button class="on" data-m="g">급등</button><button data-m="l">급락</button></div></div>
+    <div class="caro" id="caro"></div>
+
+    <div class="sec"><h2>⭐ 시그니처</h2></div>
+    <div class="sig" id="sig"></div>
+
+    <div class="tiles">
+      <a class="tile t1" href="events.html"><div class="ic">📅</div><div class="tl">이벤트·언락<br>캘린더</div></a>
+      <a class="tile t2" href="signals.html"><div class="ic">🐋</div><div class="tl">시장지표<br>시계열</div></a>
+    </div>
+
+    <div class="foot">🔥 모바일 2안 프로토타입 · 데이터 동일(market_now/signature) · 투자 권유 아님</div>
+  </div>
+
+  <nav class="nav">
+    <a class="on" href="m2.html"><span class="ic">🏠</span>홈</a>
+    <a href="macro-news.html"><span class="ic">📰</span>뉴스</a>
+    <a href="market.html"><span class="ic">📊</span>마켓</a>
+    <a href="signals.html"><span class="ic">🐋</span>시그널</a>
+    <a href="indices.html"><span class="ic">📈</span>지수</a>
+  </nav>
+
+<script>
+const $=(id)=>document.getElementById(id);
+const esc=(s)=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const safe=(u)=>{try{const x=new URL(u,location.href);return /^https?:$/.test(x.protocol)?x.href:"";}catch{return"";}};
+const comma=(n,d=0)=>n==null?"—":Number(n).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd=(v)=>{if(v==null)return"—";const a=Math.abs(v),s=v<0?"-":"";if(a>=1e12)return`${s}$${(a/1e12).toFixed(2)}T`;if(a>=1e9)return`${s}$${(a/1e9).toFixed(1)}B`;if(a>=1e6)return`${s}$${(a/1e6).toFixed(1)}M`;return`${s}$${comma(a)}`;};
+const pc=(v)=>v==null?"—":`${v>=0?"▲":"▼"} ${Math.abs(v).toFixed(2)}%`;
+const kl=(v)=>v<0?"down":"up";
+let MN=null,MV="g";
+async function getJSON(u){const r=await fetch(u+(u.includes("?")?"&":"?")+"t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;return r.json();}
+
+function mood(v){
+  if(v==null)return{g:"linear-gradient(160deg,#1a1f28,#14181f)",t:"😐 시황",c:"#cdd6e0"};
+  if(v<25)return{g:"linear-gradient(160deg,#3a0f16,#14181f)",t:"🥶 극단적 공포",c:"#ff6b78"};
+  if(v<45)return{g:"linear-gradient(160deg,#3a1c0c,#14181f)",t:"😟 공포 구간",c:"#ffa24d"};
+  if(v<55)return{g:"linear-gradient(160deg,#33300c,#14181f)",t:"😐 중립",c:"#ffd24d"};
+  if(v<75)return{g:"linear-gradient(160deg,#103022,#14181f)",t:"🤑 탐욕 구간",c:"#3ee08a"};
+  return{g:"linear-gradient(160deg,#0e3a24,#14181f)",t:"🔥 극단적 탐욕",c:"#22d07a"};
+}
+
+async function loadHome(){
+  try{
+    const d=await getJSON("data/v1/market_now.json");MN=d;
+    let bn={};try{const a=await getJSON('https://api.binance.com/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22%2C%22ETHUSDT%22%5D');if(Array.isArray(a))a.forEach(x=>bn[x.symbol]=x);}catch{}
+    const bp=bn.BTCUSDT?+bn.BTCUSDT.lastPrice:(d.btc&&d.btc.price),bc=bn.BTCUSDT?+bn.BTCUSDT.priceChangePercent:(d.btc&&d.btc.chg);
+    const ep=bn.ETHUSDT?+bn.ETHUSDT.lastPrice:(d.eth&&d.eth.price),ec=bn.ETHUSDT?+bn.ETHUSDT.priceChangePercent:(d.eth&&d.eth.chg);
+    const fg=d.fear_greed||{},v=fg.value,mo=mood(v);
+    $("hero").style.background=mo.g;
+    $("verdict").textContent=mo.t; $("verdict").style.color=mo.c;
+    const fgko={"Extreme Fear":"극단공포","Fear":"공포","Neutral":"중립","Greed":"탐욕","Extreme Greed":"극단탐욕"};
+    $("vsub").textContent=`공포·탐욕 ${v??"–"} · ${fgko[fg.class]||""}`;
+    $("fgNum").textContent=v??"–"; $("fgNum").style.color=mo.c;
+    $("btcPx").classList.remove("skel"); $("btcPx").textContent="BTC $"+comma(bp);
+    $("btcChg").textContent=pc(bc); $("btcChg").className="chg "+kl(bc);
+    $("ethPx").textContent="$"+comma(ep); $("ethChg").textContent=pc(ec); $("ethChg").className="e3 "+kl(ec);
+    $("strip").innerHTML=[
+      ["BTC 도미넌스",d.btc_dominance!=null?d.btc_dominance.toFixed(1)+"%":"—","var(--txt)"],
+      ["김치 프리미엄",d.kimchi!=null?(d.kimchi>=0?"+":"")+d.kimchi.toFixed(2)+"%":"—",d.kimchi>=0?"var(--up)":"var(--down)"],
+      ["총 시총",usd(d.total_mcap),"var(--txt)"],
+    ].map(([l,vv,c])=>`<div class="s"><div class="l">${l}</div><div class="v mono" style="color:${c}">${vv}</div></div>`).join("");
+    $("ageT").textContent="갱신 "+(d.generated_at||"").slice(11,16);
+    renderCaro();
+  }catch(e){$("verdict").textContent="시세 로드 재시도…";}
+}
+function renderCaro(){
+  if(!MN)return;
+  const list=(MV==="g"?MN.gainers:MN.losers)||[];
+  $("caro").innerHTML=list.map(c=>`<div class="gcard">
+    <img src="${safe(c.image)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+    <div class="nm">${esc(c.name)}</div><div class="sy">${esc(c.symbol)}</div>
+    <div class="pr mono">$${comma(c.price,c.price<1?4:2)}</div>
+    <div class="pct mono ${kl(c.chg)}">${c.chg>=0?"+":""}${c.chg.toFixed(2)}%</div>
+  </div>`).join("");
+}
+async function loadSig(){
+  try{
+    const s=await getJSON("data/v1/signature.json"),M=s.metrics||{};
+    const defs=[["btc_etf","💵 BTC ETF 순유입",1],["dat_weekly","🏦 DAT 트레저리",1],["btc_oi_24h","📊 BTC 미결제약정",0],["cb_premium","🇺🇸 코인베이스 프리미엄",0]];
+    $("sig").innerHTML=defs.map(([k,t,money])=>{const m=M[k]||{},val=m.value;const disp=money?usd(val):(m.raw??(val!=null?val+"%":"—"));const cls=val==null?"":val<0?"down":"up";return `<div class="sigc"><div class="t">${t}</div><div class="big ${cls}">${disp}</div><div class="sub">${esc((m.basis||m.as_of||"").slice(0,26))}</div></div>`;}).join("");
+  }catch(e){$("sig").innerHTML='';}
+}
+document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".seg button").forEach(x=>x.classList.remove("on"));b.classList.add("on");MV=b.dataset.m;renderCaro();});
+$("sig").innerHTML=Array(4).fill('<div class="sigc"><div class="big skel">····</div></div>').join("");
+let timer=null;
+function start(){stop();loadHome();loadSig();timer=setInterval(loadHome,60000);}
+function stop(){clearInterval(timer);}
+document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
+start();
+</script>
+</body></html>
