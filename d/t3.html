@@ -1,51 +1,64 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>토스 블루무드(한국식 색) — 개미 터미널</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<title>토스 블루무드 — 개미 터미널</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;}
-:root{--bg:#0e1116;--card:#171b22;--card2:#1f2530;--txt:#ffffff;--sub:#9aa3ad;--gray:#8b95a1;--line:rgba(255,255,255,.07);--blue:#3182f6;--up:#f04452;--down:#3182f6;}
+/* 한국식: 상승/양수/긍정=빨강, 하락/음수/부정=파랑 */
+:root{--bg:#0e1116;--card:#171b22;--card2:#1f2530;--txt:#fff;--sub:#9aa3ad;--gray:#8b95a1;--line:rgba(255,255,255,.08);--blue:#3182f6;
+  --redText:#ff5d6c;--blueText:#4d9bff;
+  --posBg:linear-gradient(150deg,#6b1f2e,#3a1620);--posBd:#7a2a3a;
+  --negBg:linear-gradient(150deg,#1f3a6b,#16203a);--negBd:#2a4a7a;}
 body{background:var(--bg);color:var(--txt);padding-bottom:84px;font-weight:600;}
 .mono{font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
-.up{color:var(--up);}.down{color:var(--down);}
-.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:#0e1116;}
-.top .logo{font-size:22px;font-weight:800;color:var(--txt);}.top .logo span{color:var(--blue);}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:var(--bg);}
+.top .logo{font-size:22px;font-weight:800;}.top .logo span{color:var(--blue);}
 .top .t{font-size:13px;color:var(--gray);font-weight:700;}
 .wrap{padding:14px 16px 0;}
-.hero{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-.hero .cell{background:var(--card);border-radius:24px;padding:30px 14px;text-align:center;}
-.hero .cell:first-child{background:var(--card);}
-.hero .cell:first-child{background:linear-gradient(150deg,#1f3a6b,#16203a);}
-.hero .lab{font-size:21px;color:var(--gray);font-weight:700;}
-.hero .px{font-size:46px;font-weight:800;color:var(--txt);margin-top:10px;line-height:1;}
-.hero .chg{font-size:23px;font-weight:800;margin-top:11px;}
-.sec{margin:0 4px 14px;}.sec{display:flex;align-items:center;justify-content:space-between;}
-.sec h2{font-size:29px;font-weight:800;color:var(--txt);}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-.stats .s{background:var(--card);border-radius:24px;padding:28px 14px;text-align:center;}
-.stats .s .l{font-size:19px;color:var(--gray);font-weight:700;}
-.stats .s .v{font-size:37px;font-weight:800;margin-top:8px;color:var(--txt);}
-.toggle{display:flex;background:var(--card2);border-radius:12px;padding:4px;}
-.toggle button{border:none;background:none;color:var(--gray);font-size:15px;font-weight:800;padding:8px 16px;border-radius:9px;}
-.toggle button.on{background:var(--blue);color:#fff;}
-.sig{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-.sig .c{background:var(--card);border-radius:24px;padding:28px 16px;min-height:176px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
-.sig .c .t{font-size:20px;color:var(--gray);font-weight:700;}
-.sig .c .big{font-size:43px;font-weight:800;margin-top:10px;line-height:1;color:var(--txt);}
-.sig .c .sub{font-size:14px;color:var(--sub);font-weight:600;margin-top:9px;}
-.movers{background:var(--card);border-radius:22px;padding:4px 18px;margin-bottom:20px;}
-.mrow{display:flex;align-items:center;gap:14px;padding:17px 0;}
-.mrow+.mrow{border-top:1px solid var(--line);}
-.mrow .rk{font-size:19px;font-weight:800;color:var(--gray);width:22px;}
-.mrow img{width:48px;height:48px;border-radius:50%;}
-.mrow .nm{font-size:23px;font-weight:800;color:var(--txt);}.mrow .sy{font-size:13px;color:var(--gray);font-weight:700;text-transform:uppercase;margin-top:1px;}
-.mrow .pr{margin-left:auto;text-align:right;}.mrow .pr .p1{font-size:21px;font-weight:800;color:var(--txt);}
-.mrow .pr .p2{font-size:21px;font-weight:800;margin-top:3px;}
+
+/* 칸 등락 색: pos=빨강, neg=파랑, plain=중립 */
+.tile{background:var(--card);border:1px solid transparent;}
+.tile.pos{background:var(--posBg);border-color:var(--posBd);}
+.tile.neg{background:var(--negBg);border-color:var(--negBd);}
+
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+.hero .cell{border-radius:24px;padding:30px 14px;text-align:center;}
+.hero .lab{font-size:21px;color:rgba(255,255,255,.82);font-weight:800;}
+.hero .px{font-size:46px;font-weight:800;margin-top:12px;line-height:1;}
+.hero .chg{font-size:23px;font-weight:800;margin-top:13px;color:#fff;}
+
+.sec{display:flex;align-items:center;justify-content:space-between;margin:0 4px 14px;}
+.sec h2{font-size:29px;font-weight:800;}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:30px;}
+.stats .s{border-radius:24px;padding:28px 14px;text-align:center;}
+.stats .s .l{font-size:19px;color:rgba(255,255,255,.82);font-weight:800;}
+.stats .s .v{font-size:37px;font-weight:800;margin-top:9px;}
+.stats .s.plain .l{color:var(--gray);}
+
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:30px;}
+.sig .c{border-radius:24px;padding:26px 16px;min-height:170px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+.sig .c .t{font-size:20px;color:rgba(255,255,255,.82);font-weight:800;}
+.sig .c.plain .t{color:var(--gray);}
+.sig .c .big{font-size:42px;font-weight:800;margin-top:12px;line-height:1;}
+.sig .c .sub{font-size:14px;color:rgba(255,255,255,.6);font-weight:600;margin-top:11px;}
+
+/* 급등/급락 좌우 2단 */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:30px;}
+.duo .col{background:var(--card);border-radius:24px;padding:6px 14px 8px;}
+.duo .colh{text-align:center;font-size:21px;font-weight:900;padding:14px 0 10px;}
+.duo .colh.up{color:var(--redText);}.duo .colh.down{color:var(--blueText);}
+.m2{display:flex;align-items:center;gap:8px;padding:13px 2px;border-top:1px solid var(--line);}
+.m2 .rk{font-size:15px;font-weight:800;color:var(--gray);width:18px;}
+.m2 .sy{font-size:17px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.m2 .pct{font-size:17px;font-weight:900;}
+.m2 .pct.up{color:var(--redText);}.m2 .pct.down{color:var(--blueText);}
+
 .menu{background:var(--card);border-radius:22px;padding:4px 18px;margin-bottom:26px;}
 .menu .mitem{display:flex;align-items:center;gap:15px;padding:18px 0;text-decoration:none;color:var(--txt);}
 .menu .mitem+.mitem{border-top:1px solid var(--line);}
-.menu .mi{font-size:29px;width:30px;text-align:center;}.menu .ml{font-size:22px;font-weight:800;}.menu .md{font-size:13px;color:var(--gray);font-weight:600;margin-top:2px;}
+.menu .mi{font-size:27px;width:32px;text-align:center;}.menu .ml{font-size:20px;font-weight:800;}.menu .md{font-size:13px;color:var(--gray);font-weight:600;margin-top:2px;}
 .menu .mc{margin-left:auto;color:var(--gray);font-size:24px;}
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:#0e1116;border-top:1px solid var(--line);padding:9px 0 calc(9px + env(safe-area-inset-bottom));}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:var(--bg);border-top:1px solid var(--line);padding:9px 0 calc(9px + env(safe-area-inset-bottom));}
 .nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--gray);font-size:12px;font-weight:700;}
 .nav a .ic{font-size:23px;}.nav a.on{color:var(--blue);}
 .skel{background:rgba(127,127,127,.18);color:transparent;border-radius:7px;}
@@ -54,22 +67,25 @@ body{background:var(--bg);color:var(--txt);padding-bottom:84px;font-weight:600;}
   <div class="top"><div class="logo">🔥 개미<span> 터미널</span></div><div class="t" id="ageT">로딩…</div></div>
   <div class="wrap">
     <div class="hero">
-      <div class="cell"><div class="lab">BTC 비트코인</div><div class="px skel" id="btcPx">·····</div><div class="chg" id="btcChg">—</div></div>
-      <div class="cell"><div class="lab">ETH 이더리움</div><div class="px skel" id="ethPx">·····</div><div class="chg" id="ethChg">—</div></div>
+      <div class="cell tile" id="btcCell"><div class="lab">BTC 비트코인</div><div class="px mono skel" id="btcPx">·····</div><div class="chg" id="btcChg">—</div></div>
+      <div class="cell tile" id="ethCell"><div class="lab">ETH 이더리움</div><div class="px mono skel" id="ethPx">·····</div><div class="chg" id="ethChg">—</div></div>
     </div>
     <div class="sec"><h2>시장 지표</h2></div>
     <div class="stats" id="stats"></div>
     <div class="sec"><h2>시그니처 수급</h2></div>
     <div class="sig" id="sig"></div>
-    <div class="sec"><h2>급등·급락</h2><div class="toggle"><button class="on" data-m="g">급등</button><button data-m="l">급락</button></div></div>
-    <div class="movers" id="movers"></div>
+    <div class="sec"><h2>급등 · 급락</h2></div>
+    <div class="duo">
+      <div class="col"><div class="colh up">📈 급등</div><div id="gainers"></div></div>
+      <div class="col"><div class="colh down">📉 급락</div><div id="losers"></div></div>
+    </div>
     <div class="sec"><h2>바로가기</h2></div>
     <div class="menu">
-      <a class="mitem" href="../events.html"><span class="mi">🎉</span><div class="mtx"><div class="ml">이벤트·당첨자</div><div class="md">진행 이벤트·당첨</div></div><span class="mc">›</span></a>
-      <a class="mitem" href="../indices.html"><span class="mi">📈</span><div class="mtx"><div class="ml">주요 주가지수</div><div class="md">미국·한국·국채</div></div><span class="mc">›</span></a>
-      <a class="mitem" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="mi">✈️</span><div class="mtx"><div class="ml">텔레그램 채널</div><div class="md">실시간 시그널</div></div><span class="mc">›</span></a>
+      <a class="mitem" href="../events.html"><span class="mi">🎉</span><div><div class="ml">이벤트·당첨자</div><div class="md">진행 이벤트·당첨</div></div><span class="mc">›</span></a>
+      <a class="mitem" href="../indices.html"><span class="mi">📈</span><div><div class="ml">주요 주가지수</div><div class="md">미국·한국·국채</div></div><span class="mc">›</span></a>
+      <a class="mitem" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="mi">✈️</span><div><div class="ml">텔레그램 채널</div><div class="md">실시간 시그널</div></div><span class="mc">›</span></a>
     </div>
-    <div class="foot">🔥 토스 블루무드(한국식 색) · 데이터 동일(market_now/signature) · 투자 권유 아님</div>
+    <div class="foot">🔥 토스 블루무드 · 상승=빨강·하락=파랑 · 투자 권유 아님</div>
   </div>
   <nav class="nav">
     <a class="on" href="#"><span class="ic">🏠</span>홈</a>
@@ -78,5 +94,58 @@ body{background:var(--bg);color:var(--txt);padding-bottom:84px;font-weight:600;}
     <a href="../signals.html"><span class="ic">🐋</span>시그널</a>
     <a href="../indices.html"><span class="ic">📈</span>지수</a>
   </nav>
-  <script src="home.js"></script>
+<script>
+const $=(id)=>document.getElementById(id);
+const esc=(s)=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const comma=(n,d=0)=>n==null?"—":Number(n).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd=(v)=>{if(v==null)return"—";const a=Math.abs(v),s=v<0?"-":"";if(a>=1e12)return`${s}$${(a/1e12).toFixed(2)}T`;if(a>=1e9)return`${s}$${(a/1e9).toFixed(1)}B`;if(a>=1e6)return`${s}$${(a/1e6).toFixed(1)}M`;return`${s}$${comma(a)}`;};
+const pc=(v)=>v==null?"—":`${v>=0?"▲":"▼"} ${Math.abs(v).toFixed(2)}%`;
+const dir=(v)=>v==null?"plain":(v>=0?"pos":"neg");   // 칸 배경: 양수=빨강, 음수=파랑
+const ud=(v)=>v==null?"":(v>=0?"up":"down");          // 텍스트색: up=빨강, down=파랑
+let MN=null;
+async function getJSON(u){const r=await fetch(u+(u.includes("?")?"&":"?")+"t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;return r.json();}
+function setCell(id,cls){const e=$(id);if(e){e.classList.remove("pos","neg","plain");e.classList.add(cls);}}
+async function loadHome(){
+  try{
+    const d=await getJSON("../data/v1/market_now.json");MN=d;
+    let bn={};try{const a=await getJSON('https://api.binance.com/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22%2C%22ETHUSDT%22%5D');if(Array.isArray(a))a.forEach(x=>bn[x.symbol]=x);}catch{}
+    const bp=bn.BTCUSDT?+bn.BTCUSDT.lastPrice:(d.btc&&d.btc.price),bc=bn.BTCUSDT?+bn.BTCUSDT.priceChangePercent:(d.btc&&d.btc.chg);
+    const ep=bn.ETHUSDT?+bn.ETHUSDT.lastPrice:(d.eth&&d.eth.price),ec=bn.ETHUSDT?+bn.ETHUSDT.priceChangePercent:(d.eth&&d.eth.chg);
+    $("btcPx").classList.remove("skel");$("btcPx").textContent="$"+comma(bp);$("btcChg").textContent=pc(bc);setCell("btcCell",dir(bc));
+    $("ethPx").classList.remove("skel");$("ethPx").textContent="$"+comma(ep);$("ethChg").textContent=pc(ec);setCell("ethCell",dir(ec));
+    const fg=d.fear_greed||{};const fgko={"Extreme Fear":"극단공포","Fear":"공포","Neutral":"중립","Greed":"탐욕","Extreme Greed":"극단탐욕"};
+    const fgcls=fg.value==null?"plain":(fg.value>=55?"pos":(fg.value<45?"neg":"plain"));
+    const cells=[
+      ["공포·탐욕",fg.value!=null?`${fg.value} ${fgko[fg.class]||""}`:"—",fgcls],
+      ["김치 프리미엄",d.kimchi!=null?(d.kimchi>=0?"+":"")+d.kimchi.toFixed(2)+"%":"—",d.kimchi==null?"plain":dir(d.kimchi)],
+      ["BTC 도미넌스",d.btc_dominance!=null?d.btc_dominance.toFixed(1)+"%":"—","plain"],
+      ["총 시가총액",usd(d.total_mcap),"plain"],
+    ];
+    $("stats").innerHTML=cells.map(([l,v,c])=>`<div class="s tile ${c}"><div class="l">${l}</div><div class="v mono">${v}</div></div>`).join("");
+    $("ageT").textContent="갱신 "+(d.generated_at||"").slice(11,16);
+    renderMovers();
+  }catch(e){if($("btcChg"))$("btcChg").textContent="재시도…";}
+}
+function row(c){return `<div class="m2"><span class="rk">${c.rk}</span><span class="sy">${esc((c.symbol||"").toUpperCase())}</span><span class="pct ${ud(c.chg)}">${c.chg>=0?"+":""}${c.chg.toFixed(1)}%</span></div>`;}
+function renderMovers(){
+  if(!MN)return;
+  const g=(MN.gainers||[]).slice(0,8).map((c,i)=>({...c,rk:i+1}));
+  const l=(MN.losers||[]).slice(0,8).map((c,i)=>({...c,rk:i+1}));
+  $("gainers").innerHTML=g.map(row).join("");
+  $("losers").innerHTML=l.map(row).join("");
+}
+async function loadSig(){
+  try{
+    const s=await getJSON("../data/v1/signature.json"),M=s.metrics||{};
+    const defs=[["btc_etf","💵 BTC ETF 순유입",1],["dat_weekly","🏦 DAT 트레저리",1],["btc_oi_24h","📊 BTC 미결제약정",0],["cb_premium","🇺🇸 코인베이스 프리미엄",0]];
+    $("sig").innerHTML=defs.map(([k,t,money])=>{const m=M[k]||{},val=m.value;const disp=money?usd(val):(m.raw??(val!=null?val+"%":"—"));const c=dir(val);return `<div class="c tile ${c}"><div class="t">${t}</div><div class="big mono">${disp}</div><div class="sub">${esc((m.basis||m.as_of||"").slice(0,22))}</div></div>`;}).join("");
+  }catch(e){$("sig").innerHTML='';}
+}
+$("sig").innerHTML=Array(4).fill('<div class="c tile plain"><div class="big skel">····</div></div>').join("");
+let timer=null;
+function start(){stop();loadHome();loadSig();timer=setInterval(loadHome,60000);}
+function stop(){clearInterval(timer);}
+document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
+start();
+</script>
 </body></html>
