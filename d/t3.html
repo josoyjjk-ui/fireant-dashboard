@@ -48,8 +48,9 @@ body{background:var(--bg);color:var(--txt);padding-bottom:84px;font-weight:600;}
 .duo .colh{text-align:center;font-size:18px;font-weight:900;padding:14px 0 10px;}
 .duo .colh.up{color:var(--redText);}.duo .colh.down{color:var(--blueText);}
 .m2{display:flex;align-items:center;gap:8px;padding:13px 2px;border-top:1px solid var(--line);}
-.m2 .rk{font-size:15px;font-weight:800;color:var(--gray);width:18px;}
-.m2 .sy{font-size:clamp(13px,3.9vw,15px);font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.m2 .rk{font-size:14px;font-weight:800;color:var(--gray);width:14px;flex-shrink:0;}
+.m2 .lg{width:26px;height:26px;border-radius:50%;flex-shrink:0;}
+.m2 .sy{font-size:clamp(13px,3.9vw,15px);font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .m2 .pct{font-size:clamp(13px,3.9vw,15px);font-weight:900;}
 .m2 .pct.up{color:var(--redText);}.m2 .pct.down{color:var(--blueText);}
 
@@ -102,6 +103,7 @@ const usd=(v)=>{if(v==null)return"—";const a=Math.abs(v),s=v<0?"-":"";if(a>=1e
 const pc=(v)=>v==null?"—":`${v>=0?"▲":"▼"} ${Math.abs(v).toFixed(2)}%`;
 const dir=(v)=>v==null?"plain":(v>=0?"pos":"neg");   // 칸 배경: 양수=빨강, 음수=파랑
 const ud=(v)=>v==null?"":(v>=0?"up":"down");          // 텍스트색: up=빨강, down=파랑
+const safe=(u)=>{try{const x=new URL(u,location.href);return /^https?:$/.test(x.protocol)?x.href:"";}catch{return"";}};
 let MN=null;
 async function getJSON(u){const r=await fetch(u+(u.includes("?")?"&":"?")+"t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;return r.json();}
 function setCell(id,cls){const e=$(id);if(e){e.classList.remove("pos","neg","plain");e.classList.add(cls);}}
@@ -126,7 +128,7 @@ async function loadHome(){
     renderMovers();
   }catch(e){if($("btcChg"))$("btcChg").textContent="재시도…";}
 }
-function row(c){return `<div class="m2"><span class="rk">${c.rk}</span><span class="sy">${esc((c.symbol||"").toUpperCase())}</span><span class="pct ${ud(c.chg)}">${c.chg>=0?"+":""}${c.chg.toFixed(1)}%</span></div>`;}
+function row(c){return `<div class="m2"><span class="rk">${c.rk}</span><img class="lg" src="${safe(c.image)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span class="sy">${esc((c.symbol||"").toUpperCase())}</span><span class="pct ${ud(c.chg)}">${c.chg>=0?"+":""}${c.chg.toFixed(1)}%</span></div>`;}
 function renderMovers(){
   if(!MN)return;
   const g=(MN.gainers||[]).slice(0,8).map((c,i)=>({...c,rk:i+1}));
