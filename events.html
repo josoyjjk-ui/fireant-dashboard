@@ -10,6 +10,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
 :root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff5d6c;--down:#4d9bff;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;}
+html{background:var(--bg);}
 body{background:var(--bg);color:var(--txt);}
 html,body{overflow-x:hidden;}
 .nav{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
@@ -49,6 +50,19 @@ html,body{overflow-x:hidden;}
 .krx.wn{background:linear-gradient(135deg,#10241c,#0a1612);border-color:#1c3a2c;}
 .krx.wn .go{color:#3ddc97;}
 .krx.wn:hover{border-color:#3ddc97;}
+.ham{display:none;font-size:25px;background:none;border:none;color:var(--txt);font-weight:800;line-height:1;cursor:pointer;padding:0 4px 0 0;}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:60;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
+body.navopen .drawer{transform:none;}
+.drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 14px;}
+.drawer .dh .dlogo{font-size:20px;font-weight:900;color:#ff3b30;}
+.drawer .x{font-size:20px;color:var(--dim);background:none;border:none;cursor:pointer;}
+.drawer a{display:flex;align-items:center;gap:14px;padding:15px 12px;border-radius:14px;text-decoration:none;color:var(--txt);font-size:17px;font-weight:800;}
+.drawer a .ic{font-size:22px;width:26px;text-align:center;}
+.drawer a.on{background:rgba(255,59,48,.14);color:#ff3b30;}
+.drawer .ddiv{height:1px;background:var(--line);margin:9px 6px;}
+.drawer a.sub{font-size:15px;font-weight:700;color:var(--dim);}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55;}
+body.navopen .backdrop{opacity:1;pointer-events:auto;}
 @media(max-width:900px){.duo2{grid-template-columns:1fr;}}
 @media(max-width:680px){.cards{grid-template-columns:1fr;}}
 @media(max-width:600px){
@@ -64,10 +78,27 @@ html,body{overflow-x:hidden;}
   .ev .ti{font-size:18.5px;}.ev .desc{font-size:15.5px;line-height:1.6;}.ev .reward{font-size:14.5px;}.ev .meta{font-size:13.5px;}
   .ev a.go{font-size:15.5px;padding:11px 16px;}
   .winrow .n{font-size:16.5px;}.winrow .c{font-size:15.5px;}.winrow a{font-size:15px;}
+  .ham{display:inline-flex;}
+  .tabs{display:none !important;}
+  .nav>.btn{display:none;}
+  .nav{justify-content:flex-start;gap:10px;}
 }
 </style></head>
 <body>
+<div class="backdrop"></div>
+<aside class="drawer">
+  <div class="dh"><span class="dlogo">🐜 ANTINFO</span><button class="x" type="button">✕</button></div>
+  <a href="/"><span class="ic">🏠</span>홈</a>
+  <a href="macro-news"><span class="ic">📰</span>뉴스</a>
+  <a href="market"><span class="ic">📊</span>마켓</a>
+  <a href="signals"><span class="ic">🐋</span>시그널</a>
+  <a href="indices"><span class="ic">📈</span>지수</a>
+  <div class="ddiv"></div>
+  <a class="sub on" href="events"><span class="ic">🎉</span>이벤트·당첨</a>
+  <a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>
+</aside>
   <div class="nav">
+    <button class="ham" type="button" aria-label="메뉴">☰</button>
     <a class="logo" href="/" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:36px;display:block"></a>
     <div class="tabs">
       <a class="tab" href="./">대시보드</a>
@@ -108,4 +139,5 @@ html,body{overflow-x:hidden;}
 <script src="assets/events.js"></script>
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js"></script>
+<script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 </body></html>
