@@ -15,50 +15,50 @@ body{background:var(--bg);color:var(--txt);padding-bottom:80px;}
 
 /* mood hero — F&G 색으로 배경이 바뀜 */
 .hero{border-radius:26px;padding:24px 22px;margin-bottom:14px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08);}
-.hero .verdict{font-size:21px;font-weight:900;display:flex;align-items:center;gap:8px;}
-.hero .vsub{font-size:14px;font-weight:700;opacity:.85;margin-top:3px;}
-.hero .px{font-size:64px;font-weight:900;letter-spacing:-2px;line-height:1;margin-top:18px;}
-.hero .chg{font-size:22px;font-weight:900;margin-top:10px;display:inline-block;padding:6px 16px;border-radius:14px;background:rgba(0,0,0,.28);}
-.hero .eth{display:flex;align-items:center;gap:9px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.13);}
-.hero .eth .e1{font-size:18px;font-weight:900;opacity:.9;}.hero .eth .e2{font-size:28px;font-weight:900;}.hero .eth .e3{font-size:20px;font-weight:900;margin-left:auto;}
+.hero .verdict{font-size:25px;font-weight:900;display:flex;align-items:center;gap:8px;}
+.hero .vsub{font-size:16px;font-weight:800;opacity:.9;margin-top:4px;}
+.hero .px{font-size:70px;font-weight:900;letter-spacing:-2.5px;line-height:1;margin-top:18px;}
+.hero .chg{font-size:24px;font-weight:900;margin-top:12px;display:inline-block;padding:7px 18px;border-radius:14px;background:rgba(0,0,0,.28);}
+.hero .eth{display:flex;align-items:center;gap:10px;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.13);}
+.hero .eth .e1{font-size:20px;font-weight:900;opacity:.9;}.hero .eth .e2{font-size:31px;font-weight:900;}.hero .eth .e3{font-size:22px;font-weight:900;margin-left:auto;}
 .hero .fgnum{position:absolute;top:20px;right:22px;text-align:center;}
-.hero .fgnum b{font-size:40px;font-weight:900;display:block;line-height:1;}
-.hero .fgnum span{font-size:12px;font-weight:800;opacity:.85;}
+.hero .fgnum b{font-size:46px;font-weight:900;display:block;line-height:1;}
+.hero .fgnum span{font-size:13px;font-weight:800;opacity:.85;}
 
 /* 3-stat strip */
 .strip{display:flex;gap:10px;margin-bottom:24px;}
-.strip .s{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 10px;text-align:center;}
-.strip .s .l{font-size:14px;color:var(--label);font-weight:800;}
-.strip .s .v{font-size:23px;font-weight:900;margin-top:7px;}
+.strip .s{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 8px;text-align:center;}
+.strip .s .l{font-size:15.5px;color:var(--label);font-weight:800;}
+.strip .s .v{font-size:26px;font-weight:900;margin-top:9px;letter-spacing:-.5px;}
 
-.sec{display:flex;align-items:center;justify-content:space-between;margin:6px 4px 14px;}
-.sec h2{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px;}
-.sec .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:3px;}
-.sec .seg button{border:none;background:none;color:var(--dim);font-size:15px;font-weight:800;padding:7px 14px;border-radius:8px;}
+.sec{display:flex;align-items:center;justify-content:space-between;margin:8px 4px 14px;}
+.sec h2{font-size:31px;font-weight:900;color:#fff;letter-spacing:-.5px;}
+.sec .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;}
+.sec .seg button{border:none;background:none;color:var(--dim);font-size:17px;font-weight:800;padding:8px 16px;border-radius:9px;}
 .sec .seg button.on{background:var(--accent);color:#0a0c10;}
 
 /* 급등 가로 스와이프 카드 */
 .caro{display:flex;gap:12px;overflow-x:auto;padding:0 4px 6px;margin-bottom:26px;scroll-snap-type:x mandatory;}
 .caro::-webkit-scrollbar{display:none;}
-.gcard{flex:0 0 auto;width:150px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;scroll-snap-align:start;}
-.gcard img{width:46px;height:46px;border-radius:50%;}
-.gcard .nm{font-size:18px;font-weight:800;margin-top:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.gcard .sy{font-size:13px;color:var(--dim);font-weight:700;text-transform:uppercase;}
-.gcard .pr{font-size:19px;font-weight:900;margin-top:12px;}
-.gcard .pct{font-size:21px;font-weight:900;margin-top:5px;}
+.gcard{flex:0 0 auto;width:166px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;scroll-snap-align:start;}
+.gcard img{width:52px;height:52px;border-radius:50%;}
+.gcard .nm{font-size:21px;font-weight:800;margin-top:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gcard .sy{font-size:14px;color:var(--dim);font-weight:700;text-transform:uppercase;}
+.gcard .pr{font-size:21px;font-weight:900;margin-top:14px;}
+.gcard .pct{font-size:24px;font-weight:900;margin-top:6px;}
 
 /* 시그니처 2x2 */
 .sig{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:26px;}
-.sigc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;min-height:126px;display:flex;flex-direction:column;justify-content:center;}
-.sigc .t{font-size:18px;color:var(--label);font-weight:800;}
-.sigc .big{font-size:38px;font-weight:900;margin-top:10px;letter-spacing:-.5px;}
-.sigc .sub{font-size:13.5px;color:var(--dim);margin-top:8px;}
+.sigc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:19px;min-height:134px;display:flex;flex-direction:column;justify-content:center;}
+.sigc .t{font-size:19px;color:var(--label);font-weight:800;}
+.sigc .big{font-size:42px;font-weight:900;margin-top:11px;letter-spacing:-.5px;}
+.sigc .sub{font-size:14px;color:var(--dim);margin-top:9px;}
 
 /* 2-up 컬러 타일 */
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:26px;}
-.tile{border-radius:22px;padding:22px 20px;text-decoration:none;color:#fff;min-height:128px;display:flex;flex-direction:column;justify-content:space-between;}
-.tile .ic{font-size:34px;}
-.tile .tl{font-size:20px;font-weight:900;line-height:1.3;}
+.tile{border-radius:22px;padding:24px 22px;text-decoration:none;color:#fff;min-height:142px;display:flex;flex-direction:column;justify-content:space-between;}
+.tile .ic{font-size:40px;}
+.tile .tl{font-size:23px;font-weight:900;line-height:1.3;}
 .tile.t1{background:linear-gradient(150deg,#2a1c0a,#3a2a12);border:1px solid #4a3414;}
 .tile.t2{background:linear-gradient(150deg,#0e2236,#13304a);border:1px solid #1d4566;}
 
