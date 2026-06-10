@@ -6,7 +6,7 @@
 <meta name="description" content="개미들의 투자 개미굴 — 모바일 네이티브 프로토타입">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo','Pretendard',-apple-system,sans-serif;-webkit-tap-highlight-color:transparent;}
-:root{--bg:#0a0c10;--card:#14181f;--card2:#1a1f28;--line:#242b37;--txt:#eef3f8;--dim:#8a94a3;--up:#22d07a;--down:#ff4d5e;--accent:#ff7a1a;--accent2:#ffb547;--live:#3aa0ff;}
+:root{--bg:#0a0c10;--card:#14181f;--card2:#1a1f28;--line:#242b37;--txt:#eef3f8;--dim:#8a94a3;--label:#d6dee8;--up:#22d07a;--down:#ff4d5e;--accent:#ff7a1a;--accent2:#ffb547;--live:#3aa0ff;}
 body{background:var(--bg);color:var(--txt);padding-bottom:78px;}
 .top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(10,12,16,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
 .top .logo{font-size:22px;font-weight:900;color:var(--accent);}.top .logo span{color:#fff;}
@@ -17,32 +17,32 @@ body{background:var(--bg);color:var(--txt);padding-bottom:78px;}
 /* Hero */
 .hero{background:linear-gradient(165deg,#171f2a,#0f141b);border:1px solid #223141;border-radius:26px;padding:26px 24px;margin-bottom:18px;}
 .hero .row1{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
-.hero .coin{font-size:17px;color:var(--dim);font-weight:800;letter-spacing:.3px;}
+.hero .coin{font-size:18px;color:var(--label);font-weight:900;letter-spacing:.3px;}
 .hero .px{font-size:60px;font-weight:900;letter-spacing:-2px;line-height:1;margin-top:6px;}
 .hero .chg{font-size:21px;font-weight:900;margin-top:12px;display:inline-block;padding:6px 15px;border-radius:13px;}
 .chg.up,.p2.up,.e3.up{background:rgba(34,208,122,.18);}.chg.down,.p2.down,.e3.down{background:rgba(255,77,94,.18);}
 .fg{text-align:center;flex-shrink:0;}
 .fg .ring{width:98px;height:98px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;}
-.fg .lab{font-size:14px;color:var(--dim);font-weight:800;margin-top:8px;}
+.fg .lab{font-size:15px;color:var(--label);font-weight:900;margin-top:8px;}
 .hero .eth{display:flex;align-items:center;gap:10px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line);}
-.hero .eth .e1{font-size:18px;color:var(--dim);font-weight:800;}
+.hero .eth .e1{font-size:18px;color:var(--label);font-weight:900;}
 .hero .eth .e2{font-size:29px;font-weight:900;}.hero .eth .e3{font-size:20px;font-weight:900;margin-left:auto;padding:4px 12px;border-radius:10px;}
 
 /* chips — 2열 큰 카드 그리드(토스식) */
 .chips{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:26px;}
 .chip{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;}
-.chip .l{font-size:15px;color:var(--dim);font-weight:700;}
+.chip .l{font-size:16px;color:var(--label);font-weight:800;}
 .chip .v{font-size:27px;font-weight:900;margin-top:7px;}
 
 .sec{display:flex;align-items:center;justify-content:space-between;margin:14px 4px 16px;}
-.sec h2{font-size:26px;font-weight:900;}
+.sec h2{font-size:27px;font-weight:900;color:#fff;}
 .sec a{font-size:14px;color:var(--accent);font-weight:800;text-decoration:none;}
 .live{font-size:13px;font-weight:800;color:var(--live);background:#0e2236;padding:6px 13px;border-radius:20px;}
 
 /* signature 2x2 */
 .sig{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:30px;}
 .sigc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;}
-.sigc .t{font-size:16px;color:var(--dim);font-weight:800;}
+.sigc .t{font-size:17px;color:var(--label);font-weight:800;}
 .sigc .big{font-size:34px;font-weight:900;margin-top:11px;letter-spacing:-.5px;}
 .sigc .sub{font-size:14px;color:var(--dim);margin-top:8px;}
 
