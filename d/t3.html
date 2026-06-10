@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>토스 블루무드(한국식 색) — 개미 터미널</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;}
+:root{--bg:#0e1116;--card:#171b22;--card2:#1f2530;--txt:#ffffff;--sub:#9aa3ad;--gray:#8b95a1;--line:rgba(255,255,255,.07);--blue:#3182f6;--up:#f04452;--down:#3182f6;}
+body{background:var(--bg);color:var(--txt);padding-bottom:84px;font-weight:600;}
+.mono{font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
+.up{color:var(--up);}.down{color:var(--down);}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:#0e1116;}
+.top .logo{font-size:22px;font-weight:800;color:var(--txt);}.top .logo span{color:var(--blue);}
+.top .t{font-size:13px;color:var(--gray);font-weight:700;}
+.wrap{padding:14px 16px 0;}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+.hero .cell{background:var(--card);border-radius:22px;padding:22px 18px;}
+.hero .cell:first-child{background:var(--card);}
+.hero .cell:first-child{background:linear-gradient(150deg,#1f3a6b,#16203a);}
+.hero .lab{font-size:16px;color:var(--gray);font-weight:700;}
+.hero .px{font-size:31px;font-weight:800;color:var(--txt);margin-top:10px;line-height:1;}
+.hero .chg{font-size:17px;font-weight:800;margin-top:11px;}
+.sec{margin:0 4px 14px;}.sec{display:flex;align-items:center;justify-content:space-between;}
+.sec h2{font-size:21px;font-weight:800;color:var(--txt);}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:30px;}
+.stats .s{background:var(--card);border-radius:22px;padding:20px 18px;}
+.stats .s .l{font-size:15px;color:var(--gray);font-weight:700;}
+.stats .s .v{font-size:26px;font-weight:800;margin-top:8px;color:var(--txt);}
+.toggle{display:flex;background:var(--card2);border-radius:12px;padding:4px;}
+.toggle button{border:none;background:none;color:var(--gray);font-size:15px;font-weight:800;padding:8px 16px;border-radius:9px;}
+.toggle button.on{background:var(--blue);color:#fff;}
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:30px;}
+.sig .c{background:var(--card);border-radius:22px;padding:20px 18px;min-height:128px;display:flex;flex-direction:column;justify-content:center;}
+.sig .c .t{font-size:16px;color:var(--gray);font-weight:700;}
+.sig .c .big{font-size:30px;font-weight:800;margin-top:10px;line-height:1;color:var(--txt);}
+.sig .c .sub{font-size:13px;color:var(--sub);font-weight:600;margin-top:9px;}
+.movers{background:var(--card);border-radius:22px;padding:4px 18px;margin-bottom:30px;}
+.mrow{display:flex;align-items:center;gap:14px;padding:17px 0;}
+.mrow+.mrow{border-top:1px solid var(--line);}
+.mrow .rk{font-size:17px;font-weight:800;color:var(--gray);width:22px;}
+.mrow img{width:42px;height:42px;border-radius:50%;}
+.mrow .nm{font-size:19px;font-weight:800;color:var(--txt);}.mrow .sy{font-size:13px;color:var(--gray);font-weight:700;text-transform:uppercase;margin-top:1px;}
+.mrow .pr{margin-left:auto;text-align:right;}.mrow .pr .p1{font-size:18px;font-weight:800;color:var(--txt);}
+.mrow .pr .p2{font-size:18px;font-weight:800;margin-top:3px;}
+.menu{background:var(--card);border-radius:22px;padding:4px 18px;margin-bottom:26px;}
+.menu .mitem{display:flex;align-items:center;gap:15px;padding:18px 0;text-decoration:none;color:var(--txt);}
+.menu .mitem+.mitem{border-top:1px solid var(--line);}
+.menu .mi{font-size:26px;width:30px;text-align:center;}.menu .ml{font-size:19px;font-weight:800;}.menu .md{font-size:13px;color:var(--gray);font-weight:600;margin-top:2px;}
+.menu .mc{margin-left:auto;color:var(--gray);font-size:24px;}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:#0e1116;border-top:1px solid var(--line);padding:9px 0 calc(9px + env(safe-area-inset-bottom));}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--gray);font-size:12px;font-weight:700;}
+.nav a .ic{font-size:23px;}.nav a.on{color:var(--blue);}
+.skel{background:rgba(127,127,127,.18);color:transparent;border-radius:7px;}
+.foot{text-align:center;color:var(--gray);font-size:12.5px;padding:14px;line-height:1.6;}
+</style></head><body>
+  <div class="top"><div class="logo">🔥 개미<span> 터미널</span></div><div class="t" id="ageT">로딩…</div></div>
+  <div class="wrap">
+    <div class="hero">
+      <div class="cell"><div class="lab">BTC 비트코인</div><div class="px skel" id="btcPx">·····</div><div class="chg" id="btcChg">—</div></div>
+      <div class="cell"><div class="lab">ETH 이더리움</div><div class="px skel" id="ethPx">·····</div><div class="chg" id="ethChg">—</div></div>
+    </div>
+    <div class="sec"><h2>시장 지표</h2></div>
+    <div class="stats" id="stats"></div>
+    <div class="sec"><h2>시그니처 수급</h2></div>
+    <div class="sig" id="sig"></div>
+    <div class="sec"><h2>급등·급락</h2><div class="toggle"><button class="on" data-m="g">급등</button><button data-m="l">급락</button></div></div>
+    <div class="movers" id="movers"></div>
+    <div class="sec"><h2>바로가기</h2></div>
+    <div class="menu">
+      <a class="mitem" href="../events.html"><span class="mi">🎉</span><div class="mtx"><div class="ml">이벤트·당첨자</div><div class="md">진행 이벤트·당첨</div></div><span class="mc">›</span></a>
+      <a class="mitem" href="../indices.html"><span class="mi">📈</span><div class="mtx"><div class="ml">주요 주가지수</div><div class="md">미국·한국·국채</div></div><span class="mc">›</span></a>
+      <a class="mitem" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="mi">✈️</span><div class="mtx"><div class="ml">텔레그램 채널</div><div class="md">실시간 시그널</div></div><span class="mc">›</span></a>
+    </div>
+    <div class="foot">🔥 토스 블루무드(한국식 색) · 데이터 동일(market_now/signature) · 투자 권유 아님</div>
+  </div>
+  <nav class="nav">
+    <a class="on" href="#"><span class="ic">🏠</span>홈</a>
+    <a href="../macro-news.html"><span class="ic">📰</span>뉴스</a>
+    <a href="../market.html"><span class="ic">📊</span>마켓</a>
+    <a href="../signals.html"><span class="ic">🐋</span>시그널</a>
+    <a href="../indices.html"><span class="ic">📈</span>지수</a>
+  </nav>
+  <script src="home.js"></script>
+</body></html>
