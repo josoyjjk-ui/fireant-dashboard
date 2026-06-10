@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>개미 터미널 — 모바일 프로토타입</title>
+<meta name="description" content="개미들의 투자 개미굴 — 모바일 네이티브 프로토타입">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo','Pretendard',-apple-system,sans-serif;-webkit-tap-highlight-color:transparent;}
+:root{--bg:#0a0c10;--card:#14181f;--card2:#1a1f28;--line:#242b37;--txt:#eef3f8;--dim:#8a94a3;--up:#22d07a;--down:#ff4d5e;--accent:#ff7a1a;--accent2:#ffb547;--live:#3aa0ff;}
+body{background:var(--bg);color:var(--txt);padding-bottom:78px;}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(10,12,16,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.top .logo{font-size:19px;font-weight:900;color:var(--accent);}.top .logo span{color:#fff;}
+.top .t{font-size:12px;color:var(--dim);font-weight:700;}
+.wrap{padding:16px 16px 0;}
+.up{color:var(--up);}.down{color:var(--down);}.mono{font-variant-numeric:tabular-nums;}
+
+/* Hero */
+.hero{background:linear-gradient(165deg,#161d27,#10141b);border:1px solid #20303f;border-radius:22px;padding:20px;margin-bottom:14px;}
+.hero .row1{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
+.hero .coin{font-size:13px;color:var(--dim);font-weight:800;letter-spacing:.3px;}
+.hero .px{font-size:40px;font-weight:900;letter-spacing:-1px;line-height:1.05;margin-top:2px;}
+.hero .chg{font-size:16px;font-weight:800;margin-top:4px;}
+.fg{text-align:center;flex-shrink:0;}
+.fg .ring{width:74px;height:74px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;}
+.fg .lab{font-size:11px;color:var(--dim);font-weight:700;margin-top:5px;}
+.hero .eth{display:flex;align-items:center;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
+.hero .eth .e1{font-size:13px;color:var(--dim);font-weight:800;}
+.hero .eth .e2{font-size:20px;font-weight:900;}.hero .eth .e3{font-size:14px;font-weight:800;margin-left:auto;}
+
+/* chips */
+.chips{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:20px;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{flex:0 0 auto;background:var(--card);border:1px solid var(--line);border-radius:15px;padding:12px 16px;min-width:108px;}
+.chip .l{font-size:12px;color:var(--dim);font-weight:700;}
+.chip .v{font-size:20px;font-weight:900;margin-top:4px;}
+
+.sec{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 12px;}
+.sec h2{font-size:19px;font-weight:900;}
+.sec a{font-size:13px;color:var(--accent);font-weight:800;text-decoration:none;}
+.live{font-size:11px;font-weight:800;color:var(--live);background:#0e2236;padding:4px 11px;border-radius:20px;}
+
+/* signature 2x2 */
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+.sigc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;}
+.sigc .t{font-size:13px;color:var(--dim);font-weight:800;}
+.sigc .big{font-size:25px;font-weight:900;margin-top:8px;letter-spacing:-.5px;}
+.sigc .sub{font-size:11.5px;color:var(--dim);margin-top:5px;}
+
+/* movers toggle */
+.toggle{display:flex;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:4px;margin-bottom:12px;}
+.toggle button{flex:1;border:none;background:none;color:var(--dim);font-size:15px;font-weight:800;padding:11px;border-radius:10px;}
+.toggle button.on{background:var(--accent);color:#0a0c10;}
+.mrow{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid var(--line);}
+.mrow:last-child{border:none;}
+.mrow .rk{font-size:14px;color:var(--dim);font-weight:800;width:20px;text-align:center;}
+.mrow img{width:34px;height:34px;border-radius:50%;}
+.mrow .nm{font-size:16.5px;font-weight:800;}.mrow .sy{font-size:12px;color:var(--dim);text-transform:uppercase;font-weight:700;}
+.mrow .pr{margin-left:auto;text-align:right;}
+.mrow .pr .p1{font-size:16px;font-weight:800;}.mrow .pr .p2{font-size:15px;font-weight:900;margin-top:2px;}
+
+.skel{background:linear-gradient(90deg,#1a1f28,#222936,#1a1f28);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:8px;color:transparent;}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:rgba(13,16,21,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 0 calc(8px + env(safe-area-inset-bottom));}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--dim);font-size:11px;font-weight:700;}
+.nav a .ic{font-size:21px;}
+.nav a.on{color:var(--accent);}
+.foot{text-align:center;color:var(--dim);font-size:11px;padding:18px;}
+</style></head>
+<body>
+  <div class="top"><div class="logo">🔥 개미<span> 터미널</span></div><div class="t" id="ageT">로딩…</div></div>
+  <div class="wrap">
+
+    <div class="hero" id="hero">
+      <div class="row1">
+        <div><div class="coin">BTC · 비트코인</div><div class="px skel" id="btcPx">·····</div><div class="chg" id="btcChg">—</div></div>
+        <div class="fg"><div class="ring skel" id="fgRing">··</div><div class="lab" id="fgLab">공포·탐욕</div></div>
+      </div>
+      <div class="eth"><div class="e1">ETH</div><div class="e2" id="ethPx">—</div><div class="e3" id="ethChg">—</div></div>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <div class="sec"><h2>⭐ 시그니처 수급</h2><span class="live">일일</span></div>
+    <div class="sig" id="sig"></div>
+
+    <div class="sec"><h2>🚀 급등·급락</h2><span class="live">● 실시간</span></div>
+    <div class="toggle"><button class="on" data-m="g">📈 급등</button><button data-m="l">📉 급락</button></div>
+    <div id="movers"></div>
+
+    <div class="foot">🔥 모바일 프로토타입 · 데이터 동일(market_now/signature) · 투자 권유 아님</div>
+  </div>
+
+  <nav class="nav">
+    <a class="on" href="m.html"><span class="ic">🏠</span>홈</a>
+    <a href="macro-news.html"><span class="ic">📰</span>뉴스</a>
+    <a href="market.html"><span class="ic">📊</span>마켓</a>
+    <a href="signals.html"><span class="ic">🐋</span>시그널</a>
+    <a href="indices.html"><span class="ic">📈</span>지수</a>
+  </nav>
+
+<script>
+const $=(id)=>document.getElementById(id);
+const esc=(s)=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const safe=(u)=>{try{const x=new URL(u,location.href);return /^https?:$/.test(x.protocol)?x.href:"";}catch{return"";}};
+const comma=(n,d=0)=>n==null?"—":Number(n).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd=(v)=>{if(v==null)return"—";const a=Math.abs(v),s=v<0?"-":"";if(a>=1e12)return`${s}$${(a/1e12).toFixed(2)}T`;if(a>=1e9)return`${s}$${(a/1e9).toFixed(1)}B`;if(a>=1e6)return`${s}$${(a/1e6).toFixed(1)}M`;return`${s}$${comma(a)}`;};
+const pc=(v)=>v==null?"—":`${v>=0?"▲":"▼"} ${Math.abs(v).toFixed(2)}%`;
+const kl=(v)=>v<0?"down":"up";
+let MN=null, MV="g";
+
+async function getJSON(u){const r=await fetch(u+(u.includes("?")?"&":"?")+"t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;return r.json();}
+
+async function loadHome(){
+  try{
+    const d=await getJSON("data/v1/market_now.json"); MN=d;
+    // BTC/ETH 실시간 오버레이(Binance)
+    let bn={}; try{const a=await getJSON('https://api.binance.com/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22%2C%22ETHUSDT%22%5D');if(Array.isArray(a))a.forEach(x=>bn[x.symbol]=x);}catch{}
+    const bp=bn.BTCUSDT?+bn.BTCUSDT.lastPrice:(d.btc&&d.btc.price), bc=bn.BTCUSDT?+bn.BTCUSDT.priceChangePercent:(d.btc&&d.btc.chg);
+    const ep=bn.ETHUSDT?+bn.ETHUSDT.lastPrice:(d.eth&&d.eth.price), ec=bn.ETHUSDT?+bn.ETHUSDT.priceChangePercent:(d.eth&&d.eth.chg);
+    $("btcPx").classList.remove("skel"); $("btcPx").textContent="$"+comma(bp);
+    $("btcChg").textContent=pc(bc); $("btcChg").className="chg "+kl(bc);
+    $("ethPx").textContent="$"+comma(ep); $("ethChg").textContent=pc(ec); $("ethChg").className="e3 "+kl(ec);
+    // F&G ring
+    const fg=d.fear_greed||{}; const v=fg.value;
+    let col="#ff4d5e"; if(v>=55)col="#22d07a"; else if(v>=45)col="#ffb547";
+    const ring=$("fgRing"); ring.classList.remove("skel"); ring.textContent=v??"—";
+    ring.style.background=`conic-gradient(${col} ${(v||0)*3.6}deg, #222936 0)`;
+    ring.style.color="#fff"; ring.innerHTML=`<div style="width:58px;height:58px;border-radius:50%;background:#10141b;display:flex;align-items:center;justify-content:center;">${v??"—"}</div>`;
+    const fgko={"Extreme Fear":"극단공포","Fear":"공포","Neutral":"중립","Greed":"탐욕","Extreme Greed":"극단탐욕"};
+    $("fgLab").textContent=fgko[fg.class]||"공포·탐욕";
+    // chips
+    $("chips").innerHTML=[
+      ["BTC 도미넌스",d.btc_dominance!=null?d.btc_dominance.toFixed(1)+"%":"—"],
+      ["김치 프리미엄",d.kimchi!=null?(d.kimchi>=0?"+":"")+d.kimchi.toFixed(2)+"%":"—"],
+      ["총 시총",usd(d.total_mcap)],
+      ["USD/KRW",d.domestic?"₩"+comma(d.domestic.usdKrw):"—"],
+      ["24h 거래량",usd(d.total_vol)],
+    ].map(([l,vv])=>`<div class="chip"><div class="l">${l}</div><div class="v mono">${vv}</div></div>`).join("");
+    $("ageT").textContent="갱신 "+(d.generated_at||"").slice(11,16);
+    renderMovers();
+  }catch(e){ $("btcChg").textContent="시세 로드 재시도…"; }
+}
+
+function renderMovers(){
+  if(!MN)return;
+  const list=(MV==="g"?MN.gainers:MN.losers)||[];
+  $("movers").innerHTML=list.map((c,i)=>`<div class="mrow">
+    <div class="rk">${i+1}</div>
+    <img src="${safe(c.image)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+    <div><div class="nm">${esc(c.name)}</div><div class="sy">${esc(c.symbol)}</div></div>
+    <div class="pr"><div class="p1 mono">$${comma(c.price,c.price<1?4:2)}</div><div class="p2 mono ${kl(c.chg)}">${c.chg>=0?"+":""}${c.chg.toFixed(2)}%</div></div>
+  </div>`).join("")||'<div class="foot">데이터 로딩…</div>';
+}
+
+async function loadSig(){
+  try{
+    const s=await getJSON("data/v1/signature.json"); const M=s.metrics||{};
+    const defs=[["btc_etf","💵 BTC ETF 순유입",1],["dat_weekly","🏦 DAT 트레저리",1],["btc_oi_24h","📊 BTC 미결제약정",0],["cb_premium","🇺🇸 코인베이스 프리미엄",0]];
+    $("sig").innerHTML=defs.map(([k,t,money])=>{
+      const m=M[k]||{}; const val=m.value;
+      const disp=money?usd(val):(m.raw??(val!=null?val+"%":"—"));
+      const cls=val==null?"":val<0?"down":"up";
+      return `<div class="sigc"><div class="t">${t}</div><div class="big ${cls}">${disp}</div><div class="sub">${esc((m.basis||m.as_of||"").slice(0,28))}</div></div>`;
+    }).join("");
+  }catch(e){ $("sig").innerHTML='<div class="foot">시그니처 로딩…</div>'; }
+}
+
+document.querySelectorAll(".toggle button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".toggle button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); MV=b.dataset.m; renderMovers();
+});
+
+$("sig").innerHTML=Array(4).fill('<div class="sigc"><div class="big skel">····</div></div>').join("");
+let timer=null;
+function start(){stop();loadHome();loadSig();timer=setInterval(loadHome,60000);}
+function stop(){clearInterval(timer);}
+document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
+start();
+</script>
+</body></html>
