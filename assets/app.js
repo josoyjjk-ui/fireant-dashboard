@@ -126,9 +126,9 @@ function spark(id, hist, color) {
 async function loadSignature() {
   try {
     const sig = await getJSON(`${BASE}/signature.json?t=${Date.now()}`).catch(() => null);
-    const manifest = await getJSON(`${BASE}/manifest.json?t=${Date.now()}`).catch(() => null);
-    if (manifest) $("genAt").textContent = "시그니처 생성: " + (manifest.generated_at || "");
     if (!sig) return;
+    const sigT = (sig.generated_at || "").slice(11, 16);
+    $("genAt").textContent = "시그니처 갱신: " + sigT + " KST";
     const M = sig.metrics || {};
     const defs = [
       { k: "btc_etf", t: "💵 BTC 현물 ETF 순유입", hist: "btc_etf", money: true },
@@ -150,7 +150,7 @@ async function loadSignature() {
       const v = (M[defs[i].k] || {}).value;
       spark(`sk${i}`, hist, v != null && v < 0 ? "#ff4d5e" : "#21d07a");
     }
-    $("sigAsof").textContent = `일일 · ${sig.data_date || ""} 기준 (5분마다 최신 확인)`;
+    $("sigAsof").textContent = `🟢 ${sigT} 갱신 · OI·CB 실시간 / ETF·DAT ${sig.data_date || ""} 기준`;
     $("dailySum").textContent = sig.summary || "시황 요약 준비중";
     $("dailyMeta").textContent = sig.data_date || "—";
   } catch (e) { /* 유지 */ }
