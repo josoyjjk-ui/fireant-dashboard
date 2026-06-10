@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🧪 PC 토스 스킨 테스트 — 불개미 CRYPTO</title>
+<meta name="description" content="PC 대시보드 토스 디자인 테스트 — 구성 동일, 스타일만 토스풍.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+  integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g" crossorigin="anonymous"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;}
+/* 토스 블루무드 + 한국식 색: 상승=빨강 / 하락=파랑 */
+:root{--bg:#0e1116;--card:#171b22;--card2:#1f2530;--line:rgba(255,255,255,.06);--txt:#fff;--dim:#8b95a1;
+  --up:#ff5d6c;--down:#4d9bff;--accent:#3182f6;--accent2:#ffb547;--live:#3182f6;}
+body{background:var(--bg);color:var(--txt);font-weight:600;}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;border-bottom:1px solid var(--line);background:rgba(14,17,22,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:10;}
+.logo{font-size:22px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
+.tabs{display:flex;gap:6px;}.tab{padding:9px 16px;border-radius:11px;font-size:14px;font-weight:800;color:var(--dim);text-decoration:none;transition:.15s;}.tab:hover{color:#fff;}.tab.on{background:var(--accent);color:#fff;}
+.btn{padding:9px 16px;border-radius:11px;font-size:14px;font-weight:800;border:none;background:var(--accent);color:#fff;text-decoration:none;}
+.main{padding:24px 28px 50px;max-width:1440px;margin:0 auto;}
+.seclabel{display:flex;align-items:center;gap:10px;margin:28px 2px 16px;}
+.seclabel h2{font-size:23px;font-weight:900;letter-spacing:-.5px;}
+.seclabel .now{font-size:12px;font-weight:800;color:var(--live);background:rgba(49,130,246,.13);padding:4px 11px;border-radius:20px;display:flex;align-items:center;gap:6px;}
+.seclabel .daily{font-size:12px;font-weight:800;color:var(--accent2);background:rgba(255,181,71,.12);padding:4px 11px;border-radius:20px;}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 8px var(--live);}
+.up{color:var(--up);}.down{color:var(--down);}.mono{font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
+.now-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:8px;}
+.nowcard{background:var(--card);border:1px solid transparent;border-radius:20px;padding:20px 22px;}
+.nowcard .l{font-size:14px;color:var(--dim);font-weight:700;}.nowcard .v{font-size:28px;font-weight:900;margin-top:8px;}.nowcard .c{font-size:14px;font-weight:800;margin-top:4px;}
+.fg{display:inline-block;padding:3px 10px;border-radius:20px;font-size:14px;font-weight:800;}
+.sig-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:8px;}
+.sigcard{background:var(--card);border:1px solid transparent;border-radius:22px;padding:22px;position:relative;min-height:160px;}
+.sigcard .asof{font-size:11px;font-weight:800;color:var(--accent2);background:rgba(255,181,71,.12);padding:3px 9px;border-radius:8px;display:inline-block;margin-bottom:10px;}
+.sigcard .t{font-size:15px;color:var(--dim);font-weight:800;}.sigcard .big{font-size:34px;font-weight:900;margin-top:8px;letter-spacing:-1px;}.sigcard .sub{font-size:12px;color:var(--dim);margin-top:5px;}
+.sigcard canvas{margin-top:10px;height:54px!important;max-height:54px!important;width:100%!important;display:block;}
+.sigcard .pill{position:absolute;top:20px;right:20px;font-size:11px;font-weight:800;padding:4px 10px;border-radius:9px;}.pill.u{background:rgba(255,93,108,.15);color:var(--up);}.pill.d{background:rgba(77,155,255,.15);color:var(--down);}
+.row{display:grid;gap:16px;margin-bottom:16px;}.r2{grid-template-columns:1.3fr 1fr;}
+.card{background:var(--card);border:1px solid transparent;border-radius:22px;padding:22px 24px;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}.ch h3{font-size:18px;font-weight:900;letter-spacing:-.5px;}.ch .meta{font-size:12px;color:var(--dim);font-weight:700;}
+.daily-r{display:flex;gap:18px;}.daily-r .img{width:300px;height:190px;border-radius:16px;object-fit:cover;background:var(--card2);border:1px solid var(--line);flex-shrink:0;}.daily-r .sum{font-size:14.5px;line-height:1.7;color:#cdd6e0;}.daily-r .sum b{color:#fff;}
+.li{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px;}.li:last-child{border:none;}.tag{font-size:12px;padding:3px 9px;border-radius:8px;background:var(--card2);color:var(--dim);font-weight:700;}.when{font-size:13px;color:var(--accent2);font-weight:800;}
+.skel{background:rgba(127,127,127,.16);border-radius:8px;color:transparent;}
+.err{color:var(--up);font-size:12px;}
+.foot{padding:30px;color:var(--dim);font-size:12px;border-top:1px solid var(--line);text-align:center;line-height:1.7;}
+.banner{display:none;background:rgba(255,93,108,.12);color:#ffb1ba;font-size:13px;font-weight:700;text-align:center;padding:10px;}
+.tnote{background:rgba(49,130,246,.1);border:1px solid rgba(49,130,246,.3);border-radius:14px;padding:14px 20px;font-size:14px;color:#aac0e0;font-weight:700;margin:2px 2px 6px;}
+.r3{grid-template-columns:1fr 1fr 1fr;}
+.mv{align-items:center;}
+.mvn{display:flex;align-items:center;gap:10px;min-width:0;}
+.mvn .rk{font-size:13px;color:var(--dim);font-weight:800;width:18px;text-align:center;flex-shrink:0;}
+.mvn img{width:26px;height:26px;border-radius:50%;flex-shrink:0;}
+.mvn .nm{font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mvn .sym{color:var(--dim);font-size:12px;text-transform:uppercase;flex-shrink:0;font-weight:700;}
+.mvp{display:flex;align-items:center;gap:10px;flex-shrink:0;}.mvp .chg{font-weight:900;font-size:15px;min-width:66px;text-align:right;}.mvp .mono{font-size:14px;}
+.feedwrap{max-height:300px;overflow-y:auto;}
+.feedrow{display:grid;grid-template-columns:62px 40px 1fr auto;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13px;}
+.feedrow:last-child{border:none;}
+.ftime{color:var(--dim);font-size:12px;font-variant-numeric:tabular-nums;}
+.fsym{font-weight:800;font-size:12px;}.fside{font-weight:700;font-size:13px;}.famt{font-weight:900;text-align:right;}
+.feedempty{color:var(--dim);font-size:13px;padding:16px 2px;}
+.mapbar{display:flex;height:28px;border-radius:9px;overflow:hidden;margin:10px 0;background:#0e1116;}
+.mapseg{height:100%;}.mapseg.up{background:linear-gradient(90deg,rgba(255,93,108,.25),rgba(255,93,108,.5));}.mapseg.down{background:linear-gradient(90deg,rgba(77,155,255,.5),rgba(77,155,255,.25));}
+.maplabels{display:flex;justify-content:space-between;font-size:13px;font-weight:800;}
+.mapnote{font-size:12px;color:var(--dim);margin-top:10px;}
+.flowsoon{color:var(--dim);font-size:13.5px;line-height:1.7;padding:8px 2px;}
+@media(max-width:920px){.r3{grid-template-columns:1fr;}.now-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){
+  .nav{flex-wrap:wrap;padding:13px 15px;gap:10px;}
+  .tabs{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;gap:7px;}
+  .tab{flex:0 0 auto;}
+  .main{padding:16px;}
+  .now-grid{grid-template-columns:repeat(2,1fr);}
+  .sig-grid,.r2,.r3{grid-template-columns:1fr;}
+  .daily-r{flex-direction:column;}.daily-r .img{width:100%;}
+}
+</style></head>
+<body>
+  <div id="staleBanner" class="banner"></div>
+  <div class="nav">
+    <div class="logo">🔥 불개미<span> CRYPTO</span></div>
+    <div class="tabs">
+      <a class="tab on" href="./">대시보드</a>
+      <a class="tab" href="market.html">마켓</a>
+      <a class="tab" href="macro-news.html">매크로뉴스</a>
+      <a class="tab" href="indices.html">주요주가지수</a>
+      <a class="tab" href="events.html">이벤트모음</a>
+      <a class="tab" href="signals.html">시장지표</a>
+    </div>
+    <a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
+  </div>
+  <div class="main">
+    <div class="tnote">🧪 PC 토스 스킨 테스트 — 구성·항목·데이터는 기존 대시보드와 동일, 디자인(스타일·색)만 토스풍으로 변경했습니다. 실제 PC 대시보드(/) 는 그대로입니다.</div>
+
+    <div class="seclabel"><h2>📈 Market Now</h2><span class="now"><span class="pulse"></span><span id="marketAge">로딩…</span></span></div>
+    <div class="now-grid" id="nowGrid"></div>
+
+    <div class="seclabel"><h2>⭐ 불개미 시그니처 수급 보드</h2><span class="daily" id="sigAsof">로딩…</span></div>
+    <div class="sig-grid" id="sigGrid"></div>
+
+    <div class="seclabel"><h2>🚀 실시간 급등·급락 TOP 10</h2><span class="now"><span class="pulse"></span><span id="moversAge">로딩…</span></span></div>
+    <div class="row r2">
+      <div class="card"><div class="ch"><h3 class="up">📈 급등 TOP 10</h3><span class="meta">24h · 시총 250위 내</span></div><div id="topGainers"></div></div>
+      <div class="card"><div class="ch"><h3 class="down">📉 급락 TOP 10</h3><span class="meta">24h · 시총 250위 내</span></div><div id="topLosers"></div></div>
+    </div>
+
+    <div class="row"><div class="card">
+      <div class="ch"><h3>🔥 불개미 일일시황</h3><span class="meta" id="dailyMeta">—</span></div>
+      <div class="daily-r"><img class="img" id="dailyImg" alt="일일시황" src="daily-report-latest.png" onerror="this.style.display='none'"><div class="sum" id="dailySum">로딩…</div></div>
+    </div></div>
+
+    <div class="row r3">
+      <div class="card"><div class="ch"><h3>🇰🇷 국내 수급</h3><span class="meta">준실시간</span></div>
+        <div class="li"><div>김치 프리미엄</div><div class="mono" id="kimchi">—</div></div>
+        <div class="li"><div>USD/KRW</div><div class="mono" id="usdkrw">—</div></div>
+        <div class="li"><div>BTC (업비트 KRW)</div><div class="mono" id="btckrw">—</div></div>
+        <div class="li"><div>ETH (업비트 KRW)</div><div class="mono" id="ethkrw">—</div></div>
+        <div class="li"><div>업비트 BTC 24h 거래대금</div><div class="mono" id="upbitVol">—</div></div>
+      </div>
+      <div class="card"><div class="ch"><h3>📅 이벤트 캘린더</h3><span class="meta">CPI·FOMC·IPO 등</span></div>
+        <div id="calEvent"></div>
+      </div>
+      <div class="card"><div class="ch"><h3>🔓 언락 캘린더</h3><span class="meta">토큰 언락 일정</span></div>
+        <div id="calUnlock"></div>
+      </div>
+    </div>
+
+    <div class="seclabel"><h2>🐋 파생·고래 시그널</h2><span class="now"><span class="pulse"></span><span id="derivAge">로딩…</span></span><span class="daily" id="wsStat" style="background:rgba(255,255,255,.05)">🟡 연결 중…</span></div>
+    <div class="now-grid" id="derivGrid"></div>
+    <div class="row r3">
+      <div class="card"><div class="ch"><h3>💥 실시간 청산</h3><span class="meta">BTC·ETH 선물</span></div><div class="feedwrap" id="liqFeed"></div></div>
+      <div class="card"><div class="ch"><h3>🐋 고래 청산</h3><span class="meta">≥ $100K</span></div><div class="feedwrap" id="whaleLiq"></div></div>
+      <div class="card"><div class="ch"><h3>🐋 고래 체결</h3><span class="meta">≥ $500K</span></div><div class="feedwrap" id="whaleTrades"></div></div>
+    </div>
+    <div class="row r2">
+      <div class="card"><div class="ch"><h3>💥 실시간 청산 분포(맵)</h3><span class="meta">세션 누적</span></div><div id="liqMap"></div></div>
+      <div class="card"><div class="ch"><h3>🏦 고래 입출금</h3><span class="meta">거래소 유출입</span></div>
+        <div class="flowsoon">🔧 <b>준비중</b> — 거래소 온체인 유출입은 Whale Alert 등 유료 데이터가 필요합니다.<br>추후 불개미 지갑 추적봇(<b>@fireant_wallet_track_bot</b>)과 연동 예정입니다.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">🔥 FIRE ANT CRYPTO · Market Now·파생/고래=실시간(Binance) / Signature=일일 · 본 정보는 투자 권유가 아닙니다 · <span id="genAt"></span></div>
+<script src="assets/app.js"></script>
+<script src="assets/whale.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/auth.js"></script>
+</body></html>
