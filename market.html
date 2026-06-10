@@ -59,10 +59,19 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .main{padding:16px 14px;}
   .head h1{font-size:24px;}.head .sub{font-size:14px;}
   .summary{grid-template-columns:1fr 1fr;gap:11px;}.sc{padding:15px 16px;}.sc .l{font-size:13.5px;}.sc .v{font-size:21px;}
-  table{width:100%;}
-  th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6),th:nth-child(8),td:nth-child(8){display:none;}
-  th,td{padding:10px 6px;font-size:14px;}th{font-size:12px;}
-  .coin .nm{font-size:14px;}.coin .sym{font-size:11.5px;}.coin img{width:24px;height:24px;}
+  /* 모바일: 코인·가격·24h 3컬럼만, 나머지 숨김 */
+  table{width:100%;table-layout:fixed;}
+  #rows td:nth-child(1),table thead th:nth-child(1){display:none;}
+  #rows td:nth-child(5),table thead th:nth-child(5){display:none;}
+  #rows td:nth-child(6),table thead th:nth-child(6){display:none;}
+  #rows td:nth-child(7),table thead th:nth-child(7){display:none;}
+  #rows td:nth-child(8),table thead th:nth-child(8){display:none;}
+  th,td{padding:9px 5px;font-size:13px;}th{font-size:12px;}
+  /* 코인명 셀(2번째) 말줄임 */
+  #rows td:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0;}
+  .coin{flex-wrap:nowrap;gap:6px;}.coin img{width:20px;height:20px;}
+  .coin .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .coin .sym{font-size:11px;}
   .ham{display:inline-flex;}
   .tabs{display:none !important;}
   .nav>.btn{display:none;}

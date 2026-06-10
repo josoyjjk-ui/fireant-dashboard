@@ -27,7 +27,6 @@ function render() {
     return `<a class="item" href="${safeURL(x.link)}" target="_blank" rel="noopener">
       <div class="ti">${fresh ? '<span class="dot"></span>' : ""}${esc(x.title_ko || x.title)}</div>
       ${sum}
-      ${x.title_ko && x.title_ko !== x.title ? `<div class="orig">${esc(x.title)}</div>` : ""}
       <div class="meta"><span class="cat ${esc(x.category)}">${esc(x.category)}</span><span>${esc(x.source)}</span><span>${ago(x.iso)}</span></div>
     </a>`;
   }).join("") || '<div style="color:var(--dim);padding:14px;">표시할 뉴스가 없습니다.</div>';

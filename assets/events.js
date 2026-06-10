@@ -22,13 +22,12 @@ function fmtDate(s) {
 function evCard(ev, state) {
   const label = { active: "진행중", soon: "예정", ended: "종료" }[state];
   const cls = { active: "b-active", soon: "b-soon", ended: "b-ended" }[state];
-  const period = [fmtDate(ev.startDate), fmtDate(ev.endDate)].filter(Boolean).join(" ~ ");
   const link = ev.link ? `<a class="go" href="${safeURL(ev.link)}">바로가기 →</a>` : "";
   return `<div class="ev">
     <div class="top"><div class="ti">${esc(ev.title)}</div><span class="badge ${cls}">${label}</span></div>
-    <div class="desc">${esc(ev.description || "")}</div>
+    ${ev.description ? `<div class="desc">${esc(ev.description)}</div>` : ""}
     ${ev.rewards ? `<div class="reward">🎁 ${esc(ev.rewards)}</div>` : ""}
-    <div class="meta">${period}</div>${link}</div>`;
+    ${link}</div>`;
 }
 
 async function getJSON(p) {
@@ -46,7 +45,8 @@ async function getJSON(p) {
     evs.forEach((e) => groups[classify(e, now)].push(e));
     const actHtml = [...groups.active.map((e) => evCard(e, "active")), ...groups.soon.map((e) => evCard(e, "soon"))].join("");
     $("activeWrap").innerHTML = actHtml || '<div class="empty">현재 진행중·예정 이벤트가 없습니다.</div>';
-    $("endedWrap").innerHTML = groups.ended.map((e) => evCard(e, "ended")).join("") || '<div class="empty">종료된 이벤트가 없습니다.</div>';
+    // 종료된 이벤트 섹션 제거 — endedWrap이 없으면 스킵
+    if ($("endedWrap")) $("endedWrap").innerHTML = "";
   } catch (e) {
     $("activeWrap").innerHTML = `<div class="empty">이벤트 로드 실패: ${e.message}</div>`;
   }

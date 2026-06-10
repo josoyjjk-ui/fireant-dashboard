@@ -27,6 +27,8 @@ html,body{overflow-x:hidden;}
 .idx .c{font-size:13px;font-weight:800;margin-top:3px;}
 .up{color:var(--up);}.down{color:var(--down);}.mono{font-variant-numeric:tabular-nums;}
 .note{font-size:11px;color:var(--accent2);margin-top:6px;}
+.sector-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:18px;}
+.sector-hd{font-size:15px;font-weight:900;color:var(--accent2);margin-bottom:14px;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:40px;}
 .ham{display:none;font-size:25px;background:none;border:none;color:var(--txt);font-weight:800;line-height:1;cursor:pointer;padding:0 4px 0 0;}
 .drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:60;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
@@ -42,6 +44,7 @@ body.navopen .drawer{transform:none;}
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55;}
 body.navopen .backdrop{opacity:1;pointer-events:auto;}
 @media(max-width:760px){.grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){
   body{font-size:16px;}
   .nav{flex-wrap:wrap;justify-content:flex-start;padding:13px 15px;gap:8px;}.logo{font-size:22px;}
@@ -58,7 +61,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .nav>.btn{display:none;}
   .nav{justify-content:flex-start;gap:10px;}
 }
-@media(max-width:430px){.grid{grid-template-columns:1fr;}}
+@media(max-width:360px){.grid{grid-template-columns:1fr;}}
 </style></head>
 <body>
 <div class="backdrop"></div>

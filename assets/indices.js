@@ -69,7 +69,7 @@ async function load() {
     let html = "";
     ORDER.forEach((g) => {
       if (!groups[g]) return;
-      html += `<div class="seclabel">${GROUP_META[g] || g}</div><div class="grid">${groups[g].map(card).join("")}</div>`;
+      html += `<div class="sector-box"><div class="sector-hd">${GROUP_META[g] || g}</div><div class="grid">${groups[g].map(card).join("")}</div></div>`;
     });
     $("wrap").innerHTML = html || '<div style="color:var(--dim)">데이터 없음</div>';
     const t = (j.generated_at || "").slice(0, 16).replace("T", " ");

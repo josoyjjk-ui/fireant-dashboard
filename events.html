@@ -33,6 +33,10 @@ html,body{overflow-x:hidden;}
 .winrow{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;}
 .winrow .n{font-weight:700;font-size:14px;}.winrow .c{font-size:13px;color:var(--accent2);font-weight:800;}
 .winrow a{color:var(--accent);text-decoration:none;font-weight:700;font-size:13px;}
+.chips-row{display:flex;gap:10px;margin:18px 0 4px;flex-wrap:wrap;}
+.chip{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;text-decoration:none;color:var(--txt);font-size:13px;font-weight:700;transition:border-color .15s;}
+.chip:hover{border-color:var(--accent);}
+.chip-ic{font-size:16px;}.chip-label{flex:1;}.chip-arr{color:var(--dim);font-size:13px;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:40px;}
 .empty{color:var(--dim);font-size:13px;padding:14px;}
 .krx{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#13233a,#101620);border:1px solid #20344e;border-radius:16px;padding:18px 20px;text-decoration:none;color:var(--txt);margin-bottom:8px;}
@@ -112,28 +116,13 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   </div>
   <div class="main">
     <div class="head"><h1>🎉 이벤트 모음</h1><div class="sub">진행/예정 이벤트와 당첨자 발표를 한 곳에서</div></div>
-    <div class="seclabel">🏦 거래소 이벤트 ㅣ 🏆 리더보드 ㅣ 🎉 당첨자 발표</div>
-    <div class="duo2">
-      <a class="krx" href="kr-exchange/">
-        <span class="ic">🏦</span>
-        <span class="tx"><span class="t1">한국 거래소 이벤트</span><span class="t2">업비트·빗썸·코인원·코빗·고팍스 · 매일 갱신</span></span>
-        <span class="go">전체 보기 →</span>
-      </a>
-      <a class="krx lb" href="leaderboard/">
-        <span class="ic">🏆</span>
-        <span class="tx"><span class="t1">리더보드</span><span class="t2">추천 랭킹 · 리워드 순위</span></span>
-        <span class="go">순위 보기 →</span>
-      </a>
-      <a class="krx wn" href="/winners/">
-        <span class="ic">🎉</span>
-        <span class="tx"><span class="t1">당첨자 발표</span><span class="t2">이벤트별 당첨자 명단</span></span>
-        <span class="go">바로 보기 →</span>
-      </a>
-    </div>
     <div class="seclabel">🔥 진행중 · 예정</div>
     <div class="cards" id="activeWrap"></div>
-    <div class="seclabel">📋 종료된 이벤트</div>
-    <div class="cards" id="endedWrap"></div>
+    <div class="chips-row">
+      <a class="chip" href="kr-exchange/"><span class="chip-ic">🏦</span><span class="chip-label">거래소 이벤트</span><span class="chip-arr">→</span></a>
+      <a class="chip" href="leaderboard/"><span class="chip-ic">🏆</span><span class="chip-label">리더보드</span><span class="chip-arr">→</span></a>
+      <a class="chip" href="/winners/"><span class="chip-ic">🎉</span><span class="chip-label">당첨자 발표</span><span class="chip-arr">→</span></a>
+    </div>
   </div>
   <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · antinfo.io · 투자 권유 아님</div>
 <script src="assets/events.js"></script>

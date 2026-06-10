@@ -53,7 +53,10 @@ function chart(canvas, hist, unit) {
 
 (async function main() {
   const grid = $("grid");
-  grid.innerHTML = DEFS.map((d, i) => `<div class="card"><div class="ch"><div class="t">${d.title}</div><div class="asof" id="asof${i}">—</div></div><div class="big" id="big${i}">···</div><div class="desc">${d.desc}</div><div class="chartbox"><canvas id="cv${i}"></canvas><div class="empty" id="emp${i}" style="display:none">데이터 누적 중 (1~2일 후 추세 표시)</div></div></div>`).join("");
+  // 시그니처 수급: 4개 지표를 하나의 박스에 compact rows로 렌더
+  grid.innerHTML = `<div class="sig-box" style="grid-column:1/-1">` +
+    DEFS.map((d, i) => `<div class="sig-row"><div class="sig-label">${d.title}</div><div class="sig-val"><span class="big sig-big" id="big${i}">···</span><span class="sig-basis" id="asof${i}"></span></div></div>`).join("") +
+    `</div>`;
   try {
     const sig = await getJSON(`${BASE}/signature.json`).catch(() => null);
     if (sig) { $("genAt").textContent = `${sig.data_date || ""} 기준 · 생성 ${(sig.generated_at||"").slice(0,16)}`; }
@@ -62,12 +65,9 @@ function chart(canvas, hist, unit) {
       const m = sig && sig.metrics ? sig.metrics[d.key] : null;
       if (m) {
         $(`big${i}`).textContent = d.unit === "USD" ? fmtUSD(m.value) : (m.raw ?? "—");
-        $(`big${i}`).className = "big " + cls(m.value);
-        $(`asof${i}`).textContent = m.basis || "—";
+        $(`big${i}`).className = "big sig-big " + cls(m.value);
+        $(`asof${i}`).textContent = m.basis || "";
       }
-      const hist = await getJSON(`${BASE}/history/${d.hist}.json`).catch(() => []);
-      const ok = chart($(`cv${i}`), hist, d.unit);
-      if (!ok || hist.length < 2) { $(`cv${i}`).style.display = "none"; $(`emp${i}`).style.display = "block"; }
     }
   } catch (e) {
     grid.innerHTML = `<div class="err">⚠️ 데이터 로드 실패: ${e.message}</div>`;
