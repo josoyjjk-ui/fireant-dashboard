@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ANTINFO — 시그널 목업(테스트)</title>
+<meta name="robots" content="noindex">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo','Pretendard',sans-serif;}
+:root{--bg:#0a0c10;--card:#13161c;--card2:#171b22;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;
+  --up:#ff3b30;--down:#3aa0ff;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;}
+html,body{background:var(--bg);color:var(--txt);overflow-x:hidden;}
+.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;padding:14px 18px;background:#0c0e13;border-bottom:1px solid var(--line);}
+.top .logo{font-size:19px;font-weight:900;color:var(--accent);}
+.top .tag{font-size:11px;font-weight:800;color:var(--accent2);background:#2a1c0a;padding:3px 9px;border-radius:20px;}
+.main{padding:18px 16px;max-width:1100px;margin:0 auto;}
+.up{color:var(--up);}.down{color:var(--down);}.mono{font-variant-numeric:tabular-nums;}
+.dim{color:var(--dim);}
+
+/* ① 한 줄 시장 해석 */
+.read{background:linear-gradient(135deg,#1a1320,#12161d);border:1px solid #3a2230;border-radius:16px;padding:16px 18px;margin-bottom:18px;}
+.read .k{font-size:12px;font-weight:800;color:var(--accent2);letter-spacing:.3px;margin-bottom:6px;display:flex;align-items:center;gap:7px;}
+.read .pulse{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 8px var(--live);}
+.read .v{font-size:16px;font-weight:800;line-height:1.5;}
+.read .v b.u{color:var(--up);}.read .v b.d{color:var(--down);}
+.read .sub{font-size:12px;color:var(--dim);margin-top:7px;}
+
+.seclabel{display:flex;align-items:center;gap:9px;margin:20px 0 11px;}
+.seclabel h2{font-size:16px;font-weight:900;}
+.seclabel .src{font-size:11px;color:var(--dim);font-weight:600;margin-left:auto;}
+
+/* 카드 그리드 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;}
+.pcard .l{font-size:13px;color:var(--dim);font-weight:700;display:flex;justify-content:space-between;}
+.pcard .l .sym{color:var(--accent2);font-weight:800;}
+.pcard .p{font-size:26px;font-weight:900;margin-top:5px;letter-spacing:-.5px;}
+.pcard .chg{font-size:14px;font-weight:800;margin-top:2px;}
+.pcard .meta{font-size:11px;color:var(--dim);margin-top:8px;display:flex;gap:12px;}
+.pcard .meta b{font-weight:800;}
+
+.scard{background:linear-gradient(180deg,#141a24,#10141b);border:1px solid #1e2c3c;border-radius:13px;padding:12px 14px;}
+.scard .l{font-size:11px;color:var(--dim);font-weight:700;}
+.scard .v{font-size:18px;font-weight:800;margin-top:4px;}
+.scard .c{font-size:11px;font-weight:700;margin-top:2px;color:var(--dim);}
+
+/* 김프 강조 */
+.kimchi{background:linear-gradient(135deg,#201318,#12161d);border:1px solid #3a2230;}
+.kimchi .v{font-size:30px;}
+
+/* 차트 */
+.chartwrap{position:relative;height:230px;}
+.tf{display:flex;gap:6px;margin-left:auto;}
+.tf button{border:1px solid var(--line);background:transparent;color:var(--dim);font-weight:800;font-size:12px;padding:5px 11px;border-radius:8px;cursor:pointer;}
+.tf button.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+.note{font-size:11px;color:var(--dim);margin-top:8px;}
+
+/* ④ 용어 설명 */
+.gloss{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:8px;}
+.gloss h3{font-size:13px;font-weight:900;margin-bottom:10px;color:var(--accent2);}
+.gloss .row{font-size:13px;line-height:1.6;color:#cdd6e0;margin-bottom:8px;}
+.gloss .row b{color:#fff;}
+.foot{padding:22px 16px;color:var(--dim);font-size:11px;text-align:center;border-top:1px solid var(--line);margin-top:26px;}
+@media(max-width:600px){.grid4{grid-template-columns:repeat(2,1fr);}.main{padding:14px 13px;}.pcard .p{font-size:23px;}}
+</style></head>
+<body>
+<div class="top"><span class="logo">🐜 ANTINFO</span><span class="tag">시그널 목업 · 테스트</span></div>
+<div class="main">
+
+  <!-- ① 한 줄 시장 해석 -->
+  <div class="read">
+    <div class="k"><span class="pulse"></span>지금 시장 — 자동 해석</div>
+    <div class="v" id="readText">시장 데이터 불러오는 중…</div>
+    <div class="sub" id="readSub">실시간 시세·김프·펀딩·OI를 종합해 자동 생성 (룰 기반)</div>
+  </div>
+
+  <!-- ② 가격 + ③ 김프 -->
+  <div class="seclabel"><h2>💰 실시간 시세</h2><span class="src">Binance · Upbit · 빨강=상승</span></div>
+  <div class="grid2">
+    <div class="card pcard"><div class="l"><span>비트코인</span><span class="sym">BTC</span></div>
+      <div class="p mono" id="btcP">–</div><div class="chg mono" id="btcC">–</div>
+      <div class="meta"><span>펀딩 <b id="btcF">–</b></span><span>OI <b id="btcOI">–</b></span></div></div>
+    <div class="card pcard"><div class="l"><span>이더리움</span><span class="sym">ETH</span></div>
+      <div class="p mono" id="ethP">–</div><div class="chg mono" id="ethC">–</div>
+      <div class="meta"><span>펀딩 <b id="ethF">–</b></span><span>OI <b id="ethOI">–</b></span></div></div>
+  </div>
+
+  <div class="seclabel"><h2>🇰🇷 김치 프리미엄</h2><span class="src">업비트(KRW) vs 바이낸스(USDT)</span></div>
+  <div class="grid2">
+    <div class="card kimchi pcard"><div class="l"><span>BTC 김프</span><span class="sym" id="fxLabel">환율 –</span></div>
+      <div class="p v mono" id="kimchiBtc">–</div><div class="chg dim" id="kimchiBtcD">업비트 – · 바이낸스 –</div></div>
+    <div class="card kimchi pcard"><div class="l"><span>ETH 김프</span><span class="sym">실시간</span></div>
+      <div class="p v mono" id="kimchiEth">–</div><div class="chg dim" id="kimchiEthD">업비트 – · 바이낸스 –</div></div>
+  </div>
+
+  <!-- ④ 파생 지표 strip -->
+  <div class="seclabel"><h2>📊 파생 지표</h2><span class="src">Binance 선물</span></div>
+  <div class="grid4">
+    <div class="scard"><div class="l">BTC 펀딩비</div><div class="v mono" id="sBtcF">–</div><div class="c" id="sBtcFt">다음 정산 –</div></div>
+    <div class="scard"><div class="l">ETH 펀딩비</div><div class="v mono" id="sEthF">–</div><div class="c" id="sEthFt">다음 정산 –</div></div>
+    <div class="scard"><div class="l">BTC 미결제약정</div><div class="v mono" id="sBtcOI">–</div><div class="c" id="sBtcOIc">–</div></div>
+    <div class="scard"><div class="l">BTC 도미넌스</div><div class="v mono" id="sDom">–</div><div class="c">CoinGecko</div></div>
+  </div>
+
+  <!-- 시계열 차트 -->
+  <div class="seclabel"><h2>📈 파생 추세</h2>
+    <div class="tf"><button data-tf="1D" class="on">1일</button><button data-tf="1W">1주</button><button data-tf="1M">1개월</button></div>
+  </div>
+  <div class="card"><div class="chartwrap"><canvas id="oiChart"></canvas></div>
+    <div class="note">⚠️ 추세 데이터는 <b>예시</b>입니다 — 실제 운영 시 스냅샷을 누적해 그립니다. (현재값은 라이브)</div></div>
+
+  <!-- ④ 용어 설명 -->
+  <div class="seclabel"><h2>📖 지표 설명</h2></div>
+  <div class="gloss">
+    <div class="row"><b>김치 프리미엄</b> — 업비트(원화) 가격을 환율로 환산해 바이낸스(달러) 가격과 비교한 차이. <b>양(+)</b>이면 국내 매수세가 더 강하다는 신호입니다.</div>
+    <div class="row"><b>펀딩비</b> — 무기한선물에서 롱·숏이 주고받는 수수료. <b>양(+)</b>이면 롱이 우세(레버리지 과열), <b>음(−)</b>이면 숏 우위입니다.</div>
+    <div class="row"><b>미결제약정(OI)</b> — 청산되지 않고 남아있는 선물 계약의 총액. 늘면 레버리지 자금이 시장에 더 들어왔다는 뜻입니다.</div>
+    <div class="row"><b>도미넌스</b> — 전체 암호화폐 시가총액에서 비트코인이 차지하는 비중.</div>
+  </div>
+
+</div>
+<div class="foot">🐜 ANTINFO 시그널 목업 · 무료 공개 API(Binance·Upbit·CoinGecko) · 투자 권유 아님</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const f2=n=>n.toLocaleString('en-US',{maximumFractionDigits:2});
+const usd=n=>'$'+(n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':f2(n));
+const pct=n=>(n>=0?'+':'')+n.toFixed(2)+'%';
+const cls=n=>n>=0?'up':'down';
+async function J(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw 0;return r.json();}
+
+let D={}; // 수집 데이터
+
+async function loadAll(){
+  // 환율
+  let fx=1385; try{const e=await J('https://open.er-api.com/v6/latest/USD');fx=e.rates.KRW||1385;}catch(e){}
+  D.fx=fx; $('fxLabel').textContent='₩'+f2(fx);
+  // 바이낸스 현물 24h
+  try{const[b,e]=await Promise.all([J('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT'),J('https://api.binance.com/api/v3/ticker/24hr?symbol=ETHUSDT')]);
+    D.btc=+b.lastPrice;D.eth=+e.lastPrice;D.btcChg=+b.priceChangePercent;D.ethChg=+e.priceChangePercent;
+    $('btcP').textContent='$'+f2(D.btc);$('btcC').textContent=pct(D.btcChg);$('btcC').className='chg mono '+cls(D.btcChg);
+    $('ethP').textContent='$'+f2(D.eth);$('ethC').textContent=pct(D.ethChg);$('ethC').className='chg mono '+cls(D.ethChg);
+  }catch(e){}
+  // 펀딩/OI
+  try{const[pb,pe,ob,oe]=await Promise.all([
+    J('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT'),
+    J('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=ETHUSDT'),
+    J('https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT'),
+    J('https://fapi.binance.com/fapi/v1/openInterest?symbol=ETHUSDT')]);
+    D.btcFund=+pb.lastFundingRate*100;D.ethFund=+pe.lastFundingRate*100;
+    D.btcOI=+ob.openInterest*(+pb.markPrice);D.ethOI=+oe.openInterest*(+pe.markPrice);
+    const fmtF=v=>{const el='';return (v>=0?'+':'')+v.toFixed(4)+'%';};
+    const ft=t=>{const m=Math.max(0,Math.round((t-Date.now())/60000));return Math.floor(m/60)+'시간 '+(m%60)+'분 후';};
+    $('btcF').textContent=fmtF(D.btcFund);$('btcF').className=cls(D.btcFund);
+    $('ethF').textContent=fmtF(D.ethFund);$('ethF').className=cls(D.ethFund);
+    $('btcOI').textContent=usd(D.btcOI);$('ethOI').textContent=usd(D.ethOI);
+    $('sBtcF').textContent=fmtF(D.btcFund);$('sBtcF').className='v mono '+cls(D.btcFund);
+    $('sEthF').textContent=fmtF(D.ethFund);$('sEthF').className='v mono '+cls(D.ethFund);
+    $('sBtcFt').textContent='다음 정산 '+ft(+pb.nextFundingTime);$('sEthFt').textContent='다음 정산 '+ft(+pe.nextFundingTime);
+    $('sBtcOI').textContent=usd(D.btcOI);$('sBtcOIc').textContent=f2(+ob.openInterest)+' BTC';
+  }catch(e){}
+  // 업비트 → 김프
+  try{const u=await J('https://api.upbit.com/v1/ticker?markets=KRW-BTC,KRW-ETH');
+    const ub=u.find(x=>x.market==='KRW-BTC'),ue=u.find(x=>x.market==='KRW-ETH');
+    const kb=(ub.trade_price/fx)/D.btc-1, ke=(ue.trade_price/fx)/D.eth-1;
+    $('kimchiBtc').textContent=pct(kb*100);$('kimchiBtc').className='p v mono '+cls(kb);
+    $('kimchiEth').textContent=pct(ke*100);$('kimchiEth').className='p v mono '+cls(ke);
+    $('kimchiBtcD').textContent='업비트 ₩'+f2(ub.trade_price)+' · 바이낸스 $'+f2(D.btc);
+    $('kimchiEthD').textContent='업비트 ₩'+f2(ue.trade_price)+' · 바이낸스 $'+f2(D.eth);
+    D.kimchi=kb*100;
+  }catch(e){$('kimchiBtc').textContent='–';}
+  // 도미넌스
+  try{const g=await J('https://api.coingecko.com/api/v3/global');D.dom=g.data.market_cap_percentage.btc;
+    $('sDom').textContent=D.dom.toFixed(1)+'%';}catch(e){}
+  buildRead(); drawChart('1D');
+}
+
+// ① 한 줄 해석 생성
+function buildRead(){
+  if(D.btc===undefined){return;}
+  const dir=D.btcChg>=0?'<b class="u">상승</b>':'<b class="d">하락</b>';
+  let lev='레버리지 중립';
+  if(D.btcFund>0.03)lev='<b class="u">롱 과열</b>';else if(D.btcFund<-0.03)lev='<b class="d">숏 우위</b>';
+  let kim='김프 중립';
+  if(D.kimchi>1)kim='<b class="u">국내 매수세 강함</b>';else if(D.kimchi<-0.5)kim='<b class="d">국내 약세</b>';
+  let verdict='관망 구간';
+  if(D.btcChg>0&&D.btcFund>0.03)verdict='<b class="u">단기 과열 — 추격 주의</b>';
+  else if(D.btcChg<0&&D.btcFund<-0.01)verdict='<b class="d">하락 + 숏 쏠림 — 반등 변동성 주의</b>';
+  else if(D.btcChg>0)verdict='<b class="u">완만한 상승</b>';
+  $('readText').innerHTML=`비트코인 <b class="mono">$${f2(D.btc)}</b> ${dir}(${pct(D.btcChg)}) · ${kim}(${D.kimchi>=0?'+':''}${(D.kimchi||0).toFixed(2)}%) · ${lev}(펀딩 ${(D.btcFund>=0?'+':'')+(D.btcFund||0).toFixed(3)}%) → ${verdict}`;
+  $('readSub').textContent='실시간 시세·김프·펀딩·OI 종합 (룰 기반 자동 생성) · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 기준';
+}
+
+// 시계열 차트 (예시 데이터)
+let chart;
+function genSeries(tf){const n=tf==='1D'?24:tf==='1W'?28:30;const base=D.btcOI||6.4e9;const arr=[];let v=base*0.92;
+  for(let i=0;i<n;i++){v+=base*(Math.sin(i/3)*0.012+(i/n)*0.006+0.004*((i*7%5)-2)/2);arr.push(v);}arr[n-1]=base;
+  const labels=Array.from({length:n},(_,i)=>tf==='1D'?(i+'h'):tf==='1W'?('D-'+(n-i)):('D-'+(n-i)));return{labels,arr};}
+function drawChart(tf){const{labels,arr}=genSeries(tf);
+  const ctx=$('oiChart');if(chart)chart.destroy();
+  chart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data:arr,borderColor:'#ff3b30',borderWidth:2,fill:true,
+    backgroundColor:'rgba(255,59,48,.10)',tension:.35,pointRadius:0}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'OI '+usd(c.parsed.y)}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},
+        y:{grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:v=>usd(v)}}}}});}
+document.querySelectorAll('.tf button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tf button').forEach(x=>x.classList.remove('on'));b.classList.add('on');drawChart(b.dataset.tf);});
+
+loadAll();
+setInterval(loadAll,30000);
+</script>
+</body></html>
