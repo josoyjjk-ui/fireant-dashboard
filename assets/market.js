@@ -61,9 +61,11 @@ function render() {
   rows = rows.slice(PAGE * PAGE_SIZE, (PAGE + 1) * PAGE_SIZE);  // 100개 단위 페이지
   $("rows").innerHTML = rows.map((c) => {
     const athTxt = c.athChg != null ? `<span class="down">${c.athChg.toFixed(1)}%</span>` : `<span class="dim">—</span>`;
+    const cgUrl = c.id ? `https://www.coingecko.com/en/coins/${encodeURIComponent(c.id)}`
+                       : `https://www.coingecko.com/en/search?query=${encodeURIComponent(c.symbol || c.name || "")}`;
     return `<tr>
       <td>${c.rank ?? "—"}</td>
-      <td><div class="coin"><img src="${safeURL(c.image)}" alt="" loading="lazy" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span> <span class="sym">${esc(c.symbol)}</span></div></td>
+      <td><a class="coin" href="${cgUrl}" target="_blank" rel="noopener" title="CoinGecko에서 ${esc(c.name)} 보기"><img src="${safeURL(c.image)}" alt="" loading="lazy" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span> <span class="sym">${esc(c.symbol)}</span></a></td>
       <td class="mono">${price(c.price)}</td>
       <td class="mono">${pct(c.chg24h)}</td>
       <td class="mono">${pct(c.chg7d)}</td>
