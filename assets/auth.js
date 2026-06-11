@@ -8,7 +8,11 @@
   const SUPABASE_KEY = "sb_publishable_mRNYq6Yq9UaYT3bydRhG1w_6wswYTd4";
 
   function boot() {
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // 모바일(인앱 브라우저 ↔ 시스템 브라우저 전환) PKCE code_verifier 유실 회피 → implicit 플로우.
+    // 토큰을 복귀 URL 해시로 직접 수신하므로 컨텍스트가 바뀌어도 세션 복원됨.
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { flowType: "implicit", detectSessionInUrl: true, persistSession: true, autoRefreshToken: true },
+    });
     window.__sb = sb;
 
     const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
