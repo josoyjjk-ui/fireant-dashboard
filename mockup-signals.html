@@ -55,6 +55,8 @@ html,body{background:var(--bg);color:var(--txt);overflow-x:hidden;}
 .tf button{border:1px solid var(--line);background:transparent;color:var(--dim);font-weight:800;font-size:12px;padding:5px 11px;border-radius:8px;cursor:pointer;}
 .tf button.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
 .note{font-size:11px;color:var(--dim);margin-top:8px;}
+.desc{font-size:12.5px;color:#aeb8c4;line-height:1.55;margin:-2px 0 11px;}
+.desc b{color:#fff;}
 
 /* ④ 용어 설명 */
 .gloss{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:8px;}
@@ -68,14 +70,7 @@ html,body{background:var(--bg);color:var(--txt);overflow-x:hidden;}
 <div class="top"><span class="logo">🐜 ANTINFO</span><span class="tag">시그널 목업 · 테스트</span></div>
 <div class="main">
 
-  <!-- ① 한 줄 시장 해석 -->
-  <div class="read">
-    <div class="k"><span class="pulse"></span>지금 시장 — 자동 해석</div>
-    <div class="v" id="readText">시장 데이터 불러오는 중…</div>
-    <div class="sub" id="readSub">실시간 시세·김프·펀딩·OI를 종합해 자동 생성 (룰 기반)</div>
-  </div>
-
-  <!-- ② 가격 + ③ 김프 -->
+  <!-- 가격 + 김프 -->
   <div class="seclabel"><h2>💰 실시간 시세</h2><span class="src">Binance · Upbit · 빨강=상승</span></div>
   <div class="grid2">
     <div class="card pcard"><div class="l"><span>비트코인</span><span class="sym">BTC</span></div>
@@ -103,12 +98,19 @@ html,body{background:var(--bg);color:var(--txt);overflow-x:hidden;}
     <div class="scard"><div class="l">BTC 도미넌스</div><div class="v mono" id="sDom">–</div><div class="c">CoinGecko</div></div>
   </div>
 
-  <!-- 시계열 차트 -->
-  <div class="seclabel"><h2>📈 파생 추세</h2>
+  <!-- 파생 추세(OI) -->
+  <div class="seclabel"><h2>📈 파생 추세 (미결제약정·OI)</h2>
     <div class="tf"><button data-tf="1D" class="on">1일</button><button data-tf="1W">1주</button><button data-tf="1M">1개월</button></div>
   </div>
+  <div class="desc">시장에 살아있는 <b>선물 미결제약정(OI)</b>의 시간대별 추이입니다. <b>늘면</b> 레버리지 베팅 자금이 유입(변동성↑ 신호), <b>줄면</b> 청산·포지션 정리로 자금이 빠지는 중입니다.</div>
   <div class="card"><div class="chartwrap"><canvas id="oiChart"></canvas></div>
-    <div class="note">⚠️ 추세 데이터는 <b>예시</b>입니다 — 실제 운영 시 스냅샷을 누적해 그립니다. (현재값은 라이브)</div></div>
+    <div class="note">출처 Binance 선물 · 라이브 · 상단 1일/1주/1개월 버튼으로 기간 전환</div></div>
+
+  <!-- 선물 거래량 -->
+  <div class="seclabel"><h2>📊 비트코인 선물 거래량 추이</h2></div>
+  <div class="desc">바이낸스 BTC 무기한선물의 기간별 <b>거래대금(USDT)</b>입니다. 막대가 <b>치솟으면</b> 그 구간에 매매가 폭발(추세 전환·뉴스·대규모 청산 동반)했다는 뜻으로, 시장의 관심·변동성을 가늠합니다.</div>
+  <div class="card"><div class="chartwrap"><canvas id="volChart"></canvas></div>
+    <div class="note">출처 Binance 선물 klines · 라이브 · 위 기간 버튼과 연동</div></div>
 
   <!-- ④ 용어 설명 -->
   <div class="seclabel"><h2>📖 지표 설명</h2></div>
@@ -173,40 +175,31 @@ async function loadAll(){
   // 도미넌스
   try{const g=await J('https://api.coingecko.com/api/v3/global');D.dom=g.data.market_cap_percentage.btc;
     $('sDom').textContent=D.dom.toFixed(1)+'%';}catch(e){}
-  buildRead(); drawChart('1D');
+  drawCharts('1D');
 }
 
-// ① 한 줄 해석 생성
-function buildRead(){
-  if(D.btc===undefined){return;}
-  const dir=D.btcChg>=0?'<b class="u">상승</b>':'<b class="d">하락</b>';
-  let lev='레버리지 중립';
-  if(D.btcFund>0.03)lev='<b class="u">롱 과열</b>';else if(D.btcFund<-0.03)lev='<b class="d">숏 우위</b>';
-  let kim='김프 중립';
-  if(D.kimchi>1)kim='<b class="u">국내 매수세 강함</b>';else if(D.kimchi<-0.5)kim='<b class="d">국내 약세</b>';
-  let verdict='관망 구간';
-  if(D.btcChg>0&&D.btcFund>0.03)verdict='<b class="u">단기 과열 — 추격 주의</b>';
-  else if(D.btcChg<0&&D.btcFund<-0.01)verdict='<b class="d">하락 + 숏 쏠림 — 반등 변동성 주의</b>';
-  else if(D.btcChg>0)verdict='<b class="u">완만한 상승</b>';
-  $('readText').innerHTML=`비트코인 <b class="mono">$${f2(D.btc)}</b> ${dir}(${pct(D.btcChg)}) · ${kim}(${D.kimchi>=0?'+':''}${(D.kimchi||0).toFixed(2)}%) · ${lev}(펀딩 ${(D.btcFund>=0?'+':'')+(D.btcFund||0).toFixed(3)}%) → ${verdict}`;
-  $('readSub').textContent='실시간 시세·김프·펀딩·OI 종합 (룰 기반 자동 생성) · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 기준';
+// 시계열 차트 — OI 추세 + 선물 거래량 (둘 다 라이브)
+let oiChart, volChart;
+function lbl(ts,tf){const d=new Date(ts);return tf==='1D'?String(d.getHours()).padStart(2,'0')+':00':(d.getMonth()+1)+'/'+d.getDate();}
+function baseOpt(lab){return{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>lab+' '+usd(c.parsed.y)}}},
+  scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},
+    y:{grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:v=>usd(v)}}}};}
+async function drawCharts(tf){
+  const m={'1D':{p:'1h',lim:24},'1W':{p:'4h',lim:42},'1M':{p:'1d',lim:30}}[tf]||{p:'1h',lim:24};
+  try{const oi=await J(`https://fapi.binance.com/futures/data/openInterestHist?symbol=BTCUSDT&period=${m.p}&limit=${m.lim}`);
+    const labels=oi.map(x=>lbl(x.timestamp,tf)),data=oi.map(x=>+x.sumOpenInterestValue);
+    if(oiChart)oiChart.destroy();
+    oiChart=new Chart($('oiChart'),{type:'line',data:{labels,datasets:[{data,borderColor:'#ff3b30',borderWidth:2,fill:true,backgroundColor:'rgba(255,59,48,.10)',tension:.35,pointRadius:0}]},options:baseOpt('OI')});
+  }catch(e){}
+  try{const k=await J(`https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&interval=${m.p}&limit=${m.lim}`);
+    const labels=k.map(r=>lbl(r[0],tf)),data=k.map(r=>+r[7]);
+    if(volChart)volChart.destroy();
+    volChart=new Chart($('volChart'),{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(58,160,255,.55)',borderColor:'#3aa0ff',borderWidth:0,borderRadius:2}]},options:baseOpt('거래대금')});
+  }catch(e){}
 }
-
-// 시계열 차트 (예시 데이터)
-let chart;
-function genSeries(tf){const n=tf==='1D'?24:tf==='1W'?28:30;const base=D.btcOI||6.4e9;const arr=[];let v=base*0.92;
-  for(let i=0;i<n;i++){v+=base*(Math.sin(i/3)*0.012+(i/n)*0.006+0.004*((i*7%5)-2)/2);arr.push(v);}arr[n-1]=base;
-  const labels=Array.from({length:n},(_,i)=>tf==='1D'?(i+'h'):tf==='1W'?('D-'+(n-i)):('D-'+(n-i)));return{labels,arr};}
-function drawChart(tf){const{labels,arr}=genSeries(tf);
-  const ctx=$('oiChart');if(chart)chart.destroy();
-  chart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data:arr,borderColor:'#ff3b30',borderWidth:2,fill:true,
-    backgroundColor:'rgba(255,59,48,.10)',tension:.35,pointRadius:0}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'OI '+usd(c.parsed.y)}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},
-        y:{grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:v=>usd(v)}}}}});}
 document.querySelectorAll('.tf button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.tf button').forEach(x=>x.classList.remove('on'));b.classList.add('on');drawChart(b.dataset.tf);});
+  document.querySelectorAll('.tf button').forEach(x=>x.classList.remove('on'));b.classList.add('on');drawCharts(b.dataset.tf);});
 
 loadAll();
 setInterval(loadAll,30000);
