@@ -115,13 +115,13 @@ async function fillEtfCb(){
       const t=$('tag'+i);t.textContent=v>=0?(cfg.money?'유입':'증가'):(cfg.money?'유출':'감소');t.className='tag '+(v>=0?'u':'d');}
     else $('val'+i).textContent='—';
     $('meta'+i).textContent=(m.basis||m.as_of||'기준 미상');
-    // BTC ETF: 출시 이후 전체 일일+누적 차트
-    if(it.key==='btc_etf'){
-      try{const h=await J('/data/v1/history/btc_etf_full.json?t='+Date.now());
+    // ETF(BTC·ETH): 출시 이후 전체 일일+누적 차트
+    if(it.key==='btc_etf'||it.key==='eth_etf'){
+      try{const h=await J('/data/v1/history/'+it.key+'_full.json?t='+Date.now());
         const labels=h.map(x=>x.date.slice(2)),daily=h.map(x=>x.value),cum=h.map(x=>x.cum);
         comboChart('ch'+i,labels,daily,cum);
-        const last=h[h.length-1];
-        $('meta'+i).textContent='2024-01 출시 이후 전체 · 누적 순유입 '+usd(last.cum);
+        const last=h[h.length-1],launch=h[0].date.slice(0,7);
+        $('meta'+i).textContent=launch+' 출시 이후 전체 · 누적 순유입 '+usd(last.cum);
         $('note'+i).textContent='막대=일일 순유입(빨강)/유출(파랑) · 선=누적 순유입 · 출처 SoSoValue · '+h.length+'일';
       }catch(e){$('ch'+i).closest('.chartbox').innerHTML='<div class="empty">ETF 전체 데이터를 불러오지 못했습니다.</div>';}
       continue;
