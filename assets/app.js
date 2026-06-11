@@ -146,8 +146,16 @@ async function loadSignature() {
     });
     $("sigGrid").innerHTML = html;
     for (let i = 0; i < defs.length; i++) {
-      const hist = await getJSON(`${BASE}/history/${defs[i].hist}.json?t=${Date.now()}`).catch(() => []);
       const v = (M[defs[i].k] || {}).value;
+      let hist;
+      if (defs[i].k === "btc_oi_24h") {
+        // OI는 history가 일 1점이라 라이브 Binance OI 추이(24h)로 즉시 표시
+        hist = await getJSON("https://fapi.binance.com/futures/data/openInterestHist?symbol=BTCUSDT&period=1h&limit=24")
+          .then((a) => (Array.isArray(a) ? a.map((x) => ({ value: +x.sumOpenInterestValue })) : []))
+          .catch(() => []);
+      } else {
+        hist = await getJSON(`${BASE}/history/${defs[i].hist}.json?t=${Date.now()}`).catch(() => []);
+      }
       spark(`sk${i}`, hist, v != null && v < 0 ? "#ff4d5e" : "#21d07a");
     }
     $("sigAsof").textContent = `🟢 ${sigT} 갱신 · ETF 당일·OI·CB 실시간`;
