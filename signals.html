@@ -46,6 +46,11 @@ html,body{overflow-x:hidden;}
 .now-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px;}
 .nowcard{background:linear-gradient(180deg,#141a24,#10141b);border:1px solid #1e2c3c;border-radius:13px;padding:13px 15px;}
 .nowcard .l{font-size:12px;color:var(--dim);font-weight:700;}.nowcard .v{font-size:19px;font-weight:800;margin-top:4px;}.nowcard .c{font-size:12px;font-weight:700;margin-top:2px;}
+.tf{display:flex;gap:6px;margin-left:auto;}
+.tf button{border:1px solid var(--line);background:transparent;color:var(--dim);font-weight:800;font-size:12px;padding:5px 11px;border-radius:8px;cursor:pointer;}
+.tf button.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+.gloss{font-size:13px;line-height:1.7;color:#cdd6e0;}.gloss div{margin-bottom:8px;}.gloss div:last-child{margin:0;}.gloss b{color:#fff;}
+@media(max-width:600px){.kgrid{grid-template-columns:1fr 1fr!important;}}
 .row{display:grid;gap:14px;margin-bottom:14px;}.r2{grid-template-columns:1.3fr 1fr;}.r3{grid-template-columns:1fr 1fr 1fr;}
 .ch h3{font-size:15px;font-weight:800;}.ch .meta{font-size:11px;color:var(--dim);}
 .feedwrap{max-height:300px;overflow-y:auto;}
@@ -133,6 +138,21 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
     <div id="paneWhale">
       <div class="seclabel"><h2>🐋 파생·고래 시그널</h2><span class="nowi"><span class="pulse"></span><span id="derivAge">로딩…</span></span><span class="wsstat" id="wsStat">🟡 연결 중…</span></div>
       <div class="now-grid" id="derivGrid"></div>
+
+      <div class="seclabel"><h2>🇰🇷 김치 프리미엄</h2><span class="wsstat" id="fxLabel">환율 –</span></div>
+      <div class="now-grid kgrid" style="grid-template-columns:1fr 1fr;">
+        <div class="nowcard"><div class="l">BTC 김프</div><div class="v mono" id="kimchiBtc">–</div><div class="c" id="kimchiBtcD" style="color:var(--dim)">업비트 – · 바이낸스 –</div></div>
+        <div class="nowcard"><div class="l">ETH 김프</div><div class="v mono" id="kimchiEth">–</div><div class="c" id="kimchiEthD" style="color:var(--dim)">업비트 – · 바이낸스 –</div></div>
+      </div>
+
+      <div class="seclabel"><h2>📊 비트코인 선물 거래량 추이</h2><div class="tf"><button data-tf="1D" class="on">1일</button><button data-tf="1W">1주</button><button data-tf="1M">1개월</button></div></div>
+      <div class="desc">파란 막대 = BTC 무기한선물 거래대금(USDT), 빨간 선 = BTC 가격. 거래량 급증+상승은 추세 강화, 급증+하락은 청산·투매 신호로 읽습니다.</div>
+      <div class="card"><div class="chartbox"><canvas id="volChart"></canvas></div></div>
+
+      <div class="seclabel"><h2>📈 파생 추세 (미결제약정·OI)</h2></div>
+      <div class="desc">선물 미결제약정(OI) 추이. 늘면 레버리지 자금 유입(변동성↑), 줄면 청산·포지션 정리로 자금이 빠지는 중입니다.</div>
+      <div class="card" style="margin-bottom:14px;"><div class="chartbox"><canvas id="oiChart"></canvas></div></div>
+
       <div class="row r3">
         <div class="card"><div class="ch"><h3>💥 실시간 청산</h3><span class="meta">BTC·ETH 선물</span></div><div class="feedwrap" id="liqFeed"></div></div>
         <div class="card"><div class="ch"><h3>🐋 고래 청산</h3><span class="meta">≥ $100K</span></div><div class="feedwrap" id="whaleLiq"></div></div>
@@ -143,9 +163,18 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
         <div class="card"><div class="ch"><h3>🏦 고래 입출금</h3><span class="meta">거래소 유출입</span></div><div class="flowsoon">🔧 <b>준비중</b> — 거래소 온체인 유출입은 유료 데이터가 필요합니다. 추후 <b>@fireant_wallet_track_bot</b> 연동 예정.</div></div>
       </div>
     </div>
+
+      <div class="seclabel"><h2>📖 지표 설명</h2></div>
+      <div class="card gloss">
+        <div><b>김치 프리미엄</b> — 업비트(원화) 가격을 환율로 환산해 바이낸스(달러)와 비교한 차이. 양(+)이면 국내 매수세가 강함.</div>
+        <div><b>펀딩비</b> — 무기한선물에서 롱·숏이 주고받는 수수료. 양(+)=롱 우세(과열), 음(−)=숏 우위.</div>
+        <div><b>미결제약정(OI)</b> — 청산되지 않고 남아있는 선물 계약의 총액. 늘면 레버리지 자금이 시장에 더 들어왔다는 뜻.</div>
+        <div><b>청산</b> — 증거금 부족으로 강제 종료된 포지션. 대량 청산은 급변동·연쇄청산 신호.</div>
+      </div>
   </div>
-  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 파생·청산 데이터 실시간(바이낸스 선물) · 투자 권유 아님</div>
+  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 파생·청산 데이터 실시간(바이낸스 선물·Upbit·CoinGecko) · 투자 권유 아님</div>
 <script src="assets/whale.js"></script>
+<script src="assets/signals-extra.js"></script>
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
