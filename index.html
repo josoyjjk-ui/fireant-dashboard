@@ -36,7 +36,9 @@ html{background:var(--bg);scrollbar-gutter:stable;}body{background:var(--bg);col
 .nowcard .l{font-size:12px;color:var(--dim);font-weight:700;}.nowcard .v{font-size:19px;font-weight:800;margin-top:4px;}.nowcard .c{font-size:12px;font-weight:700;margin-top:2px;}
 .fg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:13px;font-weight:800;}
 .sig-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
-.sigcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px;position:relative;min-height:150px;}
+.sigcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px;position:relative;min-height:150px;display:block;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s;}
+a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
+.sigcard .more{position:absolute;bottom:13px;right:15px;font-size:11px;font-weight:800;color:var(--accent);opacity:.75;}
 .sigcard .asof{font-size:10px;font-weight:800;color:var(--accent2);background:#231a0c;padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:8px;}
 .sigcard .t{font-size:13px;color:var(--dim);font-weight:700;}.sigcard .big{font-size:27px;font-weight:900;margin-top:5px;letter-spacing:-0.5px;}.sigcard .sub{font-size:11px;color:var(--dim);margin-top:3px;}
 .sigcard canvas{margin-top:9px;height:54px!important;max-height:54px!important;width:100%!important;display:block;}
