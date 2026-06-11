@@ -2,6 +2,14 @@
    60초 자동갱신. 코인은 클라에서 CoinGecko 직접 호출(CORS OK)로 실시간. */
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const OHLC_SYMBOLS = new Set(["^GSPC", "^IXIC", "^DJI", "^IRX", "^FVX", "^TNX", "^TYX", "DX-Y.NYB", "^VIX", "GC=F", "CL=F", "KOSPI", "KOSDAQ", "BTC"]);
+
+let ohlcCache = null;
+let activeSymbol = null;
+let activeRange = "1M";
+let chart = null;
+let candleSeries = null;
+let resizeObserver = null;
 
 function fmtNum(v, unit) {
   if (v == null) return "—";
@@ -13,13 +21,15 @@ function card(x) {
   const c = x.change_pct;
   const cls = c == null ? "" : c < 0 ? "down" : "up";
   const arr = c == null ? "" : c < 0 ? "▼" : "▲";
+  const symbol = x.symbol || "";
+  const hasChart = OHLC_SYMBOLS.has(symbol);
   // 국채 금리(unit="%")는 시장 표준대로 bp(=수익률 변동×100)로 표기
   let cTxt;
   if (c == null) cTxt = "—";
   else if (x.unit === "%" && x.change != null) cTxt = `${arr} ${Math.abs(x.change * 100).toFixed(1)}bp`;
   else cTxt = `${arr} ${Math.abs(c).toFixed(2)}%`;
   const prefix = x.unit === "$" ? "$" : "";
-  return `<div class="idx"><div class="n">${esc(x.name)}</div>
+  return `<div class="idx${hasChart ? " has-chart" : ""}" data-symbol="${esc(symbol)}" data-name="${esc(x.name)}"><div class="n">${esc(x.name)}</div>
     <div class="p mono">${prefix}${fmtNum(x.price, x.unit)}</div>
     <div class="c ${cls}">${cTxt}</div></div>`;
 }
@@ -40,10 +50,89 @@ async function loadCoins() {
     const bySym = {};
     (d.coins || []).forEach((c) => { bySym[(c.symbol || "").toUpperCase()] = c; });
     return COIN_ORDER.filter((s) => bySym[s]).map((s) => ({
-      name: COIN_NAME[s], group: "코인", unit: "$",
+      name: COIN_NAME[s], group: "코인", unit: "$", symbol: s,
       price: bySym[s].price, change_pct: bySym[s].chg,
     }));
   } catch { return []; }
+}
+
+async function loadOhlc() {
+  if (!ohlcCache) ohlcCache = await getJSON("../data/v1/indices_ohlc.json");
+  return ohlcCache;
+}
+
+function mapCandles(rows) {
+  return (rows || []).map((x) => ({
+    time: x.t,
+    open: x.o,
+    high: x.h,
+    low: x.l,
+    close: x.c,
+  })).filter((x) => x.time && [x.open, x.high, x.low, x.close].every((v) => Number.isFinite(v)));
+}
+
+function ensureChart() {
+  const el = $("idxChart");
+  if (!el || !window.LightweightCharts) return null;
+  if (chart) return chart;
+
+  chart = LightweightCharts.createChart(el, {
+    width: el.clientWidth,
+    height: el.clientHeight,
+    layout: { background: { color: "#13161c" }, textColor: "#8a94a3" },
+    grid: {
+      vertLines: { color: "#1c2330" },
+      horzLines: { color: "#1c2330" },
+    },
+    rightPriceScale: { borderColor: "#232936" },
+    timeScale: { borderColor: "#232936", timeVisible: false },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+  });
+  candleSeries = chart.addCandlestickSeries({
+    upColor: "#ff5d6c",
+    wickUpColor: "#ff5d6c",
+    borderUpColor: "#ff5d6c",
+    downColor: "#4d9bff",
+    wickDownColor: "#4d9bff",
+    borderDownColor: "#4d9bff",
+  });
+  resizeObserver = new ResizeObserver(() => {
+    if (chart && el.clientWidth) chart.applyOptions({ width: el.clientWidth });
+  });
+  resizeObserver.observe(el);
+  return chart;
+}
+
+async function setChartRange(range) {
+  activeRange = range;
+  document.querySelectorAll(".chart-range").forEach((b) => b.classList.toggle("on", b.dataset.range === range));
+  const msg = $("idxChartMsg");
+  try {
+    const data = await loadOhlc();
+    const candles = mapCandles(data?.[activeSymbol]?.[range]);
+    if (!candles.length) throw new Error("차트 데이터가 없습니다");
+    ensureChart();
+    candleSeries.setData(candles);
+    chart.timeScale().fitContent();
+    if (msg) msg.style.display = "none";
+  } catch (e) {
+    if (msg) {
+      msg.textContent = e.message || "차트 로드 실패";
+      msg.style.display = "block";
+    }
+  }
+}
+
+async function openChartModal(symbol, name) {
+  if (!OHLC_SYMBOLS.has(symbol)) return;
+  activeSymbol = symbol;
+  $("idxChartTitle").textContent = name || symbol;
+  document.body.classList.add("chartopen");
+  await setChartRange("1M");
+}
+
+function closeChartModal() {
+  document.body.classList.remove("chartopen");
 }
 
 const GROUP_META = {
@@ -85,5 +174,21 @@ if (!window.__idxInit) {
   const start = () => { stop(); load(); timer = setInterval(load, 60000); };
   const stop = () => clearInterval(timer);
   document.addEventListener("visibilitychange", () => { document.hidden ? stop() : start(); });
+  document.addEventListener("click", (e) => {
+    const rangeBtn = e.target.closest(".chart-range");
+    if (rangeBtn) {
+      setChartRange(rangeBtn.dataset.range);
+      return;
+    }
+    if (e.target.closest(".chart-close") || e.target.id === "chartBackdrop") {
+      closeChartModal();
+      return;
+    }
+    const cardEl = e.target.closest("#wrap .idx.has-chart");
+    if (cardEl) openChartModal(cardEl.dataset.symbol, cardEl.dataset.name);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && document.body.classList.contains("chartopen")) closeChartModal();
+  });
   start();
 }

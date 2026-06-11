@@ -7,6 +7,7 @@
 <meta property="og:image" content="https://antinfo.io/assets/og-image.png">
 <meta name="description" content="크립토에 영향을 주는 글로벌 증시·매크로 지표 — S&P·나스닥·달러인덱스·VIX·금·유가.">
 <link rel="canonical" href="https://antinfo.io/indices">
+<script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 @view-transition{navigation:auto;}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
@@ -23,6 +24,8 @@ html,body{overflow-x:hidden;}
 .seclabel{font-size:15px;font-weight:900;margin:24px 0 12px;color:var(--accent2);}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 .idx{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+.idx.has-chart{cursor:pointer;transition:border-color .16s ease,transform .16s ease;}
+.idx.has-chart:hover{border-color:var(--accent);}
 .idx .n{font-size:14px;color:var(--dim);font-weight:700;}
 .idx .p{font-size:24px;font-weight:900;margin-top:5px;letter-spacing:-0.5px;}
 .idx .c{font-size:13px;font-weight:800;margin-top:3px;}
@@ -44,6 +47,18 @@ body.navopen .drawer{transform:none;}
 .drawer a.sub{font-size:15px;font-weight:700;color:var(--dim);}
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55;}
 body.navopen .backdrop{opacity:1;pointer-events:auto;}
+.chart-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:80;}
+body.chartopen .chart-backdrop{display:flex;}
+.chart-modal{width:min(720px,92vw);background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.55);overflow:hidden;}
+.chart-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);}
+.chart-title{font-size:17px;font-weight:900;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chart-close{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;background:#0f1218;color:var(--txt);font-size:18px;font-weight:900;cursor:pointer;line-height:1;}
+.chart-body{padding:14px 16px 16px;}
+.chart-tabs{display:flex;gap:8px;margin-bottom:12px;}
+.chart-range{border:1px solid var(--line);background:#0f1218;color:var(--dim);border-radius:9px;padding:8px 13px;font-size:13px;font-weight:900;cursor:pointer;}
+.chart-range.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+#idxChart{height:360px;width:100%;}
+.chart-msg{display:none;color:var(--dim);font-size:13px;font-weight:700;padding:10px 2px 0;}
 @media(max-width:760px){.grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:480px){.grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){
@@ -58,6 +73,8 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .head h1{font-size:24px;}.head .sub{font-size:14px;}.seclabel{font-size:18px;}
   .sector-box{padding:14px 14px;}.grid{gap:10px;}
   .idx{padding:13px 12px;min-width:0;overflow:hidden;}.idx .n{font-size:12.5px;}.idx .p{font-size:20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.idx .c{font-size:12.5px;}
+  #idxChart{height:300px;}
+  .chart-hd{padding:14px 15px;}.chart-body{padding:12px 12px 14px;}
   .ham{display:inline-flex;}
   .tabs{display:none !important;}
   .nav>.btn{display:none;}
@@ -68,6 +85,23 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 </style></head>
 <body>
 <div class="backdrop"></div>
+<div class="chart-backdrop" id="chartBackdrop" aria-hidden="true">
+  <div class="chart-modal" role="dialog" aria-modal="true" aria-labelledby="idxChartTitle">
+    <div class="chart-hd">
+      <div class="chart-title" id="idxChartTitle">차트</div>
+      <button class="chart-close" type="button" aria-label="닫기">✕</button>
+    </div>
+    <div class="chart-body">
+      <div class="chart-tabs" role="tablist" aria-label="기간 선택">
+        <button class="chart-range on" type="button" data-range="1M">1M</button>
+        <button class="chart-range" type="button" data-range="3M">3M</button>
+        <button class="chart-range" type="button" data-range="6M">6M</button>
+      </div>
+      <div id="idxChart"></div>
+      <div class="chart-msg" id="idxChartMsg"></div>
+    </div>
+  </div>
+</div>
 <aside class="drawer">
   <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;vertical-align:middle;margin-right:7px;">개미투자정보</span><button class="x" type="button">✕</button></div>
   <a href="/"><span class="ic">🏠</span>홈</a>
