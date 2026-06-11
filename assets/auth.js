@@ -62,9 +62,7 @@
       const label = mobile ? "로그인" : "Google 로그인";
       slot.innerHTML = `<button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:${pad};border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;">
         ${gIcon}${label}</button>`;
-      slot.querySelector("#loginBtn").onclick = () =>
-        sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href.split("#")[0] } });
-      cacheSlot(slot);
+      cacheSlot(slot);  // 클릭은 아래 이벤트 위임으로 처리
     }
 
     function renderLoggedIn(slot, profile, user) {
@@ -81,14 +79,25 @@
         ${nameTag}
         ${tierBadge}
         <button id="logoutBtn" style="padding:6px 10px;border-radius:8px;border:1px solid #232936;background:transparent;color:#8a94a3;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;">로그아웃</button>`;
-      slot.querySelector("#logoutBtn").onclick = async () => { await sb.auth.signOut(); location.reload(); };
-      cacheSlot(slot);
+      cacheSlot(slot);  // 클릭은 아래 이벤트 위임으로 처리
     }
 
     // 마지막 렌더 결과를 캐시 → 다음 페이지에서 인라인 스크립트가 즉시 복원(팝인/깜빡임 제거). 데스크톱 전용.
     function cacheSlot(slot) {
       if (slot && slot.dataset.mobile !== "1") { try { localStorage.setItem("antinfo_navauth", slot.innerHTML); } catch (e) {} }
     }
+
+    // 로그인/로그아웃 = 이벤트 위임(캐시로 복원된 버튼·재렌더 버튼 모두 동작 보장)
+    document.addEventListener("click", (e) => {
+      if (e.target.closest("#logoutBtn")) {
+        e.preventDefault();
+        try { localStorage.removeItem("antinfo_navauth"); } catch (_) {}  // 로그아웃 시 캐시 제거(재로드 후 로그인상태 잔상 방지)
+        Promise.resolve(sb.auth.signOut()).catch(() => {}).finally(() => location.reload());
+      } else if (e.target.closest("#loginBtn")) {
+        e.preventDefault();
+        sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href.split("#")[0] } });
+      }
+    });
 
     async function refresh() {
       const slot = ensureSlot();
