@@ -50,6 +50,7 @@ html{background:var(--bg);scrollbar-gutter:stable;}body{background:var(--bg);col
 <div class="main">
   <div class="head"><h1 id="title">시그니처 수급 상세</h1><div class="sub" id="sub">불러오는 중…</div></div>
   <div class="tf" id="tf" style="display:none"><button data-tf="1D" class="on">1일</button><button data-tf="1W">1주</button><button data-tf="1M">1개월</button></div>
+  <div class="tf" id="etfTf" style="display:none"><button data-agg="D" class="on">일간</button><button data-agg="W">주간</button><button data-agg="M">월간</button></div>
   <div class="grid" id="grid"></div>
   <div id="tables"></div>
   <div class="gloss" id="gloss"></div>
@@ -127,17 +128,38 @@ function renderCards(){
   if(cfg.items.length===1)$('grid').style.gridTemplateColumns='1fr';  // 단독 페이지는 1열(차트 꽉 차게)
 }
 
-function renderTable(it,h){
-  const rows=h.slice().reverse();  // 최신순
+let ETFMODE='D'; const ETFITEMS=[];
+function isoWeek(ds){const dt=new Date(ds+'T00:00:00Z');const day=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-day+3);const ft=new Date(Date.UTC(dt.getUTCFullYear(),0,4));const wk=1+Math.round(((dt-ft)/864e5-3+((ft.getUTCDay()+6)%7))/7);return dt.getUTCFullYear()+'-W'+String(wk).padStart(2,'0');}
+function aggregate(h,mode){
+  if(mode==='D')return h.map(r=>({label:r.date,value:r.value,cum:r.cum,traded:r.traded,assets:r.assets}));
+  const keyf=mode==='W'?isoWeek:(d=>d.slice(0,7));
+  const m=new Map();
+  for(const r of h){const k=keyf(r.date);if(!m.has(k))m.set(k,{label:k,value:0,cum:null,traded:0,tradedN:0,assets:null});const g=m.get(k);g.value+=r.value||0;if(r.traded!=null){g.traded+=r.traded;g.tradedN++;}if(r.cum!=null)g.cum=r.cum;if(r.assets!=null)g.assets=r.assets;}
+  return [...m.values()].map(g=>({label:g.label,value:g.value,cum:g.cum,traded:g.tradedN?g.traded:null,assets:g.assets}));
+}
+function renderTable(it,rows,mode){
+  const r2=rows.slice().reverse();
+  const modeKo={D:'일간',W:'주간',M:'월간'}[mode],col={D:'날짜',W:'주(ISO)',M:'월'}[mode],dcol={D:'일일 순유입',W:'주간 순유입',M:'월간 순유입'}[mode];
   const fmtD=v=>(v>=0?'+':'-')+usd(Math.abs(v)).replace('-','');
-  let html=`<div class="tblwrap"><h3>📋 ${it.label} 일일 유출입 — 전체 ${rows.length}일 (최신순)</h3><div class="etscroll"><table class="etable"><thead><tr><th>날짜</th><th>일일 순유입</th><th>누적 순유입</th><th>거래대금</th><th>순자산</th></tr></thead><tbody>`;
-  for(const r of rows){const c=r.value>=0?'up':'down';
-    html+=`<tr><td>${r.date}</td><td class="${c}">${fmtD(r.value)}</td><td>${r.cum!=null?usd(r.cum):'—'}</td><td>${r.traded!=null?usd(r.traded):'—'}</td><td>${r.assets!=null?usd(r.assets):'—'}</td></tr>`;}
+  let html=`<div class="tblwrap"><h3>📋 ${it.label} ${modeKo} 유출입 — ${r2.length}개 (최신순)</h3><div class="etscroll"><table class="etable"><thead><tr><th>${col}</th><th>${dcol}</th><th>누적 순유입</th><th>거래대금</th><th>순자산</th></tr></thead><tbody>`;
+  for(const r of r2){const c=r.value>=0?'up':'down';
+    html+=`<tr><td>${r.label}</td><td class="${c}">${fmtD(r.value)}</td><td>${r.cum!=null?usd(r.cum):'—'}</td><td>${r.traded!=null?usd(r.traded):'—'}</td><td>${r.assets!=null?usd(r.assets):'—'}</td></tr>`;}
   html+=`</tbody></table></div><div class="note">출처 SoSoValue · 유입(+)=빨강 · 유출(−)=파랑</div></div>`;
-  document.getElementById('tables').insertAdjacentHTML('beforeend', html);
+  document.getElementById('tables').insertAdjacentHTML('beforeend',html);
+}
+function drawEtfCharts(){
+  document.getElementById('tables').innerHTML='';
+  const modeKo={D:'일간',W:'주간',M:'월간'}[ETFMODE];
+  for(const {i,it,h} of ETFITEMS){
+    const agg=aggregate(h,ETFMODE);
+    comboChart('ch'+i, agg.map(r=>String(r.label).slice(2)), agg.map(r=>r.value), agg.map(r=>r.cum));
+    $('note'+i).textContent='막대=순유입(빨강)/유출(파랑) · 선=누적 · '+modeKo+' '+agg.length+'개 · 출처 SoSoValue';
+    renderTable(it,agg,ETFMODE);
+  }
 }
 async function fillEtfCb(){
   document.getElementById('tables').innerHTML='';  // 재호출 시 중복 방지
+  ETFITEMS.length=0;
   const s=await loadSig();
   for(let i=0;i<cfg.items.length;i++){
     const it=cfg.items[i],m=SIG[it.key]||{},v=m.value;
@@ -145,15 +167,12 @@ async function fillEtfCb(){
       const t=$('tag'+i);t.textContent=v>=0?(cfg.money?'유입':'증가'):(cfg.money?'유출':'감소');t.className='tag '+(v>=0?'u':'d');}
     else $('val'+i).textContent='—';
     $('meta'+i).textContent=(m.basis||m.as_of||'기준 미상');
-    // ETF(BTC·ETH): 출시 이후 전체 일일+누적 차트
+    // ETF(BTC·ETH): 출시 이후 전체. 일간/주간/월간 토글로 차트+표 재집계
     if(it.key==='btc_etf'||it.key==='eth_etf'){
       try{const h=await J('/data/v1/history/'+it.key+'_full.json?t='+Date.now());
-        const labels=h.map(x=>x.date.slice(2)),daily=h.map(x=>x.value),cum=h.map(x=>x.cum);
-        comboChart('ch'+i,labels,daily,cum);
         const last=h[h.length-1],launch=h[0].date.slice(0,7);
         $('meta'+i).textContent=launch+' 출시 이후 전체 · 누적 순유입 '+usd(last.cum);
-        $('note'+i).textContent='막대=일일 순유입(빨강)/유출(파랑) · 선=누적 순유입 · 출처 SoSoValue · '+h.length+'일';
-        renderTable(it,h);
+        ETFITEMS.push({i,it,h});
       }catch(e){$('ch'+i).closest('.chartbox').innerHTML='<div class="empty">ETF 전체 데이터를 불러오지 못했습니다.</div>';}
       continue;
     }
@@ -171,6 +190,7 @@ async function fillEtfCb(){
       const t=$('tag'+i);t.textContent=p>=0?'미국 강세':'미국 약세';t.className='tag '+(p>=0?'u':'d');
       $('meta'+i).textContent='Coinbase $'+f2(+cb.price)+' vs Binance $'+f2(+bn.price)+' · 라이브';}catch(e){}}
   }
+  if(ETFITEMS.length){$('etfTf').style.display='flex';drawEtfCharts();}
 }
 
 async function fillOi(tf){
@@ -198,6 +218,7 @@ if(cfg.live==='oi'){
 }else{
   fillEtfCb();
   setInterval(fillEtfCb,60000);
+  document.querySelectorAll('#etfTf button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#etfTf button').forEach(x=>x.classList.remove('on'));b.classList.add('on');ETFMODE=b.dataset.agg;drawEtfCharts();});
 }
 </script>
 </body></html>
