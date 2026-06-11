@@ -47,6 +47,7 @@
         ${gIcon}${label}</button>`;
       slot.querySelector("#loginBtn").onclick = () =>
         sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href.split("#")[0] } });
+      cacheSlot(slot);
     }
 
     function renderLoggedIn(slot, profile, user) {
@@ -64,6 +65,12 @@
         ${tierBadge}
         <button id="logoutBtn" style="padding:6px 10px;border-radius:8px;border:1px solid #232936;background:transparent;color:#8a94a3;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;">로그아웃</button>`;
       slot.querySelector("#logoutBtn").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+      cacheSlot(slot);
+    }
+
+    // 마지막 렌더 결과를 캐시 → 다음 페이지에서 인라인 스크립트가 즉시 복원(팝인/깜빡임 제거). 데스크톱 전용.
+    function cacheSlot(slot) {
+      if (slot && slot.dataset.mobile !== "1") { try { localStorage.setItem("antinfo_navauth", slot.innerHTML); } catch (e) {} }
     }
 
     async function refresh() {
