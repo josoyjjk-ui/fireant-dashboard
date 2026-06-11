@@ -153,6 +153,11 @@ async function loadSignature() {
         hist = await getJSON("https://fapi.binance.com/futures/data/openInterestHist?symbol=BTCUSDT&period=1h&limit=24")
           .then((a) => (Array.isArray(a) ? a.map((x) => ({ value: +x.sumOpenInterestValue })) : []))
           .catch(() => []);
+      } else if (defs[i].k === "btc_etf") {
+        // BTC ETF는 출시 이후 전체 일일 데이터 — 최근 30일 스파크라인
+        hist = await getJSON(`${BASE}/history/btc_etf_full.json?t=${Date.now()}`)
+          .then((a) => (Array.isArray(a) ? a.slice(-30) : []))
+          .catch(() => []);
       } else {
         hist = await getJSON(`${BASE}/history/${defs[i].hist}.json?t=${Date.now()}`).catch(() => []);
       }
