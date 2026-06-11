@@ -98,19 +98,19 @@ html,body{background:var(--bg);color:var(--txt);overflow-x:hidden;}
     <div class="scard"><div class="l">BTC 도미넌스</div><div class="v mono" id="sDom">–</div><div class="c">CoinGecko</div></div>
   </div>
 
-  <!-- 파생 추세(OI) -->
-  <div class="seclabel"><h2>📈 파생 추세 (미결제약정·OI)</h2>
+  <!-- 선물 거래량 + BTC 가격 오버랩 -->
+  <div class="seclabel"><h2>📊 비트코인 선물 거래량 추이</h2>
     <div class="tf"><button data-tf="1D" class="on">1일</button><button data-tf="1W">1주</button><button data-tf="1M">1개월</button></div>
   </div>
+  <div class="desc">파란 막대 = 바이낸스 BTC 무기한선물 <b>거래대금(USDT)</b>, 빨간 선 = <b>BTC 가격</b>. 막대가 <b>치솟을 때</b> 가격이 어디로 움직였는지 겹쳐 보면 — 거래량 급증 + 상승은 추세 강화, 거래량 급증 + 하락은 청산·투매 신호로 읽습니다.</div>
+  <div class="card"><div class="chartwrap"><canvas id="volChart"></canvas></div>
+    <div class="note">출처 Binance 선물 klines · 라이브 · 상단 1일/1주/1개월 버튼으로 기간 전환</div></div>
+
+  <!-- 파생 추세(OI) -->
+  <div class="seclabel"><h2>📈 파생 추세 (미결제약정·OI)</h2></div>
   <div class="desc">시장에 살아있는 <b>선물 미결제약정(OI)</b>의 시간대별 추이입니다. <b>늘면</b> 레버리지 베팅 자금이 유입(변동성↑ 신호), <b>줄면</b> 청산·포지션 정리로 자금이 빠지는 중입니다.</div>
   <div class="card"><div class="chartwrap"><canvas id="oiChart"></canvas></div>
-    <div class="note">출처 Binance 선물 · 라이브 · 상단 1일/1주/1개월 버튼으로 기간 전환</div></div>
-
-  <!-- 선물 거래량 -->
-  <div class="seclabel"><h2>📊 비트코인 선물 거래량 추이</h2></div>
-  <div class="desc">바이낸스 BTC 무기한선물의 기간별 <b>거래대금(USDT)</b>입니다. 막대가 <b>치솟으면</b> 그 구간에 매매가 폭발(추세 전환·뉴스·대규모 청산 동반)했다는 뜻으로, 시장의 관심·변동성을 가늠합니다.</div>
-  <div class="card"><div class="chartwrap"><canvas id="volChart"></canvas></div>
-    <div class="note">출처 Binance 선물 klines · 라이브 · 위 기간 버튼과 연동</div></div>
+    <div class="note">출처 Binance 선물 · 라이브 · 위 기간 버튼과 연동</div></div>
 
   <!-- ④ 용어 설명 -->
   <div class="seclabel"><h2>📖 지표 설명</h2></div>
@@ -193,9 +193,17 @@ async function drawCharts(tf){
     oiChart=new Chart($('oiChart'),{type:'line',data:{labels,datasets:[{data,borderColor:'#ff3b30',borderWidth:2,fill:true,backgroundColor:'rgba(255,59,48,.10)',tension:.35,pointRadius:0}]},options:baseOpt('OI')});
   }catch(e){}
   try{const k=await J(`https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&interval=${m.p}&limit=${m.lim}`);
-    const labels=k.map(r=>lbl(r[0],tf)),data=k.map(r=>+r[7]);
+    const labels=k.map(r=>lbl(r[0],tf)),vol=k.map(r=>+r[7]),price=k.map(r=>+r[4]);
     if(volChart)volChart.destroy();
-    volChart=new Chart($('volChart'),{type:'bar',data:{labels,datasets:[{data,backgroundColor:'rgba(58,160,255,.55)',borderColor:'#3aa0ff',borderWidth:0,borderRadius:2}]},options:baseOpt('거래대금')});
+    volChart=new Chart($('volChart'),{data:{labels,datasets:[
+      {type:'bar',label:'거래대금',data:vol,backgroundColor:'rgba(58,160,255,.45)',borderColor:'#3aa0ff',borderWidth:0,borderRadius:2,yAxisID:'y',order:2},
+      {type:'line',label:'BTC 가격',data:price,borderColor:'#ff3b30',borderWidth:2,pointRadius:0,tension:.3,yAxisID:'y1',order:1}
+    ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:true,position:'top',labels:{color:'#aeb8c4',boxWidth:10,font:{size:11}}},
+        tooltip:{callbacks:{label:c=>c.dataset.label+' '+(c.dataset.yAxisID==='y1'?'$'+f2(c.parsed.y):usd(c.parsed.y))}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},
+        y:{position:'left',grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:v=>usd(v)}},
+        y1:{position:'right',grid:{display:false},ticks:{color:'#ff8b85',font:{size:10},callback:v=>'$'+(v/1000).toFixed(0)+'k'}}}}});
   }catch(e){}
 }
 document.querySelectorAll('.tf button').forEach(b=>b.onclick=()=>{
