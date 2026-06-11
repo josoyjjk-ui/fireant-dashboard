@@ -8,12 +8,25 @@
   const SUPABASE_KEY = "sb_publishable_mRNYq6Yq9UaYT3bydRhG1w_6wswYTd4";
 
   function boot() {
-    // 모바일(인앱 브라우저 ↔ 시스템 브라우저 전환) PKCE code_verifier 유실 회피 → implicit 플로우.
-    // 토큰을 복귀 URL 해시로 직접 수신하므로 컨텍스트가 바뀌어도 세션 복원됨.
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: { flowType: "implicit", detectSessionInUrl: true, persistSession: true, autoRefreshToken: true },
-    });
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     window.__sb = sb;
+
+    // 인앱 브라우저(카톡·네이버·인스타 등) 감지 — 구글 OAuth가 인앱 웹뷰를 차단(disallowed_useragent)하므로 외부 브라우저 안내.
+    const UA = navigator.userAgent || "";
+    const inApp = /KAKAOTALK|NAVER\(inapp|DaumApps|Instagram|FBAN|FBAV|FB_IAB|Line\/|; wv\)|everytimeApp|band|kakaostory|Snapchat|Twitter/i.test(UA);
+    if (inApp && !sessionStorage.getItem("inappDismiss")) {
+      const isAndroid = /Android/i.test(UA);
+      const bar = document.createElement("div");
+      bar.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#2a1116;color:#ffd9dd;font:700 13px/1.45 'Apple SD Gothic Neo',sans-serif;padding:13px 16px;box-shadow:0 -4px 18px rgba(0,0,0,.5);display:flex;gap:10px;align-items:center;";
+      const open = isAndroid
+        ? `<a id="iabOpen" style="flex:0 0 auto;background:#ff3b30;color:#fff;text-decoration:none;font-weight:800;padding:8px 13px;border-radius:9px;">크롬으로 열기</a>`
+        : `<span style="flex:0 0 auto;color:#fff;font-weight:800;">우측 ⋯ → Safari로 열기</span>`;
+      bar.innerHTML = `<span style="flex:1;min-width:0;">🔒 카톡·인앱 브라우저에선 구글 로그인이 막힙니다. 기본 브라우저로 열어주세요.</span>${open}<span id="iabX" style="flex:0 0 auto;color:#ffb1ba;cursor:pointer;padding:4px 6px;">✕</span>`;
+      document.body.appendChild(bar);
+      const x = bar.querySelector("#iabX"); if (x) x.onclick = () => { sessionStorage.setItem("inappDismiss", "1"); bar.remove(); };
+      const ob = bar.querySelector("#iabOpen");
+      if (ob) ob.onclick = () => { location.href = "intent://" + location.host + location.pathname + location.search + "#Intent;scheme=https;package=com.android.chrome;end"; };
+    }
 
     const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch { return ""; } };
