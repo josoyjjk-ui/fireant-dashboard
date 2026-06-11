@@ -25,22 +25,29 @@ async function getJSON(u) {
   return r.json();
 }
 
-async function load() {
-  try {
-    const d = await getJSON("../data/v1/market_now.json?t=" + Date.now());
-    // 요약
-    $("summary").innerHTML = [
-      ["총 시가총액", d.total_mcap != null ? fmtUSD(d.total_mcap) : "—"],
-      ["24h 거래량", d.total_vol != null ? fmtUSD(d.total_vol) : "—"],
-      ["BTC 도미넌스", d.btc_dominance != null ? d.btc_dominance.toFixed(1) + "%" : "—"],
-      ["ETH 도미넌스", d.eth_dominance != null ? d.eth_dominance.toFixed(1) + "%" : "—"],
-    ].map(([l, v]) => `<div class="sc"><div class="l">${l}</div><div class="v mono">${v}</div></div>`).join("");
-    // 테이블
-    const rows = d.markets || [];
-    $("rows").innerHTML = rows.map((c, i) => {
-      const athTxt = c.athChg != null ? `<span class="down">${c.athChg.toFixed(1)}%</span>` : `<span class="dim">—</span>`;
-      return `<tr>
-      <td>${c.rank || i + 1}</td>
+let ALL = [];
+// 정렬 상태. 숫자형 기본 내림차순(큰값 먼저), rank/name은 오름차순 기본
+let SORT = { key: "rank", dir: 1 };
+const NUMKEYS = { price: 1, chg24h: 1, chg7d: 1, athChg: 1, mcap: 1, fdv: 1, rank: 1 };
+
+function render() {
+  const q = ($("q").value || "").trim().toLowerCase();
+  let rows = ALL.filter((c) => !q || (c.name || "").toLowerCase().includes(q) || (c.symbol || "").toLowerCase().includes(q));
+  const { key, dir } = SORT;
+  rows = rows.slice().sort((a, b) => {
+    if (key === "name") {
+      const av = (a.name || "").toLowerCase(), bv = (b.name || "").toLowerCase();
+      return av < bv ? -dir : av > bv ? dir : 0;
+    }
+    let av = a[key], bv = b[key];
+    av = (av == null ? (dir === 1 ? Infinity : -Infinity) : av);  // 결측은 항상 뒤로
+    bv = (bv == null ? (dir === 1 ? Infinity : -Infinity) : bv);
+    return (av - bv) * dir;
+  });
+  $("rows").innerHTML = rows.map((c) => {
+    const athTxt = c.athChg != null ? `<span class="down">${c.athChg.toFixed(1)}%</span>` : `<span class="dim">—</span>`;
+    return `<tr>
+      <td>${c.rank ?? "—"}</td>
       <td><div class="coin"><img src="${safeURL(c.image)}" alt="" loading="lazy" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span> <span class="sym">${esc(c.symbol)}</span></div></td>
       <td class="mono">${price(c.price)}</td>
       <td class="mono">${pct(c.chg24h)}</td>
@@ -48,12 +55,40 @@ async function load() {
       <td class="mono">${athTxt}</td>
       <td class="mono">${fmtUSD(c.mcap)}</td>
       <td class="mono">${fmtUSD(c.fdv)}</td></tr>`;
-    }).join("");
+  }).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--dim);padding:24px">검색 결과 없음</td></tr>`;
+  $("cnt").textContent = `${rows.length} / ${ALL.length}개`;
+  document.querySelectorAll("th[data-k]").forEach((th) => {
+    const ar = th.querySelector(".ar");
+    ar.textContent = th.dataset.k === SORT.key ? (SORT.dir === 1 ? "▲" : "▼") : "";
+  });
+}
+
+async function load() {
+  try {
+    const d = await getJSON("../data/v1/market_now.json?t=" + Date.now());
+    $("summary").innerHTML = [
+      ["총 시가총액", d.total_mcap != null ? fmtUSD(d.total_mcap) : "—"],
+      ["24h 거래량", d.total_vol != null ? fmtUSD(d.total_vol) : "—"],
+      ["BTC 도미넌스", d.btc_dominance != null ? d.btc_dominance.toFixed(1) + "%" : "—"],
+      ["ETH 도미넌스", d.eth_dominance != null ? d.eth_dominance.toFixed(1) + "%" : "—"],
+    ].map(([l, v]) => `<div class="sc"><div class="l">${l}</div><div class="v mono">${v}</div></div>`).join("");
+    ALL = d.markets || [];
+    render();
     $("age").textContent = "갱신 " + (d.generated_at || "").slice(11, 16);
   } catch (e) {
     if (!$("rows").children.length) $("rows").innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--down)">시세 일시 오류 (재시도 중) — ${esc(e.message)}</td></tr>`;
   }
 }
+
+// 검색
+$("q").addEventListener("input", render);
+// 헤더 클릭 정렬: 같은 컬럼이면 방향 토글, 다른 컬럼이면 숫자=내림/이름=오름 기본
+document.querySelectorAll("th[data-k]").forEach((th) => th.addEventListener("click", () => {
+  const k = th.dataset.k;
+  if (SORT.key === k) { SORT.dir = -SORT.dir; }
+  else { SORT.key = k; SORT.dir = (k === "name" || k === "rank") ? 1 : -1; }
+  render();
+}));
 
 $("summary").innerHTML = Array(4).fill('<div class="sc"><div class="l skel">··</div><div class="v skel">····</div></div>').join("");
 
