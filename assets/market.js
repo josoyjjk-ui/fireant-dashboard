@@ -28,7 +28,19 @@ async function getJSON(u) {
 let ALL = [];
 // 정렬 상태. 숫자형 기본 내림차순(큰값 먼저), rank/name은 오름차순 기본
 let SORT = { key: "rank", dir: 1 };
-const NUMKEYS = { price: 1, chg24h: 1, chg7d: 1, athChg: 1, mcap: 1, fdv: 1, rank: 1 };
+let PAGE = 0;
+const PAGE_SIZE = 100;
+
+function renderPager(total) {
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (PAGE >= pages) PAGE = pages - 1;
+  const from = total ? PAGE * PAGE_SIZE + 1 : 0, to = Math.min(total, (PAGE + 1) * PAGE_SIZE);
+  let h = `<button data-p="prev" ${PAGE === 0 ? "disabled" : ""}>‹ 이전</button>`;
+  for (let i = 0; i < pages; i++) h += `<button data-p="${i}" class="${i === PAGE ? "on" : ""}">${i * PAGE_SIZE + 1}–${Math.min(total, (i + 1) * PAGE_SIZE)}</button>`;
+  h += `<button data-p="next" ${PAGE >= pages - 1 ? "disabled" : ""}>다음 ›</button>`;
+  h += `<span class="rng">${from}–${to} / 총 ${total}</span>`;
+  $("pager").innerHTML = pages > 1 || total ? h : "";
+}
 
 function render() {
   const q = ($("q").value || "").trim().toLowerCase();
@@ -44,6 +56,9 @@ function render() {
     bv = (bv == null ? (dir === 1 ? Infinity : -Infinity) : bv);
     return (av - bv) * dir;
   });
+  const total = rows.length;
+  renderPager(total);
+  rows = rows.slice(PAGE * PAGE_SIZE, (PAGE + 1) * PAGE_SIZE);  // 100개 단위 페이지
   $("rows").innerHTML = rows.map((c) => {
     const athTxt = c.athChg != null ? `<span class="down">${c.athChg.toFixed(1)}%</span>` : `<span class="dim">—</span>`;
     return `<tr>
@@ -56,7 +71,7 @@ function render() {
       <td class="mono">${fmtUSD(c.mcap)}</td>
       <td class="mono">${fmtUSD(c.fdv)}</td></tr>`;
   }).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--dim);padding:24px">검색 결과 없음</td></tr>`;
-  $("cnt").textContent = `${rows.length} / ${ALL.length}개`;
+  $("cnt").textContent = `${total} / ${ALL.length}개`;
   document.querySelectorAll("th[data-k]").forEach((th) => {
     const ar = th.querySelector(".ar");
     ar.textContent = th.dataset.k === SORT.key ? (SORT.dir === 1 ? "▲" : "▼") : "";
@@ -80,15 +95,25 @@ async function load() {
   }
 }
 
-// 검색
-$("q").addEventListener("input", render);
+// 검색 (페이지 리셋)
+$("q").addEventListener("input", () => { PAGE = 0; render(); });
 // 헤더 클릭 정렬: 같은 컬럼이면 방향 토글, 다른 컬럼이면 숫자=내림/이름=오름 기본
 document.querySelectorAll("th[data-k]").forEach((th) => th.addEventListener("click", () => {
   const k = th.dataset.k;
   if (SORT.key === k) { SORT.dir = -SORT.dir; }
   else { SORT.key = k; SORT.dir = (k === "name" || k === "rank") ? 1 : -1; }
-  render();
+  PAGE = 0; render();
 }));
+// 페이지 네비
+$("pager").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-p]"); if (!b) return;
+  const p = b.dataset.p;
+  if (p === "prev") PAGE = Math.max(0, PAGE - 1);
+  else if (p === "next") PAGE = PAGE + 1;
+  else PAGE = +p;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
 
 $("summary").innerHTML = Array(4).fill('<div class="sc"><div class="l skel">··</div><div class="v skel">····</div></div>').join("");
 
