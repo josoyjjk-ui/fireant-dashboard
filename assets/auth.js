@@ -91,12 +91,11 @@
     document.addEventListener("click", (e) => {
       if (e.target.closest("#logoutBtn")) {
         e.preventDefault();
-        // 세션 토큰을 직접 강제 삭제(signOut 네트워크 hang/실패와 무관하게 확실히 로그아웃)
-        const purge = () => { try {
-          [localStorage, sessionStorage].forEach((st) => Object.keys(st).forEach((k) => { if (/^sb-|supabase|antinfo_navauth/.test(k)) st.removeItem(k); }));
-        } catch (_) {} };
-        // local scope = 네트워크 revoke 없이 로컬 세션만 제거(멈춤 방지)
-        Promise.resolve(sb.auth.signOut({ scope: "local" })).catch(() => {}).finally(() => { purge(); location.reload(); });
+        // 확실한 로그아웃: 로컬 세션 제거 + 스토리지 전면 클리어(키 이름 무관) → 홈으로
+        Promise.resolve(sb.auth.signOut({ scope: "local" })).catch(() => {}).finally(() => {
+          try { localStorage.clear(); sessionStorage.clear(); } catch (_) {}
+          location.replace("/");
+        });
       } else if (e.target.closest("#loginBtn")) {
         e.preventDefault();
         sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href.split("#")[0] } });
