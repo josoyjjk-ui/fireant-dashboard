@@ -9,10 +9,25 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo','Pretendard',sans-serif;}
 :root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff3b30;--down:#3aa0ff;--accent:#ff3b30;--accent2:#ffb547;}
 html{background:var(--bg);scrollbar-gutter:stable;}body{background:var(--bg);color:var(--txt);}html,body{overflow-x:hidden;}
-.nav{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
-.nav a.back{color:var(--dim);text-decoration:none;font-weight:800;font-size:14px;}
-.nav a.back:hover{color:var(--txt);}
-.nav .logo{font-size:18px;font-weight:900;color:var(--accent);margin-left:auto;text-decoration:none;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;view-transition-name:site-nav;}
+.logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
+.tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}.tab.on{background:var(--accent);color:#0a0c10;}
+.btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
+.ham{display:none;font-size:25px;background:none;border:none;color:var(--txt);font-weight:800;line-height:1;cursor:pointer;padding:0 4px 0 0;}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:60;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
+body.navopen .drawer{transform:none;}
+.drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 14px;}
+.drawer .dh .dlogo{font-size:20px;font-weight:900;color:#ff3b30;}
+.drawer .x{font-size:20px;color:var(--dim);background:none;border:none;cursor:pointer;}
+.drawer a{display:flex;align-items:center;gap:14px;padding:15px 12px;border-radius:14px;text-decoration:none;color:var(--txt);font-size:17px;font-weight:800;}
+.drawer a .ic{font-size:22px;width:26px;text-align:center;}
+.drawer a.on{background:rgba(255,59,48,.14);color:#ff3b30;}
+.drawer .ddiv{height:1px;background:var(--line);margin:9px 6px;}
+.drawer a.sub{font-size:15px;font-weight:700;color:var(--dim);}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55;}
+body.navopen .backdrop{opacity:1;pointer-events:auto;}
+.brand2{display:flex;align-items:center;gap:12px;min-width:0;}.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}.lede2{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}@media(max-width:1100px){.lede2{display:none;}}
+#authSlot{display:inline-flex;align-items:center;}
 .main{padding:22px 18px;max-width:1000px;margin:0 auto;}
 .head h1{font-size:23px;font-weight:900;}
 .head .sub{color:var(--dim);font-size:13.5px;margin-top:6px;line-height:1.55;}
@@ -44,9 +59,38 @@ html{background:var(--bg);scrollbar-gutter:stable;}body{background:var(--bg);col
 .empty{color:var(--dim);font-size:12.5px;text-align:center;padding:60px 0;}
 .foot{padding:24px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:34px;}
 @media(max-width:640px){.grid{grid-template-columns:1fr;}.head h1{font-size:20px;}.card .big{font-size:26px;}}
+@media(max-width:600px){
+  .nav{flex-wrap:wrap;justify-content:flex-start;padding:13px 15px;gap:10px;}.logo{font-size:22px;}
+  #authSlot a,#authSlot button{font-size:12px;padding:7px 10px;white-space:nowrap;}
+  .ham{display:inline-flex;}.tabs{display:none !important;}.nav>.btn{display:none;}
+}
 </style></head>
 <body>
-<div class="nav"><a class="back" href="/">← 대시보드</a><a class="logo" href="/">🐜 ANTINFO</a></div>
+<div class="backdrop"></div>
+<aside class="drawer">
+  <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;vertical-align:middle;margin-right:7px;">개미투자정보</span><button class="x" type="button">✕</button></div>
+  <a class="on" href="/"><span class="ic">🏠</span>홈</a>
+  <a href="macro-news"><span class="ic">📰</span>뉴스</a>
+  <a href="market"><span class="ic">📊</span>마켓</a>
+  <a href="signals"><span class="ic">🐋</span>시그널</a>
+  <a href="indices"><span class="ic">📈</span>지수</a>
+  <div class="ddiv"></div>
+  <a class="sub" href="events"><span class="ic">🎉</span>이벤트·당첨</a>
+  <a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>
+</aside>
+  <div class="nav">
+    <button class="ham" type="button" aria-label="메뉴">☰</button>
+    <div class="brand2"><a class="logo" href="/" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:34px;display:block"></a><div class="btext"><span class="bname">개미투자정보</span><span class="lede2">개미투자자들이 필요한 모든 정보</span></div></div>
+    <div class="tabs">
+      <a class="tab on" href="./">대시보드</a>
+      <a class="tab" href="market">마켓</a>
+      <a class="tab" href="macro-news">매크로뉴스</a>
+      <a class="tab" href="indices">주요주가지수</a>
+      <a class="tab" href="events">이벤트모음</a>
+      <a class="tab" href="signals">시장지표</a>
+    </div>
+    <span id="authSlot" data-mobile="0" style="display:inline-flex;align-items:center;gap:8px;margin-right:8px;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button></span><script>(function(){try{var h=localStorage.getItem("antinfo_navauth");if(h){var s=document.getElementById("authSlot");if(s)s.innerHTML=h;}}catch(e){}})();</script><a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
+  </div>
 <div class="main">
   <div class="head"><h1 id="title">시그니처 수급 상세</h1><div class="sub" id="sub">불러오는 중…</div></div>
   <div class="tf" id="tf" style="display:none"><button data-tf="1D" class="on">1일</button><button data-tf="1W">1주</button><button data-tf="1M">1개월</button></div>
@@ -221,4 +265,7 @@ if(cfg.live==='oi'){
   document.querySelectorAll('#etfTf button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#etfTf button').forEach(x=>x.classList.remove('on'));b.classList.add('on');ETFMODE=b.dataset.agg;drawEtfCharts();});
 }
 </script>
+<script src="assets/vendor/supabase.js"></script>
+<script src="assets/auth.js"></script>
+<script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 </body></html>
