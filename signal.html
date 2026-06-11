@@ -60,6 +60,14 @@ const CFG={
     sub:'미국 증시 상장 <b>현물 ETF</b>의 일일 순유입/유출. 기관 자금이 비트코인·이더리움으로 들어오는지(유입=빨강) 나가는지(유출=파랑)를 보여주는 핵심 수급 지표입니다. (D-1, 뉴욕 마감 기준)',
     items:[{key:'btc_etf',label:'BTC 현물 ETF'},{key:'eth_etf',label:'ETH 현물 ETF'}],money:true,live:null,
     gloss:'<b>현물 ETF 순유입</b>이란? 블랙록·피델리티 등이 운용하는 비트코인/이더리움 현물 ETF에 하루 동안 들어오고 나간 자금의 합계입니다. <b>+(유입)</b>은 기관 매수세, <b>−(유출)</b>은 차익실현·이탈로 읽습니다. <b>BTC</b>는 ETF 출시(2024-01) 이후 <b>전체 일일·누적 추이</b>를 제공하며, ETH는 당일값 중심(누적 중)입니다.'},
+  btc_etf:{title:'💵 BTC 현물 ETF 순유입',
+    sub:'미국 증시 상장 <b>비트코인 현물 ETF</b>의 일일 순유입/유출과 누적. 기관 자금이 비트코인으로 들어오는지(유입=빨강)/나가는지(유출=파랑)를 보여주는 핵심 수급 지표입니다. (D-1, 뉴욕 마감 기준)',
+    items:[{key:'btc_etf',label:'BTC 현물 ETF'}],money:true,live:null,
+    gloss:'<b>BTC 현물 ETF 순유입</b>이란? 블랙록·피델리티 등이 운용하는 비트코인 현물 ETF에 하루 동안 들어오고 나간 자금의 합계입니다. <b>+(유입)</b>은 기관 매수세, <b>−(유출)</b>은 차익실현·이탈. 2024-01 출시 이후 전체 일일·누적 추이를 제공합니다.'},
+  eth_etf:{title:'💵 ETH 현물 ETF 순유입',
+    sub:'미국 증시 상장 <b>이더리움 현물 ETF</b>의 일일 순유입/유출과 누적. 기관 자금이 이더리움으로 들어오는지(유입=빨강)/나가는지(유출=파랑)를 보여줍니다. (D-1, 뉴욕 마감 기준)',
+    items:[{key:'eth_etf',label:'ETH 현물 ETF'}],money:true,live:null,
+    gloss:'<b>ETH 현물 ETF 순유입</b>이란? 이더리움 현물 ETF에 하루 동안 들어오고 나간 자금의 합계입니다. <b>+(유입)</b>은 기관 매수세, <b>−(유출)</b>은 차익실현·이탈. 2024-07 출시 이후 전체 일일·누적 추이를 제공합니다.'},
   oi:{title:'📊 미결제약정 (OI) — BTC · ETH',
     sub:'무기한선물에서 청산되지 않고 살아있는 <b>미결제약정(OI)</b> 규모. <b>늘면</b> 레버리지 베팅 자금 유입(변동성↑), <b>줄면</b> 청산·포지션 정리로 자금이 빠지는 중입니다. (Binance 선물 라이브)',
     items:[{key:'btc_oi_24h',label:'BTC OI 24h',sym:'BTCUSDT'},{key:'eth_oi_24h',label:'ETH OI 24h',sym:'ETHUSDT'}],money:false,live:'oi',
@@ -105,6 +113,7 @@ function renderCards(){
       <div class="big mono" id="val${i}">–</div><div class="meta" id="meta${i}">불러오는 중…</div>
       <div class="chartbox"><canvas id="ch${i}"></canvas></div>
       <div class="note" id="note${i}"></div></div>`).join('');
+  if(cfg.items.length===1)$('grid').style.gridTemplateColumns='1fr';  // 단독 페이지는 1열(차트 꽉 차게)
 }
 
 async function fillEtfCb(){

@@ -180,7 +180,7 @@ function renderMovers(){
 async function loadSig(){
   try{
     const s=await getJSON("data/v1/signature.json"),M=s.metrics||{};
-    const defs=[["btc_etf","💵 BTC ETF 순유입",1,"signal.html?m=etf"],["eth_etf","💵 ETH ETF 순유입",1,"signal.html?m=etf"],["btc_oi_24h","📊 BTC 미결제약정",0,"signal.html?m=oi"],["cb_premium","🇺🇸 코인베이스 프리미엄",0,"signal.html?m=cb"]];
+    const defs=[["btc_etf","💵 BTC ETF 순유입",1,"signal.html?m=btc_etf"],["eth_etf","💵 ETH ETF 순유입",1,"signal.html?m=eth_etf"],["btc_oi_24h","📊 BTC 미결제약정",0,"signal.html?m=oi"],["cb_premium","🇺🇸 코인베이스 프리미엄",0,"signal.html?m=cb"]];
     $("sig").innerHTML=defs.map(([k,t,money,link])=>{const m=M[k]||{},val=m.value;const disp=money?usd(val):(m.raw??(val!=null?val+"%":"—"));const c=dir(val);return `<a class="c tile ${c}" href="${link}" style="text-decoration:none;color:inherit;display:block;position:relative;"><div class="t">${t}</div><div class="big mono">${disp}</div><div class="sub">${esc((m.basis||m.as_of||"").slice(0,22))}</div><span style="position:absolute;bottom:10px;right:12px;font-size:11px;font-weight:800;color:#ff3b30;opacity:.8;">자세히 →</span></a>`;}).join("");
   }catch(e){$("sig").innerHTML='';}
 }
