@@ -161,7 +161,7 @@ async function loadSignature() {
       } else {
         hist = await getJSON(`${BASE}/history/${defs[i].hist}.json?t=${Date.now()}`).catch(() => []);
       }
-      spark(`sk${i}`, hist, v != null && v < 0 ? "#ff4d5e" : "#21d07a");
+      spark(`sk${i}`, hist, "#3aa0ff");  // 4개 카드 스파크라인 색상·양식 통일(블루)
     }
     $("sigAsof").textContent = `🟢 ${sigT} 갱신 · ETF 당일·OI·CB 실시간`;
     $("dailySum").textContent = sig.summary || "시황 요약 준비중";
