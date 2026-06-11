@@ -7,6 +7,29 @@
   const SUPABASE_URL = "https://jcuuvazpexyinjjruplc.supabase.co";
   const SUPABASE_KEY = "sb_publishable_mRNYq6Yq9UaYT3bydRhG1w_6wswYTd4";
 
+  // 로그인/로그아웃 클릭 = 최상위 이벤트 위임(부트·supabase-js 로드와 무관하게 즉시 등록).
+  // → supabase-js가 한국망에서 안 떠도, 캐시로 복원된 버튼이어도 로그아웃은 무조건 동작.
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#logoutBtn")) {
+      e.preventDefault();
+      // signOut을 기다리지 않는다(supabase-js의 navigator.locks/네트워크 hang 방지). 발사 후 즉시 정리·이동.
+      try { if (window.__sb) window.__sb.auth.signOut({ scope: "local" }); } catch (_) {}
+      try {
+        // supabase 세션 토큰 + nav 캐시 직접 제거 후 전체 클리어(키 이름 무관)
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (_) {}
+      location.replace("/");
+      return;
+    }
+    if (e.target.closest("#loginBtn")) {
+      e.preventDefault();
+      try {
+        if (window.__sb) window.__sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href.split("#")[0] } });
+      } catch (_) {}
+    }
+  });
+
   function boot() {
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     window.__sb = sb;
@@ -86,21 +109,6 @@
     function cacheSlot(slot) {
       if (slot && slot.dataset.mobile !== "1") { try { localStorage.setItem("antinfo_navauth", slot.innerHTML); } catch (e) {} }
     }
-
-    // 로그인/로그아웃 = 이벤트 위임(캐시로 복원된 버튼·재렌더 버튼 모두 동작 보장)
-    document.addEventListener("click", (e) => {
-      if (e.target.closest("#logoutBtn")) {
-        e.preventDefault();
-        // 확실한 로그아웃: 로컬 세션 제거 + 스토리지 전면 클리어(키 이름 무관) → 홈으로
-        Promise.resolve(sb.auth.signOut({ scope: "local" })).catch(() => {}).finally(() => {
-          try { localStorage.clear(); sessionStorage.clear(); } catch (_) {}
-          location.replace("/");
-        });
-      } else if (e.target.closest("#loginBtn")) {
-        e.preventDefault();
-        sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href.split("#")[0] } });
-      }
-    });
 
     async function refresh() {
       const slot = ensureSlot();
