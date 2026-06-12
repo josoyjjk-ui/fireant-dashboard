@@ -97,7 +97,7 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
 .verdict-card h3{font-size:15px;font-weight:800;margin-bottom:14px;color:var(--txt);}
 .verdict-label{font-size:13px;color:var(--dim);font-weight:700;margin-bottom:10px;display:block;}
 .verdict-buttons{display:flex;gap:10px;margin-bottom:14px;}
-.verdict-btn{flex:1;padding:9px 12px;border-radius:9px;font-size:13px;font-weight:700;border:2px solid transparent;cursor:pointer;transition:all 0.15s;text-align:center;}
+.verdict-btn{flex:1;padding:9px 12px;border-radius:9px;font-size:13px;font-weight:700;border:2px solid transparent;cursor:default;transition:all 0.15s;text-align:center;}
 .verdict-btn.up{background:#232323;color:#8a94a3;border-color:#2a2a2a;}
 .verdict-btn.up.active{background:#ff3b30;color:#fff;border-color:#ff3b30;}
 .verdict-btn.neutral{background:#232323;color:#8a94a3;border-color:#2a2a2a;}
@@ -158,12 +158,12 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
       <h3>🧠 전문가 의견</h3>
       <span class="verdict-label">데이터 종합결론</span>
       <div class="verdict-buttons">
-        <button class="verdict-btn up" onclick="setVerdict('up')">상승</button>
-        <button class="verdict-btn neutral" onclick="setVerdict('neutral')">중립</button>
-        <button class="verdict-btn down" onclick="setVerdict('down')">하락</button>
+        <span class="verdict-btn up">상승</span>
+        <span class="verdict-btn neutral">중립</span>
+        <span class="verdict-btn down">하락</span>
       </div>
       <span class="verdict-label">불개미 투자의견</span>
-      <div class="verdict-text">모든 지표가 약세입니다. 하지만 매도세가 눈에 띄게 잦아들고 있습니다. 매수 및 향후 상승 예상합니다.</div>
+      <div class="verdict-text" id="verdictOpinion">모든 지표가 약세입니다. 하지만 매도세가 눈에 띄게 잦아들고 있습니다. 매수 및 향후 상승 예상합니다.</div>
     </div>
     <div class="seclabel"><h2>📈 Market Now</h2><span class="now"><span class="pulse"></span><span id="marketAge">로딩…</span></span></div>
     <div class="now-grid" id="nowGrid"></div>
@@ -217,44 +217,26 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
 <script>
+/* 전문가 의견: data/v1/verdict.json(운영자 설정, 전 방문자 공유)에서 읽어 표시 */
 (function() {
-  function setVerdict(verdict) {
-    try {
-      localStorage.setItem('antinfo_verdict', verdict);
-    } catch(e) {}
-    updateVerdictButtons(verdict);
+  function render(v) {
+    document.querySelectorAll('.verdict-btn').forEach(function(b){ b.classList.remove('active'); });
+    var el = document.querySelector('.verdict-btn.' + v);
+    if (el) el.classList.add('active');
   }
-
-  function updateVerdictButtons(activeVerdict) {
-    var buttons = document.querySelectorAll('.verdict-btn');
-    buttons.forEach(function(btn) {
-      btn.classList.remove('active');
-    });
-    var activeBtn = document.querySelector('.verdict-btn.' + activeVerdict);
-    if (activeBtn) {
-      activeBtn.classList.add('active');
-    }
+  function load() {
+    fetch('data/v1/verdict.json?t=' + Date.now(), { cache: 'no-store' })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d && (d.conclusion === 'up' || d.conclusion === 'neutral' || d.conclusion === 'down')) render(d.conclusion);
+        else render('down');
+        var op = document.getElementById('verdictOpinion');
+        if (op && d && d.opinion) op.textContent = d.opinion;
+      })
+      .catch(function(){ render('down'); });
   }
-
-  function initVerdict() {
-    try {
-      var saved = localStorage.getItem('antinfo_verdict');
-      if (saved && (saved === 'up' || saved === 'neutral' || saved === 'down')) {
-        updateVerdictButtons(saved);
-      } else {
-        updateVerdictButtons('down');
-      }
-    } catch(e) {
-      updateVerdictButtons('down');
-    }
-  }
-
-  window.setVerdict = setVerdict;
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initVerdict);
-  } else {
-    initVerdict();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load);
+  else load();
 })();
 </script>
 </body></html>
