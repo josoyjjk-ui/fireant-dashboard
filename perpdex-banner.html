@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    width:1600px;
+    font-family:'Noto Sans KR', sans-serif;
+    background:radial-gradient(1400px 800px at 85% -10%, #2a0d0d 0%, #120a0a 45%, #0a0a0a 100%);
+    color:#fff;
+    padding:54px 64px 48px;
+    word-break:keep-all;
+  }
+  .top-line { height:6px; width:100%; background:linear-gradient(90deg,#E53935,#FF7043); border-radius:6px; }
+
+  .header { display:flex; align-items:center; gap:18px; margin:30px 0 26px; }
+  .header img { width:78px; height:78px; object-fit:contain; }
+  .header .brand { font-family:'Bebas Neue',sans-serif; font-size:46px; letter-spacing:3px; color:#fff; line-height:1; }
+  .header .brand b { color:#E53935; }
+  .header .tag { margin-left:auto; font-size:18px; font-weight:700; color:#0a0a0a;
+    background:#FFCA28; padding:8px 16px; border-radius:999px; letter-spacing:.5px; }
+
+  .ath {
+    display:inline-flex; align-items:center; gap:10px;
+    background:rgba(38,166,91,0.14); border:1px solid rgba(56,224,123,0.45);
+    color:#38E07B; font-weight:900; font-size:22px; letter-spacing:.5px;
+    padding:10px 20px; border-radius:999px; margin-bottom:18px;
+  }
+  h1 { font-size:52px; font-weight:900; line-height:1.22; letter-spacing:-1px; }
+  h1 .hl { color:#E53935; }
+  .sub { margin-top:14px; font-size:21px; font-weight:500; color:#b9b3b0; line-height:1.5; }
+
+  .list { margin-top:30px; display:grid; grid-template-columns:1fr 1fr;
+    grid-template-rows:repeat(3, 1fr); grid-auto-flow:column; gap:18px 26px; }
+  .row {
+    display:flex; align-items:center; gap:22px;
+    background:linear-gradient(90deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
+    border:1px solid rgba(255,255,255,0.08);
+    border-left:5px solid #E53935;
+    border-radius:16px; padding:22px 26px;
+  }
+  .num { font-family:'Bebas Neue',sans-serif; font-size:48px; color:#E53935; width:38px; text-align:center; line-height:1; flex:none; }
+  .logo { width:68px; height:68px; border-radius:16px; object-fit:cover; flex:none;
+    background:#fff; border:1px solid rgba(255,255,255,0.14); }
+  .info { flex:1; min-width:0; }
+  .info .name { font-size:30px; font-weight:900; letter-spacing:.3px; }
+  .info .name .sym { font-size:17px; font-weight:700; color:#0a0a0a; background:#FFCA28;
+    padding:3px 10px; border-radius:7px; margin-left:10px; vertical-align:middle; letter-spacing:.5px; }
+  .info .desc { margin-top:7px; font-size:19px; font-weight:500; color:#cfc9c6; line-height:1.4; }
+  .cmc {
+    flex:none; display:flex; flex-direction:column; align-items:center; gap:4px;
+    background:#142E45; border:1px solid #1f4a6e; color:#4FB0F0;
+    padding:11px 18px; border-radius:12px; font-weight:800; font-size:16px; white-space:nowrap;
+  }
+  .cmc .ico { font-size:20px; }
+  .cmc .slug { font-size:12px; font-weight:600; color:#7f8a93; letter-spacing:.3px; }
+
+  .footer { margin-top:36px; display:flex; align-items:center; justify-content:space-between;
+    border-top:1px solid rgba(255,255,255,0.1); padding-top:20px; }
+  .footer .site { font-size:22px; font-weight:900; color:#E53935; letter-spacing:.5px; }
+  .footer .note { font-size:16px; color:#8a8482; font-weight:500; }
+</style>
+</head>
+<body>
+  <div class="top-line"></div>
+
+  <div class="header">
+    <img src="assets/fireant-logo-nobg.png" alt="fireant">
+    <div class="brand">FIRE<b>ANT</b> CRYPTO</div>
+    <div class="tag">PerpDex 리서치</div>
+  </div>
+
+  <div class="ath">🚀 HYPERLIQUID — ALL TIME HIGH</div>
+  <h1>하이퍼리퀴드 ATH <span class="hl">낙수 수혜</span> PerpDex<br>프로젝트 리스트</h1>
+  <div class="sub">PerpDex 대장주 하이퍼리퀴드의 사상 최고가 경신으로<br>낙수 효과가 기대되는 PerpDex 프로젝트들을 정리했습니다.</div>
+
+  <div class="list">
+    <div class="row">
+      <div class="num">01</div>
+      <img class="logo" src="assets/logo-lighter.png" alt="Lighter">
+      <div class="info">
+        <div class="name">Lighter <span class="sym">LIT</span></div>
+        <div class="desc">하이퍼리퀴드 킬러를 천명하고 나온 프로젝트</div>
+      </div>
+      <div class="cmc"><span class="ico">📊</span>CoinMarketCap<span class="slug">/lighter</span></div>
+    </div>
+
+    <div class="row">
+      <div class="num">02</div>
+      <img class="logo" src="assets/logo-edgex.png" alt="EdgeX">
+      <div class="info">
+        <div class="name">EdgeX <span class="sym">EDGE</span></div>
+        <div class="desc">동시대에 나온 Amber 출신들의 PerpDex</div>
+      </div>
+      <div class="cmc"><span class="ico">📊</span>CoinMarketCap<span class="slug">/edgex</span></div>
+    </div>
+
+    <div class="row">
+      <div class="num">03</div>
+      <img class="logo" src="assets/logo-orderly.png" alt="Orderly">
+      <div class="info">
+        <div class="name">Orderly <span class="sym">ORDER</span></div>
+        <div class="desc">PerpDex들에 호가창(오더북)을 공급하는 인프라 서비스</div>
+      </div>
+      <div class="cmc"><span class="ico">📊</span>CoinMarketCap<span class="slug">/orderly-network</span></div>
+    </div>
+
+    <div class="row">
+      <div class="num">04</div>
+      <img class="logo" src="assets/logo-apex.png" alt="APEX">
+      <div class="info">
+        <div class="name">APEX <span class="sym">APEX</span></div>
+        <div class="desc">Bybit의 자회사 PerpDex</div>
+      </div>
+      <div class="cmc"><span class="ico">📊</span>CoinMarketCap<span class="slug">/apex-token</span></div>
+    </div>
+
+    <div class="row">
+      <div class="num">05</div>
+      <img class="logo" src="assets/logo-aster.png" alt="Aster">
+      <div class="info">
+        <div class="name">Aster <span class="sym">ASTER</span></div>
+        <div class="desc">바이낸스의 친아들 PerpDex</div>
+      </div>
+      <div class="cmc"><span class="ico">📊</span>CoinMarketCap<span class="slug">/aster</span></div>
+    </div>
+
+    <div class="row">
+      <div class="num">06</div>
+      <img class="logo" src="assets/logo-synfutures.png" alt="SynFutures">
+      <div class="info">
+        <div class="name">SynFutures <span class="sym">F</span></div>
+        <div class="desc">PerpDex OG 프로젝트</div>
+      </div>
+      <div class="cmc"><span class="ico">📊</span>CoinMarketCap<span class="slug">/synfutures</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="site">fireantcrypto.com</div>
+    <div class="note">※ 투자 권유 아님 · 단순 정보 제공</div>
+  </div>
+</body>
+</html>

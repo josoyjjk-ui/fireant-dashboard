@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    width:1200px; height:675px;
+    font-family:'Noto Sans KR', sans-serif;
+    background:radial-gradient(900px 600px at 22% 50%, #2a0d0d 0%, #140a0a 55%, #0a0a0a 100%);
+    color:#fff; display:flex; align-items:center; gap:40px;
+    padding:60px; word-break:keep-all;
+  }
+  .top { position:absolute; top:0; left:0; width:100%; height:8px;
+    background:linear-gradient(90deg,#E53935,#FF7043); }
+
+  .logo { width:360px; flex:none; }
+  .logo img { width:100%; filter:drop-shadow(0 10px 30px rgba(229,57,53,0.45)); }
+
+  .bubble { position:relative; flex:1; background:#fff; color:#111;
+    border-radius:28px; padding:44px 46px; box-shadow:0 18px 50px rgba(0,0,0,0.5); }
+  .bubble::before { content:''; position:absolute; left:-26px; top:120px;
+    border:18px solid transparent; border-right-color:#fff; border-left:0; }
+
+  .head { font-size:46px; font-weight:900; line-height:1.25; letter-spacing:-1px; }
+  .head .lock { color:#C9971A; }
+  .head .flow { color:#1FA463; }
+
+  .row { display:flex; align-items:center; gap:18px; margin-top:32px; }
+  .chip { display:flex; align-items:center; gap:12px; padding:18px 24px; border-radius:18px; font-weight:900; font-size:30px; }
+  .mega { background:#FFF4D6; color:#7a5a00; border:2px solid #F2C94C; }
+  .usdm { background:#E4F8EE; color:#0f7a45; border:2px solid #43D88A; }
+  .chip .ico { font-size:34px; }
+  .x { font-size:30px; color:#C0392B; font-weight:900; }
+  .arrow { font-size:40px; color:#888; font-weight:900; }
+  .tag { display:inline-block; margin-top:8px; font-size:15px; font-weight:700; padding:3px 10px;
+    border-radius:8px; }
+  .tag.no { background:#FDE2E0; color:#C0392B; }
+  .tag.yes { background:#DDF5E8; color:#0f7a45; }
+  .cell { display:flex; flex-direction:column; align-items:center; gap:8px; }
+
+  .brand { position:absolute; bottom:26px; right:40px; font-size:18px; font-weight:900; color:#E53935; letter-spacing:.5px; }
+</style>
+</head>
+<body>
+  <div class="top"></div>
+
+  <div class="logo">
+    <img src="assets/fireant-logo-nobg.png" alt="FIRE ANT CRYPTO">
+  </div>
+
+  <div class="bubble">
+    <div class="head">MEGA는 <span class="lock">잠그고</span> 🔒<br>USDm만 <span class="flow">푼다</span> 💵</div>
+    <div class="row">
+      <div class="cell">
+        <div class="chip mega"><span class="ico">🪙</span>MEGA</div>
+        <span class="tag no">시장 유통 ❌</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="cell">
+        <div class="chip usdm"><span class="ico">💵</span>USDm</div>
+        <span class="tag yes">보상 지급 ✅</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="brand">fireantcrypto.com</div>
+</body>
+</html>
