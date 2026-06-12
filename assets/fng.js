@@ -30,8 +30,8 @@
             return null;
         },
         polarToCart: function(cx, cy, r, deg) {
-            const rad = ((deg - 90) * Math.PI) / 180;
-            return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+            const rad = (deg * Math.PI) / 180;
+            return { x: cx + r * Math.cos(rad), y: cy - r * Math.sin(rad) };
         },
         describeArc: function(cx, cy, r, start, end) {
             const s = this.polarToCart(cx, cy, r, end);
@@ -45,30 +45,31 @@
         const container = document.getElementById('gaugeContainer');
         if (!container) return;
 
-        const R = 120, cx = 200, cy = 155, sw = 30;
-        const pad = 1.5; 
+        const R = 120, cx = 200, cy = 175, sw = 30;
+        const pad = 1.5;
         const step = (180 - pad * (bands.length - 1)) / bands.length;
-        
+
         let arcs = '';
         let startAngle = 0;
 
-        bands.forEach(function(b) {
+        // 좌→우 = 공포→탐욕: deg 0(우)→180(좌) 좌표계라 밴드를 역순으로 그려 탐욕이 우측에 오게 한다.
+        bands.slice().reverse().forEach(function(b) {
             const endAngle = startAngle + step;
             const innerR = R - sw / 2;
-            
+
             const s1 = utils.polarToCart(cx, cy, innerR, startAngle);
             const e1 = utils.polarToCart(cx, cy, innerR, endAngle);
             const e2 = utils.polarToCart(cx, cy, innerR + sw, endAngle);
             const s2 = utils.polarToCart(cx, cy, innerR + sw, startAngle);
-            
+
             const diff = endAngle - startAngle;
             const largeArc = (diff > 180) ? 1 : 0;
-            
+
             const d = [
-                'M ' + s1.x + ' ' + s1.y, 
-                'A ' + innerR + ' ' + innerR + ' 0 ' + largeArc + ' 1 ' + e1.x + ' ' + e1.y, 
-                'L ' + e2.x + ' ' + e2.y, 
-                'A ' + (innerR + sw) + ' ' + (innerR + sw) + ' 0 ' + largeArc + ' 0 ' + s2.x + ' ' + s2.y, 
+                'M ' + s1.x + ' ' + s1.y,
+                'A ' + innerR + ' ' + innerR + ' 0 ' + largeArc + ' 1 ' + e1.x + ' ' + e1.y,
+                'L ' + e2.x + ' ' + e2.y,
+                'A ' + (innerR + sw) + ' ' + (innerR + sw) + ' 0 ' + largeArc + ' 0 ' + s2.x + ' ' + s2.y,
                 'Z'
             ].join(' ');
 
@@ -76,10 +77,11 @@
             startAngle = endAngle + pad;
         });
 
-        const needleAngle = (Math.min(100, Math.max(0, value)) / 100) * 180;
+        // value 0 → 좌(deg180), 100 → 우(deg0)
+        const needleAngle = 180 - (Math.min(100, Math.max(0, value)) / 100) * 180;
         const needleTip = utils.polarToCart(cx, cy, R - 1, needleAngle);
-        const nL = utils.polarToCart(cx, cy, 6, needleAngle - 90);
-        const nR = utils.polarToCart(cx, cy, 6, needleAngle + 90);
+        const nL = utils.polarToCart(cx, cy, 8, needleAngle - 90);
+        const nR = utils.polarToCart(cx, cy, 8, needleAngle + 90);
 
         const svg = [
             '<svg viewBox="0 0 400 210" xmlns="http://www.w3.org/2000/svg">',
