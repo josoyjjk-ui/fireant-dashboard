@@ -176,7 +176,7 @@ async function loadSignature() {
       const v = m.value;
       const disp = d.money ? fmtUSD(v) : (m.raw ?? (v != null ? v + "%" : "—"));
       const pill = v == null ? "" : `<span class="pill ${v < 0 ? "d" : "u"}">${v < 0 ? "유출/감소" : "유입/증가"}</span>`;
-      html += `<a class="sigcard" href="${d.link}">${pill}<span class="asof">${m.basis || "—"}</span><div class="t">${d.t}</div><div class="big ${cls(v)}">${disp}</div><div class="sub">${(m.as_of || "").slice(0, 60) || "기준 미상"}</div><canvas id="sk${i}" height="54"></canvas><span class="more">자세히 →</span></a>`;
+      html += `<a class="sigcard" href="${d.link}">${pill}<span class="asof">${m.basis || "—"}</span><div class="t">${d.t}</div><div class="big ${cls(v)}">${disp}</div><div class="sub">${(m.as_of || "").slice(0, 60) || "기준 미상"}</div><div class="sparkbox"><canvas id="sk${i}" height="54"></canvas></div><span class="more">자세히 →</span></a>`;
     });
     $("sigGrid").innerHTML = html;
     for (let i = 0; i < defs.length; i++) {

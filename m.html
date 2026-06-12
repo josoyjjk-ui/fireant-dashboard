@@ -12,7 +12,7 @@
   --redText:#ff5d6c;--blueText:#4d9bff;
   --posBg:linear-gradient(150deg,#6b1f2e,#3a1620);--posBd:#7a2a3a;
   --negBg:linear-gradient(150deg,#1f3a6b,#16203a);--negBd:#2a4a7a;}
-html{background:var(--bg);}body{background:var(--bg);color:var(--txt);padding-bottom:20px;font-weight:600;}
+html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var(--txt);padding-bottom:20px;font-weight:600;overflow-x:hidden;}
 .mono{font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
 .top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:var(--bg);}
 .top .logo{font-size:22px;font-weight:800;}.top .logo span{color:var(--blue);}
@@ -39,11 +39,19 @@ html{background:var(--bg);}body{background:var(--bg);color:var(--txt);padding-bo
 .stats .s.plain .l{color:var(--gray);}
 
 .sig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
-.sig .c{border-radius:24px;padding:16px 10px;min-height:120px;min-width:0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
-.sig .c .t{font-size:clamp(14px,4.4vw,17px);color:rgba(255,255,255,.82);font-weight:800;}
-.sig .c.plain .t{color:var(--gray);}
-.sig .c .big{font-size:clamp(22px,7.8vw,33px);font-weight:800;margin-top:12px;line-height:1;}
-.sig .c .sub{font-size:14px;color:rgba(255,255,255,.6);font-weight:600;margin-top:11px;}
+.sig .c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;min-height:186px;min-width:0;overflow:hidden;display:grid;grid-template-rows:20px 38px 34px 18px 34px;position:relative;text-align:left;transition:border-color .15s,transform .15s;}
+.sig .c:hover{border-color:#ff3b30;transform:translateY(-2px);}
+.sig .c.tile.pos,.sig .c.tile.neg,.sig .c.tile.plain{background:var(--card);border-color:var(--line);}
+.sig .c.tile.pos:hover,.sig .c.tile.neg:hover,.sig .c.tile.plain:hover{border-color:#ff3b30;}
+.sig .c .asof{font-size:10px;font-weight:900;color:#ffb547;background:#231a0c;padding:2px 7px;border-radius:6px;justify-self:start;max-width:calc(100% - 58px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sig .c .pill{position:absolute;top:13px;right:13px;font-size:10px;font-weight:900;padding:3px 7px;border-radius:6px;}
+.sig .c .pill.u{background:#2a1116;color:var(--redText);}.sig .c .pill.d{background:#0e2236;color:var(--blueText);}
+.sig .c .t{font-size:clamp(13px,4vw,16px);color:var(--gray);font-weight:800;align-self:end;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sig .c .big{font-size:clamp(21px,7vw,30px);font-weight:900;line-height:1.05;align-self:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sig .c.pos .big{color:var(--redText);}.sig .c.neg .big{color:var(--blueText);}
+.sig .c .sub{font-size:12px;color:rgba(255,255,255,.6);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sig .c .spark{height:34px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0));border:1px solid rgba(255,255,255,.035);}
+.sig .c .more{position:absolute;bottom:10px;right:12px;font-size:11px;font-weight:900;color:#ff3b30;opacity:.85;}
 
 /* 급등/급락 좌우 2단 */
 .duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
@@ -93,6 +101,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 #authSlot{flex:0 1 auto !important;min-width:0 !important;max-width:34vw;overflow:hidden;}
 #authSlot button{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;}
 #authSlot img{flex:0 0 auto;}
+@media(max-width:820px){.hero,.stats,.sig,.duo{grid-template-columns:1fr;}.sig .c{min-height:176px;}.duo .col{padding:6px 12px 8px;}}
 @media(max-width:380px){#authSlot{max-width:30vw;margin-left:6px !important;}}
 </style></head><body>
 <div class="backdrop"></div>
@@ -183,7 +192,7 @@ async function loadSig(){
   try{
     const s=await getJSON("data/v1/signature.json"),M=s.metrics||{};
     const defs=[["btc_etf","💵 BTC ETF 순유입",1,"signal?m=btc_etf"],["eth_etf","💵 ETH ETF 순유입",1,"signal?m=eth_etf"],["btc_oi_24h","📊 BTC 미결제약정",0,"signal?m=oi"],["cb_premium","🇺🇸 코인베이스 프리미엄",0,"signal?m=cb"]];
-    $("sig").innerHTML=defs.map(([k,t,money,link])=>{const m=M[k]||{},val=m.value;const disp=money?usd(val):(m.raw??(val!=null?val+"%":"—"));const c=dir(val);return `<a class="c tile ${c}" href="${link}" style="text-decoration:none;color:inherit;display:block;position:relative;"><div class="t">${t}</div><div class="big mono">${disp}</div><div class="sub">${esc((m.basis||m.as_of||"").slice(0,22))}</div><span style="position:absolute;bottom:10px;right:12px;font-size:11px;font-weight:800;color:#ff3b30;opacity:.8;">자세히 →</span></a>`;}).join("");
+    $("sig").innerHTML=defs.map(([k,t,money,link])=>{const m=M[k]||{},val=m.value;const disp=money?usd(val):(m.raw??(val!=null?val+"%":"—"));const c=dir(val);const pill=val==null?"":`<span class="pill ${val>=0?"u":"d"}">${val>=0?(money?"유입":"증가"):(money?"유출":"감소")}</span>`;return `<a class="c tile ${c}" href="${link}" style="text-decoration:none;color:inherit;">${pill}<span class="asof">${esc(m.basis||"—")}</span><div class="t">${t}</div><div class="big mono">${disp}</div><div class="sub">${esc((m.as_of||m.basis||"기준 미상").slice(0,28))}</div><div class="spark"></div><span class="more">자세히 →</span></a>`;}).join("");
   }catch(e){$("sig").innerHTML='';}
 }
 $("sig").innerHTML=Array(4).fill('<div class="c tile plain"><div class="big skel">····</div></div>').join("");
