@@ -74,7 +74,7 @@ function renderNowSkeleton() {
     cell("BTC", "nv-btc", true) + cell("ETH", "nv-eth", true) +
     cell("BTC 도미넌스", "nv-dom", false) + cell("총 시총", "nv-mcap", false) +
     cell("김치 프리미엄", "nv-kim", false) +
-    `<a class="nowcard clickable" href="fng" target="_blank" rel="noopener" title="공포·탐욕 지수 상세 보기"><div class="l">공포·탐욕 ↗</div><div class="v"><span class="fg" id="nv-fng">—</span></div></a>`;
+    `<a class="nowcard clickable" href="fng" target="_blank" rel="noopener" title="공포·탐욕 지수 상세 보기"><div class="l">공포·탐욕</div><div class="v"><span class="fg" id="nv-fng">—</span></div><span class="more">자세히 →</span></a>`;
 }
 
 // Binance 24h(BTC/ETH) — 모바일 네트워크에서도 접근 가능. 실시간 오버레이용.
