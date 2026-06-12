@@ -198,8 +198,6 @@ async function loadSignature() {
       spark(`sk${i}`, hist, v != null && v >= 0 ? "#ff3b30" : "#3aa0ff");  // 상승=빨강 하락=파랑(한국식)
     }
     $("sigAsof").textContent = `🟢 ${sigT} 갱신 · ETF 당일·OI·CB 실시간`;
-    $("dailySum").textContent = sig.summary || "시황 요약 준비중";
-    $("dailyMeta").textContent = sig.data_date || "—";
   } catch (e) { /* 유지 */ }
 }
 
