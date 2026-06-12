@@ -140,7 +140,7 @@
     wsClose();
     msgCount = 0; wsConnectedAt = Date.now();
     const streams = ["btcusdt@forceOrder", "ethusdt@forceOrder", "btcusdt@aggTrade", "ethusdt@aggTrade"].join("/");
-    try { ws = new WebSocket(`wss://fstream.binance.com/stream?streams=${streams}`); }
+    try { ws = new WebSocket(`wss://fstream.binance.com/market/stream?streams=${streams}`); }
     catch { return; }
     ws.onopen = () => { wsConnectedAt = Date.now(); updateHealth(); };
     ws.onmessage = (e) => onMsg(e.data);
