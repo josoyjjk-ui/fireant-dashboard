@@ -9,6 +9,13 @@
   var DOWN = "#4d9bff";
   var FALLBACK_TIMEFRAMES = ["1일","5일","1개월","3개월","6개월","1년","2년","5년"];
 
+  // 한국증시는 야간선물까지 24시간 갱신되는 TradingView 선물 위젯으로 대체
+  // (Yahoo 무료 피드는 한국 선물 미제공 → 현물 지수는 15:30 이후 멈춤)
+  var TV = {
+    "KOSPI":  {symbol:"KRX:K2I1!", name:"코스피200 선물"},
+    "KOSDAQ": {symbol:"KRX:KQI1!", name:"코스닥150 선물"}
+  };
+
   var state = {
     index: null,
     timeframes: FALLBACK_TIMEFRAMES.slice(),
@@ -70,7 +77,20 @@
     card.msg.classList.toggle("hide", !text);
   }
 
+  function tvCardHtml(inst){
+    var t = TV[inst.key];
+    return ''+
+      '<article class="chart-card tv-card" data-key="'+esc(inst.key)+'">'+
+        '<div class="card-head">'+
+          '<div class="card-title"><strong>'+esc(t.name)+'</strong><span class="badge">'+esc(inst.group || "한국증시")+' · TradingView</span></div>'+
+          '<div class="card-quote"><span class="card-change mono" style="font-size:11px;color:#8a94a3;">야간선물 포함 24h</span></div>'+
+        '</div>'+
+        '<div class="tv-wrap"><div id="tv_'+esc(inst.key)+'" class="tv-widget"></div></div>'+
+      '</article>';
+  }
+
   function cardHtml(inst){
+    if(TV[inst.key]) return tvCardHtml(inst);
     var buttons = state.timeframes.map(function(tf){
       var on = tf === DEFAULT_TF ? " on" : "";
       return '<button class="tf'+on+'" type="button" data-tf="'+esc(tf)+'">'+esc(tf)+'</button>';
@@ -110,6 +130,7 @@
     el.grid.querySelectorAll(".chart-card").forEach(function(root){
       var inst = instByKey[root.dataset.key];
       if(!inst) return;
+      if(TV[inst.key]) return; // TradingView 위젯 카드는 lightweight 등록/리프레시 제외
       var card = {
         key: inst.key,
         name: inst.name || inst.key,
@@ -129,6 +150,48 @@
       };
       state.cards.set(inst.key, card);
     });
+    initTvWidgets();
+  }
+
+  function buildTvWidget(key){
+    var t = TV[key];
+    if(!t || !document.getElementById("tv_"+key)) return;
+    new TradingView.widget({
+      container_id: "tv_"+key,
+      symbol: t.symbol,
+      interval: "60",
+      timezone: "Asia/Seoul",
+      theme: "dark",
+      style: "1",
+      locale: "kr",
+      autosize: true,
+      hide_side_toolbar: true,
+      hide_top_toolbar: false,
+      hide_legend: false,
+      allow_symbol_change: false,
+      save_image: false,
+      withdateranges: true,
+      backgroundColor: "rgba(16,19,25,1)",
+      gridColor: "rgba(35,41,54,0.5)"
+    });
+  }
+
+  function initTvWidgets(){
+    var keys = Object.keys(TV).filter(function(k){ return document.getElementById("tv_"+k); });
+    if(!keys.length) return;
+    function run(){ keys.forEach(buildTvWidget); }
+    if(window.TradingView && window.TradingView.widget){ run(); return; }
+    var s = document.createElement("script");
+    s.src = "https://s3.tradingview.com/tv.js";
+    s.async = true;
+    s.onload = run;
+    s.onerror = function(){
+      keys.forEach(function(k){
+        var b = document.getElementById("tv_"+k);
+        if(b) b.innerHTML = '<div class="card-msg" style="position:static;background:none;">TradingView 로드 실패</div>';
+      });
+    };
+    document.head.appendChild(s);
   }
 
   function chartOptions(card){
