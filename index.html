@@ -93,30 +93,26 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
 .maplabels{display:flex;justify-content:space-between;font-size:12px;font-weight:800;}
 .mapnote{font-size:11px;color:var(--dim);margin-top:8px;}
 .flowsoon{color:var(--dim);font-size:12.5px;line-height:1.6;padding:6px 2px;}
-.verdict-card.hero-section{margin-bottom:24px;}
-.hero-banner{background:linear-gradient(135deg,#1a1f2a 0%,#13161c 100%);border:1px solid var(--line);border-radius:16px;padding:24px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;position:relative;overflow:hidden;}
+.verdict-card.hero-section{margin-bottom:12px;}
+.hero-banner{background:linear-gradient(135deg,#1a1f2a 0%,#13161c 100%);border:1px solid var(--line);border-radius:14px;padding:12px 18px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;position:relative;overflow:hidden;}
 .hero-banner::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--up),var(--accent));}
-.hero-brand{display:flex;align-items:center;gap:14px;margin-bottom:16px;min-width:0;}
-.hero-brand img{height:32px;display:block;flex:0 0 auto;}
-.hero-title{font-size:18px;font-weight:900;color:#fff;line-height:1.2;}
-.hero-badge{font-size:11px;font-weight:900;padding:4px 10px;border-radius:20px;margin-left:auto;white-space:nowrap;}
+.hero-brand{display:flex;align-items:center;gap:10px;margin-bottom:5px;min-width:0;}
+.hero-brand img{height:24px;display:block;flex:0 0 auto;}
+.hero-title{font-size:15px;font-weight:900;color:#fff;line-height:1.2;}
+.hero-badge{font-size:11px;font-weight:900;padding:3px 10px;border-radius:20px;margin-left:auto;white-space:nowrap;}
 .hero-badge.up{color:#fff;background:#ff3b30;}
 .hero-badge.neutral{color:#1a1208;background:#ffb547;}
 .hero-badge.down{color:#fff;background:#4d9bff;}
-.hero-content{font-size:14px;line-height:1.7;color:#cdd6e0;max-width:620px;}
-.hero-note{font-size:11px;color:var(--dim);font-weight:700;margin-top:12px;display:flex;align-items:center;gap:6px;}
-.hero-note::before{content:"※";font-size:10px;}
-.hero-cta{background:linear-gradient(135deg,var(--accent),#ff5d6c);color:#fff;padding:16px 24px;border-radius:12px;text-decoration:none;font-size:14px;font-weight:900;text-align:center;white-space:nowrap;box-shadow:0 4px 15px rgba(255,59,48,0.3);transition:transform 0.15s,box-shadow 0.15s;}
+.hero-content{font-size:13.5px;line-height:1.45;color:#cdd6e0;max-width:720px;}
+.hero-cta{background:linear-gradient(135deg,var(--accent),#ff5d6c);color:#fff;padding:10px 16px;border-radius:11px;text-decoration:none;font-size:13px;font-weight:900;text-align:center;white-space:nowrap;box-shadow:0 4px 15px rgba(255,59,48,0.3);transition:transform 0.15s,box-shadow 0.15s;}
 .hero-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,59,48,0.4);}
-.positioning{margin-bottom:32px;}
-.positioning-head{font-size:22px;font-weight:900;color:#fff;margin-bottom:4px;}
-.positioning-sub{font-size:14px;color:var(--dim);font-weight:700;margin-bottom:20px;}
-.value-props{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-.prop-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;text-decoration:none;color:inherit;transition:border-color 0.15s,transform 0.15s;min-width:0;}
-.prop-card:hover{border-color:var(--accent);transform:translateY(-3px);}
-.prop-icon{font-size:28px;margin-bottom:12px;}
-.prop-title{font-size:15px;font-weight:900;color:#fff;margin-bottom:8px;line-height:1.35;}
-.prop-desc{font-size:13px;color:var(--dim);line-height:1.5;}
+.positioning{margin-bottom:18px;margin-top:14px;}
+.positioning-head{font-size:16px;font-weight:900;color:#fff;margin-bottom:9px;}
+.value-props{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.prop-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;text-decoration:none;color:inherit;transition:border-color 0.15s,transform 0.15s;min-width:0;display:flex;align-items:center;gap:10px;}
+.prop-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.prop-icon{font-size:20px;flex:0 0 auto;line-height:1;}
+.prop-title{font-size:14px;font-weight:800;color:#fff;line-height:1.3;}
 @media(max-width:920px){
   .r3{grid-template-columns:1fr;}.now-grid{grid-template-columns:repeat(3,1fr);}
   .hero-banner{grid-template-columns:1fr;gap:16px;padding:20px;}
@@ -156,9 +152,9 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
   .hero-cta{order:2;white-space:normal;}
   .hero-brand{flex-wrap:wrap;gap:8px;}
   .hero-badge{margin-left:0;}
-  .value-props{grid-template-columns:1fr;gap:12px;}
-  .positioning-head{font-size:20px;}
-  .prop-card{padding:18px;}
+  .value-props{grid-template-columns:1fr;gap:8px;}
+  .positioning-head{font-size:15px;}
+  .prop-card{padding:11px 14px;}
 }
 </style></head>
 <body>
@@ -185,29 +181,24 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
             <span class="hero-badge neutral" id="verdictBadge">중립</span>
           </div>
           <div class="hero-content verdict-text" id="verdictOpinion">모든 지표가 약세입니다. 하지만 매도세가 눈에 띄게 잦아들고 있습니다. 매수 및 향후 상승 예상합니다.</div>
-          <div class="hero-note">불개미 직접 작성</div>
         </div>
         <a class="hero-cta" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">📡 불개미 시그널, 텔레그램으로 받기 →</a>
       </div>
     </div>
     <div class="positioning">
       <div class="positioning-head">개미가 이기는 한국형 투자 대시보드</div>
-      <div class="positioning-sub">왜 antinfo?</div>
       <div class="value-props">
         <a class="prop-card" href="signals">
           <div class="prop-icon">🇰🇷</div>
           <div class="prop-title">김치프리미엄·원화 유출입</div>
-          <div class="prop-desc">업비트·빗썸 실시간 프리미엄과 원화 마켓 흐름을 한눈에 확인합니다.</div>
         </a>
         <a class="prop-card" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">
           <div class="prop-icon">🐜</div>
           <div class="prop-title">불개미 실시간 시그널</div>
-          <div class="prop-desc">운영자 직접 분석한 시황 해석과 투자 의견을 텔레그램으로 받습니다.</div>
         </a>
         <a class="prop-card" href="events">
           <div class="prop-icon">🎉</div>
           <div class="prop-title">한국거래소 이벤트 총정리</div>
-          <div class="prop-desc">업비트·빗썸 이벤트와 당첨자 발표, 에어드랍 정보를 빠르게 큐레이션합니다.</div>
         </a>
       </div>
     </div>
