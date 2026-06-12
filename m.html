@@ -85,6 +85,16 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .flash-down{animation:fDn .7s ease-out;}
 .top .t{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;}
 .foot{text-align:center;color:var(--gray);font-size:12.5px;padding:14px;line-height:1.6;}
+.mtrust{margin:18px 0 0;display:flex;flex-direction:column;gap:10px;}
+.mtrust-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;}
+.mtrust-card h3{font-size:14px;font-weight:900;color:#fff;margin-bottom:9px;}
+.mtrust-card p{font-size:13px;line-height:1.65;color:#cdd6e0;}
+.mtrust-card .who{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.mtrust-card .who img{height:24px;display:block;}.mtrust-card .who b{font-size:15px;color:#fff;}
+.mtrust-src{font-size:12.5px;line-height:1.95;color:#cdd6e0;}.mtrust-src b{color:#ffb547;font-weight:800;}
+.mtrust-soc{margin-top:11px;display:flex;gap:7px;flex-wrap:wrap;}
+.mtrust-soc a{font-size:12.5px;font-weight:800;color:#0a0c10;background:#ffb547;padding:6px 12px;border-radius:8px;text-decoration:none;}
+.mdisc{font-size:11.5px;color:var(--gray);line-height:1.65;margin-top:11px;}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;}
 .btext{display:flex;flex-direction:column;gap:1px;min-width:0;}
 .bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}
@@ -186,7 +196,30 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
       <a class="mitem" href="events"><span class="mi">🎉</span><div><div class="ml">이벤트·당첨자</div><div class="md">진행 이벤트·당첨</div></div><span class="mc">›</span></a>
       <a class="mitem" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="mi">✈️</span><div><div class="ml">텔레그램 채널</div><div class="md">실시간 시그널</div></div><span class="mc">›</span></a>
     </div>
-    <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 상승=빨강·하락=파랑 · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
+    <section class="mtrust">
+      <div class="mtrust-card">
+        <h3>🐜 운영자 소개</h3>
+        <div class="who"><img src="/assets/antinfo-logo.png" alt="ANTINFO"><b>불개미 (ANTINFO)</b></div>
+        <p>크립토 KOL <b style="color:#fff">불개미</b>가 직접 운영하는 한국형 투자정보 대시보드입니다. 실시간 데이터와 불개미 시황 의견을 한 곳에 모읍니다.</p>
+        <div class="mtrust-soc">
+          <a href="https://x.com/fireant_korea" target="_blank" rel="noopener">𝕏 X</a>
+          <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener">Telegram</a>
+          <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener">YouTube</a>
+        </div>
+      </div>
+      <div class="mtrust-card">
+        <h3>📊 데이터 출처 · 갱신</h3>
+        <div class="mtrust-src">
+          <b>시세·마켓</b> Binance(실시간)·CoinGecko<br>
+          <b>김프·원화 유출입</b> 업비트·빗썸<br>
+          <b>코인베이스 프리미엄·파생</b> Coinbase·Binance<br>
+          <b>차트·지수</b> Yahoo Finance<br>
+          <b>공포탐욕</b> alternative.me · <b>언락</b> DefiLlama
+        </div>
+        <p class="mdisc">※ 데이터는 공개 API 기준, 지연·오차 가능. 모든 콘텐츠와 불개미 의견은 정보 제공 목적이며 <b style="color:#cdd6e0">투자 권유가 아닙니다</b>. 투자 판단과 책임은 본인에게 있습니다.</p>
+      </div>
+    </section>
+    <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보</div>
   </div>
 <script>
 document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});

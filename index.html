@@ -69,6 +69,20 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .err{color:var(--down);font-size:12px;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;}
+.trust{max-width:1240px;margin:36px auto 0;padding:0 24px;}
+.trust-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;}
+.trust-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+.trust-card h3{font-size:15px;font-weight:900;color:#fff;margin-bottom:11px;}
+.trust-card p{font-size:13.5px;line-height:1.7;color:#cdd6e0;}
+.trust-card .who{display:flex;align-items:center;gap:11px;margin-bottom:10px;}
+.trust-card .who img{height:28px;display:block;}
+.trust-card .who b{font-size:16px;color:#fff;}
+.trust-src{font-size:13px;line-height:2;color:#cdd6e0;}
+.trust-src b{color:var(--accent2);font-weight:800;}
+.trust-soc{margin-top:13px;display:flex;gap:8px;flex-wrap:wrap;}
+.trust-soc a{font-size:13px;font-weight:800;color:#0a0c10;background:var(--accent2);padding:6px 13px;border-radius:8px;text-decoration:none;}
+.disclaimer{max-width:1240px;margin:13px auto 0;padding:0 24px;font-size:12px;color:var(--dim);line-height:1.7;}
+@media(max-width:760px){.trust,.disclaimer{padding:0 15px;}.trust-grid{grid-template-columns:1fr;}}
 .brand{display:flex;align-items:center;gap:12px;min-width:0;}
 .btext{display:flex;flex-direction:column;gap:1px;min-width:0;}
 .bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}
@@ -250,7 +264,33 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
       </div>
     </div>
   </div>
-  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · Market Now·파생/고래=실시간(Binance) / Signature=일일 · 본 정보는 투자 권유가 아닙니다 · <span id="genAt"></span><div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
+  <section class="trust">
+    <div class="trust-grid">
+      <div class="trust-card">
+        <h3>🐜 운영자 소개</h3>
+        <div class="who"><img src="/assets/antinfo-logo.png" alt="ANTINFO"><b>불개미 (ANTINFO)</b></div>
+        <p>ANTINFO는 크립토 KOL <strong style="color:#fff">불개미</strong>가 직접 운영하는 한국형 투자정보 대시보드입니다. 실시간 시장 데이터와 불개미의 시황 의견을 한 곳에 모아, 개미 투자자가 빠르게 판단하도록 정리합니다.</p>
+        <div class="trust-soc">
+          <a href="https://x.com/fireant_korea" target="_blank" rel="noopener">𝕏 X</a>
+          <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener">Telegram</a>
+          <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener">YouTube</a>
+        </div>
+      </div>
+      <div class="trust-card">
+        <h3>📊 데이터 출처 · 갱신</h3>
+        <div class="trust-src">
+          <b>시세·마켓</b> Binance(실시간)·CoinGecko<br>
+          <b>김치프리미엄·원화 유출입</b> 업비트·빗썸<br>
+          <b>코인베이스 프리미엄·파생·청산</b> Coinbase·Binance(실시간)<br>
+          <b>주요자산·지수 차트</b> Yahoo Finance<br>
+          <b>공포탐욕지수</b> alternative.me<br>
+          <b>경제·언락 캘린더</b> 공공 경제지표·DefiLlama
+        </div>
+      </div>
+    </div>
+    <p class="disclaimer">※ 데이터는 각 거래소·공개 API 기준이며 출처 사정에 따라 지연·오차가 있을 수 있습니다. ANTINFO의 모든 콘텐츠와 불개미 의견은 정보 제공·교육 목적이며 <strong style="color:#cdd6e0">투자 권유가 아닙니다</strong>. 최종 투자 판단과 책임은 투자자 본인에게 있습니다.</p>
+  </section>
+  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 데이터 갱신 <span id="genAt"></span></div>
 <script src="assets/app.js?v=5"></script>
 <script src="assets/whale.js?v=2"></script>
 <script src="assets/vendor/supabase.js"></script>
