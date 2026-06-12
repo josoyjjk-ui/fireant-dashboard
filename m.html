@@ -4,6 +4,11 @@
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:image" content="https://antinfo.io/assets/og-image.png">
+<meta name="description" content="ANTINFO 모바일 홈 — 실시간 마켓·급등급락·시그니처 수급·뉴스와 시장지표를 한눈에.">
+<meta property="og:title" content="ANTINFO — 모바일 투자정보">
+<meta property="og:description" content="실시간 마켓·급등급락·수급·뉴스와 시장지표를 모바일에서 빠르게 확인합니다.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://antinfo.io/m">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;}
@@ -160,9 +165,8 @@ function setCell(id,cls){const e=$(id);if(e){e.classList.remove("pos","neg","pla
 async function loadHome(){
   try{
     const d=await getJSON("data/v1/market_now.json");MN=d;
-    let bn={};try{const a=await getJSON('https://api.binance.com/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22%2C%22ETHUSDT%22%5D');if(Array.isArray(a))a.forEach(x=>bn[x.symbol]=x);}catch{}
-    const bp=bn.BTCUSDT?+bn.BTCUSDT.lastPrice:(d.btc&&d.btc.price),bc=bn.BTCUSDT?+bn.BTCUSDT.priceChangePercent:(d.btc&&d.btc.chg);
-    const ep=bn.ETHUSDT?+bn.ETHUSDT.lastPrice:(d.eth&&d.eth.price),ec=bn.ETHUSDT?+bn.ETHUSDT.priceChangePercent:(d.eth&&d.eth.chg);
+    const bp=d.btc&&d.btc.price,bc=d.btc&&d.btc.chg;
+    const ep=d.eth&&d.eth.price,ec=d.eth&&d.eth.chg;
     if(Date.now()-wsLast>8000){   // WS 살아있으면 BTC/ETH는 WS가 주도(덮어쓰기 방지)
       $("btcPx").classList.remove("skel");animNum($("btcPx"),bp,fUSD);$("btcChg").textContent=pc(bc);setCell("btcCell",dir(bc));
       $("ethPx").classList.remove("skel");animNum($("ethPx"),ep,fUSD);$("ethChg").textContent=pc(ec);setCell("ethCell",dir(ec));
