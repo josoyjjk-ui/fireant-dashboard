@@ -38,11 +38,43 @@ function ageText(iso) {
 
 /* ---------------- Market Now (실시간 60초) ---------------- */
 let prevPrices = {};
-function nowCard(l, v, chg) {
-  const c = chg == null ? "" : chg < 0 ? "down" : "up";
-  const arr = chg == null ? "" : chg < 0 ? "▼" : "▲";
-  const ctxt = chg == null ? "" : `<div class="c ${c}">${arr} ${Math.abs(chg).toFixed(2)}%</div>`;
-  return `<div class="nowcard"><div class="l">${l}</div><div class="v mono">${v}</div>${ctxt}</div>`;
+// 실시간 느낌: 카드 숫자를 이전값→새값으로 카운트업 + 방향 플래시(상승 빨강/하락 파랑)
+const _disp = {};  // 카드별 현재 표시 숫자(애니메이션 시작값)
+function animateNum(el, from, to, fmt) {
+  if (typeof performance === "undefined" || !window.requestAnimationFrame) { el.textContent = fmt(to); return; }
+  const dur = 700, t0 = performance.now();
+  (function step(t) {
+    const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(from + (to - from) * e);
+    if (p < 1) requestAnimationFrame(step); else el.textContent = fmt(to);
+  })(t0);
+}
+function setNum(id, target, fmt) {
+  const el = document.getElementById(id); if (!el) return;
+  if (target == null) { el.textContent = "—"; _disp[id] = null; return; }
+  const from = _disp[id];
+  if (from == null || isNaN(from)) { el.textContent = fmt(target); }
+  else if (Math.abs(from - target) > 1e-9) {
+    animateNum(el, from, target, fmt);
+    el.classList.remove("flash-up", "flash-dn"); void el.offsetWidth;
+    el.classList.add(target >= from ? "flash-up" : "flash-dn");
+  }
+  _disp[id] = target;
+}
+function setChg(key, chg) {
+  const el = document.getElementById("c-nv-" + key); if (!el) return;
+  if (chg == null) { el.textContent = ""; el.className = "c"; return; }
+  el.className = "c " + (chg < 0 ? "down" : "up");
+  el.textContent = (chg < 0 ? "▼ " : "▲ ") + Math.abs(chg).toFixed(2) + "%";
+}
+function renderNowSkeleton() {
+  if (document.getElementById("nv-btc")) return;  // 1회만 골격 생성(이후엔 값만 갱신→애니메이션)
+  const cell = (l, id, chg) => `<div class="nowcard"><div class="l">${l}</div><div class="v mono"><span class="num" id="${id}">—</span></div>${chg ? `<div class="c" id="c-${id}"></div>` : ""}</div>`;
+  $("nowGrid").innerHTML =
+    cell("BTC", "nv-btc", true) + cell("ETH", "nv-eth", true) +
+    cell("BTC 도미넌스", "nv-dom", false) + cell("총 시총", "nv-mcap", false) +
+    cell("김치 프리미엄", "nv-kim", false) +
+    `<a class="nowcard clickable" href="fng" target="_blank" rel="noopener" title="공포·탐욕 지수 상세 보기"><div class="l">공포·탐욕 ↗</div><div class="v"><span class="fg" id="nv-fng">—</span></div></a>`;
 }
 
 // Binance 24h(BTC/ETH) — 모바일 네트워크에서도 접근 가능. 실시간 오버레이용.
@@ -64,17 +96,19 @@ async function loadMarketLive() {
     const ethC = bnMap.ETHUSDT ? +bnMap.ETHUSDT.priceChangePercent : (d.eth && d.eth.chg);
     const fgv = d.fear_greed ? d.fear_greed.value : null;
 
-    let html = "";
-    html += nowCard("BTC", btcP != null ? "$" + comma(btcP) : "—", btcC);
-    html += nowCard("ETH", ethP != null ? "$" + comma(ethP) : "—", ethC);
-    html += nowCard("BTC 도미넌스", d.btc_dominance != null ? d.btc_dominance.toFixed(1) + "%" : "—", null);
-    html += nowCard("총 시총", d.total_mcap != null ? fmtUSD(d.total_mcap).replace("+", "") : "—", null);
-    html += nowCard("김치 프리미엄", d.kimchi != null ? (d.kimchi >= 0 ? "+" : "") + d.kimchi.toFixed(2) + "%" : "—", null);
-    let fgColor = "#3a1c1c", fgText = "#ff6b6b";
-    if (fgv != null) { if (fgv >= 55) { fgColor = "#0f2a1c"; fgText = "#21d07a"; } else if (fgv >= 45) { fgColor = "#2a2410"; fgText = "#ffb547"; } }
-    const fgLabel = fgv != null ? `${fgv} · ${fgKo(d.fear_greed.class)}` : "—";
-    html += `<div class="nowcard"><div class="l">공포·탐욕</div><div class="v"><span class="fg" style="background:${fgColor};color:${fgText}">${fgLabel}</span></div></div>`;
-    $("nowGrid").innerHTML = html;
+    renderNowSkeleton();
+    setNum("nv-btc", btcP, (n) => "$" + comma(n, n < 1 ? 4 : 2)); setChg("btc", btcC);
+    setNum("nv-eth", ethP, (n) => "$" + comma(n, n < 1 ? 4 : 2)); setChg("eth", ethC);
+    setNum("nv-dom", d.btc_dominance, (n) => n.toFixed(1) + "%");
+    setNum("nv-mcap", d.total_mcap, (n) => fmtUSD(n).replace("+", ""));
+    setNum("nv-kim", d.kimchi, (n) => (n >= 0 ? "+" : "") + n.toFixed(2) + "%");
+    const fe = document.getElementById("nv-fng");
+    if (fe) {
+      let fgColor = "#3a1c1c", fgText = "#ff6b6b";
+      if (fgv != null) { if (fgv >= 55) { fgColor = "#0f2a1c"; fgText = "#21d07a"; } else if (fgv >= 45) { fgColor = "#2a2410"; fgText = "#ffb547"; } }
+      fe.style.background = fgColor; fe.style.color = fgText;
+      fe.textContent = fgv != null ? `${fgv} · ${fgKo(d.fear_greed.class)}` : "—";
+    }
     $("marketAge").textContent = live ? "실시간 · 방금 갱신" : "준실시간 · " + (d.generated_at || "").slice(11, 16);
     // 국내수급 위젯
     const dm = d.domestic;
