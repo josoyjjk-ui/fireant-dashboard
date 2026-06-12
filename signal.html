@@ -96,8 +96,9 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   </div>
 <div class="main">
   <div class="head"><h1 id="title">시그니처 수급 상세</h1><div class="sub" id="sub">불러오는 중…</div></div>
-  <div class="tf" id="tf" style="display:none"><button data-tf="1D" class="on">1일</button><button data-tf="1W">1주</button><button data-tf="1M">1개월</button></div>
+  <div class="tf" id="tf" style="display:none"><button data-tf="1D" class="on">1일</button><button data-tf="1W">1주</button><button data-tf="1M">1개월</button><button data-tf="1Y">1년</button></div>
   <div class="tf" id="etfTf" style="display:none"><button data-agg="D" class="on">일간</button><button data-agg="W">주간</button><button data-agg="M">월간</button></div>
+  <div class="tf" id="cbTf" style="display:none"><button data-cbtf="ALL" class="on">기존 보기</button><button data-cbtf="1W">1주</button><button data-cbtf="1M">1개월</button><button data-cbtf="1Y">1년</button></div>
   <div class="grid" id="grid"></div>
   <div id="tables"></div>
   <div class="gloss" id="gloss"></div>
@@ -143,6 +144,15 @@ $('gloss').innerHTML='📖 '+cfg.gloss;
 
 const lbl=(ts,tf)=>{const d=new Date(ts);return tf==='1D'?String(d.getHours()).padStart(2,'0')+':00':(d.getMonth()+1)+'/'+d.getDate();};
 const charts={};
+function ensureCanvas(i){
+  const box=document.querySelector('#ch'+i)?.closest('.chartbox')||document.querySelectorAll('.chartbox')[i];
+  if(box&&!$('ch'+i))box.innerHTML='<canvas id="ch'+i+'"></canvas>';
+}
+function showChartMessage(i,msg){
+  if(charts['ch'+i]){charts['ch'+i].destroy();delete charts['ch'+i];}
+  const box=document.querySelector('#ch'+i)?.closest('.chartbox')||document.querySelectorAll('.chartbox')[i];
+  if(box)box.innerHTML='<div class="empty">'+msg+'</div>';
+}
 function lineChart(id,labels,data,color,fmt){
   if(charts[id])charts[id].destroy();
   charts[id]=new Chart($(id),{type:'line',data:{labels,datasets:[{data,borderColor:color,borderWidth:2,fill:true,backgroundColor:color.replace('rgb','rgba').replace(')',',.10)'),tension:.32,pointRadius:data.length<=2?3:0}]},
@@ -175,7 +185,7 @@ function renderCards(){
   if(cfg.items.length===1)$('grid').style.gridTemplateColumns='1fr';  // 단독 페이지는 1열(차트 꽉 차게)
 }
 
-let ETFMODE='D'; const ETFITEMS=[];
+let ETFMODE='D', CBMODE='ALL'; const ETFITEMS=[]; let CBHIST=[];
 function isoWeek(ds){const dt=new Date(ds+'T00:00:00Z');const day=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-day+3);const ft=new Date(Date.UTC(dt.getUTCFullYear(),0,4));const wk=1+Math.round(((dt-ft)/864e5-3+((ft.getUTCDay()+6)%7))/7);return dt.getUTCFullYear()+'-W'+String(wk).padStart(2,'0');}
 function aggregate(h,mode){
   if(mode==='D')return h.map(r=>({label:r.date,value:r.value,cum:r.cum,traded:r.traded,assets:r.assets}));
@@ -204,6 +214,26 @@ function drawEtfCharts(){
     renderTable(it,agg,ETFMODE);
   }
 }
+function cbWindow(h,mode){
+  if(mode==='1W')return h.slice(-7);
+  if(mode==='1M')return h.slice(-30);
+  if(mode==='1Y')return h.slice(-350);
+  return h;
+}
+function drawCbCharts(){
+  for(let i=0;i<cfg.items.length;i++){
+    const it=cfg.items[i];
+    if(it.live!=='cb')continue;
+    if(!Array.isArray(CBHIST)||!CBHIST.length){showChartMessage(i,'추세 데이터 누적 중… 매일 1개 시점씩 쌓입니다.');continue;}
+    ensureCanvas(i);
+    const rows=cbWindow(CBHIST,CBMODE);
+    const labels=rows.map(x=>(x.date||'').slice(5));
+    const data=rows.map(x=>+x.value);
+    lineChart('ch'+i,labels,data,'rgb(255,59,48)',x=>x.toFixed(3)+'%');
+    const modeKo={ALL:'기존 보기','1W':'1주','1M':'1개월','1Y':'1년'}[CBMODE]||'기존 보기';
+    $('note'+i).textContent='출처 일일시황 누적 · '+modeKo+' · '+rows.length+'일';
+  }
+}
 async function fillEtfCb(){
   document.getElementById('tables').innerHTML='';  // 재호출 시 중복 방지
   ETFITEMS.length=0;
@@ -226,11 +256,13 @@ async function fillEtfCb(){
     // 히스토리 차트
     const hk=it.hist||it.key;
     try{const h=await J('/data/v1/history/'+hk+'.json?t='+Date.now());
-      if(Array.isArray(h)&&h.length){const labels=h.map(x=>(x.date||'').slice(5)),data=h.map(x=>x.value);
-        lineChart('ch'+i,labels,data,'rgb(255,59,48)',cfg.money?usd:(x=>x.toFixed(3)+'%'));
-        $('note'+i).textContent='출처 일일시황 누적 · '+h.length+'개 시점';
+      if(Array.isArray(h)&&h.length){
+        if(it.live==='cb'){CBHIST=h;drawCbCharts();}
+        else{ensureCanvas(i);const labels=h.map(x=>(x.date||'').slice(5)),data=h.map(x=>x.value);
+          lineChart('ch'+i,labels,data,'rgb(255,59,48)',cfg.money?usd:(x=>x.toFixed(3)+'%'));
+          $('note'+i).textContent='출처 일일시황 누적 · '+h.length+'개 시점';}
       }else throw 0;
-    }catch(e){$('ch'+i).closest('.chartbox').innerHTML='<div class="empty">추세 데이터 누적 중… 매일 1개 시점씩 쌓입니다.</div>';}
+    }catch(e){showChartMessage(i,'추세 데이터 누적 중… 매일 1개 시점씩 쌓입니다.');}
     // 코인베이스 프리미엄 라이브 현재값
     if(it.live==='cb'){try{const[cb,bn]=await Promise.all([J('https://api.exchange.coinbase.com/products/BTC-USD/ticker'),J('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT')]);
       const p=((+cb.price)/(+bn.price)-1)*100;$('val'+i).textContent=pct(p);$('val'+i).className='big mono '+ucls(p);
@@ -238,21 +270,35 @@ async function fillEtfCb(){
       $('meta'+i).textContent='Coinbase $'+f2(+cb.price)+' vs Binance $'+f2(+bn.price)+' · 라이브';}catch(e){}}
   }
   if(ETFITEMS.length){$('etfTf').style.display='flex';drawEtfCharts();}
+  if(cfg.live==='cb')$('cbTf').style.display='flex';
 }
 
 async function fillOi(tf){
   const s=await loadSig();
   const m={'1D':{p:'1h',lim:24},'1W':{p:'4h',lim:42},'1M':{p:'1d',lim:30}}[tf]||{p:'1h',lim:24};
   for(let i=0;i<cfg.items.length;i++){
+    ensureCanvas(i);
     const it=cfg.items[i],mt=SIG[it.key]||{},v=mt.value;
     if(v!=null){$('val'+i).textContent=pct(v);$('val'+i).className='big mono '+ucls(v);
       const t=$('tag'+i);t.textContent=v>=0?'증가':'감소';t.className='tag '+(v>=0?'u':'d');}
     $('meta'+i).textContent='24h 변화 · '+(mt.basis||'Binance 선물');
+    if(tf==='1Y'){
+      try{const h=await J('/data/v1/history/oi_daily.json?t='+Date.now());
+        const key=it.sym&&it.sym.startsWith('ETH')?'eth':'btc';
+        const rows=(Array.isArray(h)?h:[]).filter(x=>x.date&&x[key]!=null).slice(-365);
+        $('meta'+i).textContent='ANTINFO 일일 누적 · '+rows.length+'일 수집됨';
+        if(rows.length<7){showChartMessage(i,'📈 1년 OI는 오늘부터 누적 중입니다 ('+rows.length+'일 수집됨)');$('note'+i).textContent='출처 ANTINFO 일일 누적 · 7일 이상부터 차트를 표시합니다.';continue;}
+        ensureCanvas(i);
+        lineChart('ch'+i,rows.map(x=>(x.date||'').slice(5)),rows.map(x=>+x[key]),'rgb(255,59,48)',usd);
+        $('note'+i).textContent='출처 ANTINFO 일일 누적 · 1년 · '+rows.length+'일';
+      }catch(e){showChartMessage(i,'1년 OI 누적 데이터를 불러오지 못했습니다.');}
+      continue;
+    }
     try{const oi=await J(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${it.sym}&period=${m.p}&limit=${m.lim}`);
       const labels=oi.map(x=>lbl(x.timestamp,tf)),data=oi.map(x=>+x.sumOpenInterestValue);
       lineChart('ch'+i,labels,data,'rgb(255,59,48)',usd);
       $('note'+i).textContent='출처 Binance 선물 OI · 라이브';
-    }catch(e){$('ch'+i).closest('.chartbox').innerHTML='<div class="empty">OI 데이터를 불러오지 못했습니다.</div>';}
+    }catch(e){showChartMessage(i,'OI 데이터를 불러오지 못했습니다.');}
   }
 }
 
@@ -266,6 +312,7 @@ if(cfg.live==='oi'){
   fillEtfCb();
   setInterval(fillEtfCb,60000);
   document.querySelectorAll('#etfTf button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#etfTf button').forEach(x=>x.classList.remove('on'));b.classList.add('on');ETFMODE=b.dataset.agg;drawEtfCharts();});
+  document.querySelectorAll('#cbTf button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#cbTf button').forEach(x=>x.classList.remove('on'));b.classList.add('on');CBMODE=b.dataset.cbtf;drawCbCharts();});
 }
 </script>
 <script src="assets/vendor/supabase.js"></script>
