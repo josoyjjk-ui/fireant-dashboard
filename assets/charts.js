@@ -11,10 +11,9 @@
 
   // 한국증시는 야간선물까지 24시간 갱신되는 TradingView 선물 위젯으로 대체
   // (Yahoo 무료 피드는 한국 선물 미제공 → 현물 지수는 15:30 이후 멈춤)
-  var TV = {
-    "KOSPI":  {symbol:"KRX:K2I1!", name:"코스피200 선물"},
-    "KOSDAQ": {symbol:"KRX:KQI1!", name:"코스닥150 선물"}
-  };
+  // ⚠ 무료 TradingView 임베드 위젯은 KRX 선물/지수를 거래소 라이선스로 차단함
+  // ("TradingView에서만 제공되는 심볼" 모달). → 비워서 기존 지수 카드로 렌더.
+  var TV = {};
 
   var state = {
     index: null,
