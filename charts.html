@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ANTINFO — 주요 주가지수</title>
+<title>ANTINFO — 실시간 차트</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:image" content="https://antinfo.io/assets/og-image.png">
-<meta name="description" content="크립토에 영향을 주는 글로벌 증시·매크로 지표 — S&P·나스닥·달러인덱스·VIX·금·유가.">
-<link rel="canonical" href="https://antinfo.io/indices">
+<meta property="og:title" content="ANTINFO — 실시간 차트">
+<meta property="og:description" content="코인·미국지수·선물·원자재·VIX·달러인덱스·국채금리를 한 화면에서 확인하는 ANTINFO 전용 차트.">
+<meta property="og:type" content="website">
+<meta name="description" content="코인·미국지수·선물·원자재·VIX·달러인덱스·국채금리를 1일 분봉부터 5년까지 확인하는 ANTINFO 실시간 차트.">
+<link rel="canonical" href="https://antinfo.io/charts">
 <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 @view-transition{navigation:auto;}
@@ -19,20 +22,37 @@ html,body{overflow-x:hidden;}
 .logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
 .tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}.tab.on{background:var(--accent);color:#0a0c10;}
 .btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
-.main{padding:22px 24px;max-width:1240px;margin:0 auto;}
-.head h1{font-size:24px;font-weight:900;}.head .sub{color:var(--dim);font-size:14px;margin-top:4px;}
-.seclabel{font-size:15px;font-weight:900;margin:24px 0 12px;color:var(--accent2);}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.idx{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
-.idx.has-chart{cursor:pointer;transition:border-color .16s ease,transform .16s ease;}
-.idx.has-chart:hover{border-color:var(--accent);}
-.idx .n{font-size:14px;color:var(--dim);font-weight:700;}
-.idx .p{font-size:24px;font-weight:900;margin-top:5px;letter-spacing:-0.5px;}
-.idx .c{font-size:13px;font-weight:800;margin-top:3px;}
+.main{padding:22px 24px;max-width:1320px;margin:0 auto;}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px;}
+.head h1{font-size:26px;font-weight:900;letter-spacing:-0.2px;}
+.head .sub{color:var(--dim);font-size:14px;font-weight:700;margin-top:5px;}
+.quote{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;justify-content:flex-end;font-variant-numeric:tabular-nums;}
+.quote .name{font-size:15px;color:var(--txt);font-weight:900;}
+.quote .price{font-size:22px;color:#fff;font-weight:900;}
+.quote .change{font-size:14px;font-weight:900;}
 .up{color:var(--up);}.down{color:var(--down);}.mono{font-variant-numeric:tabular-nums;}
-.note{font-size:11px;color:var(--accent2);margin-top:6px;}
-.sector-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:18px;}
-.sector-hd{font-size:15px;font-weight:900;color:var(--accent2);margin-bottom:14px;}
+.bar{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:12px;}
+.bar-title{font-size:12px;font-weight:900;color:var(--accent2);margin-bottom:10px;}
+.instrument-groups{display:flex;flex-direction:column;gap:10px;}
+.group-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;align-items:center;}
+.group-label{font-size:12px;font-weight:900;color:var(--dim);white-space:nowrap;}
+.pill-row{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:1px;}
+.pill-row::-webkit-scrollbar,.timeframes::-webkit-scrollbar{display:none;}
+.pill,.tf{border:1px solid var(--line);background:#0f1218;color:var(--txt);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:900;white-space:nowrap;cursor:pointer;transition:border-color .14s ease,background .14s ease,color .14s ease;}
+.pill:hover,.tf:hover{border-color:var(--accent);}
+.pill.on,.tf.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+.timeframes{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.chart-shell{position:relative;background:linear-gradient(180deg,#0d1016,#0a0c10);border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+#chart{width:100%;height:68vh;min-height:420px;}
+.chart-msg{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--dim);font-size:15px;font-weight:900;background:rgba(10,12,16,.82);z-index:2;}
+.chart-msg.show{display:flex;}
+.seo{margin:18px 0 28px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;color:#cbd4df;line-height:1.7;font-size:14px;}
+.seo h2{font-size:17px;color:#fff;margin-bottom:8px;}
+.seo p{margin:7px 0;}
+.faq{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;}
+.qa{border:1px solid var(--line);border-radius:12px;background:#0f1218;padding:13px;}
+.qa b{display:block;color:var(--accent2);font-size:13px;margin-bottom:5px;}
+.qa span{display:block;color:var(--dim);font-size:13px;line-height:1.55;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:40px;}
 .ham{display:none;font-size:25px;background:none;border:none;color:var(--txt);font-weight:800;line-height:1;cursor:pointer;padding:0 4px 0 0;}
 .drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:60;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
@@ -47,20 +67,7 @@ body.navopen .drawer{transform:none;}
 .drawer a.sub{font-size:15px;font-weight:700;color:var(--dim);}
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55;}
 body.navopen .backdrop{opacity:1;pointer-events:auto;}
-.chart-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:80;}
-body.chartopen .chart-backdrop{display:flex;}
-.chart-modal{width:min(720px,92vw);background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.55);overflow:hidden;}
-.chart-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);}
-.chart-title{font-size:17px;font-weight:900;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.chart-close{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;background:#0f1218;color:var(--txt);font-size:18px;font-weight:900;cursor:pointer;line-height:1;}
-.chart-body{padding:14px 16px 16px;}
-.chart-tabs{display:flex;gap:8px;margin-bottom:12px;}
-.chart-range{border:1px solid var(--line);background:#0f1218;color:var(--dim);border-radius:9px;padding:8px 13px;font-size:13px;font-weight:900;cursor:pointer;}
-.chart-range.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
-#idxChart{height:360px;width:100%;}
-.chart-msg{display:none;color:var(--dim);font-size:13px;font-weight:700;padding:10px 2px 0;}
-@media(max-width:760px){.grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:480px){.grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:860px){.head{align-items:flex-start;flex-direction:column;}.quote{justify-content:flex-start;}.faq{grid-template-columns:1fr;}}
 @media(max-width:600px){
   body{font-size:16px;}
   .nav{flex-wrap:wrap;justify-content:flex-start;padding:13px 15px;gap:8px;}.logo{font-size:22px;}
@@ -70,46 +77,31 @@ body.chartopen .chart-backdrop{display:flex;}
   .tabs::-webkit-scrollbar{display:none;}.tab{flex:0 0 auto;font-size:15.5px;padding:9px 15px;}
   .btn{font-size:13px;padding:8px 12px;white-space:nowrap;flex-shrink:0;}
   .main{padding:16px 14px;}
-  .head h1{font-size:24px;}.head .sub{font-size:14px;}.seclabel{font-size:18px;}
-  .sector-box{padding:14px 14px;}.grid{gap:10px;}
-  .idx{padding:13px 12px;min-width:0;overflow:hidden;}.idx .n{font-size:12.5px;}.idx .p{font-size:20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.idx .c{font-size:12.5px;}
-  #idxChart{height:300px;}
-  .chart-hd{padding:14px 15px;}.chart-body{padding:12px 12px 14px;}
+  .head h1{font-size:24px;}.head .sub{font-size:14px;}
+  .quote .price{font-size:20px;}
+  .bar{padding:12px;margin-bottom:10px;}
+  .group-row{grid-template-columns:1fr;gap:7px;}
+  .group-label{font-size:12px;color:var(--accent2);}
+  .pill,.tf{font-size:13px;padding:8px 11px;}
+  #chart{height:62vh;min-height:380px;}
+  .seo{padding:17px 16px;font-size:14px;}
   .ham{display:inline-flex;}
   .tabs{display:none !important;}
   .nav>.btn{display:none;}
   .nav{justify-content:flex-start;gap:10px;}
 }
-@media(max-width:360px){.idx .p{font-size:18px;}.idx .n,.idx .c{font-size:12px;}}
 .brand2{display:flex;align-items:center;gap:12px;min-width:0;}.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}.lede2{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}@media(max-width:1100px){.lede2{display:none;}}
 </style></head>
 <body>
 <div class="backdrop"></div>
-<div class="chart-backdrop" id="chartBackdrop" aria-hidden="true">
-  <div class="chart-modal" role="dialog" aria-modal="true" aria-labelledby="idxChartTitle">
-    <div class="chart-hd">
-      <div class="chart-title" id="idxChartTitle">차트</div>
-      <button class="chart-close" type="button" aria-label="닫기">✕</button>
-    </div>
-    <div class="chart-body">
-      <div class="chart-tabs" role="tablist" aria-label="기간 선택">
-        <button class="chart-range on" type="button" data-range="1M">1M</button>
-        <button class="chart-range" type="button" data-range="3M">3M</button>
-        <button class="chart-range" type="button" data-range="6M">6M</button>
-      </div>
-      <div id="idxChart"></div>
-      <div class="chart-msg" id="idxChartMsg"></div>
-    </div>
-  </div>
-</div>
 <aside class="drawer">
   <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;vertical-align:middle;margin-right:7px;">개미투자정보</span><button class="x" type="button">✕</button></div>
   <a href="/"><span class="ic">🏠</span>홈</a>
   <a href="macro-news"><span class="ic">📰</span>뉴스</a>
   <a href="market"><span class="ic">📊</span>마켓</a>
   <a href="signals"><span class="ic">🐋</span>시그널</a>
-  <a class="on" href="indices"><span class="ic">📈</span>지수</a>
-  <a href="charts"><span class="ic">🕯️</span>차트</a>
+  <a href="indices"><span class="ic">📈</span>지수</a>
+  <a class="on" href="charts"><span class="ic">🕯️</span>차트</a>
   <div class="ddiv"></div>
   <a class="sub" href="events"><span class="ic">🎉</span>이벤트·당첨</a>
   <a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>
@@ -121,19 +113,50 @@ body.chartopen .chart-backdrop{display:flex;}
       <a class="tab" href="./">대시보드</a>
       <a class="tab" href="market">마켓</a>
       <a class="tab" href="macro-news">매크로뉴스</a>
-      <a class="tab on" href="indices">주요주가지수</a>
-      <a class="tab" href="charts">차트</a>
+      <a class="tab" href="indices">주요주가지수</a>
+      <a class="tab on" href="charts">차트</a>
       <a class="tab" href="events">이벤트모음</a>
       <a class="tab" href="signals">시장지표</a>
     </div>
     <span id="authSlot" data-mobile="0" style="display:inline-flex;align-items:center;gap:8px;margin-right:8px;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button></span><script>(function(){try{var h=localStorage.getItem("antinfo_navauth");if(h){var s=document.getElementById("authSlot");if(s)s.innerHTML=h;}}catch(e){}})();</script><a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
   </div>
-  <div class="main">
-    <div class="head"><h1>📈 주요 주가지수 · 매크로</h1><div class="sub">코인·미국지수·한국증시·미국채 금리·매크로를 한 화면에 · <span id="genAt">로딩…</span></div></div>
-    <div id="wrap"></div>
-  </div>
-  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 출처 CoinGecko·Yahoo Finance·네이버 금융 · 코인 실시간/지수 지연 시세 · 투자 권유 아님</div>
-<script src="assets/indices.js"></script>
+  <main class="main">
+    <section class="head">
+      <div>
+        <h1>📈 실시간 차트</h1>
+        <div class="sub">코인·선물·지수·금리·매크로·원자재 통합 차트</div>
+      </div>
+      <div class="quote" id="quote">
+        <span class="name" id="qName">BTC</span>
+        <span class="price mono" id="qPrice">로딩…</span>
+        <span class="change mono" id="qChange"></span>
+      </div>
+    </section>
+    <section class="bar" aria-label="종목 선택">
+      <div class="bar-title">종목 선택</div>
+      <div class="instrument-groups" id="instruments"></div>
+    </section>
+    <section class="bar" aria-label="기간 선택">
+      <div class="bar-title">기간 선택</div>
+      <div class="timeframes" id="timeframes"></div>
+    </section>
+    <section class="chart-shell">
+      <div id="chart"></div>
+      <div class="chart-msg" id="chartMsg">데이터를 불러오는 중입니다</div>
+    </section>
+    <section class="seo">
+      <h2>ANTINFO 전용 멀티자산 차트</h2>
+      <p>이 페이지는 코인, 미국지수, 선물, 원자재, VIX, 달러인덱스, 미국채 금리를 하나의 큰 캔들 차트로 보여줍니다. 1일은 5분봉 중심으로 짧은 흐름을 확인하고, 5일에서 5년까지는 넓은 추세를 비교할 수 있습니다.</p>
+      <p>차트 데이터는 ANTINFO 서버에서 수집한 JSON을 사용하며, 브라우저에서 외부 시세 API를 직접 호출하지 않습니다. 종목을 바꾸면 필요한 파일만 받아오고, 현재 선택 종목은 60초마다 새로 확인합니다.</p>
+      <div class="faq">
+        <div class="qa"><b>어떤 종목을 볼 수 있습니까?</b><span>BTC·ETH·SOL·XRP·BNB와 나스닥/S&P 선물, 미국·한국 주요지수, 국채금리, DXY·VIX, 금·WTI를 제공합니다.</span></div>
+        <div class="qa"><b>색상 기준은 무엇입니까?</b><span>한국식 표기 기준으로 상승 캔들은 빨강, 하락 캔들은 파랑으로 표시합니다.</span></div>
+        <div class="qa"><b>데이터가 비어 있으면 어떻게 됩니까?</b><span>해당 기간 데이터가 아직 준비되지 않은 경우 차트 영역에 준비중 메시지를 표시합니다.</span></div>
+      </div>
+    </section>
+  </main>
+  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 코인/지수/선물/원자재 차트 · 투자 권유 아님</div>
+<script src="assets/charts.js"></script>
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
