@@ -36,6 +36,7 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .hero .chg{font-size:clamp(15px,5vw,19px);font-weight:800;margin-top:13px;color:#fff;}
 
 .sec{display:flex;align-items:center;justify-content:space-between;margin:0 4px 14px;}
+.seclink{font-size:14px;font-weight:800;color:#ff3b30;text-decoration:none;white-space:nowrap;}
 .sec h2{font-size:clamp(19px,6vw,24px);font-weight:800;}
 .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
 .stats .s{border-radius:24px;padding:16px 10px;text-align:center;min-width:0;overflow:hidden;}
@@ -145,11 +146,11 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
       <div class="cell tile" id="btcCell"><div class="lab">BTC 비트코인</div><div class="px mono skel" id="btcPx">·····</div><div class="chg" id="btcChg">—</div></div>
       <div class="cell tile" id="ethCell"><div class="lab">ETH 이더리움</div><div class="px mono skel" id="ethPx">·····</div><div class="chg" id="ethChg">—</div></div>
     </div>
-    <div class="sec"><h2>시장 지표</h2></div>
+    <div class="sec"><h2>시장 지표</h2><a class="seclink" href="charts">자세히 →</a></div>
     <div class="stats" id="stats"></div>
     <div class="sec"><h2>시그니처 수급</h2></div>
     <div class="sig" id="sig"></div>
-    <div class="sec"><h2>급등 · 급락</h2></div>
+    <div class="sec"><h2>급등 · 급락</h2><a class="seclink" href="market">자세히 →</a></div>
     <div class="duo">
       <div class="col"><div class="colh up">📈 급등</div><div id="gainers"></div></div>
       <div class="col"><div class="colh down">📉 급락</div><div id="losers"></div></div>
