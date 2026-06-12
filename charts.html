@@ -18,7 +18,7 @@
 html{background:var(--bg);scrollbar-gutter:stable;}
 body{background:var(--bg);color:var(--txt);}
 html,body{overflow-x:hidden;}
-.nav{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;view-transition-name:site-nav;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:15px max(24px, calc((100% - 1320px)/2 + 24px));border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;view-transition-name:site-nav;}
 .logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
 .tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}.tab.on{background:var(--accent);color:#0a0c10;}
 .btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
@@ -147,7 +147,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
       </div>
     </section>
   </main>
-  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 코인/지수/선물/원자재 차트 · 투자 권유 아님<div style="margin-top:9px;font-size:11px;color:#8a94a3;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#8a94a3;text-decoration:none;font-weight:700;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#8a94a3;text-decoration:none;font-weight:700;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#8a94a3;text-decoration:none;font-weight:700;">YouTube</a></div></div>
+  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 코인/지수/선물/원자재 차트 · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
 <script src="assets/charts.js?v=2"></script>
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
