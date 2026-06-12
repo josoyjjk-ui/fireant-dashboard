@@ -86,13 +86,30 @@
       '</article>';
   }
 
+  var GROUP_ICON = {"코인":"🪙","선물":"📈","미국지수":"📊","한국증시":"🇰🇷","미국채 금리":"🏦","매크로":"🌐","원자재":"🛢️"};
+
   function renderSkeleton(){
     var instruments = state.index.instruments || [];
-    el.grid.innerHTML = instruments.map(cardHtml).join("");
-    var roots = el.grid.querySelectorAll(".chart-card");
-    instruments.forEach(function(inst, idx){
-      var root = roots[idx];
-      if(!root) return;
+    // 섹터별로 묶어 그룹 헤더 + 그리드로 렌더(그룹 순서 = 등장 순서)
+    var order = [], byGroup = {};
+    instruments.forEach(function(inst){
+      var g = inst.group || "기타";
+      if(!byGroup[g]){ byGroup[g] = []; order.push(g); }
+      byGroup[g].push(inst);
+    });
+    el.grid.innerHTML = order.map(function(g){
+      var icon = GROUP_ICON[g] || "•";
+      return '<section class="sector">'+
+        '<h2 class="sector-hd">'+icon+' '+esc(g)+'</h2>'+
+        '<div class="sector-grid">'+byGroup[g].map(cardHtml).join("")+'</div>'+
+      '</section>';
+    }).join("");
+    // 카드 등록은 DOM 순서와 무관하게 data-key로 매칭
+    var instByKey = {};
+    instruments.forEach(function(i){ instByKey[i.key] = i; });
+    el.grid.querySelectorAll(".chart-card").forEach(function(root){
+      var inst = instByKey[root.dataset.key];
+      if(!inst) return;
       var card = {
         key: inst.key,
         name: inst.name || inst.key,
