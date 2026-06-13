@@ -248,12 +248,17 @@ async function loadHome(){
     const fg=d.fear_greed||{};const fgko={"Extreme Fear":"극단공포","Fear":"공포","Neutral":"중립","Greed":"탐욕","Extreme Greed":"극단탐욕"};
     const fgcls=fg.value==null?"plain":(fg.value>=55?"pos":(fg.value<45?"neg":"plain"));
     const cells=[
-      ["공포·탐욕",fg.value!=null?`${fg.value} ${fgko[fg.class]||""}`:"—",fgcls],
-      ["김치 프리미엄",d.kimchi!=null?(d.kimchi>=0?"+":"")+d.kimchi.toFixed(2)+"%":"—",d.kimchi==null?"plain":dir(d.kimchi)],
-      ["BTC 도미넌스",d.btc_dominance!=null?d.btc_dominance.toFixed(1)+"%":"—","plain"],
-      ["총 시가총액",usd(d.total_mcap),"plain"],
+      ["공포·탐욕",fg.value!=null?`${fg.value} ${fgko[fg.class]||""}`:"—",fgcls,"fng"],
+      ["김치 프리미엄",d.kimchi!=null?(d.kimchi>=0?"+":"")+d.kimchi.toFixed(2)+"%":"—",d.kimchi==null?"plain":dir(d.kimchi),null],
+      ["BTC 도미넌스",d.btc_dominance!=null?d.btc_dominance.toFixed(1)+"%":"—","plain",null],
+      ["총 시가총액",usd(d.total_mcap),"plain",null],
     ];
-    $("stats").innerHTML=cells.map(([l,v,c])=>`<div class="s tile ${c}"><div class="l">${l}</div><div class="v mono">${v}</div></div>`).join("");
+    $("stats").innerHTML=cells.map(([l,v,c,link])=>{
+      const content=`<div class="l">${l}</div><div class="v mono">${v}</div>`;
+      const more=link?`<div style="position:absolute;bottom:8px;right:10px;font-size:12px;font-weight:900;color:#ff3b30;">자세히 →</div>`:"";
+      const tileHTML=`<div class="s tile ${c}" style="position:relative;${link?"min-height:74px;":""}">${content}${more}</div>`;
+      return link?`<a href="${link}" style="display:block;text-decoration:none;color:inherit;">${tileHTML}</a>`:tileHTML;
+    }).join("");
     lastFetch=Date.now();
     renderMovers();
   }catch(e){if($("btcChg"))$("btcChg").textContent="재시도…";}
