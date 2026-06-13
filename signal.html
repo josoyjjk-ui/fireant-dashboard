@@ -169,10 +169,10 @@ function lineChart(id,labels,data,color,fmt){
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.parsed.y)}}},
       scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},y:{grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:fmt}}}}});
 }
-function comboChart(id,labels,daily,cum,traded){
+function comboChart(id,labels,daily,cum,traded,dlabel){
   if(charts[id])charts[id].destroy();
   var ds=[
-    {type:'bar',label:'일일 순유입',data:daily,yAxisID:'y',order:3,borderWidth:0,backgroundColor:daily.map(v=>v>=0?'rgba(255,59,48,.55)':'rgba(58,160,255,.55)')},
+    {type:'bar',label:dlabel||'일일 순유입',data:daily,yAxisID:'y',order:3,borderWidth:0,backgroundColor:daily.map(v=>v>=0?'rgba(255,59,48,.55)':'rgba(58,160,255,.55)')},
     {type:'line',label:'누적 순유입',data:cum,yAxisID:'y1',order:1,borderColor:'#ffb547',borderWidth:2,pointRadius:0,tension:.2}
   ];
   var scales={x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},
@@ -253,6 +253,15 @@ function renderTable(it,rows,mode){
   html+=`</tbody></table></div><div class="note">출처 SoSoValue · 유입(+)=빨강 · 유출(−)=파랑</div></div>`;
   document.getElementById('tables').insertAdjacentHTML('beforeend',html);
 }
+function renderDatTable(it,rows){
+  const r2=rows.slice().reverse();
+  const fmtD=v=>(v>=0?'+':'-')+usd(Math.abs(v)).replace('-','');
+  let html=`<div class="tblwrap"><h3>📋 ${it.label} 주간 내역 — ${r2.length}주 (최신순)</h3><div class="etscroll"><table class="etable"><thead><tr><th>주 시작일</th><th>주간 순유입</th><th>누적 순유입</th></tr></thead><tbody>`;
+  for(const r of r2){const c=r.value>=0?'up':'down';
+    html+=`<tr><td>${r.label}</td><td class="${c}">${fmtD(r.value)}</td><td>${usd(r.cum)}</td></tr>`;}
+  html+=`</tbody></table></div><div class="note">출처 SoSoValue · 주간 순유입(+)=빨강 · 순유출(−)=파랑 · 누적=기간 합계</div></div>`;
+  document.getElementById('tables').insertAdjacentHTML('beforeend',html);
+}
 function drawEtfCharts(){
   document.getElementById('tables').innerHTML='';
   const modeKo={D:'일간',W:'주간',M:'월간'}[ETFMODE];
@@ -306,6 +315,13 @@ async function fillEtfCb(){
     try{const h=await J('/data/v1/history/'+hk+'.json?t='+Date.now());
       if(Array.isArray(h)&&h.length){
         if(it.live==='cb'){CBHIST=h;drawCbCharts();}
+        else if(it.key==='dat_weekly'){
+          // 주간 순유입: 막대(주간)+누적선 콤보 + 주간 표
+          let s=0;const rows=h.map(x=>{s+=(x.value||0);return {label:x.date,value:x.value||0,cum:s};});
+          ensureCanvas(i);
+          comboChart('ch'+i,rows.map(r=>String(r.label).slice(2)),rows.map(r=>r.value),rows.map(r=>r.cum),null,'주간 순유입');
+          $('note'+i).textContent='막대=주간 순유입(유입 빨강/유출 파랑) · 선=누적 순유입(주황) · '+rows.length+'주 · 출처 SoSoValue';
+          renderDatTable(it,rows);}
         else{ensureCanvas(i);const labels=h.map(x=>(x.date||'').slice(5)),data=h.map(x=>x.value);
           lineChart('ch'+i,labels,data,'rgb(255,59,48)',cfg.money?usd:(x=>x.toFixed(3)+'%'));
           $('note'+i).textContent='출처 일일시황 누적 · '+h.length+'개 시점';}
