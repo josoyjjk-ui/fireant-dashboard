@@ -178,6 +178,28 @@ function comboChart(id,labels,daily,cum){
       y1:{position:'right',grid:{display:false},ticks:{color:'#ffcf87',font:{size:10},callback:usd}}}}});
 }
 
+function movavg(arr,w){return arr.map((_,i)=>{if(i<w-1)return null;let s=0;for(let j=i-w+1;j<=i;j++)s+=arr[j];return s/w;});}
+function cbChart(id,rows){
+  if(charts[id])charts[id].destroy();
+  const labels=rows.map(x=>(x.date||'').slice(5));
+  const prem=rows.map(x=>+x.value);
+  const btc=rows.map(x=>x.btc!=null?+x.btc:null);
+  const m7=movavg(prem,Math.min(7,rows.length));
+  const hasBtc=btc.some(v=>v!=null);
+  const ds=[
+    {label:'프리미엄 %',data:prem,yAxisID:'y',borderColor:'rgb(255,59,48)',borderWidth:2,fill:true,backgroundColor:'rgba(255,59,48,.10)',tension:.3,pointRadius:0,order:2},
+    {label:'7일 평균',data:m7,yAxisID:'y',borderColor:'rgba(255,181,71,.95)',borderWidth:1.5,borderDash:[5,4],fill:false,pointRadius:0,tension:.3,order:1}
+  ];
+  if(hasBtc)ds.push({label:'BTC 가격',data:btc,yAxisID:'y1',borderColor:'#6ea8ff',borderWidth:1.7,fill:false,pointRadius:0,tension:.3,order:0});
+  charts[id]=new Chart($(id),{type:'line',data:{labels,datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:true,position:'top',labels:{color:'#aeb8c4',boxWidth:10,font:{size:11},usePointStyle:true}},
+        tooltip:{callbacks:{label:c=>{if(c.parsed.y==null)return '';return c.dataset.yAxisID==='y1'?' BTC $'+Number(c.parsed.y).toLocaleString('en-US'):' '+c.dataset.label+' '+c.parsed.y.toFixed(3)+'%';}}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:7,font:{size:10}}},
+        y:{position:'left',grid:{color:ctx=>ctx.tick.value===0?'#566073':'#1a1f28',lineWidth:ctx=>ctx.tick.value===0?1.5:1},ticks:{color:'#ff7a72',font:{size:10},callback:v=>v.toFixed(2)+'%'},title:{display:true,text:'프리미엄 %',color:'#ff7a72',font:{size:10}}},
+        y1:{position:'right',display:hasBtc,grid:{display:false},ticks:{color:'#6ea8ff',font:{size:10},callback:v=>'$'+(v/1000).toFixed(0)+'k'},title:{display:true,text:'BTC',color:'#6ea8ff',font:{size:10}}}}}});
+}
+
 let SIG={};
 async function loadSig(){try{const s=await J('/data/v1/signature.json?t='+Date.now());SIG=s.metrics||{};return s;}catch(e){return null;}}
 
@@ -233,11 +255,9 @@ function drawCbCharts(){
     if(!Array.isArray(CBHIST)||!CBHIST.length){showChartMessage(i,'추세 데이터 누적 중… 매일 1개 시점씩 쌓입니다.');continue;}
     ensureCanvas(i);
     const rows=cbWindow(CBHIST,CBMODE);
-    const labels=rows.map(x=>(x.date||'').slice(5));
-    const data=rows.map(x=>+x.value);
-    lineChart('ch'+i,labels,data,'rgb(255,59,48)',x=>x.toFixed(3)+'%');
-    const modeKo={ALL:'기존 보기','1W':'1주','1M':'1개월','1Y':'1년'}[CBMODE]||'기존 보기';
-    $('note'+i).textContent='출처 일일시황 누적 · '+modeKo+' · '+rows.length+'일';
+    cbChart('ch'+i,rows);
+    const modeKo={ALL:'전체','1W':'1주','1M':'1개월','1Y':'1년'}[CBMODE]||'전체';
+    $('note'+i).textContent='프리미엄 %(빨강)·7일 평균(점선)·BTC 가격(파랑) 이중축 · '+modeKo+' · '+rows.length+'일 · 출처 Coinbase·Binance 일봉';
   }
 }
 async function fillEtfCb(){
