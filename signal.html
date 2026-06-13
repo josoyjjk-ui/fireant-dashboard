@@ -206,6 +206,7 @@ function cbChart(id,rows,btcMap){
   ];
   if(hasBtc)ds.push({label:'BTC 가격',data:btc,yAxisID:'y1',borderColor:'#6ea8ff',borderWidth:1.7,fill:false,pointRadius:0,tension:.3,order:0});
   charts[id]=new Chart($(id),{type:'line',data:{labels,datasets:ds},
+    plugins:[{id:'zeroline',afterDatasetsDraw:function(c){var y=c.scales.y;if(!y)return;var py=y.getPixelForValue(0);var a=c.chartArea;if(py<a.top||py>a.bottom)return;var x=c.ctx;x.save();x.beginPath();x.moveTo(a.left,py);x.lineTo(a.right,py);x.lineWidth=1.2;x.strokeStyle='rgba(150,160,175,.65)';x.setLineDash([5,4]);x.stroke();x.restore();}}],
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
       plugins:{legend:{display:true,position:'top',labels:{color:'#aeb8c4',boxWidth:10,font:{size:11},usePointStyle:true}},
         tooltip:{callbacks:{label:c=>{if(c.parsed.y==null)return '';return c.dataset.yAxisID==='y1'?' BTC $'+Number(c.parsed.y).toLocaleString('en-US'):' '+c.dataset.label+' '+c.parsed.y.toFixed(3)+'%';}}}},
