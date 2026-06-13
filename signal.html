@@ -247,6 +247,13 @@ function renderTable(it,rows,mode){
   html+=`</tbody></table></div><div class="note">출처 SoSoValue · 유입(+)=빨강 · 유출(−)=파랑</div></div>`;
   document.getElementById('tables').insertAdjacentHTML('beforeend',html);
 }
+function volChart(id,labels,data){
+  if(charts[id])charts[id].destroy();
+  charts[id]=new Chart($(id),{type:'bar',data:{labels,datasets:[{label:'거래대금',data,backgroundColor:'rgba(255,181,71,.5)',borderColor:'#ffb547',borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'거래대금 '+usd(c.parsed.y)}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},
+        y:{grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:usd}}}}});
+}
 function drawEtfCharts(){
   document.getElementById('tables').innerHTML='';
   const modeKo={D:'일간',W:'주간',M:'월간'}[ETFMODE];
@@ -254,6 +261,12 @@ function drawEtfCharts(){
     const agg=aggregate(h,ETFMODE);
     comboChart('ch'+i, agg.map(r=>String(r.label).slice(2)), agg.map(r=>r.value), agg.map(r=>r.cum));
     $('note'+i).textContent='막대=순유입(빨강)/유출(파랑) · 선=누적 · '+modeKo+' '+agg.length+'개 · 출처 SoSoValue';
+    // 거래대금 차트(순유입 아래)
+    const volRows=agg.filter(r=>r.traded!=null);
+    document.getElementById('tables').insertAdjacentHTML('beforeend',
+      '<div class="tblwrap"><h3>💰 '+it.label+' '+modeKo+' 거래대금</h3><div class="chartbox"><canvas id="vol'+i+'"></canvas></div>'+
+      '<div class="note">막대=ETF 총 거래대금 · '+modeKo+' '+volRows.length+'개 · 출처 SoSoValue</div></div>');
+    volChart('vol'+i, volRows.map(r=>String(r.label).slice(2)), volRows.map(r=>r.traded));
     renderTable(it,agg,ETFMODE);
   }
 }
