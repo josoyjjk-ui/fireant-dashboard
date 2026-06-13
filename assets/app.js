@@ -240,7 +240,7 @@ async function loadCalendar() {
 
 /* ---------------- init ---------------- */
 $("nowGrid").innerHTML = Array(6).fill('<div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div>').join("");
-$("sigGrid").innerHTML = Array(4).fill('<div class="sigcard"><div class="big skel">·····</div></div>').join("");
+$("sigGrid").innerHTML = Array(5).fill('<div class="sigcard"><div class="big skel">·····</div></div>').join("");
 
 // 타이머 가드 — 중복 로드 방지 + 탭 비활성 시 폴링 정지(누수·rate-limit 방지)
 if (!window.__hubInit) {
