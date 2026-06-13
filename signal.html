@@ -179,11 +179,21 @@ function comboChart(id,labels,daily,cum){
 }
 
 function movavg(arr,w){return arr.map((_,i)=>{if(i<w-1)return null;let s=0;for(let j=i-w+1;j<=i;j++)s+=arr[j];return s/w;});}
-function cbChart(id,rows){
+let BTCMAP=null;
+async function ensureBtcMap(){
+  if(BTCMAP)return BTCMAP;
+  BTCMAP={};
+  try{
+    const k=await J('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=365');
+    for(const r of k){const d=new Date(r[0]).toISOString().slice(0,10);BTCMAP[d]=+r[4];}
+  }catch(e){}
+  return BTCMAP;
+}
+function cbChart(id,rows,btcMap){
   if(charts[id])charts[id].destroy();
   const labels=rows.map(x=>(x.date||'').slice(5));
   const prem=rows.map(x=>+x.value);
-  const btc=rows.map(x=>x.btc!=null?+x.btc:null);
+  const btc=rows.map(x=>(btcMap&&btcMap[x.date]!=null)?btcMap[x.date]:(x.btc!=null?+x.btc:null));
   const m7=movavg(prem,Math.min(7,rows.length));
   const hasBtc=btc.some(v=>v!=null);
   const ds=[
@@ -248,14 +258,15 @@ function cbWindow(h,mode){
   if(mode==='1Y')return h.slice(-350);
   return h;
 }
-function drawCbCharts(){
+async function drawCbCharts(){
+  const bmap=await ensureBtcMap();
   for(let i=0;i<cfg.items.length;i++){
     const it=cfg.items[i];
     if(it.live!=='cb')continue;
     if(!Array.isArray(CBHIST)||!CBHIST.length){showChartMessage(i,'추세 데이터 누적 중… 매일 1개 시점씩 쌓입니다.');continue;}
     ensureCanvas(i);
     const rows=cbWindow(CBHIST,CBMODE);
-    cbChart('ch'+i,rows);
+    cbChart('ch'+i,rows,bmap);
     const modeKo={ALL:'전체','1W':'1주','1M':'1개월','1Y':'1년'}[CBMODE]||'전체';
     $('note'+i).textContent='프리미엄 %(빨강)·7일 평균(점선)·BTC 가격(파랑) 이중축 · '+modeKo+' · '+rows.length+'일 · 출처 Coinbase·Binance 일봉';
   }
