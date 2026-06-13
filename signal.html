@@ -169,17 +169,23 @@ function lineChart(id,labels,data,color,fmt){
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.parsed.y)}}},
       scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},y:{grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:fmt}}}}});
 }
-function comboChart(id,labels,daily,cum){
+function comboChart(id,labels,daily,cum,traded){
   if(charts[id])charts[id].destroy();
-  charts[id]=new Chart($(id),{data:{labels,datasets:[
-    {type:'bar',label:'일일 순유입',data:daily,yAxisID:'y',order:2,borderWidth:0,backgroundColor:daily.map(v=>v>=0?'rgba(255,59,48,.55)':'rgba(58,160,255,.55)')},
+  var ds=[
+    {type:'bar',label:'일일 순유입',data:daily,yAxisID:'y',order:3,borderWidth:0,backgroundColor:daily.map(v=>v>=0?'rgba(255,59,48,.55)':'rgba(58,160,255,.55)')},
     {type:'line',label:'누적 순유입',data:cum,yAxisID:'y1',order:1,borderColor:'#ffb547',borderWidth:2,pointRadius:0,tension:.2}
-  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+  ];
+  var scales={x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},
+    y:{position:'left',grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:usd}},
+    y1:{position:'right',grid:{display:false},ticks:{color:'#ffcf87',font:{size:10},callback:usd}}};
+  if(traded&&traded.some(v=>v!=null)){
+    ds.push({type:'line',label:'거래대금',data:traded,yAxisID:'y2',order:2,borderColor:'#6ea8ff',borderWidth:1.4,borderDash:[4,3],pointRadius:0,tension:.2});
+    scales.y2={position:'right',grid:{display:false},ticks:{color:'#6ea8ff',font:{size:9},callback:usd}};
+  }
+  charts[id]=new Chart($(id),{data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
     plugins:{legend:{display:true,position:'top',labels:{color:'#aeb8c4',boxWidth:10,font:{size:11}}},
       tooltip:{callbacks:{label:c=>c.dataset.label+' '+usd(c.parsed.y)}}},
-    scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},
-      y:{position:'left',grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:usd}},
-      y1:{position:'right',grid:{display:false},ticks:{color:'#ffcf87',font:{size:10},callback:usd}}}}});
+    scales:scales}});
 }
 
 function movavg(arr,w){return arr.map((_,i)=>{if(i<w-1)return null;let s=0;for(let j=i-w+1;j<=i;j++)s+=arr[j];return s/w;});}
@@ -247,26 +253,13 @@ function renderTable(it,rows,mode){
   html+=`</tbody></table></div><div class="note">출처 SoSoValue · 유입(+)=빨강 · 유출(−)=파랑</div></div>`;
   document.getElementById('tables').insertAdjacentHTML('beforeend',html);
 }
-function volChart(id,labels,data){
-  if(charts[id])charts[id].destroy();
-  charts[id]=new Chart($(id),{type:'bar',data:{labels,datasets:[{label:'거래대금',data,backgroundColor:'rgba(255,181,71,.5)',borderColor:'#ffb547',borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'거래대금 '+usd(c.parsed.y)}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#5c6675',maxTicksLimit:6,font:{size:10}}},
-        y:{grid:{color:'#1a1f28'},ticks:{color:'#5c6675',font:{size:10},callback:usd}}}}});
-}
 function drawEtfCharts(){
   document.getElementById('tables').innerHTML='';
   const modeKo={D:'일간',W:'주간',M:'월간'}[ETFMODE];
   for(const {i,it,h} of ETFITEMS){
     const agg=aggregate(h,ETFMODE);
-    comboChart('ch'+i, agg.map(r=>String(r.label).slice(2)), agg.map(r=>r.value), agg.map(r=>r.cum));
-    $('note'+i).textContent='막대=순유입(빨강)/유출(파랑) · 선=누적 · '+modeKo+' '+agg.length+'개 · 출처 SoSoValue';
-    // 거래대금 차트(순유입 아래)
-    const volRows=agg.filter(r=>r.traded!=null);
-    document.getElementById('tables').insertAdjacentHTML('beforeend',
-      '<div class="tblwrap"><h3>💰 '+it.label+' '+modeKo+' 거래대금</h3><div class="chartbox"><canvas id="vol'+i+'"></canvas></div>'+
-      '<div class="note">막대=ETF 총 거래대금 · '+modeKo+' '+volRows.length+'개 · 출처 SoSoValue</div></div>');
-    volChart('vol'+i, volRows.map(r=>String(r.label).slice(2)), volRows.map(r=>r.traded));
+    comboChart('ch'+i, agg.map(r=>String(r.label).slice(2)), agg.map(r=>r.value), agg.map(r=>r.cum), agg.map(r=>r.traded));
+    $('note'+i).textContent='막대=순유입(빨강/파랑) · 선=누적(주황) · 점선=거래대금(파랑) · '+modeKo+' '+agg.length+'개 · 출처 SoSoValue';
     renderTable(it,agg,ETFMODE);
   }
 }
