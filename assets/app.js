@@ -167,6 +167,7 @@ async function loadSignature() {
     const defs = [
       { k: "btc_etf", t: "💵 BTC 현물 ETF 순유입", hist: "btc_etf", money: true, link: "signal?m=btc_etf" },
       { k: "eth_etf", t: "💵 ETH 현물 ETF 순유입", hist: "eth_etf", money: true, link: "signal?m=eth_etf" },
+      { k: "dat_weekly", t: "🏦 DAT 주간 순유입", hist: "dat_weekly", money: true, link: "signal?m=dat" },
       { k: "btc_oi_24h", t: "📊 BTC OI (미결제약정)", hist: "btc_oi_24h", money: false, link: "signal?m=oi" },
       { k: "cb_premium", t: "🇺🇸 코인베이스 프리미엄", hist: "cb", money: false, link: "signal?m=cb" },
     ];

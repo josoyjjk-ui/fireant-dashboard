@@ -141,7 +141,11 @@ const CFG={
   cb:{title:'🇺🇸 코인베이스 프리미엄',
     sub:'미국 거래소 <b>Coinbase(USD)</b>와 글로벌 <b>Binance(USDT)</b>의 BTC 가격차. <b>양(+)</b>이면 미국 현물 수요가 상대적으로 강함을 시사합니다. (라이브)',
     items:[{key:'cb_premium',label:'Coinbase 프리미엄',hist:'cb',live:'cb'}],money:false,live:'cb',
-    gloss:'<b>코인베이스 프리미엄</b>이란? 미국계 기관·개인이 주로 쓰는 Coinbase의 BTC 가격이 글로벌 기준(Binance)보다 높은지(+)/낮은지(−)를 % 로 나타낸 값입니다. <b>+</b> 확대는 미국발 매수세, <b>−</b>는 미국 약세 신호로 해석합니다.'}};
+    gloss:'<b>코인베이스 프리미엄</b>이란? 미국계 기관·개인이 주로 쓰는 Coinbase의 BTC 가격이 글로벌 기준(Binance)보다 높은지(+)/낮은지(−)를 % 로 나타낸 값입니다. <b>+</b> 확대는 미국발 매수세, <b>−</b>는 미국 약세 신호로 해석합니다.'},
+  dat:{title:'🏦 DAT 주간 순유입',
+    sub:'상장사·기관이 보유한 <b>디지털자산 트레저리(DAT)</b>로 한 주 동안 들어온 순자금. <b>+(유입)</b>은 기업 매집 확대, <b>−(유출)</b>은 축소를 뜻합니다. (주간·SoSoValue)',
+    items:[{key:'dat_weekly',label:'DAT 주간 순유입',hist:'dat_weekly'}],money:true,live:null,
+    gloss:'<b>DAT(Digital Asset Treasuries)</b>란? 마이크로스트래티지처럼 비트코인 등 디지털자산을 재무제표에 보유한 기업·기관입니다. <b>주간 순유입</b>은 이들이 한 주간 순매수(+)/순매도(−)한 자금 규모로, 기관 매집 흐름의 바로미터입니다.'}};
 
 const cfg=CFG[M]||CFG.etf;
 $('title').innerHTML=cfg.title;
