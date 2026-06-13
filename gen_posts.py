@@ -34,8 +34,25 @@ html{background:var(--bg);scrollbar-gutter:stable;}body{background:var(--bg);col
 a{color:inherit;}img{max-width:100%;}
 .nav{display:flex;align-items:center;justify-content:space-between;padding:15px max(24px,calc((100% - 1240px)/2 + 24px));border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
 .logo{font-size:21px;font-weight:900;color:var(--accent);text-decoration:none;}.logo span{color:#fff;}
+.brand2{display:flex;align-items:center;gap:12px;min-width:0;}
+.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}
+.lede2{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}.tab.on{background:var(--accent);color:#0a0c10;}
 .btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;background:var(--accent);color:#0a0c10;text-decoration:none;}
+.ham{display:none;font-size:25px;background:none;border:none;color:var(--txt);font-weight:800;line-height:1;cursor:pointer;padding:0 4px 0 0;}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:60;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
+.drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 14px;}
+.drawer .dh .dlogo{font-size:20px;font-weight:900;color:#ff3b30;}
+.drawer .x{font-size:20px;color:var(--dim);background:none;border:none;cursor:pointer;}
+.drawer a{display:flex;align-items:center;gap:14px;padding:15px 12px;border-radius:14px;text-decoration:none;color:var(--txt);font-size:17px;font-weight:800;}
+.drawer a .ic{font-size:22px;width:26px;text-align:center;}
+.drawer a.on{background:rgba(255,59,48,.14);color:#ff3b30;}
+.drawer .ddiv{height:1px;background:var(--line);margin:9px 6px;}
+.drawer a.sub{font-size:15px;font-weight:700;color:var(--dim);}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55;}
+body.navopen .drawer{transform:none;}
+body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .main{padding:26px 24px;max-width:760px;margin:0 auto;}
 .idxmain{padding:26px 24px;max-width:1000px;margin:0 auto;}
 .crumb{font-size:13px;color:var(--dim);font-weight:700;margin-bottom:14px;}.crumb a{color:var(--dim);text-decoration:none;}
@@ -71,10 +88,21 @@ h1.title{font-size:28px;font-weight:900;line-height:1.3;letter-spacing:-0.4px;ma
 .pcard .ps{font-size:13.5px;color:var(--dim);line-height:1.55;}
 .pcard .pd{font-size:12px;color:var(--dim);font-weight:700;margin-top:10px;}
 .empty{color:var(--dim);font-size:15px;padding:40px 0;text-align:center;}
+@media(max-width:1100px){.lede2{display:none;}}
 @media(max-width:760px){.plist{grid-template-columns:1fr;}h1.title{font-size:23px;}.idxhead{font-size:24px;}.main,.idxmain{padding:18px 15px;}
-.nav{flex-wrap:wrap;gap:8px;padding:13px 15px;}.tabs{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;}.tabs::-webkit-scrollbar{display:none;}.tab{flex:0 0 auto;}}"""
+.nav{flex-wrap:wrap;gap:8px;padding:13px 15px;}.tabs{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;}.tabs::-webkit-scrollbar{display:none;}.tab{flex:0 0 auto;}
+#authSlot a,#authSlot button{font-size:12px;padding:7px 10px;white-space:nowrap;}}"""
 
-NAV = ('<div class="nav"><a class="logo" href="/">ANT<span>INFO</span></a>'
+_GLOGIN = ('<span id="authSlot" data-mobile="0" style="display:inline-flex;align-items:center;gap:8px;margin-right:8px;">'
+           '<button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;">'
+           '<svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button></span>'
+           '<script>(function(){try{var h=localStorage.getItem("antinfo_navauth");if(h){var s=document.getElementById("authSlot");if(s)s.innerHTML=h;}}catch(e){}})();</script>')
+
+NAV = ('<div class="nav">'
+       '<button class="ham" type="button" aria-label="메뉴">☰</button>'
+       '<a class="brand2" href="/" style="text-decoration:none;color:inherit;cursor:pointer">'
+       '<span class="logo" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:34px;display:block"></span>'
+       '<div class="btext"><span class="bname">개미투자정보</span><span class="lede2">개미투자자들이 필요한 모든 정보</span></div></a>'
        '<div class="tabs">'
        '<a class="tab" href="/">대시보드</a>'
        '<a class="tab" href="/market">마켓</a>'
@@ -84,7 +112,25 @@ NAV = ('<div class="nav"><a class="logo" href="/">ANT<span>INFO</span></a>'
        '<a class="tab" href="/signals">시장지표</a>'
        '<a class="tab on" href="/posts/">인사이트</a>'
        '</div>'
+       + _GLOGIN +
        '<a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a></div>')
+
+DRAWER = ('<aside class="drawer">'
+          '<div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;vertical-align:middle;margin-right:7px;">개미투자정보</span><button class="x" type="button">✕</button></div>'
+          '<a href="/"><span class="ic">🏠</span>홈</a>'
+          '<a href="/macro-news"><span class="ic">📰</span>뉴스</a>'
+          '<a href="/market"><span class="ic">📊</span>마켓</a>'
+          '<a href="/signals"><span class="ic">🐋</span>시장지표</a>'
+          '<a href="/charts"><span class="ic">🕯️</span>주요자산차트</a>'
+          '<a class="on" href="/posts/"><span class="ic">📝</span>인사이트</a>'
+          '<div class="ddiv"></div>'
+          '<a class="sub" href="/events"><span class="ic">🎉</span>이벤트·당첨</a>'
+          '<a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>'
+          '</aside><div class="backdrop"></div>')
+
+SCRIPTS = ('<script src="/assets/vendor/supabase.js"></script>'
+           '<script src="/assets/auth.js?v=3"></script>'
+           '<script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>')
 
 FOOT = ('<div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보<br>'
         '운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener">X</a> · '
@@ -165,6 +211,7 @@ def page(meta, slug, body_html):
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <script type="application/ld+json">{jsonld}</script>
 <style>{CSS}</style></head><body>
+{DRAWER}
 {NAV}
 <article class="main">
 <div class="crumb"><a href="/">홈</a> › <a href="/posts/">인사이트</a> › {html.escape(meta.get("type","글"))}</div>
@@ -183,6 +230,7 @@ def page(meta, slug, body_html):
 {DISC}
 </article>
 {FOOT}
+{SCRIPTS}
 </body></html>"""
 
 
@@ -215,6 +263,7 @@ def index_page(posts):
 <meta property="og:url" content="{url}"><meta property="og:image" content="https://antinfo.io/assets/og-image.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>{CSS}</style></head><body>
+{DRAWER}
 {NAV}
 <div class="idxmain">
 <div class="crumb"><a href="/">홈</a> › 인사이트</div>
@@ -223,6 +272,7 @@ def index_page(posts):
 {body}
 </div>
 {FOOT}
+{SCRIPTS}
 </body></html>"""
 
 
