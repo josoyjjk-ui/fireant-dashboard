@@ -9,6 +9,129 @@
   var DOWN = "#4d9bff";
   var FALLBACK_TIMEFRAMES = ["1일","5일","1개월","3개월","6개월","1년","2년","5년"];
 
+  // Yahoo Finance 실시간 스트리머
+  var YF = {BTC:"BTC-USD",ETH:"ETH-USD",SOL:"SOL-USD",XRP:"XRP-USD",BNB:"BNB-USD",NQ:"NQ=F",ES:"ES=F",GSPC:"^GSPC",IXIC:"^IXIC",DJI:"^DJI",KOSPI:"^KS11",KOSDAQ:"^KQ11",IRX:"^IRX",FVX:"^FVX",TNX:"^TNX",TYX:"^TYX",DXY:"DX-Y.NYB",VIX:"^VIX",GC:"GC=F",CL:"CL=F"};
+  var YF_REV = {};
+  Object.keys(YF).forEach(function(k){ YF_REV[YF[k]] = k; });
+
+  // 경량 protobuf 디코더 (Yahoo Finance 웹소켓 메시지용)
+  function _yfDecode(b){
+    var o = {}, i = 0, n = b.length;
+    var dv = new DataView(b.buffer, b.byteOffset, b.byteLength);
+    function vint(){
+      var s = 0, r = 0;
+      while(true){
+        var x = b[i++];
+        r += (x & 0x7f) * Math.pow(2, s);
+        if(!(x & 0x80)) break;
+        s += 7;
+      }
+      return r;
+    }
+    while(i < n){
+      var tag = vint(), f = tag >> 3, wt = tag & 7;
+      if(wt === 0){
+        o[f] = vint();
+      }else if(wt === 5){
+        o[f] = dv.getFloat32(i, true);
+        i += 4;
+      }else if(wt === 1){
+        o[f] = dv.getFloat64(i, true);
+        i += 8;
+      }else if(wt === 2){
+        var l = vint();
+        if(f === 1) o[f] = new TextDecoder().decode(b.subarray(i, i + l));
+        i += l;
+      }else{
+        break;
+      }
+    }
+    return o;
+  }
+
+  var wsState = {
+    ws: null,
+    timer: null,
+    connected: false,
+    retryDelay: 3000
+  };
+
+  function startLiveWS(){
+    if(wsState.ws) return;
+    if(document.hidden) return;
+
+    try{
+      wsState.ws = new WebSocket("wss://streamer.finance.yahoo.com/?version=2");
+      var ws = wsState.ws;
+
+      ws.onopen = function(){
+        wsState.connected = true;
+        console.log("Yahoo Finance WebSocket connected");
+
+        // 현재 cards에 있는 key들만 구독
+        var symbols = [];
+        state.cards.forEach(function(card){
+          var sym = YF[card.key];
+          if(sym) symbols.push(sym);
+        });
+
+        if(symbols.length > 0){
+          ws.send(JSON.stringify({subscribe: symbols}));
+        }
+      };
+
+      ws.onmessage = function(ev){
+        try{
+          var m = JSON.parse(ev.data);
+          if(m.type === "pricing"){
+            var bytes = Uint8Array.from(atob(m.message), function(c){ return c.charCodeAt(0); });
+            var d = _yfDecode(bytes);
+            var sym = d[1], price = d[2], chgPct = d[8];
+            var key = YF_REV[sym];
+            var card = key && state.cards.get(key);
+            if(card && price != null){
+              card.price.textContent = fmtPrice(price);
+              if(chgPct != null){
+                card.change.textContent = (chgPct >= 0 ? "+" : "") + chgPct.toFixed(2) + "%";
+                card.change.className = "card-change mono " + (chgPct >= 0 ? "up" : "down");
+              }
+              card.root.classList.add("live");
+            }
+          }
+        }catch(err){
+          console.warn("Yahoo WS message parse error", err);
+        }
+      };
+
+      ws.onclose = function(){
+        wsState.connected = false;
+        wsState.ws = null;
+        console.log("Yahoo Finance WebSocket closed, retrying in", wsState.retryDelay, "ms");
+        if(!document.hidden){
+          wsState.timer = setTimeout(startLiveWS, wsState.retryDelay);
+        }
+      };
+
+      ws.onerror = function(err){
+        console.warn("Yahoo Finance WebSocket error", err);
+      };
+    }catch(err){
+      console.warn("Yahoo WebSocket init failed", err);
+    }
+  }
+
+  function stopLiveWS(){
+    if(wsState.timer){
+      clearTimeout(wsState.timer);
+      wsState.timer = null;
+    }
+    if(wsState.ws){
+      wsState.ws.close();
+      wsState.ws = null;
+    }
+    wsState.connected = false;
+  }
+
   // 한국증시는 야간선물까지 24시간 갱신되는 TradingView 선물 위젯으로 대체
   // (Yahoo 무료 피드는 한국 선물 미제공 → 현물 지수는 15:30 이후 멈춤)
   // ⚠ 무료 TradingView 임베드 위젯은 KRX 선물/지수를 거래소 라이선스로 차단함
@@ -380,9 +503,11 @@
     document.addEventListener("visibilitychange", function(){
       if(document.hidden){
         stopRefresh();
+        stopLiveWS();
       }else{
         refreshVisible();
         startRefresh();
+        startLiveWS();
       }
     });
   }
@@ -397,6 +522,7 @@
       observeCards();
       bindVisibility();
       startRefresh();
+      startLiveWS();
     }catch(err){
       console.error(err);
       if(el.generatedAt) el.generatedAt.textContent = "차트 인덱스를 불러오지 못했습니다";
