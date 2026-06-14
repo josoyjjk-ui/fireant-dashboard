@@ -65,6 +65,8 @@
       padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 14px;
     }
     .section-head h2 { font-size: 1rem; font-weight: 700; }
+    /* 거래소 로고 통일: 흰 칩 + contain(와이드 로고도 안 잘림) */
+    .exch-logo { width: 24px; height: 24px; border-radius: 6px; object-fit: contain; background: #fff; padding: 2px; flex-shrink: 0; }
     .section-head .exch-badge {
       font-size: 0.72rem; font-weight: 700; padding: 2px 9px;
       border-radius: 20px; background: var(--surface); color: var(--text-dim);
@@ -341,7 +343,7 @@
     <!-- 고팍스 -->
     <div class="section" id="gopax">
       <div class="section-head">
-        <img src="logos/gopax.jpg" alt="고팍스" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <img src="logos/gopax.jpg" alt="고팍스" class="exch-logo">
         <h2 class="gopax">고팍스</h2>
         <span class="exch-badge">GOPAX</span>
         <span class="ev-count">2개</span>
@@ -377,7 +379,7 @@
     <!-- 빗썸 -->
     <div class="section" id="bithumb">
       <div class="section-head">
-        <img src="logos/bithumb.jpg" alt="빗썸" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <img src="logos/bithumb.jpg" alt="빗썸" class="exch-logo">
         <h2 class="bithumb">빗썸</h2>
         <span class="exch-badge">Bithumb</span>
         <span class="ev-count">3개</span>
@@ -425,7 +427,7 @@
     <!-- 업비트 -->
     <div class="section" id="upbit">
       <div class="section-head">
-        <img src="logos/upbit.jpg" alt="업비트" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <img src="logos/upbit.jpg" alt="업비트" class="exch-logo">
         <h2 class="upbit">업비트</h2>
         <span class="exch-badge">Upbit</span>
         <span class="ev-count zero">0개</span>
@@ -438,7 +440,7 @@
     <!-- 코빗 -->
     <div class="section" id="korbit">
       <div class="section-head">
-        <img src="logos/korbit.jpg" alt="코빗" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <img src="logos/korbit.jpg" alt="코빗" class="exch-logo">
         <h2 class="korbit">코빗</h2>
         <span class="exch-badge">Korbit</span>
         <span class="ev-count">2개</span>
@@ -474,7 +476,7 @@
     <!-- 코인원 -->
     <div class="section" id="coinone">
       <div class="section-head">
-        <img src="logos/coinone.jpg" alt="코인원" style="width:24px;height:24px;border-radius:6px;object-fit:cover;">
+        <img src="logos/coinone.jpg" alt="코인원" class="exch-logo">
         <h2 class="coinone">코인원</h2>
         <span class="exch-badge">Coinone</span>
         <span class="ev-count">5개</span>
