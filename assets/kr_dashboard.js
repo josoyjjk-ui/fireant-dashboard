@@ -18,6 +18,12 @@
   };
   var EX_ORDER = ['upbit', 'bithumb', 'coinone', 'korbit', 'gopax'];
   var EX_NAMES = { upbit: '업비트', bithumb: '빗썸', coinone: '코인원', korbit: '코빗', gopax: '고팍스' };
+  var EX_NAME2KEY = { '업비트': 'upbit', '빗썸': 'bithumb', '코인원': 'coinone', '코빗': 'korbit', '고팍스': 'gopax' };
+  function exLogoHTML(name) {
+    var key = EX_NAME2KEY[name];
+    if (key) return '<img class="kr-exch-logo" src="logos/' + key + '.jpg" alt="' + esc(name) + '" title="' + esc(name) + '" loading="lazy">';
+    return '<span class="kr-exch-badge">' + esc(name) + '</span>';
+  }
 
   /* ---------- 숫자 포맷 (한국식: 조/억/만) ---------- */
   function toNum(v) {
@@ -139,7 +145,7 @@
         + '<td>' + fmtPrice(r.price) + '</td>'
         + '<td class="' + changeClass(ch) + '">' + fmtPct(ch, true) + '</td>'
         + '<td>' + fmtVol(r.vol_krw) + '</td>'
-        + '<td><span class="kr-exch-badge">' + esc(r.exchange) + '</span></td>'
+        + '<td>' + exLogoHTML(r.exchange) + '</td>'
         + '</tr>';
     });
     return ''
