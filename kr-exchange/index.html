@@ -398,39 +398,12 @@
       <h1>🏦 한국거래소 이벤트</h1>
       <p style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;">* 가나다 순서로 배치하였습니다.</p>
     </div>
-    <nav class="mobile-toc" aria-label="한국거래소 대시보드 목차">
-      <a href="#kr-data">점유율</a>
-      <a href="#kr-live">실시간 동향</a>
-      <a href="#kr-arbitrage">차익거래</a>
-      <a href="#kr-top3">거래소별 TOP3</a>
-      <a href="#kr-events">거래소 이벤트</a>
-    </nav>
-
-    <!-- 📊 점유율(접기) + 실시간 한국거래소 동향(항상표시) -->
-    <section class="kr-section kr-collapsed" id="kr-data">
-  <div class="kr-section-head" id="kr-data-head">
-    <h2>💹 거래대금 점유율 (24h)</h2>
-    <span class="kr-updated" id="kr-updated">로딩 중…</span>
-    <button class="kr-refresh" id="kr-refresh" type="button" title="새로고침">↻</button>
-  </div>
-  <div class="kr-data-body" id="kr-data-body">
-    <div class="kr-card"><div class="kr-card-title">거래대금 점유율 (24h)</div><div id="kr-shares"><div class="kr-status">로딩 중…</div></div><div class="kr-total" id="kr-total"></div></div>
-  </div>
-</section>
-<section class="kr-section" id="kr-live">
-  <div class="kr-section-head kr-static">
-    <h2>📊 실시간 한국거래소 동향</h2>
-  </div>
-  <div class="kr-top-grid"><div class="kr-card"><div class="kr-card-title">거래량 TOP 10</div><div id="kr-vol-top"><div class="kr-status">로딩 중…</div></div></div><div class="kr-card"><div class="kr-card-title">상승률 TOP 10</div><div id="kr-gain-top"><div class="kr-status">로딩 중…</div></div></div></div>
-  <div class="kr-card" id="kr-arbitrage"><div class="kr-card-title">⚡ 차익거래 기회 (거래소간 가격 이격)</div><div id="kr-arb"><div class="kr-status">로딩 중…</div></div></div>
-  <div class="kr-card" id="kr-top3"><div class="kr-card-title">🏆 거래소별 TOP3</div><div id="kr-perex"><div class="kr-status">로딩 중…</div></div></div>
-</section>
 
     <div class="kr-event-row">
     <div class="kr-event-main" id="kr-events">
     <div class="ev-grid">
     <!-- 고팍스 -->
-    <div class="section open" id="gopax">
+    <div class="section" id="gopax">
       <div class="section-head">
         <img src="logos/gopax.jpg" alt="고팍스" class="exch-logo">
         <h2 class="gopax">고팍스</h2>
@@ -466,7 +439,7 @@
     </div>
 
     <!-- 빗썸 -->
-    <div class="section open" id="bithumb">
+    <div class="section" id="bithumb">
       <div class="section-head">
         <img src="logos/bithumb.jpg" alt="빗썸" class="exch-logo">
         <h2 class="bithumb">빗썸</h2>
@@ -514,7 +487,7 @@
     </div>
 
     <!-- 업비트 -->
-    <div class="section open" id="upbit">
+    <div class="section" id="upbit">
       <div class="section-head">
         <img src="logos/upbit.jpg" alt="업비트" class="exch-logo">
         <h2 class="upbit">업비트</h2>
@@ -527,7 +500,7 @@
     </div>
 
     <!-- 코빗 -->
-    <div class="section open" id="korbit">
+    <div class="section" id="korbit">
       <div class="section-head">
         <img src="logos/korbit.jpg" alt="코빗" class="exch-logo">
         <h2 class="korbit">코빗</h2>
@@ -563,7 +536,7 @@
     </div>
 
     <!-- 코인원 -->
-    <div class="section open" id="coinone">
+    <div class="section" id="coinone">
       <div class="section-head">
         <img src="logos/coinone.jpg" alt="코인원" class="exch-logo">
         <h2 class="coinone">코인원</h2>
@@ -647,6 +620,34 @@
       <div id="kr-kimchi-widget"><div class="kr-status">로딩 중…</div></div>
     </aside>
     </div><!-- /.kr-event-row -->
+    <nav class="mobile-toc" aria-label="한국거래소 대시보드 목차">
+      <a href="#kr-data">점유율</a>
+      <a href="#kr-live">실시간 동향</a>
+      <a href="#kr-arbitrage">차익거래</a>
+      <a href="#kr-top3">거래소별 TOP3</a>
+      <a href="#kr-events">거래소 이벤트</a>
+    </nav>
+
+    <!-- 📊 점유율(접기) + 실시간 한국거래소 동향(항상표시) -->
+    <section class="kr-section kr-collapsed" id="kr-data">
+  <div class="kr-section-head" id="kr-data-head">
+    <h2>💹 거래대금 점유율 (24h)</h2>
+    <span class="kr-updated" id="kr-updated">로딩 중…</span>
+    <button class="kr-refresh" id="kr-refresh" type="button" title="새로고침">↻</button>
+  </div>
+  <div class="kr-data-body" id="kr-data-body">
+    <div class="kr-card"><div class="kr-card-title">거래대금 점유율 (24h)</div><div id="kr-shares"><div class="kr-status">로딩 중…</div></div><div class="kr-total" id="kr-total"></div></div>
+  </div>
+</section>
+<section class="kr-section" id="kr-live">
+  <div class="kr-section-head kr-static">
+    <h2>📊 실시간 한국거래소 동향</h2>
+  </div>
+  <div class="kr-top-grid"><div class="kr-card"><div class="kr-card-title">거래량 TOP 10</div><div id="kr-vol-top"><div class="kr-status">로딩 중…</div></div></div><div class="kr-card"><div class="kr-card-title">상승률 TOP 10</div><div id="kr-gain-top"><div class="kr-status">로딩 중…</div></div></div></div>
+  <div class="kr-card" id="kr-arbitrage"><div class="kr-card-title">⚡ 차익거래 기회 (거래소간 가격 이격)</div><div id="kr-arb"><div class="kr-status">로딩 중…</div></div></div>
+  <div class="kr-card" id="kr-top3"><div class="kr-card-title">🏆 거래소별 TOP3</div><div id="kr-perex"><div class="kr-status">로딩 중…</div></div></div>
+</section>
+
   </div>
 
   <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
