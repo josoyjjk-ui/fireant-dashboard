@@ -65,7 +65,7 @@
   /* ---------- 에러 / 로딩 ---------- */
   function statusHTML(msg) { return '<div class="kr-status">' + esc(msg) + '</div>'; }
   function failAll(msg) {
-    ['kr-shares', 'kr-kimchi', 'kr-vol-top', 'kr-gain-top', 'kr-arb', 'kr-perex'].forEach(function (id) {
+    ['kr-shares', 'kr-kimchi', 'kr-kimchi-widget', 'kr-vol-top', 'kr-gain-top', 'kr-arb', 'kr-perex'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.innerHTML = statusHTML(msg);
     });
@@ -113,18 +113,17 @@
 
   /* ---------- 2. 김치 프리미엄 ---------- */
   function renderKimchi(data) {
-    var root = document.getElementById('kr-kimchi');
-    if (!root) return;
     var kp = data.kimchi_premium || {};
     var p = toNum(kp.btc_pct);
-    if (p === null) {
-      root.innerHTML = '<div class="kr-kimchi-val kr-flat">산출 불가</div>'
-        + (kp.note ? '<div class="kr-kimchi-note">' + esc(kp.note) + '</div>' : '');
-      return;
-    }
-    root.innerHTML = ''
-      + '<div class="kr-kimchi-val ' + changeClass(p) + '">' + fmtPct(p, true) + '</div>'
-      + (kp.note ? '<div class="kr-kimchi-note">' + esc(kp.note) + '</div>' : '');
+    var note = kp.note ? '<div class="kr-kimchi-note">' + esc(kp.note) + '</div>' : '';
+    var valHTML = (p === null)
+      ? '<div class="kr-kimchi-val kr-flat">산출 불가</div>'
+      : '<div class="kr-kimchi-val ' + changeClass(p) + '">' + fmtPct(p, true) + '</div>';
+    var root = document.getElementById('kr-kimchi');
+    if (root) root.innerHTML = valHTML + note;
+    // 우측 위젯 카드에는 큰 수치만 렌더 (note 생략)
+    var widget = document.getElementById('kr-kimchi-widget');
+    if (widget) widget.innerHTML = valHTML;
   }
 
   /* ---------- 3. TOP 10 표 ---------- */
@@ -179,9 +178,10 @@
       var gap = toNum(r.gap_pct);
       var kim = toNum(r.kimchi_pct);
       var hot = (gap !== null && gap >= 2) ? ' class="hot"' : '';
+      var logo = r.logo ? '<img src="' + esc(r.logo) + '" alt="" width="18" height="18" loading="lazy" style="border-radius:50%;vertical-align:middle;margin-right:6px">' : '';
       body += ''
         + '<tr' + hot + '>'
-        +   '<td class="l sym">' + esc(r.symbol) + '</td>'
+        +   '<td class="l sym">' + logo + esc(r.symbol) + '</td>'
         +   '<td><span class="kr-arb-ex">' + esc(r.low_ex) + '</span><span class="kr-arb-px">' + fmtArbPrice(r.low_price) + '</span></td>'
         +   '<td><span class="kr-arb-ex">' + esc(r.high_ex) + '</span><span class="kr-arb-px">' + fmtArbPrice(r.high_price) + '</span></td>'
         +   '<td>' + fmtArbPrice(r.global_krw) + '</td>'
@@ -202,17 +202,17 @@
   }
 
   /* ---------- 5. 거래소별 TOP3 ---------- */
-  function perexListHTML(items, kind) {
+  function perexListHTML(items) {
     if (!items || !items.length) return '<div class="kr-perex-empty">데이터 없음</div>';
-    return items.slice(0, 3).map(function (it) {
-      var sym = '<span class="sym">' + esc(it.symbol) + '</span>';
-      var px = '<span class="px" style="margin-left:auto;color:var(--text-dim);font-variant-numeric:tabular-nums;font-size:0.82rem">' + fmtPrice(it.price) + '</span>';
-      if (kind === 'gainers') {
-        var ch = toNum(it.change_pct);
-        return '<div class="kr-perex-item">' + sym + px + '<span class="' + changeClass(ch) + '" style="min-width:62px;text-align:right">' + fmtPct(ch, true) + '</span></div>';
-      }
-      return '<div class="kr-perex-item">' + sym + px + '<span class="vol" style="min-width:72px;text-align:right">' + fmtVol(it.vol_krw) + '원</span></div>';
+    var hdr = '<div class="kr-perex-item hdr"><span class="sym">종목</span><span class="px">가격</span><span class="vol">거래량</span></div>';
+    var body = items.slice(0, 3).map(function (it) {
+      return '<div class="kr-perex-item">'
+        + '<span class="sym">' + esc(it.symbol) + '</span>'
+        + '<span class="px">' + fmtPrice(it.price) + '</span>'
+        + '<span class="vol">' + fmtVol(it.vol_krw) + '원</span>'
+        + '</div>';
     }).join('');
+    return hdr + body;
   }
   function renderPerExTop3(data) {
     var root = document.getElementById('kr-perex');
@@ -237,9 +237,9 @@
       html += ''
         + '<div class="kr-perex-card">' + head
         +   '<div class="kr-perex-sub"><div class="kr-perex-sub-title">상승률 TOP3</div>'
-        +     '<div class="kr-perex-list">' + perexListHTML(p.gainers_top10, 'gainers') + '</div></div>'
+        +     '<div class="kr-perex-list">' + perexListHTML(p.gainers_top10) + '</div></div>'
         +   '<div class="kr-perex-sub"><div class="kr-perex-sub-title">거래량 TOP3</div>'
-        +     '<div class="kr-perex-list">' + perexListHTML(p.volume_top10, 'volume') + '</div></div>'
+        +     '<div class="kr-perex-list">' + perexListHTML(p.volume_top10) + '</div></div>'
         + '</div>';
     });
     root.innerHTML = html + '</div>';
@@ -279,7 +279,14 @@
 
   function init() {
     var btn = document.getElementById('kr-refresh');
-    if (btn) btn.addEventListener('click', load);
+    if (btn) btn.addEventListener('click', function (e) { e.stopPropagation(); load(); });
+    // 섹션 헤더 클릭 → 접기/펼치기 (기본 접힘: .kr-collapsed). 새로고침 버튼은 토글에서 제외.
+    var head = document.getElementById('kr-data-head');
+    if (head) head.addEventListener('click', function (e) {
+      if (e.target.closest('#kr-refresh')) return;
+      var sec = document.getElementById('kr-data');
+      if (sec) sec.classList.toggle('kr-collapsed');
+    });
     load();
     setInterval(load, REFRESH_MS);
   }
