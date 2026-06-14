@@ -206,11 +206,12 @@
     if (!items || !items.length) return '<div class="kr-perex-empty">데이터 없음</div>';
     return items.slice(0, 3).map(function (it) {
       var sym = '<span class="sym">' + esc(it.symbol) + '</span>';
+      var px = '<span class="px" style="margin-left:auto;color:var(--text-dim);font-variant-numeric:tabular-nums;font-size:0.82rem">' + fmtPrice(it.price) + '</span>';
       if (kind === 'gainers') {
         var ch = toNum(it.change_pct);
-        return '<div class="kr-perex-item">' + sym + '<span class="' + changeClass(ch) + '">' + fmtPct(ch, true) + '</span></div>';
+        return '<div class="kr-perex-item">' + sym + px + '<span class="' + changeClass(ch) + '" style="min-width:62px;text-align:right">' + fmtPct(ch, true) + '</span></div>';
       }
-      return '<div class="kr-perex-item">' + sym + '<span class="vol">' + fmtVol(it.vol_krw) + '원</span></div>';
+      return '<div class="kr-perex-item">' + sym + px + '<span class="vol" style="min-width:72px;text-align:right">' + fmtVol(it.vol_krw) + '원</span></div>';
     }).join('');
   }
   function renderPerExTop3(data) {
