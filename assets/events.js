@@ -12,21 +12,51 @@ function classify(ev, now) {
   return "active";
 }
 
-function fmtDate(s) {
-  if (!s) return "";
+const WD = ["일", "월", "화", "수", "목", "금", "토"];
+function fmtMD(s, withTime) {
   const d = new Date(s);
   if (isNaN(d)) return s;
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+  let r = `${d.getMonth() + 1}/${d.getDate()} (${WD[d.getDay()]})`;
+  if (withTime) {
+    const hh = String(d.getHours()).padStart(2, "0"), mm = String(d.getMinutes()).padStart(2, "0");
+    if (!(hh === "00" && mm === "00")) r += ` ${hh}:${mm}`;
+  }
+  return r;
+}
+function rangeStr(ev) {
+  if (ev.startDate && ev.endDate) return `${fmtMD(ev.startDate, false)} ~ ${fmtMD(ev.endDate, true)}`;
+  if (ev.endDate) return `~ ${fmtMD(ev.endDate, true)}`;
+  if (ev.startDate) return `${fmtMD(ev.startDate, false)} ~`;
+  return "";
+}
+function cdStr(ev, state) {
+  if (state === "ended") return { txt: "종료됨", cls: "cd-end" };
+  const target = state === "soon" ? ev.startDate : ev.endDate;
+  if (!target) return null;
+  const ms = new Date(target).getTime() - Date.now();
+  if (isNaN(ms)) return null;
+  if (ms <= 0) return state === "soon" ? { txt: "곧 시작", cls: "" } : { txt: "종료됨", cls: "cd-end" };
+  const d = Math.floor(ms / 864e5), h = Math.floor((ms % 864e5) / 36e5);
+  const pre = state === "soon" ? "시작까지" : "종료까지";
+  return { txt: `${pre} ${d}일 ${h}시간`, cls: "" };
+}
+function tagsHtml(ev) {
+  let tags = Array.isArray(ev.tags) && ev.tags.length ? ev.tags : (ev.type === "official" ? ["공식 이벤트"] : []);
+  return tags.map((t, i) => `<span class="tg ${i === 0 ? "tg-type" : "tg-proj"}">${esc(t)}</span>`).join("");
 }
 
 function evCard(ev, state) {
-  const label = { active: "진행중", soon: "예정", ended: "종료" }[state];
-  const cls = { active: "b-active", soon: "b-soon", ended: "b-ended" }[state];
-  const link = ev.link ? `<a class="go" href="${safeURL(ev.link)}">바로가기 →</a>` : "";
+  const steps = ev.steps || ev.description || "";
+  const cd = cdStr(ev, state);
+  const tg = tagsHtml(ev);
+  const range = rangeStr(ev);
+  const link = ev.link ? `<a class="go" href="${safeURL(ev.link)}">참여하기 →</a>` : "";
   return `<div class="ev">
-    <div class="top"><div class="ti">${esc(ev.title)}</div><span class="badge ${cls}">${label}</span></div>
-    ${ev.description ? `<div class="desc">${esc(ev.description)}</div>` : ""}
-    ${ev.rewards ? `<div class="reward">🎁 ${esc(ev.rewards)}</div>` : ""}
+    ${tg ? `<div class="tags">${tg}</div>` : ""}
+    <div class="ti">${esc(ev.title)}</div>
+    ${(range || ev.rewards) ? `<div class="metarow">${range ? `<span class="m-date">🗓️ ${esc(range)}</span>` : ""}${ev.rewards ? `<span class="m-reward">🎁 ${esc(ev.rewards)}</span>` : ""}</div>` : ""}
+    ${steps ? `<div class="step">• ${esc(steps)}</div>` : ""}
+    ${cd ? `<div class="cd ${cd.cls}">⏰ ${esc(cd.txt)}</div>` : ""}
     ${link}</div>`;
 }
 
