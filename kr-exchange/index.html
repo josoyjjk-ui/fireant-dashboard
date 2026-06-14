@@ -51,6 +51,10 @@
     .page-header { padding: 40px 0 28px; }
     .page-header h1 { font-size: 1.6rem; font-weight: 800; }
     .section { margin-top: 32px; }
+    /* 거래소 이벤트 2열 그리드(2x3) */
+    .ev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; margin-top: 24px; }
+    .ev-grid > .section { margin-top: 0; }
+    @media (max-width: 680px) { .ev-grid { grid-template-columns: 1fr; } }
     .section-head {
       cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px;
       padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 14px;
@@ -213,6 +217,7 @@
       <p style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;">* 가나다 순서로 배치하였습니다.</p>
     </div>
 
+    <div class="ev-grid">
     <!-- 고팍스 -->
     <div class="section" id="gopax">
       <div class="section-head">
@@ -416,6 +421,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
 
     <div class="notice">
