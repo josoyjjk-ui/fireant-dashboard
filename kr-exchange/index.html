@@ -11,14 +11,14 @@
     :root, [data-theme="dark"] {
       --bg: #09090f; --surface: rgba(255,255,255,0.06); --surface2: rgba(255,255,255,0.03);
       --border: rgba(255,255,255,0.1); --text: #f0f0f5; --text-dim: rgba(240,240,245,0.55);
-      --text-muted: rgba(240,240,245,0.35); --gold: #FFD740; --green: #48C78E; --red: #FF5F5F;
+      --text-muted: rgba(240,240,245,0.35); --gold: #FFD740; --green: #48C78E; --red: #FF5F5F; --blue: #5B9BE8;
       --nav-bg: rgba(8,8,15,0.85);
       --radius: 16px; --radius-sm: 10px;
     }
     [data-theme="light"] {
       --bg: #f5f5f7; --surface: rgba(0,0,0,0.05); --surface2: rgba(0,0,0,0.02);
       --border: rgba(0,0,0,0.1); --text: #1a1a2e; --text-dim: rgba(26,26,46,0.55);
-      --text-muted: rgba(26,26,46,0.35); --gold: #D4A017; --green: #22A855; --red: #E54848;
+      --text-muted: rgba(26,26,46,0.35); --gold: #D4A017; --green: #22A855; --red: #E54848; --blue: #2563EB;
       --nav-bg: rgba(245,245,247,0.9);
       --radius: 16px; --radius-sm: 10px;
     }
@@ -116,6 +116,81 @@
       .nav-inner { max-width: 100%; padding: 0 8px; }
       .nav-links { position: static; transform: none; left: auto; flex-wrap: nowrap; justify-content: center; white-space: nowrap; gap: 2px; width: 100%; overflow-x: auto; }
       .nav-links a { font-size: 0.72rem; padding: 4px 6px; }
+    }
+
+    /* ===== 실시간 거래소 데이터 (kr_dashboard.js) ===== */
+    .kr-section { margin-top: 40px; }
+    .kr-section-head {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .kr-section-head h2 { font-size: 1.05rem; font-weight: 800; }
+    .kr-updated { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; }
+    .kr-refresh {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-dim); font-size: 0.85rem; line-height: 1; padding: 4px 9px;
+      cursor: pointer; transition: color .2s, border-color .2s;
+    }
+    .kr-refresh:hover { color: var(--text); border-color: var(--gold); }
+    .kr-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px; margin-bottom: 14px;
+    }
+    .kr-card-title {
+      font-size: 0.8rem; font-weight: 700; color: var(--text-dim);
+      margin-bottom: 14px; letter-spacing: 0.01em;
+    }
+    .kr-status { padding: 16px 0; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+
+    /* 점유율 막대 */
+    .kr-share-row { margin-bottom: 12px; }
+    .kr-share-row:last-child { margin-bottom: 0; }
+    .kr-share-info { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+    .kr-share-name { font-size: 0.86rem; font-weight: 700; min-width: 52px; }
+    .kr-share-vol { font-size: 0.76rem; color: var(--text-dim); }
+    .kr-share-pct { margin-left: auto; font-size: 0.84rem; font-weight: 800; color: var(--text); }
+    .kr-share-track {
+      position: relative; height: 8px; background: var(--surface);
+      border-radius: 4px; overflow: hidden;
+    }
+    .kr-share-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+    .kr-total {
+      margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border);
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 0.82rem; color: var(--text-dim);
+    }
+    .kr-total b { color: var(--text); font-weight: 800; font-size: 0.92rem; }
+
+    /* 김치 프리미엄 */
+    .kr-kimchi { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    .kr-kimchi-val { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; }
+    .kr-kimchi-note { font-size: 0.72rem; color: var(--text-muted); flex: 1; min-width: 180px; }
+
+    /* TOP 10 표 */
+    .kr-top-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .kr-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; table-layout: auto; }
+    .kr-table th {
+      text-align: right; font-weight: 600; color: var(--text-muted);
+      font-size: 0.68rem; padding: 4px 4px; border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    .kr-table th.l { text-align: left; }
+    .kr-table td {
+      padding: 6px 4px; border-bottom: 1px solid var(--surface);
+      text-align: right; white-space: nowrap;
+    }
+    .kr-table td.l { text-align: left; }
+    .kr-table td.rank { color: var(--text-muted); width: 18px; }
+    .kr-table td.sym { font-weight: 700; }
+    .kr-table tbody tr:last-child td { border-bottom: none; }
+    .kr-exch-badge {
+      display: inline-block; font-size: 0.62rem; font-weight: 700;
+      padding: 1px 6px; border-radius: 10px; background: var(--surface); color: var(--text-dim);
+    }
+    .kr-up { color: var(--red); }   /* 국내 관습: 상승=빨강 */
+    .kr-down { color: var(--blue); } /* 국내 관습: 하락=파랑 */
+    .kr-flat { color: var(--text-dim); }
+    @media (min-width: 768px) {
+      .kr-top-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="97eb5034-8d7d-4c30-a7ef-53d73cfe8298"></script>
@@ -347,6 +422,40 @@
       💡 이벤트 정보는 수동으로 업데이트됩니다. 최신 정보는 각 거래소 공식 채널을 확인해주세요.<br>
       📅 마지막 업데이트: 2026-06-14
     </div>
+
+    <!-- 📊 실시간 거래소 데이터 (assets/kr_dashboard.js 가 렌더) -->
+    <section class="kr-section" id="kr-data">
+      <div class="kr-section-head">
+        <h2>📊 실시간 거래소 데이터</h2>
+        <span class="kr-updated" id="kr-updated">로딩 중…</span>
+        <button class="kr-refresh" id="kr-refresh" type="button" title="새로고침">↻</button>
+      </div>
+
+      <!-- 1. 거래대금 점유율 -->
+      <div class="kr-card">
+        <div class="kr-card-title">거래대금 점유율 (24h)</div>
+        <div id="kr-shares"><div class="kr-status">로딩 중…</div></div>
+        <div class="kr-total" id="kr-total"></div>
+      </div>
+
+      <!-- 2. 김치 프리미엄 -->
+      <div class="kr-card">
+        <div class="kr-card-title">김치 프리미엄 (BTC)</div>
+        <div class="kr-kimchi" id="kr-kimchi"><div class="kr-status">로딩 중…</div></div>
+      </div>
+
+      <!-- 3. TOP 10 -->
+      <div class="kr-top-grid">
+        <div class="kr-card">
+          <div class="kr-card-title">거래량 TOP 10</div>
+          <div id="kr-vol-top"><div class="kr-status">로딩 중…</div></div>
+        </div>
+        <div class="kr-card">
+          <div class="kr-card-title">상승률 TOP 10</div>
+          <div id="kr-gain-top"><div class="kr-status">로딩 중…</div></div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
@@ -392,5 +501,6 @@
       head.addEventListener('click', () => { head.closest('.section').classList.toggle('open'); });
     });
   </script>
+  <script src="/assets/kr_dashboard.js" defer></script>
 </body>
 </html>
