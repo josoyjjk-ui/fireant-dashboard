@@ -196,6 +196,54 @@
     @media (min-width: 768px) {
       .kr-top-grid { grid-template-columns: 1fr 1fr; }
     }
+
+    /* 차익거래 표 */
+    .kr-arb-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+    .kr-arb-table th {
+      text-align: right; font-weight: 600; color: var(--text-muted);
+      font-size: 0.66rem; padding: 4px 5px; border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    .kr-arb-table th.l { text-align: left; }
+    .kr-arb-table td {
+      padding: 7px 5px; border-bottom: 1px solid var(--surface);
+      text-align: right; white-space: nowrap;
+    }
+    .kr-arb-table td.l { text-align: left; }
+    .kr-arb-table td.sym { font-weight: 700; }
+    .kr-arb-ex { display: block; font-size: 0.6rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1px; }
+    .kr-arb-px { font-weight: 700; }
+    .kr-arb-src { font-size: 0.62rem; color: var(--text-muted); margin-top: 8px; text-align: right; }
+    .kr-arb-table tbody tr:last-child td { border-bottom: none; }
+    .kr-arb-table tbody tr.hot td { background: rgba(255,95,95,0.07); }
+
+    /* 거래소별 TOP3 */
+    .kr-perex-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 560px) { .kr-perex-grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1000px) { .kr-perex-grid { grid-template-columns: repeat(3, 1fr); } }
+    .kr-perex-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px;
+    }
+    .kr-perex-head {
+      display: flex; align-items: center; gap: 8px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 10px;
+    }
+    .kr-perex-logo {
+      width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+      background: #fff; padding: 3px; object-fit: contain; box-sizing: border-box;
+    }
+    .kr-perex-name { font-size: 0.86rem; font-weight: 800; }
+    .kr-perex-sub { margin-bottom: 10px; }
+    .kr-perex-sub:last-child { margin-bottom: 0; }
+    .kr-perex-sub-title {
+      font-size: 0.64rem; font-weight: 700; color: var(--text-muted);
+      margin-bottom: 6px; letter-spacing: 0.02em;
+    }
+    .kr-perex-list { display: flex; flex-direction: column; gap: 4px; }
+    .kr-perex-item { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.76rem; }
+    .kr-perex-item .sym { font-weight: 700; }
+    .kr-perex-item .vol { color: var(--text-dim); font-size: 0.72rem; }
+    .kr-perex-empty { font-size: 0.74rem; color: var(--text-muted); text-align: center; padding: 8px 0; }
   </style>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="97eb5034-8d7d-4c30-a7ef-53d73cfe8298"></script>
 </head>
@@ -460,6 +508,18 @@
           <div class="kr-card-title">상승률 TOP 10</div>
           <div id="kr-gain-top"><div class="kr-status">로딩 중…</div></div>
         </div>
+      </div>
+
+      <!-- 4. 차익거래 기회 (거래소간 가격 이격) -->
+      <div class="kr-card">
+        <div class="kr-card-title">⚡ 차익거래 기회 (거래소간 가격 이격)</div>
+        <div id="kr-arb"><div class="kr-status">로딩 중…</div></div>
+      </div>
+
+      <!-- 5. 거래소별 TOP3 -->
+      <div class="kr-card">
+        <div class="kr-card-title">🏆 거래소별 TOP3</div>
+        <div id="kr-perex"><div class="kr-status">로딩 중…</div></div>
       </div>
     </section>
   </div>

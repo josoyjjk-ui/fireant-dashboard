@@ -17,6 +17,7 @@
     gopax:   '#8B5CF6'
   };
   var EX_ORDER = ['upbit', 'bithumb', 'coinone', 'korbit', 'gopax'];
+  var EX_NAMES = { upbit: '업비트', bithumb: '빗썸', coinone: '코인원', korbit: '코빗', gopax: '고팍스' };
 
   /* ---------- 숫자 포맷 (한국식: 조/억/만) ---------- */
   function toNum(v) {
@@ -64,7 +65,7 @@
   /* ---------- 에러 / 로딩 ---------- */
   function statusHTML(msg) { return '<div class="kr-status">' + esc(msg) + '</div>'; }
   function failAll(msg) {
-    ['kr-shares', 'kr-kimchi', 'kr-vol-top', 'kr-gain-top'].forEach(function (id) {
+    ['kr-shares', 'kr-kimchi', 'kr-vol-top', 'kr-gain-top', 'kr-arb', 'kr-perex'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.innerHTML = statusHTML(msg);
     });
@@ -158,6 +159,91 @@
     if (g) g.innerHTML = tableHTML(data.gainers_top10);
   }
 
+  /* ---------- 4. 차익거래 기회 (거래소간 가격 이격) ---------- */
+  // 차익 비교용 가격: 한국식 콤마, 초저가는 소수 유지 (단위 미표기)
+  function fmtArbPrice(v) {
+    v = toNum(v); if (v === null) return '—';
+    var abs = Math.abs(v);
+    if (abs >= 1) return Math.round(v).toLocaleString('ko-KR');
+    if (abs >= 0.01) return v.toFixed(4);
+    if (abs >= 0.0001) return v.toFixed(6);
+    return v.toFixed(8);
+  }
+  function renderArbitrage(data) {
+    var root = document.getElementById('kr-arb');
+    if (!root) return;
+    var rows = data.arbitrage;
+    if (!rows || !rows.length) { root.innerHTML = statusHTML('데이터 준비중'); return; }
+    var body = '';
+    rows.slice(0, 10).forEach(function (r) {
+      var gap = toNum(r.gap_pct);
+      var kim = toNum(r.kimchi_pct);
+      var hot = (gap !== null && gap >= 2) ? ' class="hot"' : '';
+      body += ''
+        + '<tr' + hot + '>'
+        +   '<td class="l sym">' + esc(r.symbol) + '</td>'
+        +   '<td><span class="kr-arb-ex">' + esc(r.low_ex) + '</span><span class="kr-arb-px">' + fmtArbPrice(r.low_price) + '</span></td>'
+        +   '<td><span class="kr-arb-ex">' + esc(r.high_ex) + '</span><span class="kr-arb-px">' + fmtArbPrice(r.high_price) + '</span></td>'
+        +   '<td>' + fmtArbPrice(r.global_krw) + '</td>'
+        +   '<td class="' + changeClass(gap) + '">' + fmtPct(gap, true) + '</td>'
+        +   '<td class="' + changeClass(kim) + '">' + fmtPct(kim, true) + '</td>'
+        + '</tr>';
+    });
+    root.innerHTML = ''
+      + '<table class="kr-arb-table">'
+      +   '<thead><tr>'
+      +     '<th class="l">코인</th>'
+      +     '<th>국내 최저가</th><th>국내 최고가</th><th>글로벌</th>'
+      +     '<th>이격률</th><th>김프</th>'
+      +   '</tr></thead>'
+      +   '<tbody>' + body + '</tbody>'
+      + '</table>'
+      + '<div class="kr-arb-src">출처: CoinGecko</div>';
+  }
+
+  /* ---------- 5. 거래소별 TOP3 ---------- */
+  function perexListHTML(items, kind) {
+    if (!items || !items.length) return '<div class="kr-perex-empty">데이터 없음</div>';
+    return items.slice(0, 3).map(function (it) {
+      var sym = '<span class="sym">' + esc(it.symbol) + '</span>';
+      if (kind === 'gainers') {
+        var ch = toNum(it.change_pct);
+        return '<div class="kr-perex-item">' + sym + '<span class="' + changeClass(ch) + '">' + fmtPct(ch, true) + '</span></div>';
+      }
+      return '<div class="kr-perex-item">' + sym + '<span class="vol">' + fmtVol(it.vol_krw) + '원</span></div>';
+    }).join('');
+  }
+  function renderPerExTop3(data) {
+    var root = document.getElementById('kr-perex');
+    if (!root) return;
+    var per = data.per_exchange;
+    if (!per) { root.innerHTML = statusHTML('데이터 준비중'); return; }
+    var hasAny = EX_ORDER.some(function (k) { return per[k]; });
+    if (!hasAny) { root.innerHTML = statusHTML('데이터 준비중'); return; }
+    var ex = data.exchanges || {};
+    var html = '<div class="kr-perex-grid">';
+    EX_ORDER.forEach(function (k) {
+      var p = per[k];
+      var name = (ex[k] && ex[k].name) || EX_NAMES[k] || k;
+      var color = EX_COLORS[k];
+      var logo = 'logos/' + k + '.jpg';
+      var head = '<div class="kr-perex-head"><img class="kr-perex-logo" src="' + logo + '" alt="' + esc(name) + '" loading="lazy">'
+        + '<span class="kr-perex-name" style="color:' + color + '">' + esc(name) + '</span></div>';
+      if (!p) {
+        html += '<div class="kr-perex-card">' + head + '<div class="kr-perex-empty">데이터 없음</div></div>';
+        return;
+      }
+      html += ''
+        + '<div class="kr-perex-card">' + head
+        +   '<div class="kr-perex-sub"><div class="kr-perex-sub-title">상승률 TOP3</div>'
+        +     '<div class="kr-perex-list">' + perexListHTML(p.gainers_top10, 'gainers') + '</div></div>'
+        +   '<div class="kr-perex-sub"><div class="kr-perex-sub-title">거래량 TOP3</div>'
+        +     '<div class="kr-perex-list">' + perexListHTML(p.volume_top10, 'volume') + '</div></div>'
+        + '</div>';
+    });
+    root.innerHTML = html + '</div>';
+  }
+
   /* ---------- 갱신 시각 ---------- */
   function fmtUpdated(iso) {
     if (!iso) return '';
@@ -174,6 +260,8 @@
     renderShares(data);
     renderKimchi(data);
     renderTops(data);
+    renderArbitrage(data);
+    renderPerExTop3(data);
     var upd = fmtUpdated(data.generated_at);
     setText('kr-updated', upd ? '업데이트: ' + upd : '업데이트됨');
   }
