@@ -296,7 +296,7 @@
       var events = Array.isArray(ex.events) ? ex.events : [];
       var count = source === 'unavailable' ? 0 : events.length;
       var countClass = count > 0 ? 'ev-count' : 'ev-count zero';
-      var openClass = count > 0 ? 'section open' : 'section';
+      var openClass = 'section'; // 접힘 디폴트(클릭 시 펼침)
       html += ''
         + '<div class="' + openClass + '">'
         +   '<div class="section-head">'
