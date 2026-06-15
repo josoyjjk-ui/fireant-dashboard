@@ -19,6 +19,7 @@
   var EX_ORDER = ['upbit', 'bithumb', 'coinone', 'korbit', 'gopax'];
   var EX_NAMES = { upbit: '업비트', bithumb: '빗썸', coinone: '코인원', korbit: '코빗', gopax: '고팍스' };
   var EX_NAME2KEY = { '업비트': 'upbit', '빗썸': 'bithumb', '코인원': 'coinone', '코빗': 'korbit', '고팍스': 'gopax' };
+  var EVENT_NOTICE = '💡 이벤트는 거래소 공식 공지에서 자동 수집됩니다(최신순). 상세·조건은 각 거래소 공식 채널 확인.';
   function exLogoHTML(name) {
     var key = EX_NAME2KEY[name];
     if (key) return '<img class="kr-exch-logo" src="logos/' + key + '.jpg" alt="' + esc(name) + '" title="' + esc(name) + '" loading="lazy">';
@@ -251,6 +252,71 @@
     root.innerHTML = html + '</div>';
   }
 
+  /* ---------- 거래소 이벤트 ---------- */
+  function eventNoticeHTML() {
+    return '<div class="notice">' + esc(EVENT_NOTICE) + '</div>';
+  }
+
+  function eventEmptyHTML() {
+    return '<div class="ev-empty">현재 확인된 진행 중 이벤트가 없습니다 / 공식 채널 확인</div>';
+  }
+
+  function renderEventCards(events) {
+    if (!events || !events.length) return eventEmptyHTML();
+    return events.map(function (ev) {
+      return ''
+        + '<div class="ev-card">'
+        +   '<div class="ev-title"><a href="' + esc(ev.url) + '" target="_blank" rel="noopener noreferrer">' + esc(ev.title) + '</a></div>'
+        +   '<div class="ev-meta">'
+        +     (ev.date ? '<span>등록 ' + esc(ev.date) + '</span>' : '')
+        +     '<span>공식 공지</span>'
+        +   '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  function bindEventToggles(root) {
+    root.querySelectorAll('.section-head').forEach(function (head) {
+      head.addEventListener('click', function () {
+        var section = head.closest('.section');
+        if (section) section.classList.toggle('open');
+      });
+    });
+  }
+
+  function renderEvents(data) {
+    var root = document.getElementById('kr-events');
+    if (!root) return;
+    var exchanges = (data && data.exchanges) || {};
+    var html = '<div class="ev-grid">';
+    EX_ORDER.forEach(function (key) {
+      var ex = exchanges[key] || {};
+      var name = ex.name || EX_NAMES[key] || key;
+      var source = ex.source || 'unavailable';
+      var events = Array.isArray(ex.events) ? ex.events : [];
+      var count = source === 'unavailable' ? 0 : events.length;
+      var countClass = count > 0 ? 'ev-count' : 'ev-count zero';
+      var openClass = count > 0 ? 'section open' : 'section';
+      html += ''
+        + '<div class="' + openClass + '">'
+        +   '<div class="section-head">'
+        +     '<img class="exch-logo" src="logos/' + key + '.jpg" alt="' + esc(name) + '" loading="lazy">'
+        +     '<h2 class="' + key + '">' + esc(name) + '</h2>'
+        +     '<span class="exch-badge">' + esc(key.toUpperCase()) + '</span>'
+        +     '<span class="' + countClass + '">' + count + '</span>'
+        +   '</div>'
+        +   '<div class="ev-body">' + renderEventCards(source === 'unavailable' ? [] : events) + '</div>'
+        + '</div>';
+    });
+    root.innerHTML = html + '</div>' + eventNoticeHTML();
+    bindEventToggles(root);
+  }
+
+  function failEvents(msg) {
+    var root = document.getElementById('kr-events');
+    if (root) root.innerHTML = statusHTML(msg) + eventNoticeHTML();
+  }
+
   /* ---------- 갱신 시각 ---------- */
   function fmtUpdated(iso) {
     if (!iso) return '';
@@ -283,9 +349,19 @@
       });
   }
 
+  function loadEvents() {
+    fetch('../data/v1/kr_events.json?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+      .then(renderEvents)
+      .catch(function (e) {
+        failEvents('이벤트 로딩 실패');
+        console.error('[kr_dashboard] event load error', e);
+      });
+  }
+
   function init() {
     var btn = document.getElementById('kr-refresh');
-    if (btn) btn.addEventListener('click', function (e) { e.stopPropagation(); load(); });
+    if (btn) btn.addEventListener('click', function (e) { e.stopPropagation(); load(); loadEvents(); });
     // 섹션 헤더 클릭 → 접기/펼치기 (기본 접힘: .kr-collapsed). 새로고침 버튼은 토글에서 제외.
     var head = document.getElementById('kr-data-head');
     if (head) head.addEventListener('click', function (e) {
@@ -294,7 +370,8 @@
       if (sec) sec.classList.toggle('kr-collapsed');
     });
     load();
-    setInterval(load, REFRESH_MS);
+    loadEvents();
+    setInterval(function () { load(); loadEvents(); }, REFRESH_MS);
   }
 
   if (document.readyState === 'loading') {
