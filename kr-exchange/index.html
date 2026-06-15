@@ -205,6 +205,12 @@
 
     /* TOP 10 표 */
     .kr-top-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    /* 로딩 시 화면 흔들림(CLS) 방지 — 비동기로 채워지는 컨테이너 높이 미리 예약 */
+    #kr-vol-top, #kr-gain-top { min-height: 362px; }
+    #kr-arb { min-height: 555px; }
+    #kr-perex { min-height: 630px; }
+    #kr-kimchi-widget { min-height: 58px; }
+    #kr-events { min-height: 144px; }
     .kr-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; table-layout: auto; }
     .kr-table th {
       text-align: right; font-weight: 600; color: var(--text-muted);
