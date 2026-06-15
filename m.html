@@ -137,6 +137,28 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .m-prop-head{display:flex;align-items:center;gap:10px;min-width:0;}
 .m-prop-icon{font-size:19px;line-height:1;flex:0 0 auto;}
 .m-prop-title{font-size:14px;font-weight:800;color:#fff;line-height:1.3;min-width:0;overflow-wrap:break-word;}
+.krs-card{background:#12151c;border:1px solid #232936;border-radius:14px;padding:14px;margin-bottom:18px;}
+.krs-top{display:flex;justify-content:space-between;align-items:baseline;}
+.krs-top .l{font-size:12px;color:#8b93a3;font-weight:700;}
+.krs-top .v{font-size:21px;font-weight:800;}
+.krs-bar{display:flex;height:8px;border-radius:5px;overflow:hidden;margin:9px 0 12px;background:#0e1116;}
+.krs-bar i{height:100%;}
+.krs-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1b2029;font-size:13px;}
+.krs-row:last-child{border-bottom:0;}
+.krs-row .pct{font-weight:800;}
+.krs-empty{color:#8b93a3;font-size:13px;padding:14px 2px;}
+.whsub{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:800;margin:14px 2px 6px;}
+.whsub span{font-size:11px;color:#8b93a3;font-weight:700;}
+.feedwrap{max-height:300px;overflow-y:auto;background:#12151c;border:1px solid #232936;border-radius:12px;padding:6px 12px;margin-bottom:6px;}
+.feedrow{display:grid;grid-template-columns:58px 40px 1fr auto;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid #1b2029;font-size:13px;}
+.feedrow:last-child{border-bottom:0;}
+.ftime{color:#8b93a3;font-size:11px;font-variant-numeric:tabular-nums;}
+.fsym{font-weight:800;font-size:12px;}
+.fside{font-weight:700;font-size:13px;}
+.famt{font-weight:800;text-align:right;}
+.feedempty{color:#8b93a3;font-size:12px;padding:14px 2px;}
+.mapbar{display:flex;height:24px;border-radius:7px;overflow:hidden;margin:8px 0;background:#0e1116;}
+.mapseg{height:100%;}
 </style></head><body>
 <div class="backdrop"></div>
 <aside class="drawer">
@@ -185,11 +207,22 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
     <div class="stats" id="stats"></div>
     <div class="sec"><h2>시그니처 수급</h2></div>
     <div class="sig" id="sig"></div>
+    <div class="sec"><h2>🇰🇷 국내 수급 · 5대 통합</h2><a class="seclink" href="kr-exchange/">자세히 →</a></div>
+    <div id="krSupply"><div class="krs-empty">로딩 중…</div></div>
     <div class="sec"><h2>급등 · 급락</h2><a class="seclink" href="market">자세히 →</a></div>
     <div class="duo">
       <div class="col"><div class="colh up">📈 급등</div><div id="gainers"></div></div>
       <div class="col"><div class="colh down">📉 급락</div><div id="losers"></div></div>
     </div>
+    <div class="sec"><h2>🐋 고래·청산 시그널</h2><a class="seclink" href="signals">자세히 →</a></div>
+    <div class="whsub">💥 실시간 청산 <span>BTC·ETH 선물</span></div>
+    <div class="feedwrap" id="liqFeed"></div>
+    <div class="whsub">🐋 고래 청산 <span>≥ $100K</span></div>
+    <div class="feedwrap" id="whaleLiq"></div>
+    <div class="whsub">🐋 고래 체결 <span>≥ $500K</span></div>
+    <div class="feedwrap" id="whaleTrades"></div>
+    <div class="whsub">💥 청산 분포 <span>세션 누적</span></div>
+    <div id="liqMap"></div>
     <div class="sec"><h2>바로가기</h2></div>
     <div class="menu">
       <a class="mitem" href="events"><span class="mi">🎉</span><div><div class="ml">이벤트·당첨자</div><div class="md">진행 이벤트·당첨</div></div><span class="mc">›</span></a>
@@ -285,12 +318,15 @@ function animNum(el,to,fmt){if(!el)return;const from=el._v==null?to:el._v;el._v=
 let lastFetch=0,wsLast=0,ws=null;
 function tickAge(){if(!lastFetch)return;const s=Math.max(0,Math.round((Date.now()-lastFetch)/1000));$("ageT").textContent=s<5?"🟢 방금 갱신":(s<60?`🟢 ${s}초 전`:`🟢 ${Math.floor(s/60)}분 전`);}
 function startWS(){try{ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/ethusdt@ticker");ws.onmessage=function(ev){try{const m=JSON.parse(ev.data).data;if(!m||!m.s)return;wsLast=Date.now();const price=+m.c,chg=+m.P;if(m.s==="BTCUSDT"){$("btcPx").classList.remove("skel");animNum($("btcPx"),price,fUSD);$("btcChg").textContent=pc(chg);setCell("btcCell",dir(chg));}else if(m.s==="ETHUSDT"){$("ethPx").classList.remove("skel");animNum($("ethPx"),price,fUSD);$("ethChg").textContent=pc(chg);setCell("ethCell",dir(chg));}}catch(e){}};ws.onclose=function(){ws=null;setTimeout(function(){if(!document.hidden)startWS();},5000);};ws.onerror=function(){try{ws.close();}catch(e){}};}catch(e){}}
-let timer=null,sigTimer=null,ageTimer=null;
-function start(){stop();loadHome();timer=setInterval(loadHome,30000);loadSig();sigTimer=setInterval(loadSig,600000);startWS();}
-function stop(){clearInterval(timer);clearInterval(sigTimer);try{if(ws)ws.close();}catch(e){}ws=null;}
+function fmtKRW(v){if(v==null)return"—";var a=Math.abs(v);if(a>=1e12)return"₩"+(v/1e12).toFixed(2)+"조";if(a>=1e8)return"₩"+comma(Math.round(v/1e8))+"억";if(a>=1e4)return"₩"+comma(Math.round(v/1e4))+"만";return"₩"+comma(v);}
+async function loadKr(){try{const d=await getJSON("data/v1/kr_exchange.json");const ex=d.exchanges||{};const order=["upbit","bithumb","coinone","korbit","gopax"];const col={upbit:"#1499DA",bithumb:"#F7981C",coinone:"#FFD740",korbit:"#00C4B4",gopax:"#8B5CF6"};const medals=["🥇","🥈","🥉","",""];const tot=d.total_vol_krw||0;const bar=order.map(k=>{const e=ex[k];return e?`<i style="width:${(e.share_pct||0).toFixed(2)}%;background:${col[k]}"></i>`:"";}).join("");const rows=order.map((k,i)=>{const e=ex[k];return e?`<div class="krs-row"><span>${medals[i]} ${esc(e.name||k)}</span><span><span class="pct">${(e.share_pct||0).toFixed(1)}%</span> · ${fmtKRW(e.vol_24h_krw)}</span></div>`:"";}).join("");const kp=d.kimchi_premium&&d.kimchi_premium.btc_pct;const kpRow=(kp==null)?"":`<div class="krs-row"><span>김치프리미엄(BTC)</span><span class="${kp>=0?"up":"down"}">${kp>=0?"+":""}${Number(kp).toFixed(2)}%</span></div>`;const el=$("krSupply");if(el){el.dataset.ok="1";el.innerHTML=`<div class="krs-card"><div class="krs-top"><span class="l">통합 24h 거래대금</span><span class="v">${fmtKRW(tot)}</span></div><div class="krs-bar">${bar}</div>${rows}${kpRow}</div>`;}}catch(e){const el=$("krSupply");if(el&&!el.dataset.ok)el.innerHTML='<div class="krs-empty">국내 수급 로딩 실패</div>';}}
+let timer=null,sigTimer=null,ageTimer=null,krTimer=null;
+function start(){stop();loadHome();timer=setInterval(loadHome,30000);loadSig();sigTimer=setInterval(loadSig,600000);loadKr();krTimer=setInterval(loadKr,60000);startWS();}
+function stop(){clearInterval(timer);clearInterval(sigTimer);clearInterval(krTimer);try{if(ws)ws.close();}catch(e){}ws=null;}
 document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
 start();
 </script>
+<script src="assets/whale.js?v=2"></script>
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
 <script>
