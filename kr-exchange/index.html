@@ -50,6 +50,10 @@
     .backdrop { position:fixed; inset:0; background:rgba(0,0,0,.55); opacity:0; pointer-events:none; transition:opacity .25s; z-index:55; }
     body.navopen .backdrop { opacity:1; pointer-events:auto; }
     .wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 22px 24px 60px; }
+    /* 콘텐츠 1회 부드러운 페이드인 — 데이터 채워지는 순간(스켈레톤→콘텐츠)의 깜빡임을 가림. 네비는 영향 없음(별도 요소), 데이터 갱신 시 재실행 안 됨 */
+    @keyframes krWrapIn { from { opacity: 0; } to { opacity: 1; } }
+    .wrap { animation: krWrapIn 0.3s ease-out; }
+    @media (prefers-reduced-motion: reduce) { .wrap { animation: none; } }
     .page-header { padding: 40px 0 28px; }
     .page-header h1 { font-size: 1.07rem; font-weight: 800; }
     .mobile-toc { display: none; }
