@@ -132,10 +132,16 @@ function fgKo(c) {
 }
 
 /* ---------------- 실시간 급등·급락 TOP 10 (market_now.json 공유) ---------------- */
+function cgURL(c) {
+  // 코인게코 코인 페이지(id 있으면) → 없으면 심볼/이름 검색으로 폴백
+  const id = c && c.id ? String(c.id) : "";
+  if (id) return "https://www.coingecko.com/en/coins/" + encodeURIComponent(id);
+  return "https://www.coingecko.com/en/search?query=" + encodeURIComponent((c && (c.symbol || c.name)) || "");
+}
 function moverRow(c, i) {
   const v = c.chg;
-  return `<div class="li mv"><div class="mvn"><span class="rk">${i + 1}</span><img src="${safeURL(c.image)}" alt="" loading="lazy" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span><span class="sym">${esc(c.symbol)}</span></div>
-    <div class="mvp"><span class="mono">$${comma(c.price, c.price < 1 ? 4 : 2)}</span><span class="${cls(v)} chg">${v >= 0 ? "+" : ""}${v.toFixed(2)}%</span></div></div>`;
+  return `<a class="li mv" href="${esc(cgURL(c))}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;cursor:pointer" title="코인게코에서 ${esc(c.name)} 보기"><div class="mvn"><span class="rk">${i + 1}</span><img src="${safeURL(c.image)}" alt="" loading="lazy" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span><span class="sym">${esc(c.symbol)}</span></div>
+    <div class="mvp"><span class="mono">$${comma(c.price, c.price < 1 ? 4 : 2)}</span><span class="${cls(v)} chg">${v >= 0 ? "+" : ""}${v.toFixed(2)}%</span></div></a>`;
 }
 function loadMovers() {
   if (!MN) return;
