@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-06-16T16:21:04+09:00",
-  "run_id": "1781594472",
-  "status": "ok",
+  "generated_at": "2026-06-16T16:23:29+09:00",
+  "run_id": "1781594618",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -94,12 +94,12 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 99.685,
+      "price": 99.697,
       "prev_close": 99.631,
-      "change": 0.054000000000002046,
-      "change_pct": 0.054199997992594715,
+      "change": 0.0660000000000025,
+      "change_pct": 0.0662444419909491,
       "currency": "USD",
-      "market_time": 1781593871
+      "market_time": 1781594017
     },
     {
       "name": "VIX 변동성",
@@ -118,24 +118,24 @@
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 4347.4,
+      "price": 4348.6,
       "prev_close": 4328.0,
-      "change": 19.399999999999636,
-      "change_pct": 0.44824399260627623,
+      "change": 20.600000000000364,
+      "change_pct": 0.4759704251386406,
       "currency": "USD",
-      "market_time": 1781593862
+      "market_time": 1781594015
     },
     {
       "name": "WTI 유가",
       "symbol": "CL=F",
       "group": "원자재",
       "unit": "",
-      "price": 80.18,
+      "price": 80.14,
       "prev_close": 80.75,
-      "change": -0.5699999999999932,
-      "change_pct": -0.705882352941168,
+      "change": -0.6099999999999994,
+      "change_pct": -0.755417956656346,
       "currency": "USD",
-      "market_time": 1781593874
+      "market_time": 1781594020
     },
     {
       "name": "코스피",
@@ -147,7 +147,8 @@
       "change": 180.62,
       "change_pct": 2.11,
       "currency": "KRW",
-      "market_time": "2026-06-16T16:20:00+09:00"
+      "market_time": "2026-06-16T16:20:00+09:00",
+      "stale": true
     },
     {
       "name": "코스닥",
@@ -159,8 +160,10 @@
       "change": 15.35,
       "change_pct": 1.48,
       "currency": "KRW",
-      "market_time": "2026-06-16T16:20:00+09:00"
+      "market_time": "2026-06-16T16:22:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "코스피(KOSPI): <urlopen error [Errno 54] Connection reset by peer>"
+  ]
 }
