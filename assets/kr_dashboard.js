@@ -26,6 +26,11 @@
     return '<span class="kr-exch-badge">' + esc(name) + '</span>';
   }
 
+  function coinLogoHTML(url) {
+    if (!url) return '';
+    return '<img class="kr-coin-logo" src="' + esc(url) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
+  }
+
   /* ---------- 숫자 포맷 (한국식: 조/억/만) ---------- */
   function toNum(v) {
     if (v === null || v === undefined || v === '') return null;
@@ -142,7 +147,7 @@
       body += ''
         + '<tr>'
         + '<td class="rank">' + esc(r.rank != null ? r.rank : '') + '</td>'
-        + '<td class="l sym">' + esc(r.symbol) + '</td>'
+        + '<td class="l sym">' + coinLogoHTML(r.logo) + esc(r.symbol) + '</td>'
         + '<td>' + fmtPrice(r.price) + '</td>'
         + '<td class="' + changeClass(ch) + '">' + fmtPct(ch, true) + '</td>'
         + '<td>' + fmtVol(r.vol_krw) + '</td>'
@@ -214,7 +219,7 @@
     var hdr = '<div class="kr-perex-item hdr"><span class="sym">종목</span><span class="px">가격</span><span class="vol">거래량</span></div>';
     var body = items.slice(0, 3).map(function (it) {
       return '<div class="kr-perex-item">'
-        + '<span class="sym">' + esc(it.symbol) + '</span>'
+        + '<span class="sym">' + coinLogoHTML(it.logo) + esc(it.symbol) + '</span>'
         + '<span class="px">' + fmtPrice(it.price) + '</span>'
         + '<span class="vol">' + fmtVol(it.vol_krw) + '원</span>'
         + '</div>';
