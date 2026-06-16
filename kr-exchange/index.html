@@ -251,6 +251,28 @@
     .kr-caut-date { font-size:0.7rem; color:var(--text-muted); }
     .kr-caut-deadline { font-size:0.7rem; font-weight:800; color:#FF5F5F; }
     .kr-caut-empty { font-size:0.78rem; color:var(--text-muted); padding:6px 0; }
+    /* 상장폐지·유의 캘린더 (D-day 타임라인) */
+    .kr-cal-note { font-size:0.74rem; color:var(--text-muted); margin-bottom:10px; line-height:1.45; }
+    .kr-cal { display:flex; flex-direction:column; gap:6px; }
+    .kr-cal-row { display:grid; grid-template-columns:46px 52px 22px auto auto 1fr; align-items:center; gap:8px;
+      padding:9px 10px; border-radius:10px; background:var(--surface,#14141c); border:1px solid var(--border);
+      border-left:3px solid var(--border); text-decoration:none; color:var(--text); }
+    .kr-cal-row.del { border-left-color:#FF5F5F; }
+    .kr-cal-row.warn { border-left-color:#F7981C; }
+    .kr-cal-date { font-weight:800; font-size:0.86rem; font-variant-numeric:tabular-nums; }
+    .kr-cal-dd { font-size:0.7rem; font-weight:800; text-align:center; padding:2px 0; border-radius:5px; background:rgba(255,255,255,.07); color:var(--text); }
+    .kr-cal-dd.now { background:#FF5F5F; color:#fff; }
+    .kr-cal-dd.past, .kr-cal-dd.none { background:transparent; color:var(--text-muted); font-weight:700; }
+    .kr-cal-ex { width:18px; height:18px; border-radius:5px; object-fit:contain; background:#fff; padding:2px; }
+    .kr-cal-coin { font-weight:800; font-size:0.84rem; }
+    .kr-cal-tag { font-size:0.66rem; font-weight:800; padding:2px 7px; border-radius:5px; white-space:nowrap; }
+    .kr-cal-tag.del { background:rgba(255,95,95,.16); color:#FF5F5F; }
+    .kr-cal-tag.warn { background:rgba(247,152,28,.16); color:#F7981C; }
+    .kr-cal-title { font-size:0.78rem; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    @media (max-width:820px){
+      .kr-cal-row { grid-template-columns:44px 50px 20px 1fr auto; }
+      .kr-cal-title { display:none; }
+    }
     .kr-up { color: var(--red); }   /* 국내 관습: 상승=빨강 */
     .kr-down { color: var(--blue); } /* 국내 관습: 하락=파랑 */
     .kr-flat { color: var(--text-dim); }
@@ -464,7 +486,7 @@
   <div class="kr-card" id="kr-top3"><div class="kr-card-title">🏆 거래소별 TOP3</div><div id="kr-perex"><div class="kr-status">로딩 중…</div></div></div>
 </section>
 <section class="kr-section" id="kr-caution">
-  <div class="kr-section-head kr-static"><h2>⚠️ 유의종목 · 거래지원 종료</h2></div>
+  <div class="kr-section-head kr-static"><h2>⚠️ 상장폐지·유의 캘린더</h2></div>
   <div class="kr-card"><div id="kr-caution-body"><div class="kr-status">로딩 중…</div></div></div>
 </section>
 

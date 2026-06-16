@@ -364,31 +364,56 @@
       });
   }
 
-  /* ---------- 유의종목 ---------- */
+  /* ---------- 유의종목·상장폐지 캘린더 ----------
+     규칙: ①유의촉구 제외 ②같은 코인에 상폐 공지 있으면 유의지정 숨김(수집기에서 처리)
+           날짜축=거래종료일(상폐)/결정예정일(유의), 오름차순 D-day 타임라인 */
+  function _dday(s, today) {
+    if (!s) return null;
+    var p = s.split('-'); if (p.length < 3) return null;
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return Math.round((d - today) / 86400000);
+  }
   function renderCaution(data) {
     var root = document.getElementById('kr-caution-body');
     if (!root) return;
     var ex = (data && data.exchanges) || {};
-    var html = '<div class="kr-caut-grid">';
+    var list = [];
     EX_ORDER.forEach(function (k) {
       var e = ex[k] || {};
       var name = e.name || EX_NAMES[k] || k;
-      var items = Array.isArray(e.items) ? e.items : [];
-      var body = items.length ? items.map(function (it) {
-        var cls = (it.status && it.status.indexOf('상장폐지') >= 0) ? 'del' : 'warn';
-        var coin = it.coin ? '<b>' + esc(it.coin) + '</b> ' : '';
-        return '<div class="kr-caut-item"><a href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">'
-          + coin + esc(it.title) + '</a><div class="kr-caut-meta">'
-          + '<span class="kr-caut-badge ' + cls + '">' + esc(it.status || '유의') + '</span>'
-          + (it.date ? '<span class="kr-caut-date">지정 ' + esc(it.date) + '</span>' : '')
-          + (it.deadline ? '<span class="kr-caut-deadline">⏳ 기한 ' + esc(it.deadline) + '</span>' : '')
-          + '</div></div>';
-      }).join('') : '<div class="kr-caut-empty">현재 확인된 유의종목 없음</div>';
-      html += '<div class="kr-caut-col"><div class="kr-caut-ex">'
-        + '<img src="logos/' + k + '.jpg" alt="' + esc(name) + '" loading="lazy">' + esc(name) + '</div>'
-        + body + '</div>';
+      (Array.isArray(e.items) ? e.items : []).forEach(function (it) {
+        list.push({ k: k, name: name, coin: it.coin, status: it.status,
+          title: it.title, url: it.url, key: it.deadline || it.date || '' });
+      });
     });
-    root.innerHTML = html + '</div>';
+    if (!list.length) { root.innerHTML = '<div class="kr-caut-empty">현재 상장폐지·유의 일정 없음</div>'; return; }
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    // 다가오는 일정(미래·오늘) 먼저 오름차순, 경과분은 뒤에 최근순
+    list.forEach(function (it) { it._d = _dday(it.key, today); });
+    list.sort(function (a, b) {
+      var ap = (a._d === null || a._d < 0), bp = (b._d === null || b._d < 0);
+      if (ap !== bp) return ap ? 1 : -1;            // 경과/미정은 뒤로
+      if (ap) return (b.key || '').localeCompare(a.key || '');  // 경과끼리 최근순
+      return (a.key || '').localeCompare(b.key || '');          // 다가오는 건 임박순
+    });
+    var rows = list.map(function (it) {
+      var isDel = it.status && it.status.indexOf('상장폐지') >= 0;
+      var cls = isDel ? 'del' : 'warn';
+      var diff = _dday(it.key, today);
+      var dd = (diff === null) ? '<span class="kr-cal-dd none">미정</span>'
+        : (diff > 0 ? '<span class="kr-cal-dd">D-' + diff + '</span>'
+          : (diff === 0 ? '<span class="kr-cal-dd now">D-DAY</span>'
+            : '<span class="kr-cal-dd past">' + (isDel ? '종료' : '경과') + '</span>'));
+      var md = it.key ? it.key.slice(5).replace('-', '/') : '–';
+      return '<a class="kr-cal-row ' + cls + '" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">'
+        + '<span class="kr-cal-date">' + esc(md) + '</span>' + dd
+        + '<img class="kr-cal-ex" src="logos/' + it.k + '.jpg" alt="' + esc(it.name) + '" loading="lazy">'
+        + '<span class="kr-cal-coin">' + esc(it.coin || '') + '</span>'
+        + '<span class="kr-cal-tag ' + cls + '">' + (isDel ? '거래종료' : '유의지정') + '</span>'
+        + '<span class="kr-cal-title">' + esc(it.title) + '</span></a>';
+    }).join('');
+    root.innerHTML = '<div class="kr-cal-note">🔴 거래종료(상장폐지) · 🟠 거래유의(상폐 가능) — 날짜=거래종료일/결정예정일 · 유의촉구·중복 제외</div>'
+      + '<div class="kr-cal">' + rows + '</div>';
   }
   function loadCaution() {
     fetch('../data/v1/kr_caution.json?t=' + Date.now(), { cache: 'no-store' })
