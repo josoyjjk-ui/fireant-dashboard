@@ -380,7 +380,8 @@
         return '<div class="kr-caut-item"><a href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">'
           + coin + esc(it.title) + '</a><div class="kr-caut-meta">'
           + '<span class="kr-caut-badge ' + cls + '">' + esc(it.status || '유의') + '</span>'
-          + (it.date ? '<span class="kr-caut-date">' + esc(it.date) + '</span>' : '')
+          + (it.date ? '<span class="kr-caut-date">지정 ' + esc(it.date) + '</span>' : '')
+          + (it.deadline ? '<span class="kr-caut-deadline">⏳ 기한 ' + esc(it.deadline) + '</span>' : '')
           + '</div></div>';
       }).join('') : '<div class="kr-caut-empty">현재 확인된 유의종목 없음</div>';
       html += '<div class="kr-caut-col"><div class="kr-caut-ex">'
