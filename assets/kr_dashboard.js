@@ -72,6 +72,18 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  function safeHref(url) {
+    if (!url) return '#';
+    try {
+      var u = new URL(String(url), window.location.href);
+      return (/^https?:$/.test(u.protocol)) ? esc(u.href) : '#';
+    } catch (_) {
+      return '#';
+    }
+  }
+  function safeDateKey(v) {
+    return (typeof v === 'string') ? v : '';
+  }
   function setText(id, t) { var el = document.getElementById(id); if (el) el.textContent = t; }
 
   /* ---------- 에러 / 로딩 ---------- */
@@ -143,6 +155,7 @@
     if (!rows || !rows.length) return statusHTML('데이터 없음');
     var body = '';
     rows.forEach(function (r) {
+      if (!r) return;
       var ch = toNum(r.change_pct);
       body += ''
         + '<tr>'
@@ -154,6 +167,7 @@
         + '<td>' + exLogoHTML(r.exchange) + '</td>'
         + '</tr>';
     });
+    if (!body) return statusHTML('데이터 없음');
     return ''
       + '<table class="kr-table">'
       + '<thead><tr>'
@@ -187,6 +201,7 @@
     if (!rows || !rows.length) { root.innerHTML = statusHTML('데이터 준비중'); return; }
     var body = '';
     rows.slice(0, 10).forEach(function (r) {
+      if (!r) return;
       var gap = toNum(r.gap_pct);
       var kim = toNum(r.kimchi_pct);
       var hot = (gap !== null && gap >= 2) ? ' class="hot"' : '';
@@ -201,6 +216,7 @@
         +   '<td class="' + changeClass(kim) + '">' + fmtPct(kim, true) + '</td>'
         + '</tr>';
     });
+    if (!body) { root.innerHTML = statusHTML('데이터 준비중'); return; }
     root.innerHTML = ''
       + '<table class="kr-arb-table">'
       +   '<thead><tr>'
@@ -218,12 +234,14 @@
     if (!items || !items.length) return '<div class="kr-perex-empty">데이터 없음</div>';
     var hdr = '<div class="kr-perex-item hdr"><span class="sym">종목</span><span class="px">가격</span><span class="vol">거래량</span></div>';
     var body = items.slice(0, 3).map(function (it) {
+      if (!it) return '';
       return '<div class="kr-perex-item">'
         + '<span class="sym">' + coinLogoHTML(it.logo) + esc(it.symbol) + '</span>'
         + '<span class="px">' + fmtPrice(it.price) + '</span>'
         + '<span class="vol">' + fmtVol(it.vol_krw) + '원</span>'
         + '</div>';
     }).join('');
+    if (!body) return '<div class="kr-perex-empty">데이터 없음</div>';
     return hdr + body;
   }
   function renderPerExTop3(data) {
@@ -268,16 +286,18 @@
 
   function renderEventCards(events) {
     if (!events || !events.length) return eventEmptyHTML();
-    return events.map(function (ev) {
+    var body = events.map(function (ev) {
+      if (!ev) return '';
       return ''
         + '<div class="ev-card">'
-        +   '<div class="ev-title"><a href="' + esc(ev.url) + '" target="_blank" rel="noopener noreferrer">' + esc(ev.title) + '</a></div>'
+        +   '<div class="ev-title"><a href="' + safeHref(ev.url) + '" target="_blank" rel="noopener noreferrer">' + esc(ev.title) + '</a></div>'
         +   '<div class="ev-meta">'
         +     (ev.date ? '<span>등록 ' + esc(ev.date) + '</span>' : '')
         +     '<span>공식 공지</span>'
         +   '</div>'
         + '</div>';
     }).join('');
+    return body || eventEmptyHTML();
   }
 
   function bindEventToggles(root) {
@@ -368,7 +388,7 @@
      규칙: ①유의촉구 제외 ②같은 코인에 상폐 공지 있으면 유의지정 숨김(수집기에서 처리)
            날짜축=거래종료일(상폐)/결정예정일(유의), 오름차순 D-day 타임라인 */
   function _dday(s, today) {
-    if (!s) return null;
+    if (typeof s !== 'string' || !s) return null;
     var p = s.split('-'); if (p.length < 3) return null;
     var d = new Date(+p[0], +p[1] - 1, +p[2]);
     return Math.round((d - today) / 86400000);
@@ -382,8 +402,9 @@
       var e = ex[k] || {};
       var name = e.name || EX_NAMES[k] || k;
       (Array.isArray(e.items) ? e.items : []).forEach(function (it) {
+        if (!it) return;
         list.push({ k: k, name: name, coin: it.coin, status: it.status,
-          title: it.title, url: it.url, key: it.deadline || it.date || '' });
+          title: it.title, url: it.url, key: safeDateKey(it.deadline || it.date) });
       });
     });
     if (!list.length) { root.innerHTML = '<div class="kr-caut-empty">현재 상장폐지·유의 일정 없음</div>'; return; }
@@ -397,7 +418,8 @@
       return (a.key || '').localeCompare(b.key || '');          // 다가오는 건 임박순
     });
     var rows = list.map(function (it) {
-      var isDel = it.status && it.status.indexOf('상장폐지') >= 0;
+      var status = String(it.status || '');
+      var isDel = status.indexOf('상장폐지') >= 0;
       var cls = isDel ? 'del' : 'warn';
       var diff = _dday(it.key, today);
       var dd = (diff === null) ? '<span class="kr-cal-dd none">미정</span>'
@@ -405,7 +427,7 @@
           : (diff === 0 ? '<span class="kr-cal-dd now">D-DAY</span>'
             : '<span class="kr-cal-dd past">' + (isDel ? '종료' : '경과') + '</span>'));
       var md = it.key ? it.key.slice(5).replace('-', '/') : '–';
-      return '<a class="kr-cal-row ' + cls + '" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">'
+      return '<a class="kr-cal-row ' + cls + '" href="' + safeHref(it.url) + '" target="_blank" rel="noopener noreferrer">'
         + '<span class="kr-cal-date">' + esc(md) + '</span>' + dd
         + '<img class="kr-cal-ex" src="logos/' + it.k + '.jpg" alt="' + esc(it.name) + '" loading="lazy">'
         + '<span class="kr-cal-coin">' + esc(it.coin || '') + '</span>'
@@ -428,18 +450,25 @@
 
   function init() {
     var btn = document.getElementById('kr-refresh');
-    if (btn) btn.addEventListener('click', function (e) { e.stopPropagation(); load(); loadEvents(); loadCaution(); });
+    if (btn && !btn.dataset.krBound) {
+      btn.dataset.krBound = '1';
+      btn.addEventListener('click', function (e) { e.stopPropagation(); load(); loadEvents(); loadCaution(); });
+    }
     // 섹션 헤더 클릭 → 접기/펼치기 (기본 접힘: .kr-collapsed). 새로고침 버튼은 토글에서 제외.
     var head = document.getElementById('kr-data-head');
-    if (head) head.addEventListener('click', function (e) {
-      if (e.target.closest('#kr-refresh')) return;
-      var sec = document.getElementById('kr-data');
-      if (sec) sec.classList.toggle('kr-collapsed');
-    });
+    if (head && !head.dataset.krBound) {
+      head.dataset.krBound = '1';
+      head.addEventListener('click', function (e) {
+        if (e.target && e.target.closest && e.target.closest('#kr-refresh')) return;
+        var sec = document.getElementById('kr-data');
+        if (sec) sec.classList.toggle('kr-collapsed');
+      });
+    }
     load();
     loadEvents();
     loadCaution();
-    setInterval(function () { load(); loadEvents(); loadCaution(); }, REFRESH_MS);
+    if (window.__krDashboardRefreshTimer) clearInterval(window.__krDashboardRefreshTimer);
+    window.__krDashboardRefreshTimer = setInterval(function () { load(); loadEvents(); loadCaution(); }, REFRESH_MS);
   }
 
   if (document.readyState === 'loading') {
