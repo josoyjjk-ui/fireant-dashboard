@@ -364,9 +364,45 @@
       });
   }
 
+  /* ---------- 유의종목 ---------- */
+  function renderCaution(data) {
+    var root = document.getElementById('kr-caution-body');
+    if (!root) return;
+    var ex = (data && data.exchanges) || {};
+    var html = '<div class="kr-caut-grid">';
+    EX_ORDER.forEach(function (k) {
+      var e = ex[k] || {};
+      var name = e.name || EX_NAMES[k] || k;
+      var items = Array.isArray(e.items) ? e.items : [];
+      var body = items.length ? items.map(function (it) {
+        var cls = (it.status && it.status.indexOf('상장폐지') >= 0) ? 'del' : 'warn';
+        var coin = it.coin ? '<b>' + esc(it.coin) + '</b> ' : '';
+        return '<div class="kr-caut-item"><a href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">'
+          + coin + esc(it.title) + '</a><div class="kr-caut-meta">'
+          + '<span class="kr-caut-badge ' + cls + '">' + esc(it.status || '유의') + '</span>'
+          + (it.date ? '<span class="kr-caut-date">' + esc(it.date) + '</span>' : '')
+          + '</div></div>';
+      }).join('') : '<div class="kr-caut-empty">현재 확인된 유의종목 없음</div>';
+      html += '<div class="kr-caut-col"><div class="kr-caut-ex">'
+        + '<img src="logos/' + k + '.jpg" alt="' + esc(name) + '" loading="lazy">' + esc(name) + '</div>'
+        + body + '</div>';
+    });
+    root.innerHTML = html + '</div>';
+  }
+  function loadCaution() {
+    fetch('../data/v1/kr_caution.json?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+      .then(renderCaution)
+      .catch(function (e) {
+        var el = document.getElementById('kr-caution-body');
+        if (el) el.innerHTML = statusHTML('유의종목 로딩 실패');
+        console.error('[kr_dashboard] caution load error', e);
+      });
+  }
+
   function init() {
     var btn = document.getElementById('kr-refresh');
-    if (btn) btn.addEventListener('click', function (e) { e.stopPropagation(); load(); loadEvents(); });
+    if (btn) btn.addEventListener('click', function (e) { e.stopPropagation(); load(); loadEvents(); loadCaution(); });
     // 섹션 헤더 클릭 → 접기/펼치기 (기본 접힘: .kr-collapsed). 새로고침 버튼은 토글에서 제외.
     var head = document.getElementById('kr-data-head');
     if (head) head.addEventListener('click', function (e) {
@@ -376,7 +412,8 @@
     });
     load();
     loadEvents();
-    setInterval(function () { load(); loadEvents(); }, REFRESH_MS);
+    loadCaution();
+    setInterval(function () { load(); loadEvents(); loadCaution(); }, REFRESH_MS);
   }
 
   if (document.readyState === 'loading') {
