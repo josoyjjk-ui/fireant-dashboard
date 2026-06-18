@@ -4,7 +4,7 @@
   var INDEX_URL = "data/v1/charts/_index.json";
   var DATA_BASE = "data/v1/charts/";
   var DEFAULT_TF = "6개월";
-  var REFRESH_MS = 45000;
+  var REFRESH_MS = 20000;
   var UP = "#ff5d6c";
   var DOWN = "#4d9bff";
   var FALLBACK_TIMEFRAMES = ["1일","5일","1개월","3개월","6개월","1년","2년","5년"];
@@ -94,6 +94,15 @@
               if(chgPct != null){
                 card.change.textContent = (chgPct >= 0 ? "+" : "") + chgPct.toFixed(2) + "%";
                 card.change.className = "card-change mono " + (chgPct >= 0 ? "up" : "down");
+              }
+              if(card.lastBar && card.series){            // 실시간: 마지막 캔들 종가를 WS 가격으로 라이브 틱
+                try{
+                  var lb = card.lastBar;
+                  lb.close = price;
+                  if(price > lb.high) lb.high = price;
+                  if(price < lb.low) lb.low = price;
+                  card.series.update(lb);
+                }catch(e){}
               }
               card.root.classList.add("live");
             }
@@ -412,19 +421,27 @@
     var rows = (data.data && data.data[card.tf]) || [];
     var candles = validCandles(rows);
     updateQuote(card, rows);
-    card.series.setData(candles);
-    if(candles.length){
-      card.chart.timeScale().fitContent();
-      setMsg(card, "");
-    }else{
+    if(!candles.length){
       setMsg(card, "데이터 준비중입니다");
+      card.renderedTf = null; card.lastBar = null;
+      return;
     }
+    var last = candles[candles.length - 1];
+    if(card.renderedTf === card.tf){
+      card.series.update(last);                 // 증분 갱신 — 마지막 캔들만(점프·번쩍 없음)
+    }else{
+      card.series.setData(candles);             // 최초/타임프레임 변경
+      card.chart.timeScale().fitContent();      // fitContent는 이때만(매 갱신 점프 제거)
+      card.renderedTf = card.tf;
+    }
+    card.lastBar = {time:last.time, open:last.open, high:last.high, low:last.low, close:last.close};
+    setMsg(card, "");
   }
 
   async function hydrateCard(card, noStore){
     if(card.loading) return;
     card.loading = true;
-    setMsg(card, noStore ? "새 데이터 확인 중입니다" : "데이터를 불러오는 중입니다");
+    if(!card.loaded) setMsg(card, "데이터를 불러오는 중입니다");   // 백그라운드 갱신 땐 오버레이 안 띄움(번쩍 방지)
     try{
       var data = await loadData(card.key, noStore);
       card.loaded = true;
