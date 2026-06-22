@@ -261,7 +261,45 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .nav>.btn{display:none;}
   .nav{justify-content:flex-start;gap:10px;}
 }
-@media(max-width:920px){.row.r2,.row.split,.tasks-grid{grid-template-columns:1fr;}.flow-arr{display:none;}}
+@media(max-width:920px){.row.r2,.row.split,.tasks-grid{grid-template-columns:1fr;}.row.r2>*,.row.split>*,.tasks-grid>*{min-width:0;}.flow-arr{display:none;}}
+
+/* === 모바일(360/390/430) 반응형 보강 — 데스크톱(>920px) 레이아웃 미변경 === */
+@media(max-width:600px){
+  /* 관리자: 진행중 미션 관리 행(썸네일 없음) — 바디가 54px 컬럼에 찌부되는 현상 방지(단일 컬럼) */
+  #manageWrap .rev-row{grid-template-columns:1fr;}
+  /* 제출 모달: 좁은 화면 패딩 축소 + 미리보기 이미지 폭 제한(오버플로우 방지) */
+  .modal{padding:12px;}
+  .modal-box{padding:18px 16px;}
+  .modal-box img{max-width:100%;}
+}
+@media(max-width:430px){
+  /* 데일리 체크인 7박스 — 360/390에서 6+1로 찢어지지 않도록 한 줄 균등 배치 */
+  .streak-strip{gap:6px;}
+  .sq{flex:1 1 0;width:auto;min-width:0;}
+  /* 주간 리워드 상금 칩 — 4개 한 줄 유지, 긴 글자는 칩 안에서 줄바꿈(가로 스크롤 방지) */
+  .rb-prizes{gap:5px;}
+  .rb-prize{padding:7px 6px;}
+  .rb-prize .pz{white-space:normal;text-align:center;line-height:1.2;}
+  /* 진행중 미션: 제목·인증방식 뱃지 줄바꿈, 설명·단계 내 긴 URL 줄바꿈 */
+  .task-head{flex-wrap:wrap;}
+  .task-head>div:first-child{min-width:0;flex:1 1 auto;}
+  .task-desc,.task-steps{overflow-wrap:anywhere;}
+  /* 응모권 산식 칩 균등 배치(고정 min-width 로 인한 찌부/오버플로우 방지) */
+  .eq-formula{gap:6px;}
+  .eq-chip{min-width:0;flex:1 1 0;}
+  /* 가중 추첨: 추첨 버튼을 안내 텍스트 아래 풀폭으로 배치 */
+  .draw-bar{flex-direction:column;align-items:stretch;}
+  .draw-bar .btn-draw{width:100%;}
+}
+@media(max-width:380px){
+  /* 360 폭: 페이지 여백·카드 패딩 축소로 콘텐츠 폭 확보 */
+  .main{padding:14px 11px;}
+  .card{padding:14px;}
+  .reward-card{padding:14px;}
+  .rb-prize{padding:6px 4px;}
+  .rb-prize .rk{font-size:9.5px;}
+  .rb-prize .pz{font-size:12px;}
+}
 .brand2{display:flex;align-items:center;gap:12px;min-width:0;}.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}.lede2{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}@media(max-width:1100px){.lede2{display:none;}}
 </style></head>
 <body>
@@ -456,7 +494,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
-<script src="assets/airdrop.js?v=12"></script>
+<script src="assets/airdrop.js?v=13"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js"></script>
 </body></html>
