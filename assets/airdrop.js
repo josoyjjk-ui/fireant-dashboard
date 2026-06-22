@@ -183,11 +183,15 @@
 
   async function loadAuth() {
     state.user = null; state.uid = null; state.profile = null; state.isAdmin = false; state.wallets = [];
+    // 세션 조회는 navigator.locks/토큰 리프레시 경합으로 느릴 수 있어 넉넉한 타임아웃 + 1회 재시도로 false 로그아웃을 방지합니다.
     let session = null;
-    try {
-      const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 4000);
-      session = r && r.data ? r.data.session : null;
-    } catch (_) { session = null; }
+    for (let attempt = 0; attempt < 2 && !session; attempt++) {
+      try {
+        const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 10000);
+        session = r && r.data ? r.data.session : null;
+      } catch (_) { session = null; }
+      if (!session && attempt === 0) await new Promise((res) => setTimeout(res, 400));
+    }
     if (!session) return;
     state.user = session.user; state.uid = session.user.id;
     try {
