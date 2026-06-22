@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ANTINFO — 에어드랍 작업</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:image" content="https://antinfo.io/assets/og-image.png">
+<meta name="description" content="ANTINFO 에어드랍 작업 — 매일 데일리 체크인하고 에어드랍 작업을 인증하면 기프티콘 리워드 추첨에 참여하세요.">
+<meta property="og:title" content="ANTINFO — 에어드랍 작업">
+<meta property="og:description" content="데일리 체크인·에어드랍 작업 인증으로 기프티콘 리워드를 받아보세요.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://antinfo.io/airdrop">
+<style>
+@view-transition{navigation:auto;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff5d6c;--down:#4d9bff;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;}
+html{background:var(--bg);scrollbar-gutter:stable;}
+body{background:var(--bg);color:var(--txt);}
+html,body{overflow-x:hidden;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:15px max(24px, calc((100% - 1240px)/2 + 24px));border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;view-transition-name:site-nav;}
+.logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
+.tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}.tab.on{background:var(--accent);color:#0a0c10;}
+.btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
+.main{padding:22px 24px;max-width:1240px;margin:0 auto;}
+.head h1{font-size:24px;font-weight:900;}.head .sub{color:var(--dim);font-size:14px;margin-top:4px;}
+.seclabel{font-size:16px;font-weight:900;margin:26px 0 12px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;}
+.foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:40px;}
+.empty{color:var(--dim);font-size:13px;padding:18px;text-align:center;}
+.loading{color:var(--dim);font-size:13px;padding:18px;text-align:center;}
+.err{color:var(--down);font-size:13px;padding:18px;}
+.dim-sm{font-size:12px;color:var(--dim);font-weight:700;}
+
+/* 데일리 체크인 */
+.ck-h{font-size:15px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.checkin{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.ck-info{display:flex;align-items:center;gap:16px;}
+.streak-big{font-size:44px;font-weight:900;color:var(--accent2);letter-spacing:-1px;line-height:1;}
+.streak-unit{font-size:18px;font-weight:800;color:var(--accent2);margin-left:2px;}
+.streak-label{font-size:13.5px;color:var(--dim);font-weight:700;line-height:1.45;}
+.btn-sub{padding:11px 18px;border-radius:10px;border:none;background:var(--accent);color:#0a0c10;font-weight:800;font-size:13.5px;cursor:pointer;transition:filter .15s;}
+.btn-sub:hover:not(:disabled){filter:brightness(1.08);}
+.btn-sub:disabled{opacity:.55;cursor:default;}
+.btn-ghost{padding:11px 18px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--txt);font-weight:700;font-size:13.5px;cursor:pointer;}
+
+/* 작업 카드 */
+.tasks{display:flex;flex-direction:column;gap:14px;}
+.task{display:flex;flex-direction:column;gap:11px;}
+.task-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.task-title{font-size:17px;font-weight:800;line-height:1.34;}
+.reward{font-size:11px;font-weight:800;color:var(--accent2);background:#231a0c;padding:5px 11px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.task-desc{font-size:13px;color:var(--dim);line-height:1.55;}
+.task-steps{font-size:13.5px;color:#dbe4ef;line-height:1.7;font-weight:500;background:#0e1116;border:1px solid var(--line);border-radius:10px;padding:12px 14px;white-space:pre-wrap;}
+.task-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:2px;}
+.btn-go{display:inline-flex;align-items:center;gap:5px;padding:10px 16px;border-radius:10px;background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;text-decoration:none;font-weight:800;font-size:13px;box-shadow:0 4px 14px rgba(255,86,40,.22);transition:filter .15s;}
+.btn-go:hover{filter:brightness(1.08);}
+
+/* 상태 배지 */
+.badge{font-size:12px;font-weight:800;padding:7px 13px;border-radius:20px;display:inline-block;}
+.st-pending{color:#ffb547;background:#231a0c;}
+.st-approved{color:#3ddc97;background:#0c2419;}
+.st-rejected{color:#ff5d6c;background:#2a1014;}
+.st-rewarded{color:#0a0c10;background:linear-gradient(95deg,#ffd24a,#ffb547);}
+
+/* 내 인증 현황 */
+.ms-streak{font-size:14px;color:var(--dim);font-weight:700;margin-bottom:12px;}
+.ms-streak b{color:var(--accent2);font-size:16px;}
+.ms-list{display:flex;flex-direction:column;gap:8px;}
+.ms-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px;background:var(--bg);border:1px solid var(--line);border-radius:10px;}
+.ms-task{font-size:13.5px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* 관리자 패널 */
+.admin-h{font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.admin-form .field{margin-bottom:13px;}
+.af-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field label{display:block;font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--dim);}
+.field input[type=text],.field input[type=number],.field input[type=datetime-local]{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-size:14px;font-family:inherit;}
+.field textarea{width:100%;min-height:90px;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.5;}
+.field input[type=file]{width:100%;font-size:13px;color:var(--dim);}
+.preview{margin-top:4px;}
+.lot-row{display:flex;align-items:center;gap:12px;padding:11px 13px;background:var(--bg);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;flex-wrap:wrap;}
+.lot-title{font-weight:800;font-size:13.5px;flex:1;min-width:120px;}
+.rev-row{display:grid;grid-template-columns:66px 1fr auto;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);align-items:flex-start;}
+.rev-row:last-child{border-bottom:none;}
+.rev-thumb-a{display:block;}
+.rev-thumb{width:66px;height:66px;border-radius:10px;object-fit:cover;border:1px solid var(--line);background:var(--bg);}
+.rev-body{min-width:0;}
+.rev-task{font-weight:800;font-size:13.5px;}
+.rev-user{font-size:11.5px;color:var(--dim);margin-top:3px;word-break:break-all;}
+.rev-note{font-size:12.5px;color:#cdd6e0;margin-top:5px;line-height:1.5;word-break:break-word;}
+.rev-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+.rev-status{font-size:11px;font-weight:800;padding:4px 10px;border-radius:7px;}
+.mini-btn{padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--txt);font-weight:700;font-size:11.5px;cursor:pointer;white-space:nowrap;}
+.mini-btn.app{color:#3ddc97;border-color:#1c3a2c;}
+.mini-btn.rej{color:#ff5d6c;border-color:#2a1014;}
+.mini-btn.rwd{color:#0a0c10;background:linear-gradient(95deg,#ffd24a,#ffb547);border-color:transparent;}
+
+/* 모달 */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);z-index:80;display:none;align-items:center;justify-content:center;padding:18px;}
+.modal.on{display:flex;}
+.modal-box{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;max-width:460px;width:100%;max-height:88vh;overflow-y:auto;}
+.modal-x{position:absolute;top:14px;right:16px;font-size:18px;color:var(--dim);background:none;border:none;cursor:pointer;line-height:1;}
+.modal-title{font-size:18px;font-weight:900;margin-bottom:6px;padding-right:24px;}
+.modal-sub{font-size:12.5px;color:var(--dim);margin-bottom:16px;line-height:1.5;}
+
+/* 토스트 */
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#1c2330;border:1px solid var(--line);color:var(--txt);padding:13px 20px;border-radius:12px;font-size:13.5px;font-weight:700;z-index:90;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.4);}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:#3ddc97;color:#3ddc97;}
+.toast.err{border-color:#ff5d6c;color:#ff5d6c;}
+
+/* 햄버거/드로어(모바일) */
+.ham{display:none;font-size:25px;background:none;border:none;color:var(--txt);font-weight:800;line-height:1;cursor:pointer;padding:0 4px 0 0;}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:60;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
+body.navopen .drawer{transform:none;}
+.drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 14px;}
+.drawer .dh .dlogo{font-size:20px;font-weight:900;color:#ff3b30;}
+.drawer .x{font-size:20px;color:var(--dim);background:none;border:none;cursor:pointer;}
+.drawer a{display:flex;align-items:center;gap:14px;padding:15px 12px;border-radius:14px;text-decoration:none;color:var(--txt);font-size:17px;font-weight:800;}
+.drawer a .ic{font-size:22px;width:26px;text-align:center;}
+.drawer a.on{background:rgba(255,59,48,.14);color:#ff3b30;}
+.drawer .ddiv{height:1px;background:var(--line);margin:9px 6px;}
+.drawer a.sub{font-size:15px;font-weight:700;color:var(--dim);}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55;}
+body.navopen .backdrop{opacity:1;pointer-events:auto;}
+
+@media(max-width:600px){
+  body{font-size:16px;}
+  .af-row{grid-template-columns:1fr;}
+  .nav{flex-wrap:wrap;justify-content:flex-start;padding:13px 15px;gap:8px;}.logo{font-size:22px;}
+  #authSlot{flex-shrink:1;min-width:0;}
+  #authSlot a,#authSlot button{font-size:12px;padding:7px 10px;white-space:nowrap;}
+  .tabs{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;gap:7px;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+  .tabs::-webkit-scrollbar{display:none;}.tab{flex:0 0 auto;font-size:15.5px;padding:9px 15px;}
+  .btn{font-size:13px;padding:8px 12px;white-space:nowrap;flex-shrink:0;}
+  .main{padding:16px 14px;}
+  .head h1{font-size:24px;}.head .sub{font-size:14px;}.seclabel{font-size:19px;}
+  .streak-big{font-size:38px;}
+  .task-title{font-size:18.5px;}.task-steps{font-size:15px;line-height:1.65;}
+  .rev-row{grid-template-columns:54px 1fr;}.rev-thumb{width:54px;height:54px;}
+  .rev-actions{flex-direction:row;align-items:center;flex-wrap:wrap;grid-column:1/-1;justify-content:flex-start;}
+  .ham{display:inline-flex;}
+  .tabs{display:none !important;}
+  .nav>.btn{display:none;}
+  .nav{justify-content:flex-start;gap:10px;}
+}
+.brand2{display:flex;align-items:center;gap:12px;min-width:0;}.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}.lede2{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}@media(max-width:1100px){.lede2{display:none;}}
+</style></head>
+<body>
+<div class="backdrop"></div>
+<aside class="drawer">
+  <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;vertical-align:middle;margin-right:7px;">개미투자정보</span><button class="x" type="button">✕</button></div>
+  <a href="/"><span class="ic">🏠</span>홈</a>
+  <a href="macro-news"><span class="ic">📰</span>뉴스</a>
+  <a href="market"><span class="ic">📊</span>마켓</a>
+  <a href="signals"><span class="ic">🐋</span>시그널</a>
+  <a href="charts"><span class="ic">🕯️</span>주요자산차트</a>
+  <div class="ddiv"></div>
+  <a class="sub" href="events"><span class="ic">🎉</span>이벤트·당첨</a>
+  <a class="sub on" href="airdrop"><span class="ic">🪂</span>에어드랍</a>
+  <a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>
+</aside>
+  <div class="nav">
+    <button class="ham" type="button" aria-label="메뉴">☰</button>
+    <a class="brand2" href="/" style="text-decoration:none;color:inherit;cursor:pointer"><span class="logo" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:34px;display:block"></span><div class="btext"><span class="bname">개미투자정보</span><span class="lede2">개미투자자들이 필요한 모든 정보</span></div></a>
+    <div class="tabs">
+      <a class="tab" href="./">대시보드</a>
+      <a class="tab" href="market">마켓</a>
+      <a class="tab" href="macro-news">매크로뉴스</a>
+      <a class="tab" href="charts">주요자산차트</a>
+      <a class="tab" href="events">이벤트모음</a>
+      <a class="tab" href="kr-exchange/">K-거래소 현황</a>
+      <a class="tab on" href="airdrop">🪂 에어드랍</a>
+    </div>
+    <span id="authSlot" data-mobile="0" style="display:inline-flex;align-items:center;gap:8px;margin-right:8px;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button></span><script>(function(){try{var h=localStorage.getItem("antinfo_navauth");if(h){var s=document.getElementById("authSlot");if(s)s.innerHTML=h;}}catch(e){}})();</script><a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
+  </div>
+  <div class="main">
+    <div class="head"><h1>🪂 에어드랍 작업</h1><div class="sub">매일 체크인하고, 에어드랍 작업 인증하면 기프티콘 추첨!</div></div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="ck-h">🔥 데일리 체크인</div>
+      <div id="checkinBody"><div class="loading">로드 중…</div></div>
+    </div>
+
+    <div class="seclabel">🪂 진행중 에어드랍 작업</div>
+    <div class="tasks" id="tasksWrap"><div class="loading">작업을 불러오는 중…</div></div>
+
+    <div id="myStatusWrap"></div>
+
+    <div id="adminWrap" style="display:none">
+      <div class="seclabel">🛠️ 관리자 패널</div>
+      <div class="card">
+        <div class="admin-h">➕ 작업 등록</div>
+        <form id="taskForm" class="admin-form">
+          <div class="af-row">
+            <div class="field"><label>제목 *</label><input type="text" id="f_title" placeholder="예) X 팔로우 + 리트윗"></div>
+            <div class="field"><label>sort_order</label><input type="number" id="f_sort" value="0"></div>
+          </div>
+          <div class="field"><label>설명</label><input type="text" id="f_desc" placeholder="한 줄 설명"></div>
+          <div class="field"><label>참여 단계 (줄바꿈 가능)</label><textarea id="f_steps" placeholder="1. X 계정 팔로우&#10;2. 지정 트윗 리트윗&#10;3. 완료 화면 스크린샷 첨부"></textarea></div>
+          <div class="af-row">
+            <div class="field"><label>작업 링크</label><input type="text" id="f_link" placeholder="https://..."></div>
+            <div class="field"><label>리워드 표기</label><input type="text" id="f_reward" placeholder="예) 기프티콘 추첨"></div>
+          </div>
+          <div class="field"><label>카테고리 (선택)</label><input type="text" id="f_cat" placeholder="예) 소셜 / 테스트넷"></div>
+          <div class="field"><label>종료 일시 (선택)</label><input type="datetime-local" id="f_ends"></div>
+          <button class="btn-sub" type="submit" id="taskSubmit">작업 등록</button>
+        </form>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="admin-h">🎫 승인자 추첨 <span id="lotCount" class="dim-sm"></span></div>
+        <div id="lotteryWrap"><div class="loading">로드 중…</div></div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="admin-h">📋 제출 검토 <span id="revCount" class="dim-sm"></span></div>
+        <div id="revList"><div class="loading">로드 중…</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · antinfo.io · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
+
+<div class="modal" id="subModal">
+  <div class="modal-box">
+    <button class="modal-x" id="subClose" type="button" aria-label="닫기">✕</button>
+    <div class="modal-title" id="subModalTitle">인증하기</div>
+    <div class="modal-sub">완료 화면 스크린샷을 올려주세요. 운영진이 확인 후 승인합니다. 작업별 1회만 인증할 수 있어요.</div>
+    <form id="subForm">
+      <div class="field">
+        <label>스크린샷 이미지 *</label>
+        <input type="file" id="subFile" accept="image/*" required>
+        <div id="subPreview" class="preview"></div>
+      </div>
+      <div class="field">
+        <label>지갑주소 / 트윗링크 / 메모 (선택)</label>
+        <textarea id="subNote" placeholder="예) 0xABCD... 또는 트윗 URL"></textarea>
+      </div>
+      <button class="btn-sub" type="submit" id="subSubmit" style="width:100%">인증 제출하기</button>
+    </form>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="assets/vendor/supabase.js"></script>
+<script src="assets/auth.js?v=3"></script>
+<script src="assets/airdrop.js"></script>
+<script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
+</body></html>
