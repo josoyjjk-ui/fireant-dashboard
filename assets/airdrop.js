@@ -1,6 +1,6 @@
-/* 에어드랍 작업 — Supabase(airdrop_tasks / airdrop_submissions / daily_checkins)
- * 인증은 assets/auth.js 가 만든 window.__sb 를 사용(150ms 폴링, 최대 ~6초 대기).
- * 모든 사용자 입력은 esc() 로 이스케이프(XSS 방어).
+/* ANTINFO 에어드랍 v2 — Supabase 실데이터 대시보드
+ * auth.js 가 만든 window.__sb 를 사용합니다.
+ * 모든 Supabase 호출은 withTimeout() 으로 감싸고, boot 는 선렌더 후 Promise.allSettled 로 진행합니다.
  */
 (function () {
   const $ = (id) => document.getElementById(id);
@@ -12,74 +12,117 @@
     if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(v);
     return v.replace(/["\\\]\[]/g, "\\$&");
   };
-  const LOAD_TIMEOUT_MS = 6000;
+  const LOAD_TIMEOUT_MS = 7000;
   const errText = (err) => (err && (err.message || err.error_description || err.code)) || "오류";
   const withTimeout = (promise, label, ms = LOAD_TIMEOUT_MS) => Promise.race([
     Promise.resolve(promise),
     new Promise((_, rej) => setTimeout(() => rej(new Error(`${label} 시간초과`)), ms)),
   ]);
 
-  // 제출 상태 → 표기/클래스
   const STATUS = {
     pending: { txt: "대기중", cls: "st-pending" },
-    approved: { txt: "승인됨", cls: "st-approved" },
-    rejected: { txt: "거절", cls: "st-rejected" },
-    rewarded: { txt: "🎁 리워드", cls: "st-rewarded" },
+    approved: { txt: "인증완료", cls: "st-approved" },
+    rejected: { txt: "반려", cls: "st-rejected" },
+    rewarded: { txt: "🎁 지급완료", cls: "st-rewarded" },
   };
-  const st = (k) => STATUS[k] || { txt: esc(k || "—"), cls: "st-pending" };
-  // join 결과가 객체(단일 FK) 또는 배열(다중 FK)일 수 있어 둘 다 처리
-  const joinTitle = (j) => (j && (j.title || (Array.isArray(j) && j[0] && j[0].title))) || "작업";
-  const joinEmail = (j) => (j && (j.email || (Array.isArray(j) && j[0] && j[0].email) || (j.full_name))) || "";
+  const VM = {
+    onchain: { label: "온체인 자동확인", cls: "vm-chain" },
+    telegram: { label: "텔레그램 자동확인", cls: "vm-tg" },
+    capture: { label: "캡쳐 제출", cls: "vm-cap" },
+  };
+  const DAY_LABELS = ["월", "화", "수", "목", "금", "토", "일"];
+  const MEDALS = ["🥇", "🥈", "🥉"];
+  const st = (k) => STATUS[k] || { txt: esc(k || "대기중"), cls: "st-pending" };
+  const joinTitle = (j) => (j && (j.title || (Array.isArray(j) && j[0] && j[0].title))) || "미션";
+  const joinEmail = (j) => (j && (j.email || (Array.isArray(j) && j[0] && j[0].email) || j.full_name)) || "";
 
   const state = {
     sb: null,
-    user: null, uid: null, isAdmin: false,
+    user: null, uid: null, profile: null, isAdmin: false,
     tasks: [], tasksLoaded: false, _tasksErr: null,
     mySubs: {}, mySubList: [],
     allSubs: [], _adminErr: null,
     checkins: [], streak: 0, checkedInToday: false,
-    _subTask: null,
+    leaderboard: [], winners: [], _winnersErr: null,
+    _subTask: null, _clock: null,
   };
 
-  // ── KST 오늘(YYYY-MM-DD) ──────────────────────────────────────────
-  function kstToday() {
-    const kst = new Date(Date.now() + 9 * 3600 * 1000);
-    return kst.toISOString().slice(0, 10);
+  function kstDate(offsetDays = 0) {
+    const d = new Date(Date.now() + 9 * 3600 * 1000);
+    d.setUTCDate(d.getUTCDate() + offsetDays);
+    return d;
   }
-  // 연속 출석: 오늘 체크인이면 오늘부터, 아니면 어제부터 거꾸로 연속 카운트.
+  function fmtDate(d) { return d.toISOString().slice(0, 10); }
+  function kstToday() { return fmtDate(kstDate()); }
+  function dateAdd(dateStr, days) {
+    const d = new Date(`${dateStr}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + days);
+    return fmtDate(d);
+  }
+  function weekBounds() {
+    const nowKst = kstDate();
+    const day = nowKst.getUTCDay() || 7;
+    const start = new Date(nowKst);
+    start.setUTCHours(0, 0, 0, 0);
+    start.setUTCDate(start.getUTCDate() - day + 1);
+    const end = new Date(start);
+    end.setUTCDate(end.getUTCDate() + 7);
+    return {
+      startDate: fmtDate(start),
+      endDate: fmtDate(end),
+      startIso: new Date(start.getTime() - 9 * 3600 * 1000).toISOString(),
+      endIso: new Date(end.getTime() - 9 * 3600 * 1000).toISOString(),
+      endMs: end.getTime() - 9 * 3600 * 1000,
+    };
+  }
+  function lastWeekStart() {
+    return dateAdd(weekBounds().startDate, -7);
+  }
   function computeStreak(dates) {
     const set = new Set(dates || []);
+    let base = kstToday();
+    if (!set.has(base)) base = dateAdd(base, -1);
     let streak = 0;
-    const base = new Date(Date.now() + 9 * 3600 * 1000); // KST 기준
-    if (!set.has(base.toISOString().slice(0, 10))) base.setUTCDate(base.getUTCDate() - 1); // 어제로 이동
-    while (set.has(base.toISOString().slice(0, 10))) {
-      streak++;
-      base.setUTCDate(base.getUTCDate() - 1);
+    while (set.has(base)) {
+      streak += 1;
+      base = dateAdd(base, -1);
     }
     return streak;
   }
+  function thisWeekCheckins() {
+    const { startDate, endDate } = weekBounds();
+    return state.checkins.filter((d) => d >= startDate && d < endDate).length;
+  }
+  function thisWeekApprovedSubs() {
+    const { startIso, endIso } = weekBounds();
+    return state.mySubList.filter((s) => s.status === "approved" && (!s.created_at || (s.created_at >= startIso && s.created_at < endIso))).length;
+  }
+  function ticketStats() {
+    const checkins = thisWeekCheckins();
+    const checkinMul = state.streak >= 7 ? 2 : 1;
+    const checkinEntries = checkins * checkinMul;
+    const approved = thisWeekApprovedSubs();
+    const missionEntries = approved * 5;
+    return { checkins, checkinMul, checkinEntries, approved, missionEntries, total: checkinEntries + missionEntries };
+  }
 
-  // ── 토스트 ────────────────────────────────────────────────────────
   let toastTimer;
   function toast(msg, kind) {
     const t = $("toast");
+    if (!t) return;
     t.textContent = msg;
     t.className = "toast on" + (kind ? " " + kind : "");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { t.className = "toast" + (kind ? " " + kind : ""); }, 3400);
+    toastTimer = setTimeout(() => { t.className = "toast" + (kind ? " " + kind : ""); }, 3200);
   }
-
-  // ── 로그인 트리거 (auth.js 와 동일 옵션) ──────────────────────────
   function doLogin() {
     try { if (state.sb) state.sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.href.split("#")[0] } }); } catch (_) {}
   }
 
-  // ── 데이터 로드 ───────────────────────────────────────────────────
   async function loadAuth() {
-    state.user = null; state.uid = null; state.isAdmin = false;
+    state.user = null; state.uid = null; state.profile = null; state.isAdmin = false;
     let session = null;
     try {
-      // getSession 이 navigator.locks 로 hang 날 수 있어 4초 타임아웃 레이스
       const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 4000);
       session = r && r.data ? r.data.session : null;
     } catch (_) { session = null; }
@@ -87,20 +130,32 @@
     state.user = session.user; state.uid = session.user.id;
     try {
       const { data: prof } = await withTimeout(
-        state.sb.from("profiles").select("full_name,is_admin").eq("id", state.uid).single(),
+        state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,wallet_address").eq("id", state.uid).single(),
         "프로필 로드",
       );
+      state.profile = prof || null;
       state.isAdmin = !!(prof && prof.is_admin);
-    } catch (_) { state.isAdmin = false; }
+    } catch (_) {
+      try {
+        const { data: prof } = await withTimeout(
+          state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin").eq("id", state.uid).single(),
+          "프로필 폴백 로드",
+        );
+        state.profile = prof || null;
+        state.isAdmin = !!(prof && prof.is_admin);
+      } catch (_) {
+        state.profile = null;
+        state.isAdmin = false;
+      }
+    }
   }
-
   async function loadTasks() {
     try {
       const { data, error } = await withTimeout(
         state.sb.from("airdrop_tasks")
           .select("*").eq("status", "active")
           .order("sort_order", { ascending: true }).order("created_at", { ascending: false }),
-        "작업 로드",
+        "미션 로드",
       );
       if (error) { state._tasksErr = error.message || "오류"; state.tasks = []; return; }
       state._tasksErr = null;
@@ -112,23 +167,21 @@
       state.tasksLoaded = true;
     }
   }
-
   async function loadMySubs() {
     state.mySubs = {}; state.mySubList = [];
     if (!state.uid) return;
     try {
       const { data, error } = await withTimeout(
         state.sb.from("airdrop_submissions")
-          .select("id,task_id,status,proof_url,proof_note,created_at, task:airdrop_tasks(title)")
+          .select("id,task_id,status,proof_url,proof_note,created_at, task:airdrop_tasks(title,verify_method)")
           .eq("user_id", state.uid).order("created_at", { ascending: false }),
         "내 인증 로드",
       );
       if (error || !data) return;
-      (data).forEach((s) => { state.mySubs[s.task_id] = s; });
+      data.forEach((s) => { state.mySubs[s.task_id] = s; });
       state.mySubList = data;
     } catch (_) {}
   }
-
   async function loadCheckins() {
     state.checkins = []; state.streak = 0; state.checkedInToday = false;
     if (!state.uid) return;
@@ -144,14 +197,53 @@
       state.streak = computeStreak(state.checkins);
     } catch (_) {}
   }
-
+  async function loadLeaderboard() {
+    state.leaderboard = [];
+    try {
+      const since = dateAdd(kstToday(), -90);
+      const { data, error } = await withTimeout(
+        state.sb.from("daily_checkins").select("user_id,checkin_date").gte("checkin_date", since),
+        "리더보드 체크인 로드",
+      );
+      if (error || !data) return;
+      const byUser = {};
+      data.forEach((r) => {
+        if (!byUser[r.user_id]) byUser[r.user_id] = [];
+        byUser[r.user_id].push(r.checkin_date);
+      });
+      const rows = Object.entries(byUser).map(([uid, dates]) => ({ uid, streak: computeStreak(dates) })).filter((r) => r.streak > 0).sort((a, b) => b.streak - a.streak).slice(0, 10);
+      if (!rows.length) return;
+      const { data: profiles } = await withTimeout(
+        state.sb.from("profiles").select("id,email,full_name").in("id", rows.map((r) => r.uid)),
+        "리더보드 프로필 로드",
+      );
+      const names = {};
+      (profiles || []).forEach((p) => { names[p.id] = p.full_name || (p.email ? p.email.split("@")[0] : "회원"); });
+      state.leaderboard = rows.map((r) => ({ ...r, name: names[r.uid] || "회원" }));
+    } catch (_) {}
+  }
+  async function loadWinners() {
+    state.winners = []; state._winnersErr = null;
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.from("raffle_winners")
+          .select("id,week_start,user_id,telegram,prize,entries,created_at, user:profiles(full_name,email)")
+          .eq("week_start", lastWeekStart()).order("created_at", { ascending: true }),
+        "당첨자 로드",
+      );
+      if (error) { state._winnersErr = error.message || "오류"; return; }
+      state.winners = data || [];
+    } catch (err) {
+      state._winnersErr = errText(err);
+    }
+  }
   async function loadAllSubs() {
     state.allSubs = []; state._adminErr = null;
     if (!state.isAdmin) return;
     try {
       const { data, error } = await withTimeout(
         state.sb.from("airdrop_submissions")
-          .select("id,task_id,user_id,proof_url,proof_note,status,created_at, task:airdrop_tasks(title), user:profiles!airdrop_submissions_user_id_fkey(email,full_name)")
+          .select("id,task_id,user_id,proof_url,proof_note,status,created_at, task:airdrop_tasks(title,verify_method), user:profiles!airdrop_submissions_user_id_fkey(email,full_name)")
           .order("created_at", { ascending: false }),
         "관리자 제출 로드",
       );
@@ -162,127 +254,137 @@
     }
   }
 
-  // ── 렌더링 ────────────────────────────────────────────────────────
   function renderCheckin() {
     const wrap = $("checkinBody");
     if (!wrap) return;
+    const todayIdx = (kstDate().getUTCDay() + 6) % 7;
+    const { startDate } = weekBounds();
+    const set = new Set(state.checkins);
+    let boxes = "";
+    for (let i = 0; i < 7; i++) {
+      const date = dateAdd(startDate, i);
+      const done = set.has(date);
+      const cls = "sq" + (done ? " done" : "") + (i === todayIdx && !done ? " today" : "");
+      boxes += `<div class="${cls}"><span class="d">${DAY_LABELS[i]}</span><span class="v">${done ? "✓" : (i === todayIdx ? "·" : i + 1)}</span></div>`;
+    }
     if (!state.uid) {
-      wrap.innerHTML = `<div class="checkin"><div class="ck-info"><div><span class="streak-big">–</span></div><div class="streak-label">로그인하고 매일 출석하세요.<br>기프티콘 추첨에도 참여돼요 🎁</div></div><button class="btn-sub" id="ckLogin" type="button">로그인하고 체크인하기</button></div>`;
+      wrap.innerHTML = `<div class="streak-strip">${boxes}</div><div class="ck-row"><div class="ck-meta">로그인하고 매일 체크인하면 응모권을 받을 수 있습니다.<br>체크인 1회마다 응모권 <b>+1장</b>입니다.</div><button class="btn-sub" id="ckLogin" type="button">로그인하고 체크인</button></div><div class="note">🎁 7일 연속 달성 시 이번 주 체크인 응모권이 <b style="color:var(--accent2)">2배</b> 적립됩니다.</div>`;
       const b = $("ckLogin"); if (b) b.onclick = doLogin;
       return;
     }
     const done = state.checkedInToday;
-    wrap.innerHTML = `<div class="checkin">
-      <div class="ck-info"><div><span class="streak-big">${state.streak}</span><span class="streak-unit">일</span></div>
-      <div class="streak-label">${done ? "오늘 출석 완료! 🔥 내일도 만나요." : "오늘 아직 출석 안 하셨어요.<br>지금 체크인하고 연속 출석을 이어가세요!"}</div></div>
-      ${done ? `<button class="btn-sub" disabled>오늘 출석 완료 ✅</button>` : `<button class="btn-sub" id="ckBtn" type="button">오늘 체크인 ✅</button>`}
-    </div>`;
+    wrap.innerHTML = `<div class="streak-strip">${boxes}</div><div class="ck-row"><div class="ck-meta"><b>${state.streak}</b>일 연속 출석 중입니다.${done ? "<br>오늘 체크인은 완료했습니다." : `<br>오늘 체크인하면 <b>${state.streak + 1}일</b> 연속 출석입니다.`}<br>체크인 1회마다 응모권 <b>+1장</b>입니다.</div>${done ? `<button class="btn-sub" disabled>오늘 체크인 완료 ✓</button>` : `<button class="btn-sub" id="ckBtn" type="button">오늘 체크인 ✅ (+1)</button>`}</div><div class="note">🎁 7일 연속 달성 시 이번 주 체크인 응모권이 <b style="color:var(--accent2)">2배</b> 적립됩니다.</div>`;
     const b = $("ckBtn"); if (b) b.onclick = doCheckin;
   }
-
-  function taskCard(t) {
-    const sub = state.mySubs[t.id];
-    const subHtml = sub
-      ? `<span class="badge ${st(sub.status).cls}">${st(sub.status).txt}</span>`
-      : `<button class="btn-sub" type="button" data-sub="${esc(t.id)}">✅ 인증하기</button>`;
-    return `<div class="card task">
-      <div class="task-head"><div class="task-title">${esc(t.title)}</div>${t.reward_note ? `<span class="reward">🎁 ${esc(t.reward_note)}</span>` : ""}</div>
-      ${t.description ? `<div class="task-desc">${esc(t.description)}</div>` : ""}
-      ${t.steps ? `<div class="task-steps">${multiline(t.steps)}</div>` : ""}
-      <div class="task-foot">${t.link ? `<a class="btn-go" href="${safeURL(t.link)}" target="_blank" rel="noopener">작업하러 가기 ↗</a>` : ""}${subHtml}</div>
-    </div>`;
+  function renderTickets() {
+    const total = $("ticketTotal");
+    const foot = $("ticketFoot");
+    const bd = $("ticketBreakdown");
+    if (!total || !foot || !bd) return;
+    if (!state.uid) {
+      total.textContent = "0";
+      foot.textContent = "🎟️ 로그인하면 이번 주 응모권을 계산합니다.";
+      bd.innerHTML = `<span class="eq-chip"><span class="lab">체크인</span><span class="val">0</span><span class="mul">×1장</span></span><span class="eq-op">+</span><span class="eq-chip"><span class="lab">미션 인증</span><span class="val">0건</span><span class="mul">×5장</span></span><span class="eq-op">=</span><span class="eq-chip sum"><span class="lab">총 응모권</span><span class="val">0장</span></span>`;
+      return;
+    }
+    const x = ticketStats();
+    total.textContent = x.total;
+    foot.textContent = `🎟️ 추첨 가중치 ${x.total}장 · 7일 스트릭 ${state.streak >= 7 ? "달성" : "미달성"}입니다.`;
+    bd.innerHTML = `<span class="eq-chip"><span class="lab">체크인</span><span class="val">${x.checkins}</span><span class="mul">×${x.checkinMul}장</span></span><span class="eq-op">+</span><span class="eq-chip"><span class="lab">미션 인증</span><span class="val">${x.approved}건</span><span class="mul">×5장</span></span><span class="eq-op">=</span><span class="eq-chip sum"><span class="lab">총 응모권</span><span class="val">${x.total}장</span></span>`;
   }
-
+  function vmInfo(method) { return VM[method] || VM.capture; }
+  function taskCard(t) {
+    const method = t.verify_method || "capture";
+    const vm = vmInfo(method);
+    const sub = state.mySubs[t.id];
+    const statusBadge = sub ? `<span class="badge ${st(sub.status).cls}">${st(sub.status).txt}</span>` : "";
+    const action = sub ? "" : method === "onchain"
+      ? `<button class="btn-wallet" type="button" data-auto="${esc(t.id)}">지갑 연결 · 인증요청</button>`
+      : method === "telegram"
+        ? `<button class="btn-sub" type="button" data-auto="${esc(t.id)}">자동 인증요청</button>`
+        : `<button class="btn-sub" type="button" data-sub="${esc(t.id)}">✅ 인증하기</button>`;
+    return `<div class="task"><div class="task-head"><div><div class="task-title">${esc(t.title)}</div>${t.reward_note ? `<span class="reward">${esc(t.reward_note)}</span>` : `<span class="reward">응모권 +5장</span>`}</div><span class="vm ${vm.cls}">${vm.label}</span></div>${t.description ? `<div class="task-desc">${esc(t.description)}</div>` : ""}${t.steps ? `<div class="task-steps">${multiline(t.steps)}</div>` : ""}<div class="task-foot">${t.link ? `<a class="btn-go ghost" href="${safeURL(t.link)}" target="_blank" rel="noopener">작업하러 가기 ↗</a>` : ""}${action}${statusBadge}</div></div>`;
+  }
   function renderTasks() {
     const wrap = $("tasksWrap");
     if (!wrap) return;
-    if (state._tasksErr) { wrap.innerHTML = `<div class="err">작업을 불러오지 못했습니다: ${esc(state._tasksErr)}</div>`; return; }
-    if (!state.tasksLoaded) { wrap.innerHTML = `<div class="card empty">작업 정보를 확인 중입니다. 잠시 후 자동 갱신됩니다.</div>`; return; }
-    if (!state.tasks.length) { wrap.innerHTML = `<div class="card empty">현재 진행중인 에어드랍 작업이 없습니다. 곧 새 작업이 올라옵니다! 🚀</div>`; return; }
+    if (state._tasksErr) { wrap.innerHTML = `<div class="card err">미션을 불러오지 못했습니다: ${esc(state._tasksErr)}</div>`; return; }
+    if (!state.tasksLoaded) { wrap.innerHTML = `<div class="card empty">미션 정보를 확인 중입니다.</div>`; return; }
+    if (!state.tasks.length) { wrap.innerHTML = `<div class="card empty">현재 진행중인 에어드랍 미션이 없습니다.</div>`; return; }
     wrap.innerHTML = state.tasks.map(taskCard).join("");
     state.tasks.forEach((t) => {
-      const b = wrap.querySelector(`[data-sub="${cssEscape(t.id)}"]`);
-      if (b) b.onclick = () => openSubModal(t);
+      const s = wrap.querySelector(`[data-sub="${cssEscape(t.id)}"]`);
+      const a = wrap.querySelector(`[data-auto="${cssEscape(t.id)}"]`);
+      if (s) s.onclick = () => openSubModal(t);
+      if (a) a.onclick = () => submitAutoTask(t);
     });
   }
-
-  function renderMyStatus() {
-    const wrap = $("myStatusWrap");
+  function renderLeaderboard() {
+    const wrap = $("lbWrap");
     if (!wrap) return;
-    if (!state.uid) { wrap.innerHTML = ""; return; }
-    const subs = state.mySubList || [];
-    const subsHtml = subs.length
-      ? subs.map((s) => `<div class="ms-row"><span class="ms-task">${esc(joinTitle(s.task))}</span><span class="badge ${st(s.status).cls}">${st(s.status).txt}</span></div>`).join("")
-      : `<div class="empty">아직 제출한 인증이 없어요. 작업을 완료하고 인증해보세요!</div>`;
-    wrap.innerHTML = `<div class="seclabel">📌 내 인증 현황</div>
-      <div class="card">
-        <div class="ms-streak">🔥 연속 출석 <b>${state.streak}일</b> · 제출한 인증 <b>${subs.length}건</b></div>
-        <div class="ms-list">${subsHtml}</div>
-      </div>`;
+    if (!state.leaderboard.length) { wrap.innerHTML = `<div class="empty">아직 리더보드에 표시할 출석 데이터가 없습니다.</div>`; return; }
+    wrap.innerHTML = state.leaderboard.map((l, i) => {
+      const rank = i < 3 ? MEDALS[i] : i + 1;
+      const cls = "lb-row" + (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "");
+      return `<div class="${cls}"><div class="lb-rank">${rank}</div><div class="lb-name"><span class="h">${esc(l.name)}님</span></div><div class="lb-days"><b>${l.streak}</b>일 연속</div></div>`;
+    }).join("");
   }
-
+  function renderWinners() {
+    const title = $("winnersTitle");
+    const wrap = $("winnersWrap");
+    if (!wrap) return;
+    if (title) title.textContent = `🏆 지난주 당첨자${state.winners.length ? ` (${state.winners.length}명)` : ""}`;
+    if (state._winnersErr) { wrap.innerHTML = `<div class="empty">아직 당첨자 테이블이 준비되지 않았거나 당첨자가 없습니다.</div>`; return; }
+    if (!state.winners.length) { wrap.innerHTML = `<div class="empty">지난주 당첨자 기록이 아직 없습니다.</div>`; return; }
+    wrap.innerHTML = state.winners.map((w, i) => {
+      const u = w.user || {};
+      const name = w.telegram || u.full_name || (u.email ? u.email.split("@")[0] : "당첨자");
+      return `<div class="winrow"><span class="n">${i < 3 ? MEDALS[i] : ""} ${esc(name)}님</span><span class="c">${esc(w.prize || "기프티콘")} · ${Number(w.entries || 0)}장</span></div>`;
+    }).join("");
+  }
   function revRow(s) {
     const thumb = s.proof_url
       ? `<a class="rev-thumb-a" href="${safeURL(s.proof_url)}" target="_blank" rel="noopener"><img class="rev-thumb" src="${safeURL(s.proof_url)}" alt="인증 이미지"></a>`
-      : `<div class="rev-thumb"></div>`;
-    const uname = joinEmail(s.user);
-    return `<div class="rev-row">
-      ${thumb}
-      <div class="rev-body">
-        <div class="rev-task">${esc(joinTitle(s.task))}</div>
-        <div class="rev-user">${uname ? esc(uname) : "익명"}</div>
-        ${s.proof_note ? `<div class="rev-note">${esc(s.proof_note)}</div>` : ""}
-      </div>
-      <div class="rev-actions">
-        <span class="rev-status ${st(s.status).cls}">${st(s.status).txt}</span>
-        <div style="display:flex;gap:6px;">
-          <button class="mini-btn app" type="button" data-app="${esc(s.id)}">승인</button>
-          <button class="mini-btn rej" type="button" data-rej="${esc(s.id)}">거절</button>
-          <button class="mini-btn rwd" type="button" data-rwd="${esc(s.id)}">🎁리워드</button>
-        </div>
-      </div>
-    </div>`;
+      : `<div class="rev-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px;">${(s.task && s.task.verify_method) === "telegram" ? "✈️" : "🔗"}</div>`;
+    return `<div class="rev-row">${thumb}<div class="rev-body"><div class="rev-task">${esc(joinTitle(s.task))}</div><div class="rev-user">${esc(joinEmail(s.user) || "익명")} · ${esc(s.status)}</div>${s.proof_note ? `<div class="rev-note">${esc(s.proof_note)}</div>` : ""}</div><div class="rev-actions"><span class="rev-status ${st(s.status).cls}">${st(s.status).txt}</span><div style="display:flex;gap:6px;"><button class="mini-btn app" type="button" data-app="${esc(s.id)}">승인</button><button class="mini-btn rej" type="button" data-rej="${esc(s.id)}">반려</button></div></div></div>`;
   }
-
-  function renderReview() {
-    const list = $("revList");
-    if (!list) return;
-    const subs = state.allSubs || [];
-    const count = $("revCount"); if (count) count.textContent = subs.length ? `(${subs.length}건)` : "";
-    if (!state.isAdmin) return;
-    if (state._adminErr) { list.innerHTML = `<div class="err">로드 실패: ${esc(state._adminErr)}</div>`; return; }
-    if (!subs.length) { list.innerHTML = `<div class="empty">검토할 제출이 없습니다.</div>`; return; }
-    list.innerHTML = subs.map(revRow).join("");
-    subs.forEach((s) => {
-      const a = list.querySelector(`[data-app="${cssEscape(s.id)}"]`);
-      const r = list.querySelector(`[data-rej="${cssEscape(s.id)}"]`);
-      const w = list.querySelector(`[data-rwd="${cssEscape(s.id)}"]`);
-      if (a) a.onclick = () => reviewSub(s, "approved");
-      if (r) r.onclick = () => reviewSub(s, "rejected");
-      if (w) w.onclick = () => reviewSub(s, "rewarded");
+  function buildEntrants() {
+    const { startIso, endIso } = weekBounds();
+    const byUser = {};
+    (state.allSubs || []).forEach((s) => {
+      if (s.status !== "approved") return;
+      if (s.created_at && (s.created_at < startIso || s.created_at >= endIso)) return;
+      if (!byUser[s.user_id]) byUser[s.user_id] = { user_id: s.user_id, entries: 0, user: s.user };
+      byUser[s.user_id].entries += 5;
     });
+    return Object.values(byUser).sort((a, b) => b.entries - a.entries);
   }
-
   function renderLottery() {
     const wrap = $("lotteryWrap");
-    if (!wrap) return;
-    if (!state.isAdmin) return;
-    const byTask = {};
-    (state.allSubs || []).forEach((s) => {
-      if (!byTask[s.task_id]) byTask[s.task_id] = { title: joinTitle(s.task), approved: 0 };
-      if (s.status === "approved") byTask[s.task_id].approved++;
-    });
-    const entries = Object.entries(byTask).filter(([, v]) => v.approved > 0);
-    const count = $("lotCount"); if (count) count.textContent = entries.length ? `(${entries.length}개 작업)` : "";
+    if (!wrap || !state.isAdmin) return;
+    const entrants = buildEntrants();
+    const count = $("lotCount"); if (count) count.textContent = entrants.length ? `(${entrants.length}명)` : "";
     if (state._adminErr) { wrap.innerHTML = `<div class="err">${esc(state._adminErr)}</div>`; return; }
-    if (!entries.length) { wrap.innerHTML = `<div class="empty">추첨 가능한 승인 제출이 없습니다.</div>`; return; }
-    wrap.innerHTML = entries.map(([tid, v]) => `<div class="lot-row"><span class="lot-title">${esc(v.title)}</span><span class="dim-sm">승인 ${v.approved}명</span><button class="mini-btn rwd" type="button" data-lot="${esc(tid)}">승인자 중 추첨 🎁</button></div>`).join("");
-    entries.forEach(([tid]) => {
-      const b = wrap.querySelector(`[data-lot="${cssEscape(tid)}"]`);
-      if (b) b.onclick = () => doLottery(tid);
+    if (!entrants.length) { wrap.innerHTML = `<div class="empty">이번 주 추첨 가능한 인증완료 제출이 없습니다.</div>`; return; }
+    const total = entrants.reduce((a, e) => a + e.entries, 0);
+    wrap.innerHTML = `<div class="draw-bar"><div class="txt">이번 주 미션 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br>v1은 목록 확인 후 수동 추첨하며, 전체 가중 랜덤 추첨은 TODO입니다.</div><button class="btn-draw" type="button" id="drawBtn">🎲 당첨자 기록</button></div><div style="margin-top:12px;">${entrants.slice(0, 20).map((e) => `<div class="lot-row"><span class="lot-title">${esc(joinEmail(e.user) || e.user_id)}</span><span class="dim-sm">${e.entries}장</span></div>`).join("")}</div>`;
+    const b = $("drawBtn"); if (b) b.onclick = () => recordWinners(entrants);
+  }
+  function renderReview() {
+    const list = $("revList");
+    if (!list || !state.isAdmin) return;
+    const pending = (state.allSubs || []).filter((s) => s.status === "pending");
+    const count = $("revCount"); if (count) count.textContent = pending.length ? `(${pending.length}건 대기)` : "";
+    if (state._adminErr) { list.innerHTML = `<div class="err">로드 실패: ${esc(state._adminErr)}</div>`; return; }
+    if (!pending.length) { list.innerHTML = `<div class="empty">검토할 대기 제출이 없습니다.</div>`; return; }
+    list.innerHTML = pending.map(revRow).join("");
+    pending.forEach((s) => {
+      const a = list.querySelector(`[data-app="${cssEscape(s.id)}"]`);
+      const r = list.querySelector(`[data-rej="${cssEscape(s.id)}"]`);
+      if (a) a.onclick = () => reviewSub(s, "approved");
+      if (r) r.onclick = () => reviewSub(s, "rejected");
     });
   }
-
   function renderAdmin() {
     const wrap = $("adminWrap");
     if (!wrap) return;
@@ -290,37 +392,82 @@
     renderLottery();
     renderReview();
   }
-
   function renderAll() {
     renderCheckin();
+    renderTickets();
     renderTasks();
-    renderMyStatus();
+    renderLeaderboard();
+    renderWinners();
     renderAdmin();
   }
 
-  // ── 액션: 체크인 ──────────────────────────────────────────────────
-  async function doCheckin() {
-    const btn = $("ckBtn");
-    if (btn) { btn.disabled = true; btn.textContent = "처리 중…"; }
-    const { error } = await state.sb.from("daily_checkins").insert({ user_id: state.uid, checkin_date: kstToday() });
-    if (error) {
-      if (error.code === "23505" || /duplicate|unique/i.test(error.message || "")) {
-        toast("이미 오늘 출석하셨어요!", "ok");
-      } else {
-        toast("출석 실패: " + (error.message || "오류"), "err");
-        if (btn) { btn.disabled = false; btn.textContent = "오늘 체크인 ✅"; }
-        return;
-      }
-    } else {
-      toast("출석 완료! 🔥", "ok");
-    }
-    await loadCheckins();
-    renderCheckin(); renderMyStatus();
+  function tickCountdown() {
+    const { endMs } = weekBounds();
+    const diff = Math.max(0, endMs - Date.now());
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor(diff / 3600000) % 24;
+    const m = Math.floor(diff / 60000) % 60;
+    const s = Math.floor(diff / 1000) % 60;
+    if ($("cdD")) $("cdD").textContent = String(d);
+    if ($("cdH")) $("cdH").textContent = String(h).padStart(2, "0");
+    if ($("cdM")) $("cdM").textContent = String(m).padStart(2, "0");
+    if ($("cdS")) $("cdS").textContent = String(s).padStart(2, "0");
+    if ($("countdownLabel")) $("countdownLabel").textContent = `⏰ 이번 주 마감까지 (D-${d})`;
   }
 
-  // ── 액션: 인증 모달 ───────────────────────────────────────────────
+  async function doCheckin() {
+    if (!state.uid) { doLogin(); return; }
+    const btn = $("ckBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "처리 중…"; }
+    try {
+      const { error } = await withTimeout(
+        state.sb.from("daily_checkins").insert({ user_id: state.uid, checkin_date: kstToday() }),
+        "체크인 저장",
+      );
+      if (error) {
+        if (error.code === "23505" || /duplicate|unique/i.test(error.message || "")) toast("이미 오늘 체크인했습니다.", "ok");
+        else throw error;
+      } else {
+        toast("오늘 체크인 완료 · 응모권 +1장입니다.", "ok");
+      }
+      await loadCheckins();
+      renderCheckin(); renderTickets(); renderLeaderboard();
+    } catch (err) {
+      toast("체크인 실패: " + errText(err), "err");
+      if (btn) { btn.disabled = false; btn.textContent = "오늘 체크인 ✅ (+1)"; }
+    }
+  }
+
+  async function bindWallet() {
+    if (!state.uid) { doLogin(); return null; }
+    if (state.profile && state.profile.wallet_address) return state.profile.wallet_address;
+    let address = "";
+    try {
+      if (window.ethereum && typeof window.ethereum.request === "function") {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        address = accounts && accounts[0] ? accounts[0] : "";
+      }
+    } catch (_) {}
+    if (!address) address = prompt("연결할 EVM 지갑 주소를 입력해 주십시오. 1계정 1지갑만 사용할 수 있습니다.", "") || "";
+    address = address.trim().toLowerCase();
+    if (!/^0x[a-f0-9]{40}$/.test(address)) { toast("올바른 EVM 지갑 주소를 입력해 주십시오.", "err"); return null; }
+    try {
+      const { error } = await withTimeout(
+        state.sb.from("profiles").update({ wallet_address: address }).eq("id", state.uid),
+        "지갑 저장",
+      );
+      if (error) throw error;
+      state.profile = { ...(state.profile || {}), wallet_address: address };
+      toast("지갑이 연결되었습니다.", "ok");
+      return address;
+    } catch (err) {
+      toast("지갑 연결 실패: 이미 다른 계정에 연결됐거나 저장 권한이 없습니다.", "err");
+      return null;
+    }
+  }
+
   function openSubModal(t) {
-    if (!state.uid) { toast("인증하려면 먼저 로그인해주세요.", "err"); doLogin(); return; }
+    if (!state.uid) { toast("인증하려면 먼저 로그인해 주십시오.", "err"); doLogin(); return; }
     state._subTask = t;
     $("subModalTitle").textContent = t.title;
     $("subFile").value = ""; $("subNote").value = ""; $("subPreview").innerHTML = "";
@@ -334,113 +481,146 @@
     if (!t) return;
     const file = $("subFile").files[0];
     const note = $("subNote").value.trim();
-    if (!file) { toast("스크린샷 이미지를 선택해주세요.", "err"); return; }
-    if (!file.type.startsWith("image/")) { toast("이미지 파일만 업로드할 수 있어요.", "err"); return; }
-    if (file.size > 10 * 1024 * 1024) { toast("이미지가 너무 큽니다 (10MB 이하).", "err"); return; }
-
+    if (!file) { toast("스크린샷 이미지를 선택해 주십시오.", "err"); return; }
+    if (!file.type.startsWith("image/")) { toast("이미지 파일만 업로드할 수 있습니다.", "err"); return; }
+    if (file.size > 10 * 1024 * 1024) { toast("이미지는 10MB 이하로 올려 주십시오.", "err"); return; }
     const btn = $("subSubmit"); const orig = btn.textContent;
     btn.disabled = true; btn.textContent = "업로드 중…";
     try {
       const ext = ((file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg").slice(0, 4);
       const path = `${state.uid}/${t.id}_${Date.now()}.${ext}`;
-      const up = await state.sb.storage.from("airdrop-proofs").upload(path, file, { contentType: file.type, upsert: false });
+      const up = await withTimeout(
+        state.sb.storage.from("airdrop-proofs").upload(path, file, { contentType: file.type, upsert: false }),
+        "증빙 업로드",
+      );
       if (up.error) throw up.error;
       const proof_url = state.sb.storage.from("airdrop-proofs").getPublicUrl(path).data.publicUrl;
-
-      const ins = await state.sb.from("airdrop_submissions").insert({
-        task_id: t.id, user_id: state.uid, proof_url, proof_note: note || null,
-      });
+      const ins = await withTimeout(
+        state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_url, proof_note: note || null, status: "pending" }),
+        "인증 제출",
+      );
       if (ins.error) {
-        if (ins.error.code === "23505" || /duplicate|unique/i.test(ins.error.message || "")) {
-          toast("이미 이 작업에 인증을 제출하셨어요.", "err");
-        } else throw ins.error;
+        if (ins.error.code === "23505" || /duplicate|unique/i.test(ins.error.message || "")) toast("이미 이 미션에 인증을 제출했습니다.", "err");
+        else throw ins.error;
       } else {
-        toast("인증 제출 완료! 검토 후 승인됩니다 🎉", "ok");
+        toast("인증 제출 완료했습니다. 검토 후 승인됩니다.", "ok");
         closeSubModal();
       }
       await loadMySubs();
-      renderTasks(); renderMyStatus();
+      renderTasks(); renderTickets();
     } catch (err) {
-      toast("제출 실패: " + (err && err.message || "오류"), "err");
+      toast("제출 실패: " + errText(err), "err");
     } finally {
       btn.disabled = false; btn.textContent = orig;
     }
   }
 
-  // ── 액션: 관리자 검토 ─────────────────────────────────────────────
+  async function submitAutoTask(t) {
+    if (!state.uid) { toast("인증하려면 먼저 로그인해 주십시오.", "err"); doLogin(); return; }
+    if ((t.verify_method || "capture") === "onchain") {
+      const wallet = await bindWallet();
+      if (!wallet) return;
+    }
+    try {
+      // TODO: onchain/telegram 자동 검증 서버 작업이 붙으면 여기서 status 를 approved 로 전환합니다.
+      const note = (t.verify_method || "capture") === "onchain" ? `wallet:${state.profile && state.profile.wallet_address}` : "telegram:auto-verify-requested";
+      const { error } = await withTimeout(
+        state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_note: note, status: "pending" }),
+        "자동 인증 요청",
+      );
+      if (error) {
+        if (error.code === "23505" || /duplicate|unique/i.test(error.message || "")) toast("이미 이 미션에 인증을 제출했습니다.", "err");
+        else throw error;
+      } else {
+        toast("자동 인증 요청을 접수했습니다. 검증 대기 상태입니다.", "ok");
+      }
+      await loadMySubs();
+      renderTasks();
+    } catch (err) {
+      toast("인증 요청 실패: " + errText(err), "err");
+    }
+  }
+
   async function reviewSub(s, status) {
-    const { error } = await state.sb.from("airdrop_submissions").update({
-      status, reviewed_by: state.uid, reviewed_at: new Date().toISOString(),
-    }).eq("id", s.id);
-    if (error) { toast("처리 실패: " + (error.message || "오류"), "err"); return; }
-    toast(`${st(status).txt} 처리 완료`, "ok");
-    await Promise.all([loadAllSubs(), loadMySubs()]);
-    renderReview(); renderLottery(); renderTasks(); renderMyStatus();
+    try {
+      const { error } = await withTimeout(
+        state.sb.from("airdrop_submissions").update({ status, reviewed_by: state.uid, reviewed_at: new Date().toISOString() }).eq("id", s.id),
+        "제출 검토",
+      );
+      if (error) throw error;
+      toast(`${st(status).txt} 처리 완료했습니다.`, "ok");
+      await Promise.allSettled([loadAllSubs(), loadMySubs()]);
+      renderReview(); renderLottery(); renderTasks(); renderTickets();
+    } catch (err) {
+      toast("처리 실패: " + errText(err), "err");
+    }
   }
 
-  async function doLottery(taskId) {
-    const approved = (state.allSubs || []).filter((s) => s.task_id === taskId && s.status === "approved");
-    if (!approved.length) { toast("승인된 제출이 없습니다.", "err"); return; }
-    const input = prompt(`승인자(${approved.length}명) 중 몇 명을 추첨할까요?`, "1");
-    if (input == null) return;
-    let n = parseInt(input, 10);
-    if (!n || n < 1) { toast("1 이상의 숫자를 입력해주세요.", "err"); return; }
-    if (n > approved.length) { toast(`승인자는 ${approved.length}명이에요. 전원 추첨합니다.`, "ok"); n = approved.length; }
-
-    const pool = approved.slice();
-    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
-    const ids = pool.slice(0, n).map((w) => w.id);
-
-    const { error } = await state.sb.from("airdrop_submissions").update({
-      status: "rewarded", reviewed_by: state.uid, reviewed_at: new Date().toISOString(),
-    }).in("id", ids);
-    if (error) { toast("추첨 실패: " + (error.message || "오류"), "err"); return; }
-    toast(`🎉 ${n}명 추첨 완료 — 리워드 지정!`, "ok");
-    await Promise.all([loadAllSubs(), loadMySubs()]);
-    renderReview(); renderLottery(); renderTasks(); renderMyStatus();
+  async function recordWinners(entrants) {
+    const nRaw = prompt(`참여자 ${entrants.length}명 중 기록할 당첨자 수를 입력해 주십시오.`, "5");
+    if (nRaw == null) return;
+    const n = Math.max(1, Math.min(parseInt(nRaw, 10) || 1, entrants.length));
+    const prize = prompt("기록할 경품명을 입력해 주십시오.", "기프티콘") || "기프티콘";
+    const picked = entrants.slice(0, n);
+    const rows = picked.map((e) => ({ week_start: weekBounds().startDate, user_id: e.user_id, telegram: null, prize, entries: e.entries }));
+    try {
+      // TODO: 전체 weighted-random 추첨은 서버/Edge Function에서 감사 로그와 함께 구현합니다.
+      const { error } = await withTimeout(state.sb.from("raffle_winners").insert(rows), "당첨자 기록");
+      if (error) throw error;
+      toast(`${n}명의 당첨자를 기록했습니다.`, "ok");
+      await loadWinners();
+      renderWinners();
+    } catch (err) {
+      toast("당첨자 기록 실패: " + errText(err), "err");
+    }
   }
 
-  // ── 액션: 작업 등록 (관리자) ──────────────────────────────────────
   async function submitTask(e) {
     e.preventDefault();
     const title = $("f_title").value.trim();
-    if (!title) { toast("제목을 입력해주세요.", "err"); return; }
+    if (!title) { toast("제목을 입력해 주십시오.", "err"); return; }
     const btn = $("taskSubmit"); const orig = btn.textContent;
     btn.disabled = true; btn.textContent = "등록 중…";
     const payload = {
       title,
+      verify_method: $("f_verify").value || "capture",
       description: $("f_desc").value.trim() || null,
       steps: $("f_steps").value.trim() || null,
       link: $("f_link").value.trim() || null,
-      reward_note: $("f_reward").value.trim() || null,
+      reward_note: $("f_reward").value.trim() || "응모권 +5장",
       category: $("f_cat").value.trim() || null,
       status: "active",
       sort_order: parseInt($("f_sort").value, 10) || 0,
       ends_at: $("f_ends").value ? new Date($("f_ends").value).toISOString() : null,
       created_by: state.uid,
     };
-    const { error } = await state.sb.from("airdrop_tasks").insert(payload);
-    btn.disabled = false; btn.textContent = orig;
-    if (error) { toast("등록 실패: " + (error.message || "오류"), "err"); return; }
-    toast("작업이 등록되었습니다.", "ok");
-    e.target.reset();
-    await loadTasks(); renderTasks();
+    try {
+      const { error } = await withTimeout(state.sb.from("airdrop_tasks").insert(payload), "미션 등록");
+      if (error) throw error;
+      toast("미션이 등록되었습니다.", "ok");
+      e.target.reset();
+      await loadTasks();
+      renderTasks();
+    } catch (err) {
+      toast("등록 실패: " + errText(err), "err");
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
   }
 
-  // ── 부트 (직렬화: 가장 최근 부트만 렌더) ──────────────────────────
   let bootToken = 0;
   async function boot() {
     const my = ++bootToken;
-    // 먼저 정적/로그아웃 UI를 렌더해서 어떤 await가 멈춰도 placeholder가 남지 않게 한다.
     renderAll();
     try {
-      await loadTasks(); if (my !== bootToken) return;
-      renderTasks(); renderCheckin();
-      // 인증 (getSession hang 대비 타임아웃 내장)
-      await loadAuth(); if (my !== bootToken) return;
-      renderCheckin(); renderMyStatus(); renderAdmin();
-      // 유저별 데이터는 실패해도 전체 렌더를 막지 않는다.
-      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs()]); if (my !== bootToken) return;
+      await Promise.allSettled([loadTasks(), loadWinners(), loadLeaderboard()]);
+      if (my !== bootToken) return;
+      renderAll();
+      await loadAuth();
+      if (my !== bootToken) return;
+      renderAll();
+      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs()]);
+      if (my !== bootToken) return;
       renderAll();
     } catch (err) {
       console.warn("[airdrop] boot failed", err);
@@ -451,36 +631,35 @@
     }
   }
 
-  // ── 초기화 ────────────────────────────────────────────────────────
   function init() {
-    // 정적 이벤트 연결(한 번)
-    $("subForm").onsubmit = submitProof;
-    $("subClose").onclick = closeSubModal;
-    $("subModal").addEventListener("click", (e) => { if (e.target === $("subModal")) closeSubModal(); });
-    $("subFile").onchange = () => {
+    if ($("subForm")) $("subForm").onsubmit = submitProof;
+    if ($("subClose")) $("subClose").onclick = closeSubModal;
+    if ($("subModal")) $("subModal").addEventListener("click", (e) => { if (e.target === $("subModal")) closeSubModal(); });
+    if ($("subFile")) $("subFile").onchange = () => {
       const f = $("subFile").files[0]; const p = $("subPreview");
       if (!f) { p.innerHTML = ""; return; }
       if (!f.type.startsWith("image/")) { p.innerHTML = `<div class="err" style="margin-top:8px;">이미지 파일만 가능합니다.</div>`; return; }
       p.innerHTML = `<img src="${URL.createObjectURL(f)}" alt="" style="max-height:140px;border-radius:10px;border:1px solid var(--line);margin-top:8px;display:block;">`;
     };
-    $("taskForm").onsubmit = submitTask;
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("subModal").classList.contains("on")) closeSubModal(); });
-
-    // 인증 상태 변화(로그인/로그아웃/OAuth 복귀)마다 재부트
+    if ($("taskForm")) $("taskForm").onsubmit = submitTask;
+    if ($("admToggle")) $("admToggle").onclick = () => $("adminCard").classList.toggle("admin-open");
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("subModal") && $("subModal").classList.contains("on")) closeSubModal(); });
     state.sb.auth.onAuthStateChange(() => boot());
-    boot(); // INITIAL_SESSION 보험
+    tickCountdown();
+    clearInterval(state._clock);
+    state._clock = setInterval(tickCountdown, 1000);
+    boot();
   }
 
-  // window.__sb 대기(150ms × 40 ≈ 6초)
   let tries = 0;
   renderAll();
+  tickCountdown();
   (function waitForSb() {
     if (window.__sb) { state.sb = window.__sb; init(); return; }
     if (tries++ > 40) {
-      state._tasksErr = "인증 모듈을 불러오지 못했습니다. 새로고침해주세요.";
+      state._tasksErr = "인증 모듈을 불러오지 못했습니다. 새로고침해 주십시오.";
       state.tasksLoaded = true;
-      renderCheckin();
-      renderTasks();
+      renderAll();
       return;
     }
     setTimeout(waitForSb, 150);

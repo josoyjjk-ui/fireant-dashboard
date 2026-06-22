@@ -5,9 +5,9 @@
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:image" content="https://antinfo.io/assets/og-image.png">
-<meta name="description" content="ANTINFO 에어드랍 작업 — 매일 데일리 체크인하고 에어드랍 작업을 인증하면 기프티콘 리워드 추첨에 참여하세요.">
+<meta name="description" content="ANTINFO 에어드랍 작업 — 매일 데일리 체크인하고 에어드랍 작업을 인증하면 기프티콘 리워드 추첨에 참여할 수 있습니다.">
 <meta property="og:title" content="ANTINFO — 에어드랍 작업">
-<meta property="og:description" content="데일리 체크인·에어드랍 작업 인증으로 기프티콘 리워드를 받아보세요.">
+<meta property="og:description" content="데일리 체크인·에어드랍 작업 인증으로 기프티콘 리워드를 받을 수 있습니다.">
 <meta property="og:type" content="website">
 <link rel="canonical" href="https://antinfo.io/airdrop">
 <style>
@@ -22,38 +22,80 @@ html,body{overflow-x:hidden;}
 .tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}.tab.on{background:var(--accent);color:#0a0c10;}
 .btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
 .main{padding:22px 24px;max-width:1240px;margin:0 auto;}
-.head h1{font-size:24px;font-weight:900;}.head .sub{color:var(--dim);font-size:14px;margin-top:4px;}
-.seclabel{font-size:16px;font-weight:900;margin:26px 0 12px;}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;}
+.head h1{font-size:25px;font-weight:900;letter-spacing:-.4px;}.head .sub{color:var(--dim);font-size:13.5px;margin-top:4px;font-weight:700;line-height:1.45;}
+.seclabel{font-size:15px;font-weight:900;margin:15px 0 10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;transition:border-color .18s;}
+.card.hoverable:hover,.task:hover{border-color:#39414f;}
 .foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:40px;}
 .empty{color:var(--dim);font-size:13px;padding:18px;text-align:center;}
 .loading{color:var(--dim);font-size:13px;padding:18px;text-align:center;}
 .err{color:var(--down);font-size:13px;padding:18px;}
 .dim-sm{font-size:12px;color:var(--dim);font-weight:700;}
+.row{display:grid;gap:14px;margin-bottom:14px;}
+.row.r2{grid-template-columns:1.3fr 1fr;}
+.row.split{grid-template-columns:1fr 1fr;}
 
 /* 데일리 체크인 */
-.ck-h{font-size:15px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
-.checkin{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-.ck-info{display:flex;align-items:center;gap:16px;}
-.streak-big{font-size:44px;font-weight:900;color:var(--accent2);letter-spacing:-1px;line-height:1;}
-.streak-unit{font-size:18px;font-weight:800;color:var(--accent2);margin-left:2px;}
-.streak-label{font-size:13.5px;color:var(--dim);font-weight:700;line-height:1.45;}
-.btn-sub{padding:11px 18px;border-radius:10px;border:none;background:var(--accent);color:#0a0c10;font-weight:800;font-size:13.5px;cursor:pointer;transition:filter .15s;}
+.ck-card{display:flex;flex-direction:column;}
+.ck-h{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.streak-strip{display:flex;align-items:center;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+.sq{width:46px;height:50px;border-radius:11px;border:1px solid var(--line);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;flex-shrink:0;}
+.sq .d{font-size:10.5px;font-weight:800;color:var(--dim);}
+.sq .v{font-size:14px;font-weight:900;color:var(--dim);}
+.sq.done{background:rgba(61,220,151,.12);border-color:#1c3a2c;}
+.sq.done .d,.sq.done .v{color:#3ddc97;}
+.sq.today{border-color:var(--accent2);background:rgba(255,181,71,.07);box-shadow:0 0 0 2px rgba(255,181,71,.18) inset;animation:pulse 1.8s ease-in-out infinite;}
+.sq.today .d,.sq.today .v{color:var(--accent2);}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 2px rgba(255,181,71,.10) inset;}50%{box-shadow:0 0 0 3px rgba(255,181,71,.28) inset;}}
+.ck-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:auto;}
+.ck-meta{font-size:12.5px;color:var(--dim);font-weight:700;line-height:1.5;}
+.ck-meta b{color:var(--accent2);font-size:14.5px;}
+.btn-sub{padding:11px 16px;border-radius:11px;border:none;background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;font-weight:800;font-size:13px;cursor:pointer;transition:filter .15s,transform .12s;}
 .btn-sub:hover:not(:disabled){filter:brightness(1.08);}
+.btn-sub:active{transform:translateY(1px);}
 .btn-sub:disabled{opacity:.55;cursor:default;}
 .btn-ghost{padding:11px 18px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--txt);font-weight:700;font-size:13.5px;cursor:pointer;}
+.note{font-size:11.5px;color:#cdb98a;font-weight:700;margin-top:10px;display:flex;align-items:center;gap:6px;}
+.lot-card{display:flex;flex-direction:column;}
+.cd-label{font-size:12px;color:var(--dim);font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:6px;}
+.cd-clock{display:flex;align-items:baseline;gap:7px;margin-top:9px;flex-wrap:wrap;}
+.cd-unit{display:inline-flex;flex-direction:column;align-items:center;min-width:50px;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:7px 5px 5px;}
+.cd-num{font-size:26px;font-weight:900;color:#fff;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1px;}
+.cd-num.cd-days{color:var(--accent);}
+.cd-tag{font-size:10px;color:var(--dim);font-weight:800;margin-top:3px;letter-spacing:.04em;}
+.cd-sep{font-size:21px;font-weight:900;color:#3a3f4a;line-height:1;}
+.cd-foot,.tickets-foot{font-size:11.5px;color:#cdb98a;font-weight:700;margin-top:10px;display:flex;align-items:center;gap:6px;line-height:1.45;}
+.lot-div{height:1px;background:var(--line);margin:13px 0;}
+.tickets-label{font-size:12px;color:var(--dim);font-weight:800;}
+.tickets-big{font-size:48px;font-weight:900;color:var(--accent2);line-height:1;letter-spacing:-2px;margin-top:4px;text-shadow:0 0 28px rgba(255,181,71,.32);}
+.tickets-unit{font-size:18px;font-weight:800;color:var(--accent2);margin-left:4px;}
+.eq-formula{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;font-weight:800;margin-top:13px;}
+.eq-chip{display:inline-flex;flex-direction:column;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:7px 12px;min-width:80px;}
+.eq-chip .lab{font-size:10.5px;color:var(--dim);font-weight:800;}
+.eq-chip .val{font-size:16px;font-weight:900;color:var(--txt);margin-top:2px;letter-spacing:-.5px;}
+.eq-chip .mul{font-size:10.5px;color:var(--dim);font-weight:700;margin-top:1px;}
+.eq-chip.sum{background:rgba(255,181,71,.1);border-color:#3a2f14;}
+.eq-chip.sum .val{color:var(--accent2);}
+.eq-op{font-size:16px;font-weight:900;color:#3a3f4a;}
 
 /* 작업 카드 */
-.tasks{display:flex;flex-direction:column;gap:14px;}
-.task{display:flex;flex-direction:column;gap:11px;}
+.tasks-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:14px;}
+.task{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:11px;transition:border-color .18s;}
 .task-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
-.task-title{font-size:17px;font-weight:800;line-height:1.34;}
-.reward{font-size:11px;font-weight:800;color:var(--accent2);background:#231a0c;padding:5px 11px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.task-title{font-size:16px;font-weight:800;line-height:1.34;}
+.vm{font-size:11px;font-weight:800;padding:5px 11px;border-radius:20px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;}
+.vm-chain{color:#5cb0ff;background:rgba(77,155,255,.14);}
+.vm-tg{color:#7ab8ff;background:rgba(58,160,255,.14);}
+.vm-cap{color:var(--accent2);background:#231a0c;}
+.reward{font-size:11px;font-weight:800;color:var(--accent2);background:#231a0c;padding:5px 11px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:6px;display:inline-block;}
 .task-desc{font-size:13px;color:var(--dim);line-height:1.55;}
-.task-steps{font-size:13.5px;color:#dbe4ef;line-height:1.7;font-weight:500;background:#0e1116;border:1px solid var(--line);border-radius:10px;padding:12px 14px;white-space:pre-wrap;}
-.task-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:2px;}
-.btn-go{display:inline-flex;align-items:center;gap:5px;padding:10px 16px;border-radius:10px;background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;text-decoration:none;font-weight:800;font-size:13px;box-shadow:0 4px 14px rgba(255,86,40,.22);transition:filter .15s;}
+.task-steps{font-size:12.5px;color:#cdd6e0;line-height:1.6;font-weight:500;background:#0e1116;border:1px solid var(--line);border-radius:10px;padding:10px 13px;white-space:pre-wrap;}
+.task-foot{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:auto;padding-top:2px;}
+.btn-go{display:inline-flex;align-items:center;gap:5px;padding:9px 14px;border-radius:10px;background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;text-decoration:none;font-weight:800;font-size:12.5px;box-shadow:0 4px 14px rgba(255,86,40,.22);transition:filter .15s;}
 .btn-go:hover{filter:brightness(1.08);}
+.btn-go.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);box-shadow:none;}
+.btn-wallet{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:10px;background:transparent;color:#5cb0ff;border:1px solid #23425f;font-weight:800;font-size:12.5px;cursor:pointer;transition:filter .15s,border-color .15s;}
+.btn-wallet:hover{border-color:#4d9dff;}
 
 /* 상태 배지 */
 .badge{font-size:12px;font-weight:800;padding:7px 13px;border-radius:20px;display:inline-block;}
@@ -61,6 +103,26 @@ html,body{overflow-x:hidden;}
 .st-approved{color:#3ddc97;background:#0c2419;}
 .st-rejected{color:#ff5d6c;background:#2a1014;}
 .st-rewarded{color:#0a0c10;background:linear-gradient(95deg,#ffd24a,#ffb547);}
+
+.lb{display:flex;flex-direction:column;gap:7px;}
+.lb-row{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;padding:9px 13px;background:var(--bg);border:1px solid var(--line);border-radius:11px;transition:border-color .15s;}
+.lb-rank{font-size:14px;font-weight:900;color:var(--dim);text-align:center;}
+.lb-row.top1{background:linear-gradient(135deg,#2a2210,#14100a);border-color:#3a2f14;}
+.lb-row.top2{background:linear-gradient(135deg,#1f2128,#13161c);border-color:#2b3038;}
+.lb-row.top3{background:linear-gradient(135deg,#241b14,#13161c);border-color:#33271c;}
+.lb-name{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:7px;min-width:0;}
+.lb-name .h{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-days{font-size:12.5px;font-weight:800;color:var(--accent2);white-space:nowrap;}
+.lb-days b{font-size:14.5px;}
+.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;margin-bottom:13px;}
+.flow-step{flex:1;min-width:130px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 12px;}
+.flow-step .ic{font-size:18px;}.flow-step .t{font-size:12.5px;font-weight:800;margin-top:4px;}
+.flow-step .s{font-size:11px;color:var(--dim);font-weight:700;margin-top:3px;line-height:1.4;}
+.flow-arr{display:flex;align-items:center;color:#3a3f4a;font-size:16px;font-weight:900;}
+.win-mini-title{font-size:12.5px;font-weight:800;color:var(--dim);margin:4px 0 8px;}
+.winrow{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;background:var(--bg);border:1px solid var(--line);border-radius:11px;margin-bottom:7px;gap:10px;}
+.winrow .n{font-weight:800;font-size:13px;display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.winrow .c{font-size:12px;color:var(--accent2);font-weight:800;white-space:nowrap;}
 
 /* 내 인증 현황 */
 .ms-streak{font-size:14px;color:var(--dim);font-weight:700;margin-bottom:12px;}
@@ -71,10 +133,17 @@ html,body{overflow-x:hidden;}
 
 /* 관리자 패널 */
 .admin-h{font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.adm-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.adm-toggle .tit{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.adm-chev{font-size:13px;color:var(--dim);font-weight:900;transition:transform .2s;}
+.adm-wrap{max-height:0;overflow:hidden;transition:max-height .3s ease;opacity:.6;}
+.admin-open .adm-wrap{max-height:5000px;opacity:1;}
+.admin-open .adm-chev{transform:rotate(180deg);}
 .admin-form .field{margin-bottom:13px;}
 .af-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .field label{display:block;font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--dim);}
 .field input[type=text],.field input[type=number],.field input[type=datetime-local]{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-size:14px;font-family:inherit;}
+.field select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-size:14px;font-family:inherit;}
 .field textarea{width:100%;min-height:90px;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 13px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.5;}
 .field input[type=file]{width:100%;font-size:13px;color:var(--dim);}
 .preview{margin-top:4px;}
@@ -94,6 +163,11 @@ html,body{overflow-x:hidden;}
 .mini-btn.app{color:#3ddc97;border-color:#1c3a2c;}
 .mini-btn.rej{color:#ff5d6c;border-color:#2a1014;}
 .mini-btn.rwd{color:#0a0c10;background:linear-gradient(95deg,#ffd24a,#ffb547);border-color:transparent;}
+.draw-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:6px;background:linear-gradient(135deg,#221a0c,#13161c);border:1px solid #3a2f14;border-radius:12px;padding:14px 16px;}
+.draw-bar .txt{font-size:13px;color:#cdb98a;font-weight:700;line-height:1.5;}
+.draw-bar .txt b{color:var(--accent2);}
+.btn-draw{padding:12px 20px;border-radius:11px;border:none;background:linear-gradient(95deg,#ffd24a,#ffb547);color:#0a0c10;font-weight:900;font-size:13.5px;cursor:pointer;box-shadow:0 4px 16px rgba(255,181,71,.25);transition:filter .15s,transform .12s;}
+.btn-draw:hover{filter:brightness(1.06);}
 
 /* 모달 */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);z-index:80;display:none;align-items:center;justify-content:center;padding:18px;}
@@ -134,9 +208,9 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .tabs::-webkit-scrollbar{display:none;}.tab{flex:0 0 auto;font-size:15.5px;padding:9px 15px;}
   .btn{font-size:13px;padding:8px 12px;white-space:nowrap;flex-shrink:0;}
   .main{padding:16px 14px;}
-  .head h1{font-size:24px;}.head .sub{font-size:14px;}.seclabel{font-size:19px;}
-  .streak-big{font-size:38px;}
-  .task-title{font-size:18.5px;}.task-steps{font-size:15px;line-height:1.65;}
+  .head h1{font-size:22px;}.head .sub{font-size:13px;}.seclabel{font-size:16px;}
+  .tickets-big{font-size:42px;}.cd-unit{min-width:46px;}.sq{width:42px;height:46px;}
+  .task-title{font-size:16px;}.task-steps{font-size:13.5px;line-height:1.65;}
   .rev-row{grid-template-columns:54px 1fr;}.rev-thumb{width:54px;height:54px;}
   .rev-actions{flex-direction:row;align-items:center;flex-wrap:wrap;grid-column:1/-1;justify-content:flex-start;}
   .ham{display:inline-flex;}
@@ -144,6 +218,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .nav>.btn{display:none;}
   .nav{justify-content:flex-start;gap:10px;}
 }
+@media(max-width:920px){.row.r2,.row.split,.tasks-grid{grid-template-columns:1fr;}.flow-arr{display:none;}}
 .brand2{display:flex;align-items:center;gap:12px;min-width:0;}.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}.lede2{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}@media(max-width:1100px){.lede2{display:none;}}
 </style></head>
 <body>
@@ -175,45 +250,99 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
     <span id="authSlot" data-mobile="0" style="display:inline-flex;align-items:center;gap:8px;margin-right:8px;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button></span><script>(function(){try{var h=localStorage.getItem("antinfo_navauth");if(h){var s=document.getElementById("authSlot");if(s)s.innerHTML=h;}}catch(e){}})();</script><a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
   </div>
   <div class="main">
-    <div class="head"><h1>에어드랍 작업</h1><div class="sub">매일 체크인하고, 에어드랍 작업 인증하면 기프티콘 추첨!</div></div>
+    <div class="head"><h1>🎯 에어드랍 미션</h1><div class="sub">매일 체크인 · 미션 인증으로 응모권을 모으십시오. 모은 응모권은 매주 일요일 자정 가중 추첨으로 기프티콘과 교환됩니다.</div></div>
 
-    <div class="card" style="margin-top:18px;">
-      <div class="ck-h">🔥 데일리 체크인</div>
-      <div id="checkinBody"><div class="loading">로드 중…</div></div>
+    <div class="row r2" style="margin-top:14px;">
+      <div class="card ck-card">
+        <div class="ck-h">🔥 데일리 체크인</div>
+        <div id="checkinBody"><div class="loading">로드 중…</div></div>
+      </div>
+
+      <div class="card lot-card">
+        <div class="cd-label" id="countdownLabel">⏰ 이번 주 마감까지</div>
+        <div class="cd-clock">
+          <div class="cd-unit"><span class="cd-num cd-days" id="cdD">0</span><span class="cd-tag">DAYS</span></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit"><span class="cd-num" id="cdH">00</span><span class="cd-tag">HOURS</span></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit"><span class="cd-num" id="cdM">00</span><span class="cd-tag">MIN</span></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit"><span class="cd-num" id="cdS">00</span><span class="cd-tag">SEC</span></div>
+        </div>
+        <div class="cd-foot">📅 매주 일요일 24:00 KST 마감 후 일괄 추첨합니다.</div>
+        <div class="lot-div"></div>
+        <div class="tickets-label">내 응모권 (이번 주 누적)</div>
+        <div><span class="tickets-big" id="ticketTotal">0</span><span class="tickets-unit">장</span></div>
+        <div class="tickets-foot" id="ticketFoot">🎟️ 로그인하면 내 응모권을 계산합니다.</div>
+        <div class="eq-formula" id="ticketBreakdown"></div>
+      </div>
     </div>
 
-    <div class="seclabel">🪂 진행중 에어드랍 작업</div>
-    <div class="tasks" id="tasksWrap"><div class="loading">작업을 불러오는 중…</div></div>
+    <div class="seclabel">🪂 진행중 미션 <span class="dim-sm">· 인증완료 건마다 응모권 +5장</span></div>
+    <div class="tasks-grid" id="tasksWrap"><div class="loading">작업을 불러오는 중…</div></div>
 
-    <div id="myStatusWrap"></div>
+    <div class="row split">
+      <div class="card">
+        <div class="ck-h">🔥 출석 스트릭 리더보드 <span class="dim-sm">· 연속 출석일 TOP 10</span></div>
+        <div class="lb" id="lbWrap"><div class="loading">로드 중…</div></div>
+      </div>
+
+      <div class="card">
+        <div class="ck-h">🎰 이번 주 추첨 안내</div>
+        <div class="flow">
+          <div class="flow-step"><div class="ic">🗓️</div><div class="t">일요일 자정 마감</div><div class="s">이번 주 모든 응모권이 일괄 마감됩니다.</div></div>
+          <span class="flow-arr">→</span>
+          <div class="flow-step"><div class="ic">⚖️</div><div class="t">응모권 가중 추첨</div><div class="s">응모권 수만큼 가중치를 둬 추첨합니다.</div></div>
+          <span class="flow-arr">→</span>
+          <div class="flow-step"><div class="ic">🔍</div><div class="t">당첨자 검증</div><div class="s">당첨자만 온체인·캡쳐 재검증 후 확정합니다.</div></div>
+          <span class="flow-arr">→</span>
+          <div class="flow-step"><div class="ic">🎁</div><div class="t">기프티콘 지급</div><div class="s">확정 당첨자에게 기프티콘을 전송합니다.</div></div>
+        </div>
+        <div class="win-mini-title" id="winnersTitle">🏆 지난주 당첨자</div>
+        <div id="winnersWrap"><div class="empty">지난주 당첨자를 불러오는 중입니다.</div></div>
+      </div>
+    </div>
 
     <div id="adminWrap" style="display:none">
-      <div class="seclabel">🛠️ 관리자 패널</div>
-      <div class="card">
-        <div class="admin-h">➕ 작업 등록</div>
-        <form id="taskForm" class="admin-form">
-          <div class="af-row">
-            <div class="field"><label>제목 *</label><input type="text" id="f_title" placeholder="예) X 팔로우 + 리트윗"></div>
-            <div class="field"><label>sort_order</label><input type="number" id="f_sort" value="0"></div>
+      <div class="seclabel">🛠️ 관리자 패널 <span class="dim-sm">· 운영진 전용</span></div>
+      <div class="card" id="adminCard">
+        <div class="adm-toggle" id="admToggle">
+          <span class="tit">미션 등록 · 제출 검토 · 가중 추첨</span>
+          <span class="adm-chev">▼</span>
+        </div>
+        <div class="adm-wrap">
+          <div style="margin-top:16px;">
+            <div class="admin-h">➕ 미션 등록</div>
+            <form id="taskForm" class="admin-form">
+              <div class="af-row">
+                <div class="field"><label>제목 *</label><input type="text" id="f_title" placeholder="예) X 팔로우 + 리트윗"></div>
+                <div class="field"><label>인증 방식</label><select id="f_verify"><option value="capture">캡쳐 제출</option><option value="onchain">온체인 자동확인</option><option value="telegram">텔레그램 자동확인</option></select></div>
+              </div>
+              <div class="field"><label>설명</label><input type="text" id="f_desc" placeholder="한 줄 설명"></div>
+              <div class="field"><label>참여 단계 (줄바꿈 가능)</label><textarea id="f_steps" placeholder="1. X 계정 팔로우&#10;2. 지정 트윗 리트윗&#10;3. 완료 화면 스크린샷 첨부"></textarea></div>
+              <div class="af-row">
+                <div class="field"><label>작업 링크</label><input type="text" id="f_link" placeholder="https://..."></div>
+                <div class="field"><label>리워드 표기</label><input type="text" id="f_reward" placeholder="응모권 +5장"></div>
+              </div>
+              <div class="af-row">
+                <div class="field"><label>카테고리 (선택)</label><input type="text" id="f_cat" placeholder="예) 소셜 / 테스트넷"></div>
+                <div class="field"><label>sort_order</label><input type="number" id="f_sort" value="0"></div>
+              </div>
+              <div class="field"><label>종료 일시 (선택)</label><input type="datetime-local" id="f_ends"></div>
+              <button class="btn-sub" type="submit" id="taskSubmit">미션 등록</button>
+            </form>
           </div>
-          <div class="field"><label>설명</label><input type="text" id="f_desc" placeholder="한 줄 설명"></div>
-          <div class="field"><label>참여 단계 (줄바꿈 가능)</label><textarea id="f_steps" placeholder="1. X 계정 팔로우&#10;2. 지정 트윗 리트윗&#10;3. 완료 화면 스크린샷 첨부"></textarea></div>
-          <div class="af-row">
-            <div class="field"><label>작업 링크</label><input type="text" id="f_link" placeholder="https://..."></div>
-            <div class="field"><label>리워드 표기</label><input type="text" id="f_reward" placeholder="예) 기프티콘 추첨"></div>
+
+          <div style="margin-top:20px;">
+            <div class="admin-h">🎫 가중 추첨 <span id="lotCount" class="dim-sm"></span></div>
+            <div id="lotteryWrap"><div class="loading">로드 중…</div></div>
           </div>
-          <div class="field"><label>카테고리 (선택)</label><input type="text" id="f_cat" placeholder="예) 소셜 / 테스트넷"></div>
-          <div class="field"><label>종료 일시 (선택)</label><input type="datetime-local" id="f_ends"></div>
-          <button class="btn-sub" type="submit" id="taskSubmit">작업 등록</button>
-        </form>
-      </div>
-      <div class="card" style="margin-top:16px;">
-        <div class="admin-h">🎫 승인자 추첨 <span id="lotCount" class="dim-sm"></span></div>
-        <div id="lotteryWrap"><div class="loading">로드 중…</div></div>
-      </div>
-      <div class="card" style="margin-top:16px;">
-        <div class="admin-h">📋 제출 검토 <span id="revCount" class="dim-sm"></span></div>
-        <div id="revList"><div class="loading">로드 중…</div></div>
+
+          <div style="margin-top:20px;">
+            <div class="admin-h">📋 제출 검토 <span id="revCount" class="dim-sm"></span></div>
+            <div id="revList"><div class="loading">로드 중…</div></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -223,7 +352,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   <div class="modal-box">
     <button class="modal-x" id="subClose" type="button" aria-label="닫기">✕</button>
     <div class="modal-title" id="subModalTitle">인증하기</div>
-    <div class="modal-sub">완료 화면 스크린샷을 올려주세요. 운영진이 확인 후 승인합니다. 작업별 1회만 인증할 수 있어요.</div>
+    <div class="modal-sub">완료 화면 스크린샷을 올려 주십시오. 운영진이 확인 후 승인합니다. 작업별 1회만 인증할 수 있습니다.</div>
     <form id="subForm">
       <div class="field">
         <label>스크린샷 이미지 *</label>
@@ -242,6 +371,6 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
-<script src="assets/airdrop.js?v=3"></script>
+<script src="assets/airdrop.js?v=4"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 </body></html>
