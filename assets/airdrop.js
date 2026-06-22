@@ -44,8 +44,17 @@
     allSubs: [], _adminErr: null,
     checkins: [], streak: 0, checkedInToday: false,
     leaderboard: [], winners: [], _winnersErr: null,
+    lotEntrants: [], _lotErr: null, lotLoaded: false, lotResult: null, lotDrawing: false,
     _subTask: null, _clock: null,
   };
+
+  // 주간 고정 리워드 추첨 경품 구성 (순서대로 배정)
+  const RAFFLE_PRIZES = [
+    { tier: "🥇 1등", prize: "3만원권" },
+    { tier: "🥈 2등", prize: "1만원권" },
+    { tier: "🥉 3등", prize: "5천원권" },
+    ...Array.from({ length: 10 }, () => ({ tier: "🎁 참여상", prize: "스타벅스 커피" })),
+  ];
 
   function kstDate(offsetDays = 0) {
     const d = new Date(Date.now() + 9 * 3600 * 1000);
@@ -253,6 +262,30 @@
       state._adminErr = errText(err);
     }
   }
+  async function loadEntrants() {
+    state.lotEntrants = []; state._lotErr = null; state.lotLoaded = false;
+    if (!state.isAdmin) return;
+    const { startDate, endDate } = weekBounds();
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.rpc("weekly_entrants", { p_start: startDate, p_end: endDate }),
+        "응모자 집계",
+      );
+      if (error) { state._lotErr = error.message || "오류"; return; }
+      state.lotEntrants = (data || []).map((r) => ({
+        user_id: r.user_id,
+        email: r.email,
+        full_name: r.full_name,
+        checkins: r.checkins,
+        approved: r.approved,
+        entries: Math.max(0, Number(r.entries) || 0),
+      }));
+    } catch (err) {
+      state._lotErr = errText(err);
+    } finally {
+      state.lotLoaded = true;
+    }
+  }
 
   function renderCheckin() {
     const wrap = $("checkinBody");
@@ -348,27 +381,54 @@
       : `<div class="rev-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px;">${(s.task && s.task.verify_method) === "telegram" ? "✈️" : "🔗"}</div>`;
     return `<div class="rev-row">${thumb}<div class="rev-body"><div class="rev-task">${esc(joinTitle(s.task))}</div><div class="rev-user">${esc(joinEmail(s.user) || "익명")} · ${esc(s.status)}</div>${s.proof_note ? `<div class="rev-note">${esc(s.proof_note)}</div>` : ""}</div><div class="rev-actions"><span class="rev-status ${st(s.status).cls}">${st(s.status).txt}</span><div style="display:flex;gap:6px;"><button class="mini-btn app" type="button" data-app="${esc(s.id)}">승인</button><button class="mini-btn rej" type="button" data-rej="${esc(s.id)}">반려</button></div></div></div>`;
   }
-  function buildEntrants() {
-    const { startIso, endIso } = weekBounds();
-    const byUser = {};
-    (state.allSubs || []).forEach((s) => {
-      if (s.status !== "approved") return;
-      if (s.created_at && (s.created_at < startIso || s.created_at >= endIso)) return;
-      if (!byUser[s.user_id]) byUser[s.user_id] = { user_id: s.user_id, entries: 0, user: s.user };
-      byUser[s.user_id].entries += 5;
-    });
-    return Object.values(byUser).sort((a, b) => b.entries - a.entries);
+  function entrantName(e) {
+    return (e && (e.full_name || (e.email ? e.email.split("@")[0] : e.user_id))) || "참여자";
+  }
+  // 응모권 가중 랜덤 추첨(복원 없음): 응모권이 많을수록 뽑힐 확률↑
+  function weightedDrawN(pool, n) {
+    const arr = pool.map((e) => ({ ...e }));
+    const picked = [];
+    for (let k = 0; k < n && arr.length; k++) {
+      const total = arr.reduce((a, e) => a + Math.max(1, e.entries), 0);
+      let r = Math.random() * total;
+      let idx = arr.length - 1;
+      for (let i = 0; i < arr.length; i++) {
+        r -= Math.max(1, arr[i].entries);
+        if (r <= 0) { idx = i; break; }
+      }
+      picked.push(arr[idx]);
+      arr.splice(idx, 1);
+    }
+    return picked;
+  }
+  function drawWinners() {
+    const pool = state.lotEntrants || [];
+    if (!pool.length) { toast("추첨할 참여자가 없습니다.", "err"); return; }
+    const n = Math.min(RAFFLE_PRIZES.length, pool.length);
+    const picked = weightedDrawN(pool, n);
+    state.lotResult = picked.map((e, i) => ({ ...e, tier: RAFFLE_PRIZES[i].tier, prize: RAFFLE_PRIZES[i].prize }));
+    renderLottery();
+    toast(`${picked.length}명을 추첨했습니다. 확인 후 기록하십시오.`, "ok");
   }
   function renderLottery() {
     const wrap = $("lotteryWrap");
     if (!wrap || !state.isAdmin) return;
-    const entrants = buildEntrants();
+    const entrants = state.lotEntrants || [];
     const count = $("lotCount"); if (count) count.textContent = entrants.length ? `(${entrants.length}명)` : "";
-    if (state._adminErr) { wrap.innerHTML = `<div class="err">${esc(state._adminErr)}</div>`; return; }
-    if (!entrants.length) { wrap.innerHTML = `<div class="empty">이번 주 추첨 가능한 인증완료 제출이 없습니다.</div>`; return; }
+    if (state._lotErr) { wrap.innerHTML = `<div class="err">응모자 집계 실패: ${esc(state._lotErr)}</div>`; return; }
+    if (!state.lotLoaded) { wrap.innerHTML = `<div class="loading">응모자 집계 중…</div>`; return; }
+    if (!entrants.length) { wrap.innerHTML = `<div class="empty">이번 주 응모권을 보유한 참여자가 없습니다.</div>`; return; }
     const total = entrants.reduce((a, e) => a + e.entries, 0);
-    wrap.innerHTML = `<div class="draw-bar"><div class="txt">이번 주 미션 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br>v1은 목록 확인 후 수동 추첨하며, 전체 가중 랜덤 추첨은 TODO입니다.</div><button class="btn-draw" type="button" id="drawBtn">🎲 당첨자 기록</button></div><div style="margin-top:12px;">${entrants.slice(0, 20).map((e) => `<div class="lot-row"><span class="lot-title">${esc(joinEmail(e.user) || e.user_id)}</span><span class="dim-sm">${e.entries}장</span></div>`).join("")}</div>`;
-    const b = $("drawBtn"); if (b) b.onclick = () => recordWinners(entrants);
+    const prizeLine = "🥇 1등 3만원 · 🥈 2등 1만원 · 🥉 3등 5천원 · 🎁 참여상 스타벅스 10명";
+    let html = `<div class="draw-bar"><div class="txt">이번 주 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span></div><button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행</button></div>`;
+    if (state.lotResult && state.lotResult.length) {
+      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전 미저장</span></div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="redrawBtn">다시 뽑기</button></div></div>`;
+    }
+    html += `<div class="lot-divlbl">참여자 목록 (응모권순)</div><div>${entrants.slice(0, 30).map((e, i) => `<div class="lot-row"><span class="lot-title">${i + 1}. ${esc(entrantName(e))}</span><span class="dim-sm">${e.entries}장 <span style="opacity:.6">(체크인 ${e.checkins}·미션 ${e.approved})</span></span></div>`).join("")}${entrants.length > 30 ? `<div class="dim-sm" style="padding:8px 2px;">외 ${entrants.length - 30}명…</div>` : ""}</div>`;
+    wrap.innerHTML = html;
+    const b = $("drawBtn"); if (b) b.onclick = drawWinners;
+    const c = $("confirmBtn"); if (c) c.onclick = () => recordWinners(state.lotResult);
+    const rd = $("redrawBtn"); if (rd) rd.onclick = drawWinners;
   }
   function renderReview() {
     const list = $("revList");
@@ -585,29 +645,35 @@
       );
       if (error) throw error;
       toast(`${st(status).txt} 처리 완료했습니다.`, "ok");
-      await Promise.allSettled([loadAllSubs(), loadMySubs()]);
+      await Promise.allSettled([loadAllSubs(), loadMySubs(), loadEntrants()]);
       renderReview(); renderLottery(); renderTasks(); renderTickets();
     } catch (err) {
       toast("처리 실패: " + errText(err), "err");
     }
   }
 
-  async function recordWinners(entrants) {
-    const nRaw = prompt(`참여자 ${entrants.length}명 중 기록할 당첨자 수를 입력해 주십시오.`, "5");
-    if (nRaw == null) return;
-    const n = Math.max(1, Math.min(parseInt(nRaw, 10) || 1, entrants.length));
-    const prize = prompt("기록할 경품명을 입력해 주십시오.", "기프티콘") || "기프티콘";
-    const picked = entrants.slice(0, n);
-    const rows = picked.map((e) => ({ week_start: weekBounds().startDate, user_id: e.user_id, telegram: null, prize, entries: e.entries }));
+  async function recordWinners(result) {
+    if (!result || !result.length) { toast("먼저 추첨을 실행해 주십시오.", "err"); return; }
+    if (!confirm(`추첨 결과 ${result.length}명을 이번 주 당첨자로 확정 기록합니다. 진행하시겠습니까?`)) return;
+    const week = weekBounds().startDate;
+    const rows = result.map((e) => ({
+      week_start: week,
+      user_id: e.user_id,
+      telegram: e.full_name || (e.email ? e.email.split("@")[0] : null),
+      prize: `${e.tier} ${e.prize}`,
+      entries: e.entries,
+    }));
+    const btn = $("confirmBtn"); if (btn) { btn.disabled = true; btn.textContent = "기록 중…"; }
     try {
-      // TODO: 전체 weighted-random 추첨은 서버/Edge Function에서 감사 로그와 함께 구현합니다.
       const { error } = await withTimeout(state.sb.from("raffle_winners").insert(rows), "당첨자 기록");
       if (error) throw error;
-      toast(`${n}명의 당첨자를 기록했습니다.`, "ok");
+      toast(`${rows.length}명의 당첨자를 확정 기록했습니다.`, "ok");
+      state.lotResult = null;
       await loadWinners();
-      renderWinners();
+      renderWinners(); renderLottery();
     } catch (err) {
       toast("당첨자 기록 실패: " + errText(err), "err");
+      if (btn) { btn.disabled = false; btn.textContent = "✅ 당첨자 확정 기록"; }
     }
   }
 
@@ -655,7 +721,7 @@
       await loadAuth();
       if (my !== bootToken) return;
       renderAll();
-      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs()]);
+      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs(), loadEntrants()]);
       if (my !== bootToken) return;
       renderAll();
     } catch (err) {

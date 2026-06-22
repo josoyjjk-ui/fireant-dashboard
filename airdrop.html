@@ -197,6 +197,11 @@ html,body{overflow-x:hidden;}
 .draw-bar .txt b{color:var(--accent2);}
 .btn-draw{padding:12px 20px;border-radius:11px;border:none;background:linear-gradient(95deg,#ffd24a,#ffb547);color:#0a0c10;font-weight:900;font-size:13.5px;cursor:pointer;box-shadow:0 4px 16px rgba(255,181,71,.25);transition:filter .15s,transform .12s;}
 .btn-draw:hover{filter:brightness(1.06);}
+.btn-draw:disabled{opacity:.55;cursor:default;}
+.draw-result{margin-top:12px;padding:13px 15px;border-radius:12px;background:rgba(255,181,71,.06);border:1px solid #3a2f14;}
+.dr-head{font-size:13px;font-weight:900;color:var(--accent2);margin-bottom:9px;}
+.lot-row.win{background:rgba(255,181,71,.08);border-color:#4a3a18;}
+.lot-divlbl{font-size:12px;font-weight:800;color:var(--dim);margin:14px 0 8px;}
 
 /* 모달 */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);z-index:80;display:none;align-items:center;justify-content:center;padding:18px;}
@@ -289,10 +294,10 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
           <div class="rb-sub">출석 <b>+1</b> · <b>7일 연속 2배</b> · 미션 인증 <b>+5</b> · 매주 일요일 자정 추첨</div>
         </div>
         <div class="rb-prizes">
-          <div class="rb-prize gold"><span class="rk">🥇 1등</span><span class="pz">5만원</span></div>
-          <div class="rb-prize silver"><span class="rk">🥈 2등</span><span class="pz">3만원</span></div>
-          <div class="rb-prize bronze"><span class="rk">🥉 3등</span><span class="pz">1만원</span></div>
-          <div class="rb-prize join"><span class="rk">🎟️ 참여</span><span class="pz">추첨</span></div>
+          <div class="rb-prize gold"><span class="rk">🥇 1등</span><span class="pz">3만원</span></div>
+          <div class="rb-prize silver"><span class="rk">🥈 2등</span><span class="pz">1만원</span></div>
+          <div class="rb-prize bronze"><span class="rk">🥉 3등</span><span class="pz">5천원</span></div>
+          <div class="rb-prize join"><span class="rk">☕ 참여상</span><span class="pz">커피 10명</span></div>
         </div>
       </div>
       <div class="rc-div"></div>
@@ -429,6 +434,6 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
-<script src="assets/airdrop.js?v=6"></script>
+<script src="assets/airdrop.js?v=7"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 </body></html>
