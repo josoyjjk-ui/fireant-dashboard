@@ -96,8 +96,10 @@
     leaderboard: [], winners: [], _winnersErr: null, _winnerNicks: {},
     lotEntrants: [], _lotErr: null, lotLoaded: false, lotResult: null, lotDrawing: false,
     wallets: [],
+    visitStats: null, _vsErr: null, _vsClock: null,
     _subTask: null, _editSubId: null, _editTaskId: null, _clock: null,
   };
+  const numfmt = (n) => String(Number(n) || 0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   // 주간 고정 리워드 추첨 경품 구성 (순서대로 배정)
   const RAFFLE_PRIZES = [
@@ -343,6 +345,29 @@
     }
   }
 
+  async function loadVisitStats() {
+    state._vsErr = null;
+    if (!state.isAdmin) { state.visitStats = null; return; }
+    try {
+      const { data, error } = await withTimeout(state.sb.rpc("visit_stats"), "방문 통계");
+      if (error) { state._vsErr = error.message || "오류"; return; }
+      state.visitStats = data || null;
+    } catch (err) {
+      state._vsErr = errText(err);
+    }
+  }
+  function renderVisitStats() {
+    const wrap = $("visitStats");
+    if (!wrap || !state.isAdmin) return;
+    if (state._vsErr) { wrap.innerHTML = `<div class="err">방문 통계 로드 실패: ${esc(state._vsErr)}</div>`; return; }
+    const s = state.visitStats;
+    if (!s) { wrap.innerHTML = `<div class="loading">로드 중…</div>`; return; }
+    wrap.innerHTML = `
+      <div class="vstat live"><div class="vlab"><span class="vdot"></span>실시간 접속</div><div class="vnum">${numfmt(s.realtime)}</div></div>
+      <div class="vstat"><div class="vlab">오늘(일일)</div><div class="vnum">${numfmt(s.daily)}</div></div>
+      <div class="vstat"><div class="vlab">최근 7일</div><div class="vnum">${numfmt(s.weekly)}</div></div>
+      <div class="vstat"><div class="vlab">누적</div><div class="vnum">${numfmt(s.cumulative)}</div></div>`;
+  }
   function renderCheckin() {
     const wrap = $("checkinBody");
     if (!wrap) return;
@@ -557,6 +582,7 @@
     const wrap = $("adminWrap");
     if (!wrap) return;
     wrap.style.display = state.isAdmin ? "" : "none";
+    renderVisitStats();
     renderManage();
     renderLottery();
     renderReview();
@@ -941,9 +967,14 @@
       await loadAuth();
       if (my !== bootToken) return;
       renderAll();
-      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs(), loadEntrants(), loadWallets()]);
+      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs(), loadEntrants(), loadWallets(), loadVisitStats()]);
       if (my !== bootToken) return;
       renderAll();
+      // 관리자: 실시간 방문 통계 30초마다 갱신
+      clearInterval(state._vsClock);
+      if (state.isAdmin) {
+        state._vsClock = setInterval(async () => { await loadVisitStats(); renderVisitStats(); }, 30000);
+      }
     } catch (err) {
       console.warn("[airdrop] boot failed", err);
       if (my !== bootToken) return;

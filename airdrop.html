@@ -203,6 +203,14 @@ html,body{overflow-x:hidden;}
 .dr-head{font-size:13px;font-weight:900;color:var(--accent2);margin-bottom:9px;}
 .lot-row.win{background:rgba(255,181,71,.08);border-color:#4a3a18;}
 .lot-divlbl{font-size:12px;font-weight:800;color:var(--dim);margin:14px 0 8px;}
+.vstats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.vstat{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+.vstat .vlab{font-size:11px;font-weight:800;color:var(--dim);display:flex;align-items:center;gap:5px;}
+.vstat .vnum{font-size:23px;font-weight:900;margin-top:5px;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}
+.vstat.live{border-color:#1c3a2c;background:rgba(61,220,151,.06);}
+.vstat.live .vnum{color:#3ddc97;}
+.vdot{width:7px;height:7px;border-radius:50%;background:#3ddc97;display:inline-block;animation:pulse 1.8s ease-in-out infinite;}
+@media(max-width:600px){.vstats{grid-template-columns:1fr 1fr;}}
 
 /* 모달 */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);z-index:80;display:none;align-items:center;justify-content:center;padding:18px;}
@@ -371,11 +379,16 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
       <div class="seclabel">🛠️ 관리자 패널 <span class="dim-sm">· 운영진 전용</span></div>
       <div class="card" id="adminCard">
         <div class="adm-toggle" id="admToggle">
-          <span class="tit">미션 등록 · 제출 검토 · 가중 추첨 <span class="dim-sm">· 총 방문수 <span id="visitCountAdmin">…</span></span></span>
+          <span class="tit">미션 등록 · 제출 검토 · 가중 추첨 · 방문 통계</span>
           <span class="adm-chev">▼</span>
         </div>
         <div class="adm-wrap">
           <div style="margin-top:16px;">
+            <div class="admin-h">📊 방문 통계 <span class="dim-sm">· 운영진 전용</span></div>
+            <div class="vstats" id="visitStats"><div class="loading">로드 중…</div></div>
+          </div>
+
+          <div style="margin-top:20px;">
             <div class="admin-h">➕ 미션 등록</div>
             <form id="taskForm" class="admin-form">
               <div class="af-row">
@@ -418,7 +431,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
       </div>
     </div>
   </div>
-  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · antinfo.io · 투자 권유 아님 · <span id="visitCount">…</span> 누적 방문<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
+  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · antinfo.io · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
 
 <div class="modal" id="subModal">
   <div class="modal-box">
@@ -443,7 +456,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
-<script src="assets/airdrop.js?v=10"></script>
+<script src="assets/airdrop.js?v=11"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js"></script>
 </body></html>
