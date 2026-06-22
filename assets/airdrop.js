@@ -7,6 +7,17 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const multiline = (s) => esc(s).replace(/\n/g, "<br>");
   const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : "#"; } catch { return "#"; } };
+  const cssEscape = (s) => {
+    const v = String(s ?? "");
+    if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(v);
+    return v.replace(/["\\\]\[]/g, "\\$&");
+  };
+  const LOAD_TIMEOUT_MS = 6000;
+  const errText = (err) => (err && (err.message || err.error_description || err.code)) || "오류";
+  const withTimeout = (promise, label, ms = LOAD_TIMEOUT_MS) => Promise.race([
+    Promise.resolve(promise),
+    new Promise((_, rej) => setTimeout(() => rej(new Error(`${label} 시간초과`)), ms)),
+  ]);
 
   // 제출 상태 → 표기/클래스
   const STATUS = {
@@ -23,7 +34,7 @@
   const state = {
     sb: null,
     user: null, uid: null, isAdmin: false,
-    tasks: [], _tasksErr: null,
+    tasks: [], tasksLoaded: false, _tasksErr: null,
     mySubs: {}, mySubList: [],
     allSubs: [], _adminErr: null,
     checkins: [], streak: 0, checkedInToday: false,
@@ -69,64 +80,92 @@
     let session = null;
     try {
       // getSession 이 navigator.locks 로 hang 날 수 있어 4초 타임아웃 레이스
-      const r = await Promise.race([
-        state.sb.auth.getSession(),
-        new Promise((res) => setTimeout(() => res(null), 4000)),
-      ]);
+      const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 4000);
       session = r && r.data ? r.data.session : null;
     } catch (_) { session = null; }
     if (!session) return;
     state.user = session.user; state.uid = session.user.id;
     try {
-      const { data: prof } = await state.sb.from("profiles").select("full_name,is_admin").eq("id", state.uid).single();
+      const { data: prof } = await withTimeout(
+        state.sb.from("profiles").select("full_name,is_admin").eq("id", state.uid).single(),
+        "프로필 로드",
+      );
       state.isAdmin = !!(prof && prof.is_admin);
     } catch (_) { state.isAdmin = false; }
   }
 
   async function loadTasks() {
-    const { data, error } = await state.sb.from("airdrop_tasks")
-      .select("*").eq("status", "active")
-      .order("sort_order", { ascending: true }).order("created_at", { ascending: false });
-    if (error) { state._tasksErr = error.message || "오류"; return; }
-    state._tasksErr = null;
-    state.tasks = data || [];
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.from("airdrop_tasks")
+          .select("*").eq("status", "active")
+          .order("sort_order", { ascending: true }).order("created_at", { ascending: false }),
+        "작업 로드",
+      );
+      if (error) { state._tasksErr = error.message || "오류"; state.tasks = []; return; }
+      state._tasksErr = null;
+      state.tasks = data || [];
+    } catch (err) {
+      state._tasksErr = errText(err);
+      state.tasks = [];
+    } finally {
+      state.tasksLoaded = true;
+    }
   }
 
   async function loadMySubs() {
     state.mySubs = {}; state.mySubList = [];
     if (!state.uid) return;
-    const { data, error } = await state.sb.from("airdrop_submissions")
-      .select("id,task_id,status,proof_url,proof_note,created_at, task:airdrop_tasks(title)")
-      .eq("user_id", state.uid).order("created_at", { ascending: false });
-    if (error || !data) return;
-    (data).forEach((s) => { state.mySubs[s.task_id] = s; });
-    state.mySubList = data;
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.from("airdrop_submissions")
+          .select("id,task_id,status,proof_url,proof_note,created_at, task:airdrop_tasks(title)")
+          .eq("user_id", state.uid).order("created_at", { ascending: false }),
+        "내 인증 로드",
+      );
+      if (error || !data) return;
+      (data).forEach((s) => { state.mySubs[s.task_id] = s; });
+      state.mySubList = data;
+    } catch (_) {}
   }
 
   async function loadCheckins() {
     state.checkins = []; state.streak = 0; state.checkedInToday = false;
     if (!state.uid) return;
-    const { data, error } = await state.sb.from("daily_checkins")
-      .select("checkin_date").eq("user_id", state.uid).order("checkin_date", { ascending: false });
-    if (error || !data) return;
-    state.checkins = data.map((r) => r.checkin_date);
-    state.checkedInToday = state.checkins.includes(kstToday());
-    state.streak = computeStreak(state.checkins);
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.from("daily_checkins")
+          .select("checkin_date").eq("user_id", state.uid).order("checkin_date", { ascending: false }),
+        "체크인 로드",
+      );
+      if (error || !data) return;
+      state.checkins = data.map((r) => r.checkin_date);
+      state.checkedInToday = state.checkins.includes(kstToday());
+      state.streak = computeStreak(state.checkins);
+    } catch (_) {}
   }
 
   async function loadAllSubs() {
     state.allSubs = []; state._adminErr = null;
     if (!state.isAdmin) return;
-    const { data, error } = await state.sb.from("airdrop_submissions")
-      .select("id,task_id,user_id,proof_url,proof_note,status,created_at, task:airdrop_tasks(title), user:profiles(email,full_name)")
-      .order("created_at", { ascending: false });
-    if (error) { state._adminErr = error.message || "오류"; return; }
-    state.allSubs = data || [];
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.from("airdrop_submissions")
+          .select("id,task_id,user_id,proof_url,proof_note,status,created_at, task:airdrop_tasks(title), user:profiles!airdrop_submissions_user_id_fkey(email,full_name)")
+          .order("created_at", { ascending: false }),
+        "관리자 제출 로드",
+      );
+      if (error) { state._adminErr = error.message || "오류"; return; }
+      state.allSubs = data || [];
+    } catch (err) {
+      state._adminErr = errText(err);
+    }
   }
 
   // ── 렌더링 ────────────────────────────────────────────────────────
   function renderCheckin() {
     const wrap = $("checkinBody");
+    if (!wrap) return;
     if (!state.uid) {
       wrap.innerHTML = `<div class="checkin"><div class="ck-info"><div><span class="streak-big">–</span></div><div class="streak-label">로그인하고 매일 출석하세요.<br>기프티콘 추첨에도 참여돼요 🎁</div></div><button class="btn-sub" id="ckLogin" type="button">로그인하고 체크인하기</button></div>`;
       const b = $("ckLogin"); if (b) b.onclick = doLogin;
@@ -156,17 +195,20 @@
 
   function renderTasks() {
     const wrap = $("tasksWrap");
+    if (!wrap) return;
     if (state._tasksErr) { wrap.innerHTML = `<div class="err">작업을 불러오지 못했습니다: ${esc(state._tasksErr)}</div>`; return; }
+    if (!state.tasksLoaded) { wrap.innerHTML = `<div class="card empty">작업 정보를 확인 중입니다. 잠시 후 자동 갱신됩니다.</div>`; return; }
     if (!state.tasks.length) { wrap.innerHTML = `<div class="card empty">현재 진행중인 에어드랍 작업이 없습니다. 곧 새 작업이 올라옵니다! 🚀</div>`; return; }
     wrap.innerHTML = state.tasks.map(taskCard).join("");
     state.tasks.forEach((t) => {
-      const b = wrap.querySelector(`[data-sub="${CSS.escape(t.id)}"]`);
+      const b = wrap.querySelector(`[data-sub="${cssEscape(t.id)}"]`);
       if (b) b.onclick = () => openSubModal(t);
     });
   }
 
   function renderMyStatus() {
     const wrap = $("myStatusWrap");
+    if (!wrap) return;
     if (!state.uid) { wrap.innerHTML = ""; return; }
     const subs = state.mySubList || [];
     const subsHtml = subs.length
@@ -204,16 +246,17 @@
 
   function renderReview() {
     const list = $("revList");
+    if (!list) return;
     const subs = state.allSubs || [];
-    $("revCount").textContent = subs.length ? `(${subs.length}건)` : "";
+    const count = $("revCount"); if (count) count.textContent = subs.length ? `(${subs.length}건)` : "";
     if (!state.isAdmin) return;
     if (state._adminErr) { list.innerHTML = `<div class="err">로드 실패: ${esc(state._adminErr)}</div>`; return; }
     if (!subs.length) { list.innerHTML = `<div class="empty">검토할 제출이 없습니다.</div>`; return; }
     list.innerHTML = subs.map(revRow).join("");
     subs.forEach((s) => {
-      const a = list.querySelector(`[data-app="${CSS.escape(s.id)}"]`);
-      const r = list.querySelector(`[data-rej="${CSS.escape(s.id)}"]`);
-      const w = list.querySelector(`[data-rwd="${CSS.escape(s.id)}"]`);
+      const a = list.querySelector(`[data-app="${cssEscape(s.id)}"]`);
+      const r = list.querySelector(`[data-rej="${cssEscape(s.id)}"]`);
+      const w = list.querySelector(`[data-rwd="${cssEscape(s.id)}"]`);
       if (a) a.onclick = () => reviewSub(s, "approved");
       if (r) r.onclick = () => reviewSub(s, "rejected");
       if (w) w.onclick = () => reviewSub(s, "rewarded");
@@ -222,6 +265,7 @@
 
   function renderLottery() {
     const wrap = $("lotteryWrap");
+    if (!wrap) return;
     if (!state.isAdmin) return;
     const byTask = {};
     (state.allSubs || []).forEach((s) => {
@@ -229,18 +273,20 @@
       if (s.status === "approved") byTask[s.task_id].approved++;
     });
     const entries = Object.entries(byTask).filter(([, v]) => v.approved > 0);
-    $("lotCount").textContent = entries.length ? `(${entries.length}개 작업)` : "";
+    const count = $("lotCount"); if (count) count.textContent = entries.length ? `(${entries.length}개 작업)` : "";
     if (state._adminErr) { wrap.innerHTML = `<div class="err">${esc(state._adminErr)}</div>`; return; }
     if (!entries.length) { wrap.innerHTML = `<div class="empty">추첨 가능한 승인 제출이 없습니다.</div>`; return; }
     wrap.innerHTML = entries.map(([tid, v]) => `<div class="lot-row"><span class="lot-title">${esc(v.title)}</span><span class="dim-sm">승인 ${v.approved}명</span><button class="mini-btn rwd" type="button" data-lot="${esc(tid)}">승인자 중 추첨 🎁</button></div>`).join("");
     entries.forEach(([tid]) => {
-      const b = wrap.querySelector(`[data-lot="${CSS.escape(tid)}"]`);
+      const b = wrap.querySelector(`[data-lot="${cssEscape(tid)}"]`);
       if (b) b.onclick = () => doLottery(tid);
     });
   }
 
   function renderAdmin() {
-    $("adminWrap").style.display = state.isAdmin ? "" : "none";
+    const wrap = $("adminWrap");
+    if (!wrap) return;
+    wrap.style.display = state.isAdmin ? "" : "none";
     renderLottery();
     renderReview();
   }
@@ -385,14 +431,24 @@
   let bootToken = 0;
   async function boot() {
     const my = ++bootToken;
-    // 1) 인증과 무관한 작업 목록 먼저 로드·렌더 → auth가 늦거나 hang 나도 페이지는 뜬다
-    await loadTasks(); if (my !== bootToken) return;
-    renderTasks(); renderCheckin();
-    // 2) 인증 (getSession hang 대비 타임아웃 내장)
-    await loadAuth(); if (my !== bootToken) return;
-    // 3) 유저별 데이터
-    await Promise.all([loadMySubs(), loadCheckins(), loadAllSubs()]); if (my !== bootToken) return;
+    // 먼저 정적/로그아웃 UI를 렌더해서 어떤 await가 멈춰도 placeholder가 남지 않게 한다.
     renderAll();
+    try {
+      await loadTasks(); if (my !== bootToken) return;
+      renderTasks(); renderCheckin();
+      // 인증 (getSession hang 대비 타임아웃 내장)
+      await loadAuth(); if (my !== bootToken) return;
+      renderCheckin(); renderMyStatus(); renderAdmin();
+      // 유저별 데이터는 실패해도 전체 렌더를 막지 않는다.
+      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs()]); if (my !== bootToken) return;
+      renderAll();
+    } catch (err) {
+      console.warn("[airdrop] boot failed", err);
+      if (my !== bootToken) return;
+      state._tasksErr = state._tasksErr || errText(err);
+      state.tasksLoaded = true;
+      renderAll();
+    }
   }
 
   // ── 초기화 ────────────────────────────────────────────────────────
@@ -417,11 +473,14 @@
 
   // window.__sb 대기(150ms × 40 ≈ 6초)
   let tries = 0;
+  renderAll();
   (function waitForSb() {
     if (window.__sb) { state.sb = window.__sb; init(); return; }
     if (tries++ > 40) {
-      $("checkinBody").innerHTML = `<div class="err">인증 모듈 로드 실패. 새로고침해주세요.</div>`;
-      $("tasksWrap").innerHTML = `<div class="err">데이터를 불러올 수 없습니다.</div>`;
+      state._tasksErr = "인증 모듈을 불러오지 못했습니다. 새로고침해주세요.";
+      state.tasksLoaded = true;
+      renderCheckin();
+      renderTasks();
       return;
     }
     setTimeout(waitForSb, 150);
