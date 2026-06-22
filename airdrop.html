@@ -311,6 +311,11 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
       </div>
     </div>
 
+    <div class="card" id="profileCard" style="margin-top:14px;">
+      <div class="ck-h">📇 내 참여 정보 <span class="dim-sm">· 당첨 시 연락·지급에 사용됩니다</span></div>
+      <div id="profileBody"><div class="loading">로드 중…</div></div>
+    </div>
+
     <div class="row r2" style="margin-top:14px;">
       <div class="card ck-card">
         <div class="ck-h">🔥 데일리 체크인</div>
@@ -435,6 +440,6 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
-<script src="assets/airdrop.js?v=8"></script>
+<script src="assets/airdrop.js?v=9"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 </body></html>

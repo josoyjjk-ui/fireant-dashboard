@@ -146,7 +146,7 @@
     state.user = session.user; state.uid = session.user.id;
     try {
       const { data: prof } = await withTimeout(
-        state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,wallet_address").eq("id", state.uid).single(),
+        state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,wallet_address,telegram_handle,twitter_handle,youtube_handle").eq("id", state.uid).single(),
         "프로필 로드",
       );
       state.profile = prof || null;
@@ -512,7 +512,42 @@
     renderLottery();
     renderReview();
   }
+  const normHandle = (v) => (v || "").trim().replace(/^@+/, "");
+  function renderProfile() {
+    const wrap = $("profileBody");
+    if (!wrap) return;
+    if (!state.uid) {
+      wrap.innerHTML = `<div class="ck-row"><div class="ck-meta">로그인하면 텔레그램·X·유튜브 아이디를 등록할 수 있습니다.<br>당첨자 연락·미션 검증에 사용됩니다.</div><button class="btn-sub" id="pfLogin" type="button">로그인</button></div>`;
+      const b = $("pfLogin"); if (b) b.onclick = doLogin;
+      return;
+    }
+    const p = state.profile || {};
+    wrap.innerHTML = `<div class="af-row"><div class="field"><label>텔레그램 아이디</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div><div class="field"><label>X(트위터) 아이디</label><input type="text" id="pf_tw" placeholder="@username" value="${esc(p.twitter_handle || "")}"></div></div><div class="af-row"><div class="field"><label>유튜브 닉네임</label><input type="text" id="pf_yt" placeholder="채널명 또는 @핸들" value="${esc(p.youtube_handle || "")}"></div><div class="field"><label>지갑 주소 ${p.wallet_address ? "<span class=\"dim-sm\">· 등록됨</span>" : ""}</label><input type="text" id="pf_wallet" placeholder="미등록" value="${esc(p.wallet_address || "")}" disabled></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"><button class="btn-sub" id="pfSave" type="button">정보 저장</button>${p.wallet_address ? "" : `<button class="btn-ghost" id="pfWallet" type="button">지갑 주소 등록</button>`}</div>`;
+    const s = $("pfSave"); if (s) s.onclick = saveProfile;
+    const w = $("pfWallet"); if (w) w.onclick = async () => { await bindWallet(); renderProfile(); };
+  }
+  async function saveProfile() {
+    if (!state.uid) { doLogin(); return; }
+    const payload = {
+      telegram_handle: normHandle($("pf_tg") && $("pf_tg").value) || null,
+      twitter_handle: normHandle($("pf_tw") && $("pf_tw").value) || null,
+      youtube_handle: (($("pf_yt") && $("pf_yt").value) || "").trim() || null,
+    };
+    const btn = $("pfSave"); if (btn) { btn.disabled = true; btn.textContent = "저장 중…"; }
+    try {
+      const { error } = await withTimeout(state.sb.from("profiles").update(payload).eq("id", state.uid), "정보 저장");
+      if (error) throw error;
+      state.profile = { ...(state.profile || {}), ...payload };
+      toast("참여 정보를 저장했습니다.", "ok");
+    } catch (err) {
+      toast("저장 실패: " + errText(err), "err");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "정보 저장"; }
+      renderProfile();
+    }
+  }
   function renderAll() {
+    renderProfile();
     renderCheckin();
     renderTickets();
     renderTasks();
