@@ -385,10 +385,53 @@
       if (r) r.onclick = () => reviewSub(s, "rejected");
     });
   }
+  function renderManage() {
+    const wrap = $("manageWrap");
+    if (!wrap || !state.isAdmin) return;
+    const tasks = state.tasks || [];
+    const count = $("mgmtCount"); if (count) count.textContent = tasks.length ? `(${tasks.length}건 진행중)` : "";
+    if (state._tasksErr) { wrap.innerHTML = `<div class="err">로드 실패: ${esc(state._tasksErr)}</div>`; return; }
+    if (!tasks.length) { wrap.innerHTML = `<div class="empty">진행중인 미션이 없습니다.</div>`; return; }
+    wrap.innerHTML = tasks.map((t) => {
+      const ends = t.ends_at ? `<span class="dim-sm">~ ${esc(String(t.ends_at).slice(0, 10))}</span>` : `<span class="dim-sm">기한 없음</span>`;
+      return `<div class="rev-row"><div class="rev-body"><div class="rev-task">${esc(t.title)}</div><div class="rev-user">${esc(t.category || "미분류")} · ${ends}</div></div><div class="rev-actions"><div style="display:flex;gap:6px;"><button class="mini-btn rej" type="button" data-end="${esc(t.id)}">종료</button><button class="mini-btn" type="button" data-del="${esc(t.id)}" style="background:#3a2530;color:#ff8aa0;">삭제</button></div></div></div>`;
+    }).join("");
+    tasks.forEach((t) => {
+      const e = wrap.querySelector(`[data-end="${cssEscape(t.id)}"]`);
+      const d = wrap.querySelector(`[data-del="${cssEscape(t.id)}"]`);
+      if (e) e.onclick = () => endTask(t);
+      if (d) d.onclick = () => deleteTask(t);
+    });
+  }
+  async function endTask(t) {
+    if (!confirm(`"${t.title}" 미션을 지금 종료합니다. (기한과 무관하게 목록에서 내려갑니다)`)) return;
+    try {
+      const { error } = await withTimeout(state.sb.from("airdrop_tasks").update({ status: "ended" }).eq("id", t.id), "미션 종료");
+      if (error) throw error;
+      toast("미션을 종료했습니다.", "ok");
+      await loadTasks();
+      renderTasks(); renderManage();
+    } catch (err) {
+      toast("종료 실패: " + errText(err), "err");
+    }
+  }
+  async function deleteTask(t) {
+    if (!confirm(`"${t.title}" 미션을 완전히 삭제합니다. 되돌릴 수 없습니다.`)) return;
+    try {
+      const { error } = await withTimeout(state.sb.from("airdrop_tasks").delete().eq("id", t.id), "미션 삭제");
+      if (error) throw error;
+      toast("미션을 삭제했습니다.", "ok");
+      await loadTasks();
+      renderTasks(); renderManage();
+    } catch (err) {
+      toast("삭제 실패: " + errText(err), "err");
+    }
+  }
   function renderAdmin() {
     const wrap = $("adminWrap");
     if (!wrap) return;
     wrap.style.display = state.isAdmin ? "" : "none";
+    renderManage();
     renderLottery();
     renderReview();
   }
