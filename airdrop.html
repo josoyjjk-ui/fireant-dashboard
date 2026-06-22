@@ -63,6 +63,7 @@ html,body{overflow-x:hidden;}
 .bm-chip.done{border-color:#1c3a2c;background:rgba(61,220,151,.10);}
 .bm-chip.done span{color:#3ddc97;}
 @media(max-width:760px){.rc-top{flex-direction:column;align-items:stretch;}.rb-prizes{justify-content:space-between;}.rb-prize{flex:1;min-width:0;}}
+@media(max-width:430px){.rb-prize{padding:7px;}.rb-prize .rk{font-size:10px;}.rb-prize .pz{font-size:12.5px;}}
 
 /* 데일리 체크인 */
 .ck-card{display:flex;flex-direction:column;}
@@ -434,6 +435,6 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
-<script src="assets/airdrop.js?v=7"></script>
+<script src="assets/airdrop.js?v=8"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 </body></html>

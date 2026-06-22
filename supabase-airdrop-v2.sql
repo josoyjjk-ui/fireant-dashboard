@@ -123,3 +123,9 @@ BEGIN
 END; $$;
 REVOKE ALL ON FUNCTION public.weekly_entrants(date,date) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.weekly_entrants(date,date) TO authenticated;
+
+-- 6) 인증 캡쳐 버킷 비공개화 + 열람 제한(관리자/본인). 공개 URL→서명 URL 전환
+UPDATE storage.buckets SET public = false WHERE id = 'airdrop-proofs';
+DROP POLICY IF EXISTS airdrop_proofs_public_read ON storage.objects;
+CREATE POLICY airdrop_proofs_read ON storage.objects FOR SELECT TO authenticated
+  USING (bucket_id='airdrop-proofs' AND (public.is_admin() OR (storage.foldername(name))[1]=(auth.uid())::text));

@@ -7,6 +7,13 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const multiline = (s) => esc(s).replace(/\n/g, "<br>");
   const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : "#"; } catch { return "#"; } };
+  const PROOF_BUCKET = "airdrop-proofs";
+  // 저장된 proof_url(과거 public URL 또는 신규 경로)에서 스토리지 경로만 추출
+  const proofPath = (u) => {
+    if (!u) return "";
+    const m = String(u).indexOf(`/${PROOF_BUCKET}/`);
+    return m >= 0 ? String(u).slice(m + PROOF_BUCKET.length + 2).split("?")[0] : String(u);
+  };
   const cssEscape = (s) => {
     const v = String(s ?? "");
     if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(v);
@@ -258,6 +265,14 @@
       );
       if (error) { state._adminErr = error.message || "오류"; return; }
       state.allSubs = data || [];
+      // 비공개 버킷: 관리자 열람용 서명 URL 생성(1시간 유효)
+      await Promise.all((state.allSubs || []).map(async (s) => {
+        if (!s.proof_url) return;
+        try {
+          const { data: sig } = await state.sb.storage.from(PROOF_BUCKET).createSignedUrl(proofPath(s.proof_url), 3600);
+          if (sig && sig.signedUrl) s.signedUrl = sig.signedUrl;
+        } catch (_) {}
+      }));
     } catch (err) {
       state._adminErr = errText(err);
     }
@@ -376,9 +391,11 @@
     }).join("");
   }
   function revRow(s) {
-    const thumb = s.proof_url
-      ? `<a class="rev-thumb-a" href="${safeURL(s.proof_url)}" target="_blank" rel="noopener"><img class="rev-thumb" src="${safeURL(s.proof_url)}" alt="인증 이미지"></a>`
-      : `<div class="rev-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px;">${(s.task && s.task.verify_method) === "telegram" ? "✈️" : "🔗"}</div>`;
+    const thumb = (s.proof_url && s.signedUrl)
+      ? `<a class="rev-thumb-a" href="${safeURL(s.signedUrl)}" target="_blank" rel="noopener"><img class="rev-thumb" src="${safeURL(s.signedUrl)}" alt="인증 이미지"></a>`
+      : s.proof_url
+        ? `<div class="rev-thumb" style="display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--dim);text-align:center;">이미지<br>로드중</div>`
+        : `<div class="rev-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px;">${(s.task && s.task.verify_method) === "telegram" ? "✈️" : "🔗"}</div>`;
     return `<div class="rev-row">${thumb}<div class="rev-body"><div class="rev-task">${esc(joinTitle(s.task))}</div><div class="rev-user">${esc(joinEmail(s.user) || "익명")} · ${esc(s.status)}</div>${s.proof_note ? `<div class="rev-note">${esc(s.proof_note)}</div>` : ""}</div><div class="rev-actions"><span class="rev-status ${st(s.status).cls}">${st(s.status).txt}</span><div style="display:flex;gap:6px;"><button class="mini-btn app" type="button" data-app="${esc(s.id)}">승인</button><button class="mini-btn rej" type="button" data-rej="${esc(s.id)}">반려</button></div></div></div>`;
   }
   function entrantName(e) {
@@ -586,11 +603,12 @@
       const ext = ((file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg").slice(0, 4);
       const path = `${state.uid}/${t.id}_${Date.now()}.${ext}`;
       const up = await withTimeout(
-        state.sb.storage.from("airdrop-proofs").upload(path, file, { contentType: file.type, upsert: false }),
+        state.sb.storage.from(PROOF_BUCKET).upload(path, file, { contentType: file.type, upsert: false }),
         "증빙 업로드",
       );
       if (up.error) throw up.error;
-      const proof_url = state.sb.storage.from("airdrop-proofs").getPublicUrl(path).data.publicUrl;
+      // 비공개 버킷: 공개 URL 대신 스토리지 경로만 저장하고, 열람은 관리자 서명URL로 처리합니다.
+      const proof_url = path;
       const ins = await withTimeout(
         state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_url, proof_note: note || null, status: "pending" }),
         "인증 제출",
