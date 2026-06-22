@@ -26,6 +26,46 @@
     new Promise((_, rej) => setTimeout(() => rej(new Error(`${label} 시간초과`)), ms)),
   ]);
 
+  // [라벨](https://url) -> 클릭 가능한 앵커. 그 외 텍스트는 모두 이스케이프, 일반 URL은 텍스트로 남깁니다.
+  const mdLinks = (s, br) => {
+    const str = String(s ?? "");
+    const re = /\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g;
+    let out = "", last = 0, m;
+    while ((m = re.exec(str)) !== null) {
+      out += esc(str.slice(last, m.index));
+      out += `<a href="${safeURL(m[2])}" target="_blank" rel="noopener">${esc(m[1])}</a>`;
+      last = m.index + m[0].length;
+    }
+    out += esc(str.slice(last));
+    return br ? out.replace(/\n/g, "<br>") : out;
+  };
+  const shortAddr = (a) => { const v = String(a || ""); return v.length > 12 ? v.slice(0, 6) + "…" + v.slice(-4) : v; };
+  const toLocalInput = (iso) => {
+    if (!iso) return "";
+    try {
+      const d = new Date(iso); const p = (n) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+    } catch { return ""; }
+  };
+  const hasWallet = () => !!(state.wallets && state.wallets.length);
+  function flashProfile() {
+    const card = $("profileCard");
+    if (!card) return;
+    try { card.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
+    const prev = card.style.outline;
+    card.style.outline = "2px solid var(--accent2)";
+    setTimeout(() => { card.style.outline = prev; }, 2400);
+  }
+  // 참여 전 닉네임 필수 — OAuth 가입에는 입력 폼이 없어 여기서 강제합니다.
+  function requireNickname() {
+    if (state.uid && !(state.profile && state.profile.nickname)) {
+      toast("먼저 프로필에서 닉네임을 설정해 주십시오.", "err");
+      flashProfile();
+      return false;
+    }
+    return true;
+  }
+
   const STATUS = {
     pending: { txt: "대기중", cls: "st-pending" },
     approved: { txt: "인증완료", cls: "st-approved" },
@@ -41,7 +81,10 @@
   const MEDALS = ["🥇", "🥈", "🥉"];
   const st = (k) => STATUS[k] || { txt: esc(k || "대기중"), cls: "st-pending" };
   const joinTitle = (j) => (j && (j.title || (Array.isArray(j) && j[0] && j[0].title))) || "미션";
-  const joinEmail = (j) => (j && (j.email || (Array.isArray(j) && j[0] && j[0].email) || j.full_name)) || "";
+  const joinEmail = (j) => {
+    const o = Array.isArray(j) ? (j[0] || {}) : (j || {});
+    return o.nickname || o.email || o.full_name || "";
+  };
 
   const state = {
     sb: null,
@@ -50,9 +93,10 @@
     mySubs: {}, mySubList: [],
     allSubs: [], _adminErr: null,
     checkins: [], streak: 0, checkedInToday: false,
-    leaderboard: [], winners: [], _winnersErr: null,
+    leaderboard: [], winners: [], _winnersErr: null, _winnerNicks: {},
     lotEntrants: [], _lotErr: null, lotLoaded: false, lotResult: null, lotDrawing: false,
-    _subTask: null, _clock: null,
+    wallets: [],
+    _subTask: null, _editSubId: null, _editTaskId: null, _clock: null,
   };
 
   // 주간 고정 리워드 추첨 경품 구성 (순서대로 배정)
@@ -136,7 +180,7 @@
   }
 
   async function loadAuth() {
-    state.user = null; state.uid = null; state.profile = null; state.isAdmin = false;
+    state.user = null; state.uid = null; state.profile = null; state.isAdmin = false; state.wallets = [];
     let session = null;
     try {
       const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 4000);
@@ -146,7 +190,7 @@
     state.user = session.user; state.uid = session.user.id;
     try {
       const { data: prof } = await withTimeout(
-        state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,wallet_address,telegram_handle,twitter_handle,youtube_handle").eq("id", state.uid).single(),
+        state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,wallet_address,telegram_handle,twitter_handle,youtube_handle,nickname").eq("id", state.uid).single(),
         "프로필 로드",
       );
       state.profile = prof || null;
@@ -154,7 +198,7 @@
     } catch (_) {
       try {
         const { data: prof } = await withTimeout(
-          state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin").eq("id", state.uid).single(),
+          state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,nickname").eq("id", state.uid).single(),
           "프로필 폴백 로드",
         );
         state.profile = prof || null;
@@ -216,30 +260,16 @@
   async function loadLeaderboard() {
     state.leaderboard = [];
     try {
-      const since = dateAdd(kstToday(), -90);
       const { data, error } = await withTimeout(
-        state.sb.from("daily_checkins").select("user_id,checkin_date").gte("checkin_date", since),
-        "리더보드 체크인 로드",
+        state.sb.rpc("streak_leaderboard", { p_limit: 10 }),
+        "리더보드 로드",
       );
       if (error || !data) return;
-      const byUser = {};
-      data.forEach((r) => {
-        if (!byUser[r.user_id]) byUser[r.user_id] = [];
-        byUser[r.user_id].push(r.checkin_date);
-      });
-      const rows = Object.entries(byUser).map(([uid, dates]) => ({ uid, streak: computeStreak(dates) })).filter((r) => r.streak > 0).sort((a, b) => b.streak - a.streak).slice(0, 10);
-      if (!rows.length) return;
-      const { data: profiles } = await withTimeout(
-        state.sb.from("profiles").select("id,email,full_name").in("id", rows.map((r) => r.uid)),
-        "리더보드 프로필 로드",
-      );
-      const names = {};
-      (profiles || []).forEach((p) => { names[p.id] = p.full_name || (p.email ? p.email.split("@")[0] : "회원"); });
-      state.leaderboard = rows.map((r) => ({ ...r, name: names[r.uid] || "회원" }));
+      state.leaderboard = data.map((r) => ({ uid: r.user_id, streak: r.streak, name: r.nickname || "익명" }));
     } catch (_) {}
   }
   async function loadWinners() {
-    state.winners = []; state._winnersErr = null;
+    state.winners = []; state._winnersErr = null; state._winnerNicks = {};
     try {
       const { data, error } = await withTimeout(
         state.sb.from("raffle_winners")
@@ -249,6 +279,16 @@
       );
       if (error) { state._winnersErr = error.message || "오류"; return; }
       state.winners = data || [];
+      const ids = [...new Set(state.winners.map((w) => w.user_id).filter(Boolean))];
+      if (ids.length) {
+        try {
+          const { data: nicks } = await withTimeout(
+            state.sb.rpc("public_nicknames", { p_ids: ids }),
+            "당첨자 닉네임 로드",
+          );
+          (nicks || []).forEach((n) => { state._winnerNicks[n.id] = n.nickname; });
+        } catch (_) {}
+      }
     } catch (err) {
       state._winnersErr = errText(err);
     }
@@ -259,7 +299,7 @@
     try {
       const { data, error } = await withTimeout(
         state.sb.from("airdrop_submissions")
-          .select("id,task_id,user_id,proof_url,proof_note,status,created_at, task:airdrop_tasks(title,verify_method), user:profiles!airdrop_submissions_user_id_fkey(email,full_name)")
+          .select("id,task_id,user_id,proof_url,proof_note,status,created_at, task:airdrop_tasks(title,verify_method), user:profiles!airdrop_submissions_user_id_fkey(email,full_name,nickname)")
           .order("created_at", { ascending: false }),
         "관리자 제출 로드",
       );
@@ -291,6 +331,7 @@
         user_id: r.user_id,
         email: r.email,
         full_name: r.full_name,
+        nickname: r.nickname,
         checkins: r.checkins,
         approved: r.approved,
         entries: Math.max(0, Number(r.entries) || 0),
@@ -346,12 +387,15 @@
     const vm = vmInfo(method);
     const sub = state.mySubs[t.id];
     const statusBadge = sub ? `<span class="badge ${st(sub.status).cls}">${st(sub.status).txt}</span>` : "";
+    const editBtn = (sub && sub.status === "pending")
+      ? `<button class="btn-ghost" type="button" data-editsub="${esc(t.id)}">수정</button>`
+      : "";
     const action = sub ? "" : method === "onchain"
       ? `<button class="btn-wallet" type="button" data-auto="${esc(t.id)}">지갑 주소 등록 · 인증요청</button>`
       : method === "telegram"
         ? `<button class="btn-sub" type="button" data-auto="${esc(t.id)}">자동 인증요청</button>`
         : `<button class="btn-sub" type="button" data-sub="${esc(t.id)}">✅ 인증하기</button>`;
-    return `<div class="task"><div class="task-head"><div><div class="task-title">${esc(t.title)}</div>${t.reward_note ? `<span class="reward">${esc(t.reward_note)}</span>` : `<span class="reward">응모권 +5장</span>`}</div><span class="vm ${vm.cls}">${vm.label}</span></div>${t.description ? `<div class="task-desc">${esc(t.description)}</div>` : ""}${t.steps ? `<div class="task-steps">${multiline(t.steps)}</div>` : ""}<div class="task-foot">${t.link ? `<a class="btn-go ghost" href="${safeURL(t.link)}" target="_blank" rel="noopener">작업하러 가기 ↗</a>` : ""}${action}${statusBadge}</div></div>`;
+    return `<div class="task"><div class="task-head"><div><div class="task-title">${esc(t.title)}</div>${t.reward_note ? `<span class="reward">${esc(t.reward_note)}</span>` : `<span class="reward">응모권 +5장</span>`}</div><span class="vm ${vm.cls}">${vm.label}</span></div>${t.description ? `<div class="task-desc">${mdLinks(t.description)}</div>` : ""}${t.steps ? `<div class="task-steps">${mdLinks(t.steps, true)}</div>` : ""}<div class="task-foot">${t.link ? `<a class="btn-go ghost" href="${safeURL(t.link)}" target="_blank" rel="noopener">작업하러 가기 ↗</a>` : ""}${action}${editBtn}${statusBadge}</div></div>`;
   }
   function renderTasks() {
     const wrap = $("tasksWrap");
@@ -363,8 +407,10 @@
     state.tasks.forEach((t) => {
       const s = wrap.querySelector(`[data-sub="${cssEscape(t.id)}"]`);
       const a = wrap.querySelector(`[data-auto="${cssEscape(t.id)}"]`);
+      const es = wrap.querySelector(`[data-editsub="${cssEscape(t.id)}"]`);
       if (s) s.onclick = () => openSubModal(t);
       if (a) a.onclick = () => submitAutoTask(t);
+      if (es) es.onclick = () => { const sub = state.mySubs[t.id]; if (sub) openSubModal(t, sub); };
     });
   }
   function renderLeaderboard() {
@@ -386,7 +432,8 @@
     if (!state.winners.length) { wrap.innerHTML = `<div class="empty">지난주 당첨자 기록이 아직 없습니다.</div>`; return; }
     wrap.innerHTML = state.winners.map((w, i) => {
       const u = w.user || {};
-      const name = w.telegram || u.full_name || (u.email ? u.email.split("@")[0] : "당첨자");
+      const nick = (state._winnerNicks && state._winnerNicks[w.user_id]) || "";
+      const name = nick || w.telegram || u.full_name || (u.email ? u.email.split("@")[0] : "당첨자");
       return `<div class="winrow"><span class="n">${i < 3 ? MEDALS[i] : ""} ${esc(name)}님</span><span class="c">${esc(w.prize || "기프티콘")} · ${Number(w.entries || 0)}장</span></div>`;
     }).join("");
   }
@@ -399,7 +446,7 @@
     return `<div class="rev-row">${thumb}<div class="rev-body"><div class="rev-task">${esc(joinTitle(s.task))}</div><div class="rev-user">${esc(joinEmail(s.user) || "익명")} · ${esc(s.status)}</div>${s.proof_note ? `<div class="rev-note">${esc(s.proof_note)}</div>` : ""}</div><div class="rev-actions"><span class="rev-status ${st(s.status).cls}">${st(s.status).txt}</span><div style="display:flex;gap:6px;"><button class="mini-btn app" type="button" data-app="${esc(s.id)}">승인</button><button class="mini-btn rej" type="button" data-rej="${esc(s.id)}">반려</button></div></div></div>`;
   }
   function entrantName(e) {
-    return (e && (e.full_name || (e.email ? e.email.split("@")[0] : e.user_id))) || "참여자";
+    return (e && (e.nickname || e.full_name || (e.email ? e.email.split("@")[0] : e.user_id))) || "참여자";
   }
   // 응모권 가중 랜덤 추첨(복원 없음): 응모권이 많을수록 뽑힐 확률↑
   function weightedDrawN(pool, n) {
@@ -471,11 +518,13 @@
     if (!tasks.length) { wrap.innerHTML = `<div class="empty">진행중인 미션이 없습니다.</div>`; return; }
     wrap.innerHTML = tasks.map((t) => {
       const ends = t.ends_at ? `<span class="dim-sm">~ ${esc(String(t.ends_at).slice(0, 10))}</span>` : `<span class="dim-sm">기한 없음</span>`;
-      return `<div class="rev-row"><div class="rev-body"><div class="rev-task">${esc(t.title)}</div><div class="rev-user">${esc(t.category || "미분류")} · ${ends}</div></div><div class="rev-actions"><div style="display:flex;gap:6px;"><button class="mini-btn rej" type="button" data-end="${esc(t.id)}">종료</button><button class="mini-btn" type="button" data-del="${esc(t.id)}" style="background:#3a2530;color:#ff8aa0;">삭제</button></div></div></div>`;
+      return `<div class="rev-row"><div class="rev-body"><div class="rev-task">${esc(t.title)}</div><div class="rev-user">${esc(t.category || "미분류")} · ${ends}</div></div><div class="rev-actions"><div style="display:flex;gap:6px;"><button class="mini-btn app" type="button" data-edittask="${esc(t.id)}">수정</button><button class="mini-btn rej" type="button" data-end="${esc(t.id)}">종료</button><button class="mini-btn" type="button" data-del="${esc(t.id)}" style="background:#3a2530;color:#ff8aa0;">삭제</button></div></div></div>`;
     }).join("");
     tasks.forEach((t) => {
+      const et = wrap.querySelector(`[data-edittask="${cssEscape(t.id)}"]`);
       const e = wrap.querySelector(`[data-end="${cssEscape(t.id)}"]`);
       const d = wrap.querySelector(`[data-del="${cssEscape(t.id)}"]`);
+      if (et) et.onclick = () => editTask(t);
       if (e) e.onclick = () => endTask(t);
       if (d) d.onclick = () => deleteTask(t);
     });
@@ -517,18 +566,27 @@
     const wrap = $("profileBody");
     if (!wrap) return;
     if (!state.uid) {
-      wrap.innerHTML = `<div class="ck-row"><div class="ck-meta">로그인하면 텔레그램·X·유튜브 아이디를 등록할 수 있습니다.<br>당첨자 연락·미션 검증에 사용됩니다.</div><button class="btn-sub" id="pfLogin" type="button">로그인</button></div>`;
+      wrap.innerHTML = `<div class="ck-row"><div class="ck-meta">로그인하면 닉네임·텔레그램·X·유튜브 아이디·지갑 주소를 등록할 수 있습니다.<br>당첨자 연락·미션 검증에 사용됩니다.</div><button class="btn-sub" id="pfLogin" type="button">로그인</button></div>`;
       const b = $("pfLogin"); if (b) b.onclick = doLogin;
       return;
     }
     const p = state.profile || {};
-    wrap.innerHTML = `<div class="af-row"><div class="field"><label>텔레그램 아이디</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div><div class="field"><label>X(트위터) 아이디</label><input type="text" id="pf_tw" placeholder="@username" value="${esc(p.twitter_handle || "")}"></div></div><div class="af-row"><div class="field"><label>유튜브 닉네임</label><input type="text" id="pf_yt" placeholder="채널명 또는 @핸들" value="${esc(p.youtube_handle || "")}"></div><div class="field"><label>지갑 주소 ${p.wallet_address ? "<span class=\"dim-sm\">· 등록됨</span>" : ""}</label><input type="text" id="pf_wallet" placeholder="미등록" value="${esc(p.wallet_address || "")}" disabled></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"><button class="btn-sub" id="pfSave" type="button">정보 저장</button>${p.wallet_address ? "" : `<button class="btn-ghost" id="pfWallet" type="button">지갑 주소 등록</button>`}</div>`;
+    const wallets = state.wallets || [];
+    const walletRows = wallets.length
+      ? wallets.map((w) => `<div class="ms-row" style="margin-bottom:6px;"><span class="ms-task" style="font-family:monospace;font-size:12.5px;">${esc(shortAddr(w.address))}</span><button class="mini-btn rej" type="button" data-wdel="${esc(w.id)}">삭제</button></div>`).join("")
+      : `<div class="dim-sm" style="margin-bottom:6px;">등록된 지갑이 없습니다. 온체인 미션 인증에 필요합니다.</div>`;
+    const addBtn = wallets.length < 5 ? `<button class="btn-ghost" id="pfAddWallet" type="button" style="margin-top:2px;">＋ 지갑 추가</button>` : `<div class="dim-sm" style="margin-top:2px;">최대 5개까지 등록할 수 있습니다.</div>`;
+    wrap.innerHTML = `<div class="af-row"><div class="field"><label>닉네임 <span class="dim-sm">· 필수 (리더보드·당첨 표시에 사용)</span></label><input type="text" id="pf_nick" maxlength="20" placeholder="표시될 닉네임" value="${esc(p.nickname || "")}"></div><div class="field"><label>텔레그램 아이디</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div></div><div class="af-row"><div class="field"><label>X(트위터) 아이디</label><input type="text" id="pf_tw" placeholder="@username" value="${esc(p.twitter_handle || "")}"></div><div class="field"><label>유튜브 닉네임</label><input type="text" id="pf_yt" placeholder="채널명 또는 @핸들" value="${esc(p.youtube_handle || "")}"></div></div><div class="field" style="margin-bottom:6px;"><label>에어드랍 지갑 주소 <span class="dim-sm">· ${wallets.length}/5 · 온체인 인증용</span></label><div id="walletList">${walletRows}</div>${addBtn}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"><button class="btn-sub" id="pfSave" type="button">정보 저장</button></div>`;
     const s = $("pfSave"); if (s) s.onclick = saveProfile;
-    const w = $("pfWallet"); if (w) w.onclick = async () => { await bindWallet(); renderProfile(); };
+    const aw = $("pfAddWallet"); if (aw) aw.onclick = addWallet;
+    wrap.querySelectorAll("[data-wdel]").forEach((b) => { b.onclick = () => removeWallet(b.getAttribute("data-wdel")); });
   }
   async function saveProfile() {
     if (!state.uid) { doLogin(); return; }
+    const nickRaw = (($("pf_nick") && $("pf_nick").value) || "").trim();
+    if (!nickRaw) { toast("닉네임은 필수입니다. 프로필에서 설정해 주십시오.", "err"); return; }
     const payload = {
+      nickname: nickRaw,
       telegram_handle: normHandle($("pf_tg") && $("pf_tg").value) || null,
       twitter_handle: normHandle($("pf_tw") && $("pf_tw").value) || null,
       youtube_handle: (($("pf_yt") && $("pf_yt").value) || "").trim() || null,
@@ -536,9 +594,13 @@
     const btn = $("pfSave"); if (btn) { btn.disabled = true; btn.textContent = "저장 중…"; }
     try {
       const { error } = await withTimeout(state.sb.from("profiles").update(payload).eq("id", state.uid), "정보 저장");
-      if (error) throw error;
-      state.profile = { ...(state.profile || {}), ...payload };
-      toast("참여 정보를 저장했습니다.", "ok");
+      if (error) {
+        if (error.code === "23505" || /nickname|unique|이미/i.test(error.message || "")) toast("이미 사용 중인 닉네임입니다.", "err");
+        else throw error;
+      } else {
+        state.profile = { ...(state.profile || {}), ...payload };
+        toast("참여 정보를 저장했습니다.", "ok");
+      }
     } catch (err) {
       toast("저장 실패: " + errText(err), "err");
     } finally {
@@ -572,6 +634,7 @@
 
   async function doCheckin() {
     if (!state.uid) { doLogin(); return; }
+    if (!requireNickname()) return;
     const btn = $("ckBtn");
     if (btn) { btn.disabled = true; btn.textContent = "처리 중…"; }
     try {
@@ -593,72 +656,135 @@
     }
   }
 
-  async function bindWallet() {
-    if (!state.uid) { doLogin(); return null; }
-    if (state.profile && state.profile.wallet_address) return state.profile.wallet_address;
-    let address = prompt("에어드랍 검증에 사용할 EVM 지갑 주소를 입력해 주십시오. 지갑 연결 없이 주소만 받으며, 온체인 내역으로 확인합니다. 1계정 1지갑만 등록됩니다.", "0x") || "";
-    address = address.trim().toLowerCase();
-    if (!/^0x[a-f0-9]{40}$/.test(address)) { toast("올바른 EVM 지갑 주소(0x로 시작, 42자)를 입력해 주십시오.", "err"); return null; }
+  async function loadWallets() {
+    state.wallets = [];
+    if (!state.uid) return;
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.from("airdrop_wallets").select("id,address").eq("user_id", state.uid).order("created_at"),
+        "지갑 로드",
+      );
+      if (error || !data) return;
+      state.wallets = data;
+    } catch (_) {}
+  }
+  async function addWallet() {
+    if (!state.uid) { doLogin(); return; }
+    if ((state.wallets || []).length >= 5) { toast("지갑은 계정당 최대 5개까지 등록할 수 있습니다.", "err"); return; }
+    let address = (prompt("등록할 EVM 지갑 주소를 입력해 주십시오. (0x로 시작, 42자) 온체인 내역으로 검증합니다.", "0x") || "").trim().toLowerCase();
+    if (!/^0x[a-f0-9]{40}$/i.test(address)) { toast("올바른 EVM 지갑 주소(0x로 시작, 42자)를 입력해 주십시오.", "err"); return; }
     try {
       const { error } = await withTimeout(
-        state.sb.from("profiles").update({ wallet_address: address }).eq("id", state.uid),
-        "지갑 주소 저장",
+        state.sb.from("airdrop_wallets").insert({ user_id: state.uid, address }),
+        "지갑 추가",
       );
       if (error) throw error;
-      state.profile = { ...(state.profile || {}), wallet_address: address };
-      toast("지갑 주소가 등록되었습니다.", "ok");
-      return address;
+      toast("지갑을 추가했습니다.", "ok");
+      await loadWallets();
+      renderProfile();
     } catch (err) {
-      toast("등록 실패: 이미 다른 계정에 등록된 주소이거나 권한이 없습니다.", "err");
-      return null;
+      const code = err && err.code;
+      const msg = (err && err.message) || "";
+      if (code === "23505" || /unique|duplicate|이미/i.test(msg)) toast("이미 등록된 지갑 주소입니다.", "err");
+      else if (/5\s*개|최대\s*5|maximum of 5|5 wallet/i.test(msg)) toast("지갑은 계정당 최대 5개까지 등록할 수 있습니다.", "err");
+      else toast("지갑 추가 실패: " + errText(err), "err");
+    }
+  }
+  async function removeWallet(id) {
+    if (!confirm("이 지갑 주소를 삭제하시겠습니까?")) return;
+    try {
+      const { error } = await withTimeout(state.sb.from("airdrop_wallets").delete().eq("id", id), "지갑 삭제");
+      if (error) throw error;
+      toast("지갑을 삭제했습니다.", "ok");
+      await loadWallets();
+      renderProfile();
+    } catch (err) {
+      toast("삭제 실패: " + errText(err), "err");
     }
   }
 
-  function openSubModal(t) {
+  function openSubModal(t, editSub) {
     if (!state.uid) { toast("인증하려면 먼저 로그인해 주십시오.", "err"); doLogin(); return; }
+    if (!requireNickname()) return;
     state._subTask = t;
-    $("subModalTitle").textContent = t.title;
-    $("subFile").value = ""; $("subNote").value = ""; $("subPreview").innerHTML = "";
+    state._editSubId = editSub ? editSub.id : null;
+    const sub = $("subModalSub");
+    if (editSub) {
+      $("subModalTitle").textContent = "인증 수정 — " + t.title;
+      if (sub) sub.textContent = "제출한 인증을 수정할 수 있습니다. 새 스크린샷을 올리면 기존 이미지가 교체되고 다시 검토 대기 상태가 됩니다.";
+      $("subNote").value = editSub.proof_note || "";
+      $("subFile").value = "";
+      $("subFile").required = false;
+      $("subPreview").innerHTML = editSub.proof_url ? `<div class="dim-sm" style="margin-top:8px;">📎 기존 인증 이미지가 있습니다. 새 파일을 선택하면 교체됩니다.</div>` : "";
+      const sb = $("subSubmit"); if (sb) sb.textContent = "수정 저장";
+    } else {
+      $("subModalTitle").textContent = t.title;
+      if (sub) sub.textContent = "완료 화면 스크린샷을 올려 주십시오. 운영진이 확인 후 승인합니다. 작업별 1회만 인증할 수 있습니다.";
+      $("subFile").value = ""; $("subNote").value = ""; $("subPreview").innerHTML = "";
+      $("subFile").required = true;
+      const sb = $("subSubmit"); if (sb) sb.textContent = "인증 제출하기";
+    }
     $("subModal").classList.add("on");
   }
-  function closeSubModal() { $("subModal").classList.remove("on"); state._subTask = null; }
+  function closeSubModal() { $("subModal").classList.remove("on"); state._subTask = null; state._editSubId = null; }
 
   async function submitProof(e) {
     e.preventDefault();
     const t = state._subTask;
     if (!t) return;
+    const editing = !!state._editSubId;
     const file = $("subFile").files[0];
     const note = $("subNote").value.trim();
-    if (!file) { toast("스크린샷 이미지를 선택해 주십시오.", "err"); return; }
-    if (!file.type.startsWith("image/")) { toast("이미지 파일만 업로드할 수 있습니다.", "err"); return; }
-    if (file.size > 10 * 1024 * 1024) { toast("이미지는 10MB 이하로 올려 주십시오.", "err"); return; }
+    const checkFile = (f) => {
+      if (!f.type.startsWith("image/")) { toast("이미지 파일만 업로드할 수 있습니다.", "err"); return false; }
+      if (f.size > 10 * 1024 * 1024) { toast("이미지는 10MB 이하로 올려 주십시오.", "err"); return false; }
+      return true;
+    };
+    if (!editing) {
+      if (!file) { toast("스크린샷 이미지를 선택해 주십시오.", "err"); return; }
+      if (!checkFile(file)) return;
+    } else if (file && !checkFile(file)) {
+      return;
+    }
     const btn = $("subSubmit"); const orig = btn.textContent;
-    btn.disabled = true; btn.textContent = "업로드 중…";
+    btn.disabled = true; btn.textContent = editing ? "저장 중…" : "업로드 중…";
     try {
-      const ext = ((file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg").slice(0, 4);
-      const path = `${state.uid}/${t.id}_${Date.now()}.${ext}`;
-      const up = await withTimeout(
-        state.sb.storage.from(PROOF_BUCKET).upload(path, file, { contentType: file.type, upsert: false }),
-        "증빙 업로드",
-      );
-      if (up.error) throw up.error;
-      // 비공개 버킷: 공개 URL 대신 스토리지 경로만 저장하고, 열람은 관리자 서명URL로 처리합니다.
-      const proof_url = path;
-      const ins = await withTimeout(
-        state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_url, proof_note: note || null, status: "pending" }),
-        "인증 제출",
-      );
-      if (ins.error) {
-        if (ins.error.code === "23505" || /duplicate|unique/i.test(ins.error.message || "")) toast("이미 이 미션에 인증을 제출했습니다.", "err");
-        else throw ins.error;
-      } else {
-        toast("인증 제출 완료했습니다. 검토 후 승인됩니다.", "ok");
+      let proof_url = null;
+      if (file) {
+        const ext = ((file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg").slice(0, 4);
+        const path = `${state.uid}/${t.id}_${Date.now()}.${ext}`;
+        const up = await withTimeout(
+          state.sb.storage.from(PROOF_BUCKET).upload(path, file, { contentType: file.type, upsert: false }),
+          "증빙 업로드",
+        );
+        if (up.error) throw up.error;
+        // 비공개 버킷: 공개 URL 대신 스토리지 경로만 저장하고, 열람은 관리자 서명URL로 처리합니다.
+        proof_url = path;
+      }
+      if (editing) {
+        const patch = { proof_note: note || null };
+        if (proof_url) patch.proof_url = proof_url;
+        const { error } = await withTimeout(state.sb.from("airdrop_submissions").update(patch).eq("id", state._editSubId), "인증 수정");
+        if (error) throw error;
+        toast("인증을 수정했습니다. 재검토 대기 상태입니다.", "ok");
         closeSubModal();
+      } else {
+        const ins = await withTimeout(
+          state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_url, proof_note: note || null, status: "pending" }),
+          "인증 제출",
+        );
+        if (ins.error) {
+          if (ins.error.code === "23505" || /duplicate|unique/i.test(ins.error.message || "")) toast("이미 이 미션에 인증을 제출했습니다.", "err");
+          else throw ins.error;
+        } else {
+          toast("인증 제출 완료했습니다. 검토 후 승인됩니다.", "ok");
+          closeSubModal();
+        }
       }
       await loadMySubs();
       renderTasks(); renderTickets();
     } catch (err) {
-      toast("제출 실패: " + errText(err), "err");
+      toast((editing ? "수정" : "제출") + " 실패: " + errText(err), "err");
     } finally {
       btn.disabled = false; btn.textContent = orig;
     }
@@ -666,13 +792,17 @@
 
   async function submitAutoTask(t) {
     if (!state.uid) { toast("인증하려면 먼저 로그인해 주십시오.", "err"); doLogin(); return; }
-    if ((t.verify_method || "capture") === "onchain") {
-      const wallet = await bindWallet();
-      if (!wallet) return;
+    if (!requireNickname()) return;
+    if ((t.verify_method || "capture") === "onchain" && !hasWallet()) {
+      toast("온체인 인증을 위해 먼저 프로필에서 에어드랍 지갑을 추가해 주십시오.", "err");
+      flashProfile();
+      return;
     }
     try {
       // TODO: onchain/telegram 자동 검증 서버 작업이 붙으면 여기서 status 를 approved 로 전환합니다.
-      const note = (t.verify_method || "capture") === "onchain" ? `wallet:${state.profile && state.profile.wallet_address}` : "telegram:auto-verify-requested";
+      const note = (t.verify_method || "capture") === "onchain"
+        ? `wallets:${(state.wallets || []).map((w) => w.address).join(",")}`
+        : "telegram:auto-verify-requested";
       const { error } = await withTimeout(
         state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_note: note, status: "pending" }),
         "자동 인증 요청",
@@ -730,12 +860,39 @@
     }
   }
 
+  function resetEdit() {
+    state._editTaskId = null;
+    const btn = $("taskSubmit"); if (btn) btn.textContent = "미션 등록";
+    const cancel = $("taskCancel"); if (cancel) cancel.style.display = "none";
+  }
+  function cancelEdit() {
+    resetEdit();
+    const f = $("taskForm"); if (f) f.reset();
+    toast("수정을 취소했습니다.", "");
+  }
+  function editTask(t) {
+    state._editTaskId = t.id;
+    $("f_title").value = t.title || "";
+    $("f_verify").value = t.verify_method || "capture";
+    $("f_desc").value = t.description || "";
+    $("f_steps").value = t.steps || "";
+    $("f_link").value = t.link || "";
+    $("f_reward").value = t.reward_note || "";
+    $("f_cat").value = t.category || "";
+    $("f_sort").value = (t.sort_order != null ? t.sort_order : 0);
+    $("f_ends").value = toLocalInput(t.ends_at);
+    const btn = $("taskSubmit"); if (btn) btn.textContent = "미션 수정";
+    const cancel = $("taskCancel"); if (cancel) cancel.style.display = "";
+    const form = $("taskForm"); if (form) { try { form.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {} }
+    toast(`수정 모드입니다. "${t.title || ""}" 편집 후 저장하십시오.`, "");
+  }
   async function submitTask(e) {
     e.preventDefault();
     const title = $("f_title").value.trim();
     if (!title) { toast("제목을 입력해 주십시오.", "err"); return; }
-    const btn = $("taskSubmit"); const orig = btn.textContent;
-    btn.disabled = true; btn.textContent = "등록 중…";
+    const editing = !!state._editTaskId;
+    const btn = $("taskSubmit");
+    btn.disabled = true; btn.textContent = editing ? "수정 중…" : "등록 중…";
     const payload = {
       title,
       verify_method: $("f_verify").value || "capture",
@@ -744,22 +901,32 @@
       link: $("f_link").value.trim() || null,
       reward_note: $("f_reward").value.trim() || "응모권 +5장",
       category: $("f_cat").value.trim() || null,
-      status: "active",
       sort_order: parseInt($("f_sort").value, 10) || 0,
       ends_at: $("f_ends").value ? new Date($("f_ends").value).toISOString() : null,
-      created_by: state.uid,
     };
     try {
-      const { error } = await withTimeout(state.sb.from("airdrop_tasks").insert(payload), "미션 등록");
-      if (error) throw error;
-      toast("미션이 등록되었습니다.", "ok");
+      if (editing) {
+        // 상태(status)는 변경하지 않고 필드만 갱신합니다.
+        const { error } = await withTimeout(state.sb.from("airdrop_tasks").update(payload).eq("id", state._editTaskId), "미션 수정");
+        if (error) throw error;
+        toast("미션을 수정했습니다.", "ok");
+      } else {
+        const { error } = await withTimeout(
+          state.sb.from("airdrop_tasks").insert({ ...payload, status: "active", created_by: state.uid }),
+          "미션 등록",
+        );
+        if (error) throw error;
+        toast("미션이 등록되었습니다.", "ok");
+      }
+      resetEdit();
       e.target.reset();
       await loadTasks();
-      renderTasks();
+      renderTasks(); renderManage();
     } catch (err) {
-      toast("등록 실패: " + errText(err), "err");
+      toast((editing ? "수정" : "등록") + " 실패: " + errText(err), "err");
     } finally {
-      btn.disabled = false; btn.textContent = orig;
+      btn.disabled = false;
+      btn.textContent = state._editTaskId ? "미션 수정" : "미션 등록";
     }
   }
 
@@ -774,7 +941,7 @@
       await loadAuth();
       if (my !== bootToken) return;
       renderAll();
-      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs(), loadEntrants()]);
+      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs(), loadEntrants(), loadWallets()]);
       if (my !== bootToken) return;
       renderAll();
     } catch (err) {
@@ -797,6 +964,7 @@
       p.innerHTML = `<img src="${URL.createObjectURL(f)}" alt="" style="max-height:140px;border-radius:10px;border:1px solid var(--line);margin-top:8px;display:block;">`;
     };
     if ($("taskForm")) $("taskForm").onsubmit = submitTask;
+    if ($("taskCancel")) $("taskCancel").onclick = cancelEdit;
     if ($("admToggle")) $("admToggle").onclick = () => $("adminCard").classList.toggle("admin-open");
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("subModal") && $("subModal").classList.contains("on")) closeSubModal(); });
     state.sb.auth.onAuthStateChange(() => boot());

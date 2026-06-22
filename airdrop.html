@@ -371,7 +371,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
       <div class="seclabel">🛠️ 관리자 패널 <span class="dim-sm">· 운영진 전용</span></div>
       <div class="card" id="adminCard">
         <div class="adm-toggle" id="admToggle">
-          <span class="tit">미션 등록 · 제출 검토 · 가중 추첨</span>
+          <span class="tit">미션 등록 · 제출 검토 · 가중 추첨 <span class="dim-sm">· 총 방문수 <span id="visitCountAdmin">…</span></span></span>
           <span class="adm-chev">▼</span>
         </div>
         <div class="adm-wrap">
@@ -393,7 +393,10 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
                 <div class="field"><label>sort_order</label><input type="number" id="f_sort" value="0"></div>
               </div>
               <div class="field"><label>종료 일시 (선택)</label><input type="datetime-local" id="f_ends"></div>
-              <button class="btn-sub" type="submit" id="taskSubmit">미션 등록</button>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                <button class="btn-sub" type="submit" id="taskSubmit">미션 등록</button>
+                <button class="btn-ghost" type="button" id="taskCancel" style="display:none;">수정 취소</button>
+              </div>
             </form>
           </div>
 
@@ -415,13 +418,13 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
       </div>
     </div>
   </div>
-  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · antinfo.io · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
+  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · antinfo.io · 투자 권유 아님 · <span id="visitCount">…</span> 누적 방문<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
 
 <div class="modal" id="subModal">
   <div class="modal-box">
     <button class="modal-x" id="subClose" type="button" aria-label="닫기">✕</button>
     <div class="modal-title" id="subModalTitle">인증하기</div>
-    <div class="modal-sub">완료 화면 스크린샷을 올려 주십시오. 운영진이 확인 후 승인합니다. 작업별 1회만 인증할 수 있습니다.</div>
+    <div class="modal-sub" id="subModalSub">완료 화면 스크린샷을 올려 주십시오. 운영진이 확인 후 승인합니다. 작업별 1회만 인증할 수 있습니다.</div>
     <form id="subForm">
       <div class="field">
         <label>스크린샷 이미지 *</label>
@@ -440,6 +443,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
-<script src="assets/airdrop.js?v=9"></script>
+<script src="assets/airdrop.js?v=10"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
+<script defer src="/assets/visit.js"></script>
 </body></html>
