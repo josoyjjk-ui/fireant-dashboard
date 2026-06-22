@@ -35,6 +35,35 @@ html,body{overflow-x:hidden;}
 .row.r2{grid-template-columns:1.3fr 1fr;}
 .row.split{grid-template-columns:1fr 1fr;}
 
+/* 주간 고정 리워드 + 기본 미션 통합 카드 */
+.reward-card{margin-top:14px;padding:14px 18px;border-radius:16px;background:linear-gradient(100deg,#2a1408 0%,#1a1206 45%,#13161c 100%);border:1px solid #3a2a14;position:relative;overflow:hidden;}
+.reward-card::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 140% at 0% 0%,rgba(255,150,40,.18),transparent 55%);pointer-events:none;}
+.rc-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;position:relative;z-index:1;}
+.rc-info{min-width:240px;flex:1;}
+.rb-kicker{font-size:11.5px;font-weight:900;color:var(--accent2);letter-spacing:.02em;display:inline-flex;align-items:center;gap:6px;background:#231a0c;padding:4px 10px;border-radius:20px;}
+.rc-title{font-size:17px;font-weight:900;margin-top:8px;line-height:1.32;letter-spacing:-.3px;}
+.rc-title b{color:var(--accent2);}
+.rb-sub{font-size:12px;color:#cdb98a;font-weight:700;margin-top:6px;line-height:1.5;}
+.rb-sub b{color:#ffd089;}
+.rb-prizes{display:flex;gap:7px;flex-wrap:wrap;}
+.rb-prize{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:62px;padding:8px 11px;border-radius:11px;background:rgba(0,0,0,.28);border:1px solid var(--line);}
+.rb-prize .rk{font-size:10.5px;font-weight:800;color:var(--dim);}
+.rb-prize .pz{font-size:13.5px;font-weight:900;letter-spacing:-.3px;}
+.rb-prize.gold{border-color:#6a521c;background:rgba(255,190,60,.10);}.rb-prize.gold .pz,.rb-prize.gold .rk{color:#ffce5c;}
+.rb-prize.silver{border-color:#4a4f59;background:rgba(220,228,240,.05);}.rb-prize.silver .pz{color:#dfe6ef;}
+.rb-prize.bronze{border-color:#5a3a24;background:rgba(224,160,112,.07);}.rb-prize.bronze .pz{color:#e0a070;}
+.rb-prize.join{border-color:#2a3a55;background:rgba(77,155,255,.08);}.rb-prize.join .pz,.rb-prize.join .rk{color:#7ab8ff;}
+.rc-div{height:1px;background:rgba(255,255,255,.07);margin:12px 0;position:relative;z-index:1;}
+.rc-base{display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:relative;z-index:1;}
+.rc-base-label{font-size:12.5px;font-weight:900;display:inline-flex;align-items:center;gap:6px;}
+.rc-base-label em{font-style:normal;font-size:10.5px;font-weight:800;color:#fff;background:var(--accent);padding:2px 8px;border-radius:20px;}
+.bm-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:20px;background:var(--bg);border:1px solid var(--line);text-decoration:none;color:var(--txt);font-size:12.5px;font-weight:800;transition:border-color .15s;}
+.bm-chip:hover{border-color:#5a401e;}
+.bm-chip span{color:var(--accent2);font-weight:900;}
+.bm-chip.done{border-color:#1c3a2c;background:rgba(61,220,151,.10);}
+.bm-chip.done span{color:#3ddc97;}
+@media(max-width:760px){.rc-top{flex-direction:column;align-items:stretch;}.rb-prizes{justify-content:space-between;}.rb-prize{flex:1;min-width:0;}}
+
 /* 데일리 체크인 */
 .ck-card{display:flex;flex-direction:column;}
 .ck-h{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
@@ -252,6 +281,30 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   <div class="main">
     <div class="head"><h1>🎯 에어드랍 미션</h1><div class="sub">매일 체크인 · 미션 인증으로 응모권을 모으십시오. 모은 응모권은 매주 일요일 자정 가중 추첨으로 기프티콘과 교환됩니다.</div></div>
 
+    <div class="reward-card">
+      <div class="rc-top">
+        <div class="rc-info">
+          <div class="rb-kicker">🎁 이번 주 고정 리워드 · 매주 지급 확정</div>
+          <div class="rc-title">매일 출석할수록 당첨 확률 UP — <b>이번 주도 무조건 지급</b></div>
+          <div class="rb-sub">출석 <b>+1</b> · <b>7일 연속 2배</b> · 미션 인증 <b>+5</b> · 매주 일요일 자정 추첨</div>
+        </div>
+        <div class="rb-prizes">
+          <div class="rb-prize gold"><span class="rk">🥇 1등</span><span class="pz">5만원</span></div>
+          <div class="rb-prize silver"><span class="rk">🥈 2등</span><span class="pz">3만원</span></div>
+          <div class="rb-prize bronze"><span class="rk">🥉 3등</span><span class="pz">1만원</span></div>
+          <div class="rb-prize join"><span class="rk">🎟️ 참여</span><span class="pz">추첨</span></div>
+        </div>
+      </div>
+      <div class="rc-div"></div>
+      <div class="rc-base">
+        <span class="rc-base-label">✅ 기본 미션 <em>필수</em></span>
+        <a class="bm-chip done" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">📢 텔레채널 <span>✓</span></a>
+        <a class="bm-chip" href="https://t.me/+E5L9TgrKAGAxYzhl" target="_blank" rel="noopener">💬 대화방 <span>↗</span></a>
+        <a class="bm-chip" href="https://x.com/fireant_korea" target="_blank" rel="noopener">𝕏 팔로우 <span>↗</span></a>
+        <a class="bm-chip" href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener">▶ 유튜브 <span>↗</span></a>
+      </div>
+    </div>
+
     <div class="row r2" style="margin-top:14px;">
       <div class="card ck-card">
         <div class="ck-h">🔥 데일리 체크인</div>
@@ -376,6 +429,6 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
-<script src="assets/airdrop.js?v=5"></script>
+<script src="assets/airdrop.js?v=6"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 </body></html>

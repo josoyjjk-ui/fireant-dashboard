@@ -299,7 +299,7 @@
     const sub = state.mySubs[t.id];
     const statusBadge = sub ? `<span class="badge ${st(sub.status).cls}">${st(sub.status).txt}</span>` : "";
     const action = sub ? "" : method === "onchain"
-      ? `<button class="btn-wallet" type="button" data-auto="${esc(t.id)}">지갑 연결 · 인증요청</button>`
+      ? `<button class="btn-wallet" type="button" data-auto="${esc(t.id)}">지갑 주소 등록 · 인증요청</button>`
       : method === "telegram"
         ? `<button class="btn-sub" type="button" data-auto="${esc(t.id)}">자동 인증요청</button>`
         : `<button class="btn-sub" type="button" data-sub="${esc(t.id)}">✅ 인증하기</button>`;
@@ -484,27 +484,20 @@
   async function bindWallet() {
     if (!state.uid) { doLogin(); return null; }
     if (state.profile && state.profile.wallet_address) return state.profile.wallet_address;
-    let address = "";
-    try {
-      if (window.ethereum && typeof window.ethereum.request === "function") {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        address = accounts && accounts[0] ? accounts[0] : "";
-      }
-    } catch (_) {}
-    if (!address) address = prompt("연결할 EVM 지갑 주소를 입력해 주십시오. 1계정 1지갑만 사용할 수 있습니다.", "") || "";
+    let address = prompt("에어드랍 검증에 사용할 EVM 지갑 주소를 입력해 주십시오. 지갑 연결 없이 주소만 받으며, 온체인 내역으로 확인합니다. 1계정 1지갑만 등록됩니다.", "0x") || "";
     address = address.trim().toLowerCase();
-    if (!/^0x[a-f0-9]{40}$/.test(address)) { toast("올바른 EVM 지갑 주소를 입력해 주십시오.", "err"); return null; }
+    if (!/^0x[a-f0-9]{40}$/.test(address)) { toast("올바른 EVM 지갑 주소(0x로 시작, 42자)를 입력해 주십시오.", "err"); return null; }
     try {
       const { error } = await withTimeout(
         state.sb.from("profiles").update({ wallet_address: address }).eq("id", state.uid),
-        "지갑 저장",
+        "지갑 주소 저장",
       );
       if (error) throw error;
       state.profile = { ...(state.profile || {}), wallet_address: address };
-      toast("지갑이 연결되었습니다.", "ok");
+      toast("지갑 주소가 등록되었습니다.", "ok");
       return address;
     } catch (err) {
-      toast("지갑 연결 실패: 이미 다른 계정에 연결됐거나 저장 권한이 없습니다.", "err");
+      toast("등록 실패: 이미 다른 계정에 등록된 주소이거나 권한이 없습니다.", "err");
       return null;
     }
   }
