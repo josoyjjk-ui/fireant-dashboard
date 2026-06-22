@@ -65,8 +65,17 @@
 
   // ── 데이터 로드 ───────────────────────────────────────────────────
   async function loadAuth() {
-    const { data: { session } } = await state.sb.auth.getSession();
-    if (!session) { state.user = null; state.uid = null; state.isAdmin = false; return; }
+    state.user = null; state.uid = null; state.isAdmin = false;
+    let session = null;
+    try {
+      // getSession 이 navigator.locks 로 hang 날 수 있어 4초 타임아웃 레이스
+      const r = await Promise.race([
+        state.sb.auth.getSession(),
+        new Promise((res) => setTimeout(() => res(null), 4000)),
+      ]);
+      session = r && r.data ? r.data.session : null;
+    } catch (_) { session = null; }
+    if (!session) return;
     state.user = session.user; state.uid = session.user.id;
     try {
       const { data: prof } = await state.sb.from("profiles").select("full_name,is_admin").eq("id", state.uid).single();
@@ -376,8 +385,13 @@
   let bootToken = 0;
   async function boot() {
     const my = ++bootToken;
+    // 1) 인증과 무관한 작업 목록 먼저 로드·렌더 → auth가 늦거나 hang 나도 페이지는 뜬다
+    await loadTasks(); if (my !== bootToken) return;
+    renderTasks(); renderCheckin();
+    // 2) 인증 (getSession hang 대비 타임아웃 내장)
     await loadAuth(); if (my !== bootToken) return;
-    await Promise.all([loadTasks(), loadMySubs(), loadCheckins(), loadAllSubs()]); if (my !== bootToken) return;
+    // 3) 유저별 데이터
+    await Promise.all([loadMySubs(), loadCheckins(), loadAllSubs()]); if (my !== bootToken) return;
     renderAll();
   }
 
