@@ -1003,6 +1003,18 @@
       if (state.isAdmin) {
         state._vsClock = setInterval(async () => { await loadVisitStats(); renderVisitStats(); }, 30000);
       }
+      // self-heal: 첫 부팅 때 세션이 늦게 복원돼(INITIAL_SESSION 누락/지연) uid가 비면,
+      // 잠시 뒤 한 번 더 getSession 해서 세션이 있으면 자동 재부팅(거짓 비로그인 화면 제거).
+      clearTimeout(state._authRetry);
+      if (!state.uid) {
+        state._authRetry = setTimeout(async () => {
+          try {
+            const r = await withTimeout(state.sb.auth.getSession(), "세션 재확인", 5000);
+            const s = r && r.data ? r.data.session : null;
+            if (s && s.user && !state.uid) { state.user = s.user; state.uid = s.user.id; boot(); }
+          } catch (_) {}
+        }, 1800);
+      }
     } catch (err) {
       console.warn("[airdrop] boot failed", err);
       if (my !== bootToken) return;
