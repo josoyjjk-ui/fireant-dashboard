@@ -188,24 +188,14 @@
   async function ensureSession() {
     if (state.uid) return true;
     if (!state.sb) return false;
-    let session = null;
+    // getSession()은 로컬스토리지 기반이라 빠르다. 로그인된 사용자는 여기서 즉시 복원된다.
+    // refreshSession/getUser 같은 네트워크 체인은 핫패스에서 수십 초 먹통을 유발하므로 쓰지 않는다(짧은 3s 상한).
     try {
-      const r = await withTimeout(state.sb.auth.getSession(), "세션 재확인", 8000);
-      session = r && r.data ? r.data.session : null;
+      const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 3000);
+      const session = r && r.data ? r.data.session : null;
+      if (session && session.user) { state.user = session.user; state.uid = session.user.id; return true; }
     } catch (_) {}
-    if (!session) {
-      try {
-        const rr = await withTimeout(state.sb.auth.refreshSession(), "세션 갱신", 8000);
-        session = rr && rr.data ? rr.data.session : null;
-      } catch (_) {}
-    }
-    if (session && session.user) { state.user = session.user; state.uid = session.user.id; return true; }
-    try {
-      const ru = await withTimeout(state.sb.auth.getUser(), "유저 확인", 8000);
-      const u = ru && ru.data ? ru.data.user : null;
-      if (u) { state.user = u; state.uid = u.id; return true; }
-    } catch (_) {}
-    return !!state.uid;
+    return false;
   }
 
   async function loadAuth() {
@@ -414,7 +404,11 @@
     }
     if (!state.uid) {
       wrap.innerHTML = `<div class="streak-strip">${boxes}</div><div class="ck-row"><div class="ck-meta">로그인하고 매일 체크인하면 응모권을 받을 수 있습니다.<br>체크인 1회마다 응모권 <b>+1장</b>입니다.</div><button class="btn-sub" id="ckLogin" type="button">로그인하고 체크인</button></div><div class="note">🎁 7일 연속 달성 시 이번 주 체크인 응모권이 <b style="color:var(--accent2)">2배</b> 적립됩니다.</div>`;
-      const b = $("ckLogin"); if (b) b.onclick = async () => { if (await ensureSession()) { await loadCheckins(); renderCheckin(); renderTickets(); doCheckin(); } else doLogin(); };
+      const b = $("ckLogin"); if (b) b.onclick = async () => {
+        b.disabled = true; const _o = b.textContent; b.textContent = "확인 중…";
+        if (await ensureSession()) { await loadCheckins(); renderCheckin(); renderTickets(); doCheckin(); }
+        else { b.disabled = false; b.textContent = _o; doLogin(); }
+      };
       return;
     }
     const done = state.checkedInToday;
