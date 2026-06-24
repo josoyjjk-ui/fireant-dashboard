@@ -51,6 +51,8 @@
   function flashProfile() {
     const card = $("profileCard");
     if (!card) return;
+    card.classList.add("expanded");
+    const head = $("profileHead"); if (head) head.setAttribute("aria-expanded", "true");
     try { card.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
     const prev = card.style.outline;
     card.style.outline = "2px solid var(--accent2)";
@@ -989,6 +991,14 @@
   }
 
   function init() {
+    if ($("profileHead")) {
+      const toggleProfile = () => {
+        const open = $("profileCard").classList.toggle("expanded");
+        $("profileHead").setAttribute("aria-expanded", open ? "true" : "false");
+      };
+      $("profileHead").onclick = toggleProfile;
+      $("profileHead").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleProfile(); } });
+    }
     if ($("subForm")) $("subForm").onsubmit = submitProof;
     if ($("subClose")) $("subClose").onclick = closeSubModal;
     if ($("subModal")) $("subModal").addEventListener("click", (e) => { if (e.target === $("subModal")) closeSubModal(); });
