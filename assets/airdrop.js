@@ -199,7 +199,9 @@
   }
 
   async function loadAuth() {
-    state.user = null; state.uid = null; state.profile = null; state.isAdmin = false; state.wallets = [];
+    // uid/user는 함부로 비우지 않는다. onAuthStateChange가 먼저 세션을 넣었을 수 있고,
+    // getSession이 경합으로 느리면 그걸 null로 덮어 "로그인됐는데 비로그인 화면"이 뜬다.
+    state.profile = null; state.isAdmin = false; state.wallets = [];
     // 세션 조회는 navigator.locks/토큰 리프레시 경합으로 느릴 수 있어 넉넉한 타임아웃 + 1회 재시도로 false 로그아웃을 방지합니다.
     let session = null;
     for (let attempt = 0; attempt < 2 && !session; attempt++) {
@@ -209,8 +211,9 @@
       } catch (_) { session = null; }
       if (!session && attempt === 0) await new Promise((res) => setTimeout(res, 400));
     }
-    if (!session) return;
-    state.user = session.user; state.uid = session.user.id;
+    if (session && session.user) { state.user = session.user; state.uid = session.user.id; }
+    // getSession이 실패해도 리스너가 넣어둔 state.uid가 있으면 그대로 진행(거짓 로그아웃 방지).
+    if (!state.uid) { state.user = null; return; }
     try {
       const { data: prof } = await withTimeout(
         state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,wallet_address,telegram_handle,twitter_handle,youtube_handle,nickname").eq("id", state.uid).single(),
@@ -1031,7 +1034,12 @@
     if ($("taskCancel")) $("taskCancel").onclick = cancelEdit;
     if ($("admToggle")) $("admToggle").onclick = () => $("adminCard").classList.toggle("admin-open");
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("subModal") && $("subModal").classList.contains("on")) closeSubModal(); });
-    state.sb.auth.onAuthStateChange(() => boot());
+    state.sb.auth.onAuthStateChange((event, session) => {
+      // 이벤트가 주는 세션을 직접 반영(getSession 경합에 의존하지 않음) → 로그인 즉시 인증 뷰로.
+      if (session && session.user) { state.user = session.user; state.uid = session.user.id; }
+      else if (event === "SIGNED_OUT") { state.user = null; state.uid = null; }
+      boot();
+    });
     tickCountdown();
     clearInterval(state._clock);
     state._clock = setInterval(tickCountdown, 1000);
