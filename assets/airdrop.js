@@ -96,6 +96,7 @@
     allSubs: [], _adminErr: null,
     checkins: [], streak: 0, checkedInToday: false,
     leaderboard: [], winners: [], _winnersErr: null, _winnerNicks: {},
+    events: [], _eventsErr: null, eventsLoaded: false,
     lotEntrants: [], _lotErr: null, lotLoaded: false, lotResult: null, lotDrawing: false,
     wallets: [],
     visitStats: null, _vsErr: null, _vsClock: null,
@@ -476,6 +477,97 @@
       return `<div class="${cls}"><div class="lb-rank">${rank}</div><div class="lb-name"><span class="h">${esc(l.name)}님</span></div><div class="lb-days"><b>${l.streak}</b>일 연속</div></div>`;
     }).join("");
   }
+
+  const EVENT_WD = ["일", "월", "화", "수", "목", "금", "토"];
+  function classifyEvent(ev, now) {
+    const start = ev.startDate ? new Date(ev.startDate).getTime() : null;
+    const end = ev.endDate ? new Date(ev.endDate).getTime() : null;
+    if (start && now < start) return "soon";
+    if (end && now > end) return "ended";
+    return "active";
+  }
+  function eventFmtMD(s, withTime) {
+    const d = new Date(s);
+    if (isNaN(d)) return s;
+    let r = `${d.getMonth() + 1}/${d.getDate()} (${EVENT_WD[d.getDay()]})`;
+    if (withTime) {
+      const hh = String(d.getHours()).padStart(2, "0"), mm = String(d.getMinutes()).padStart(2, "0");
+      if (!(hh === "00" && mm === "00")) r += ` ${hh}:${mm}`;
+    }
+    return r;
+  }
+  function eventRangeStr(ev) {
+    if (ev.startDate && ev.endDate) return `${eventFmtMD(ev.startDate, false)} ~ ${eventFmtMD(ev.endDate, true)}`;
+    if (ev.endDate) return `~ ${eventFmtMD(ev.endDate, true)}`;
+    if (ev.startDate) return `${eventFmtMD(ev.startDate, false)} ~`;
+    return "";
+  }
+  function eventCdStr(ev, evState) {
+    if (evState === "ended") return { txt: "종료됨", cls: "cd-end" };
+    const target = evState === "soon" ? ev.startDate : ev.endDate;
+    if (!target) return null;
+    const ms = new Date(target).getTime() - Date.now();
+    if (isNaN(ms)) return null;
+    if (ms <= 0) return evState === "soon" ? { txt: "곧 시작", cls: "" } : { txt: "종료됨", cls: "cd-end" };
+    const d = Math.floor(ms / 864e5), h = Math.floor((ms % 864e5) / 36e5);
+    const pre = evState === "soon" ? "시작까지" : "종료까지";
+    return { txt: `${pre} ${d}일 ${h}시간`, cls: "" };
+  }
+  function eventTagsHtml(ev) {
+    const tags = Array.isArray(ev.tags) && ev.tags.length ? ev.tags : (ev.type === "official" ? ["공식 이벤트"] : []);
+    return tags.map((t, i) => `<span class="tg ${i === 0 ? "tg-type" : "tg-proj"}">${esc(t)}</span>`).join("");
+  }
+  function eventCard(ev, evState) {
+    const steps = ev.steps || ev.description || "";
+    const cd = eventCdStr(ev, evState);
+    const tg = eventTagsHtml(ev);
+    const range = eventRangeStr(ev);
+    const link = ev.link ? `<a class="go" href="${safeURL(ev.link)}" target="_blank" rel="noopener">참여하기 →</a>` : "";
+    return `<div class="ev">
+    ${tg ? `<div class="tags">${tg}</div>` : ""}
+    <div class="ti">${esc(ev.title)}</div>
+    ${(range || ev.rewards) ? `<div class="metarow">${range ? `<span class="m-date">🗓️ ${esc(range)}</span>` : ""}${ev.rewards ? `<span class="m-reward">🎁 ${esc(ev.rewards)}</span>` : ""}</div>` : ""}
+    ${steps ? `<div class="step">• ${esc(steps)}</div>` : ""}
+    ${cd ? `<div class="cd ${cd.cls}">⏰ ${esc(cd.txt)}</div>` : ""}
+    ${link}</div>`;
+  }
+  async function loadAirdropEvents() {
+    const wrap = $("airdropEventsWrap");
+    if (!wrap || state.eventsLoaded) return;
+    state._eventsErr = null;
+    try {
+      const r = await fetch(`/events.json?t=${Date.now()}`, { cache: "no-store" });
+      if (!r.ok) throw new Error(`/events.json ${r.status}`);
+      const data = await r.json();
+      state.events = Array.isArray(data) ? data : [];
+    } catch (err) {
+      state.events = [];
+      state._eventsErr = errText(err);
+    } finally {
+      state.eventsLoaded = true;
+      renderAirdropEvents();
+    }
+  }
+  function renderAirdropEvents() {
+    const wrap = $("airdropEventsWrap");
+    if (!wrap) return;
+    if (state._eventsErr) { wrap.innerHTML = `<div class="empty">이벤트 로드 실패: ${esc(state._eventsErr)}</div>`; return; }
+    if (!state.eventsLoaded) { wrap.innerHTML = `<div class="loading">이벤트를 불러오는 중…</div>`; return; }
+    if (!state.events.length) { wrap.innerHTML = `<div class="empty">현재 표시할 이벤트가 없습니다.</div>`; return; }
+    const now = Date.now();
+    const groups = { active: [], soon: [], ended: [] };
+    state.events.forEach((e) => { groups[classifyEvent(e, now)].push(e); });
+    const sections = [
+      ["active", "🔥 진행중"],
+      ["soon", "🗓️ 예정"],
+      ["ended", "✅ 종료"],
+    ];
+    const html = sections.map(([key, label]) => {
+      if (!groups[key].length) return "";
+      return `<div class="event-group">${label}</div>${groups[key].map((e) => eventCard(e, key)).join("")}`;
+    }).join("");
+    wrap.innerHTML = html || `<div class="empty">현재 표시할 이벤트가 없습니다.</div>`;
+  }
   function renderWinners() {
     const title = $("winnersTitle");
     const wrap = $("winnersWrap");
@@ -668,6 +760,7 @@
     renderTickets();
     renderTasks();
     renderLeaderboard();
+    renderAirdropEvents();
     renderWinners();
     renderAdmin();
   }
@@ -1061,6 +1154,7 @@
   let tries = 0;
   renderAll();
   tickCountdown();
+  loadAirdropEvents();
   (function waitForSb() {
     if (window.__sb) { state.sb = window.__sb; init(); return; }
     if (tries++ > 40) {
