@@ -308,7 +308,8 @@ function renderEtfDetailSkeleton(){
     ['pct','시총대비'],
     ['traded','거래대금']
   ].map(x=>`<div class="card etf-stat"><div><div class="k">${x[1]}</div><div class="v mono" id="etf_${x[0]}">–</div></div><div class="d" id="etf_${x[0]}_d">불러오는 중…</div></div>`).join('')+
-    `<div class="card etf-main"><div class="lab"><span>발행사별 일일 유출입 스택 <small id="etfChartMeta">최근 거래일 기준 데이터를 불러오는 중…</small></span><span class="tag u" id="etfAsOf">SoSoValue</span></div><div class="chartbox"><canvas id="etfMainChart"></canvas></div><div class="note" id="etfMainNote"></div></div>`;
+    `<div class="card etf-main"><div class="lab"><span>발행사별 일일 유출입 스택 <small id="etfChartMeta">최근 거래일 기준 데이터를 불러오는 중…</small></span><span class="tag u" id="etfAsOf">SoSoValue</span></div><div class="chartbox"><canvas id="etfMainChart"></canvas></div><div class="note" id="etfMainNote"></div></div>`+
+    `<div class="card etf-main"><div class="lab"><span>출시 이후 전체 일일·누적 추이</span><span class="tag u">Farside</span></div><div class="chartbox"><canvas id="etfFullChart"></canvas></div><div class="note">2024 출시 이후 전체 일일 순유입(막대) + 누적 순유입(선)</div></div>`;
 }
 
 function renderEtfEmpty(msg){
@@ -378,6 +379,9 @@ async function fillEtfDetail(){
     if(!detail||!Array.isArray(detail.by_date)||!detail.by_date.length)throw new Error('empty detail');
     renderEtfSummary(detail);
     etfStackChart('etfMainChart',detail,fullRows);
+    if(Array.isArray(fullRows)&&fullRows.length){
+      comboChart('etfFullChart',fullRows.map(r=>r.date),fullRows.map(r=>r.value),fullRows.map(r=>r.cum),null,'일일 순유입');
+    }
     const note=$('etfMainNote');
     if(note)note.textContent='막대=발행사별 일일 유입/유출 · 선=누적 순유입 · 발행사 '+(detail.issuers||[]).length+'개 · 출처 SoSoValue';
     $('tables').innerHTML=renderIssuerBreakdown(detail)+renderEtfHistoryTable(detail,fullRows);
