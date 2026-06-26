@@ -12,6 +12,10 @@
 <link rel="canonical" href="https://antinfo.io/m">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
+@view-transition{navigation:auto;}
+::view-transition{background:#0a0c10!important;}
+::view-transition-group(root),::view-transition-image-pair(root){background:#0a0c10!important;}
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10!important;mix-blend-mode:normal!important;}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;}
 /* 한국식: 상승/양수/긍정=빨강, 하락/음수/부정=파랑 */
 :root{color-scheme:dark;--bg:#0e1116;--card:#171b22;--card2:#1f2530;--txt:#fff;--sub:#9aa3ad;--gray:#8b95a1;--line:rgba(255,255,255,.08);--blue:#3182f6;
@@ -341,4 +345,5 @@ start();
 })();
 </script>
 <script defer src="/assets/visit.js"></script>
+<script defer src="/assets/nav-transition.js"></script>
 </body></html>

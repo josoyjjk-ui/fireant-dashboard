@@ -103,7 +103,10 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .nav>.btn{display:none;}
   .nav{justify-content:flex-start;gap:10px;}
 }
-::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style></head>
+::view-transition{background:#0a0c10!important;}
+::view-transition-group(root),::view-transition-image-pair(root){background:#0a0c10!important;}
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10!important;mix-blend-mode:normal!important;}
+html{background:#0a0c10;}</style></head>
 <body>
 <div class="backdrop"></div>
 <aside class="drawer">
@@ -155,4 +158,5 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 <script src="assets/auth.js?v=3"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js"></script>
+<script defer src="/assets/nav-transition.js"></script>
 </body></html>

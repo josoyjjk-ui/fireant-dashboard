@@ -98,7 +98,10 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .nav{justify-content:flex-start;gap:10px;}
 }
 .brand2{display:flex;align-items:center;gap:12px;min-width:0;}.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}.lede2{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}@media(max-width:1100px){.lede2{display:none;}}
-::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style></head>
+::view-transition{background:#0a0c10!important;}
+::view-transition-group(root),::view-transition-image-pair(root){background:#0a0c10!important;}
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10!important;mix-blend-mode:normal!important;}
+html{background:#0a0c10;}</style></head>
 <body>
 <div class="backdrop"></div>
 <aside class="drawer">
@@ -141,4 +144,5 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 <script src="assets/auth.js?v=3"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js"></script>
+<script defer src="/assets/nav-transition.js"></script>
 </body></html>

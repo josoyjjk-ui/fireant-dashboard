@@ -26,6 +26,9 @@
     * { margin:0; padding:0; box-sizing:border-box; }
     button, input, select, textarea { font-family: inherit; }  /* 버튼은 기본 폰트 상속 안 함 → 로그인 버튼이 Arial로 떠 크기 달라지던 문제 해결 */
     @view-transition { navigation: auto; }  /* 표준 페이지와 동일한 크로스문서 뷰 트랜지션 — 전환 시 nav morph(흔들림 방지) */
+    ::view-transition { background:#0a0c10!important; }
+    ::view-transition-group(root), ::view-transition-image-pair(root) { background:#0a0c10!important; }
+    ::view-transition-old(root), ::view-transition-new(root) { background:#0a0c10!important; mix-blend-mode:normal!important; }
     html { background: var(--bg); scrollbar-gutter: stable; }  /* 다크 배경(흰 플래시 방지) + 스크롤바 공간 항상 예약 — 페이지 이동 시 흔들림/번쩍임 방지 */
     body {
       background: var(--bg); color: var(--text);
@@ -540,5 +543,6 @@
   <script src="/assets/vendor/supabase.js"></script>
   <script src="/assets/auth.js?v=3"></script>
   <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
+<script defer src="/assets/nav-transition.js"></script>
 </body>
 </html>

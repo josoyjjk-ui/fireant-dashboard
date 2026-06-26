@@ -175,7 +175,10 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
   .positioning-head{font-size:15px;}
   .prop-card{padding:11px 14px;}
 }
-::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style></head>
+::view-transition{background:#0a0c10!important;}
+::view-transition-group(root),::view-transition-image-pair(root){background:#0a0c10!important;}
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10!important;mix-blend-mode:normal!important;}
+html{background:#0a0c10;}</style></head>
 <body>
   <div id="staleBanner" class="banner"></div>
   <div class="nav"><div class="nav-inner">
@@ -325,4 +328,5 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
 })();
 </script>
 <script defer src="/assets/visit.js"></script>
+<script defer src="/assets/nav-transition.js"></script>
 </body></html>
