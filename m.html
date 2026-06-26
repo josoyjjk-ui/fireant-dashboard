@@ -1,5 +1,6 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0c10">
 <title>ANTINFO — 개미들이 필요한 모든 투자정보</title>
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -13,7 +14,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;}
 /* 한국식: 상승/양수/긍정=빨강, 하락/음수/부정=파랑 */
-:root{--bg:#0e1116;--card:#171b22;--card2:#1f2530;--txt:#fff;--sub:#9aa3ad;--gray:#8b95a1;--line:rgba(255,255,255,.08);--blue:#3182f6;
+:root{color-scheme:dark;--bg:#0e1116;--card:#171b22;--card2:#1f2530;--txt:#fff;--sub:#9aa3ad;--gray:#8b95a1;--line:rgba(255,255,255,.08);--blue:#3182f6;
   --redText:#ff5d6c;--blueText:#4d9bff;
   --posBg:linear-gradient(150deg,#6b1f2e,#3a1620);--posBd:#7a2a3a;
   --negBg:linear-gradient(150deg,#1f3a6b,#16203a);--negBd:#2a4a7a;}
@@ -159,7 +160,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .feedempty{color:#8b93a3;font-size:12px;padding:14px 2px;}
 .mapbar{display:flex;height:24px;border-radius:7px;overflow:hidden;margin:8px 0;background:#0e1116;}
 .mapseg{height:100%;}
-</style></head><body>
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style></head><body>
 <div class="backdrop"></div>
 <aside class="drawer">
   <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;vertical-align:middle;margin-right:7px;">개미투자정보</span><button class="x" type="button">✕</button></div>

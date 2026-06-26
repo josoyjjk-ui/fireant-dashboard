@@ -2,6 +2,7 @@
 <html lang="ko"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0c10">
 <meta name="google-site-verification" content="RWdPwBk_Krb6O2Ru9PwcG5opOj0ylemb32orZWJkMJ4" />
 <script>/* 모바일 기기 → 토스형 모바일 홈(/m). ?pc 로 데스크톱 강제 가능 */
 (function(){try{var ua=navigator.userAgent||"";var mob=/Android|iPhone|iPod|iPad|IEMobile|BlackBerry|Opera Mini|Mobile/i.test(ua);var w=Math.min(window.innerWidth||9999,(screen&&screen.width)||9999);if(mob&&w<=820&&location.search.indexOf("pc")<0){location.replace("/m");}}catch(e){}})();</script>
@@ -20,7 +21,7 @@
 <style>
 @view-transition{navigation:auto;}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
-:root{--bg:#0a0c10;--card:#13161c;--card2:#171b22;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff5d6c;--down:#4d9bff;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;}
+:root{color-scheme:dark;--bg:#0a0c10;--card:#13161c;--card2:#171b22;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff5d6c;--down:#4d9bff;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;}
 html{background:var(--bg);scrollbar-gutter:stable;}body{background:var(--bg);color:var(--txt);}
 .nav{border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;view-transition-name:site-nav;padding:15px 0;}
 .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:0 24px;max-width:1240px;margin:0 auto;width:100%;}
@@ -174,7 +175,7 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
   .positioning-head{font-size:15px;}
   .prop-card{padding:11px 14px;}
 }
-</style></head>
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style></head>
 <body>
   <div id="staleBanner" class="banner"></div>
   <div class="nav"><div class="nav-inner">

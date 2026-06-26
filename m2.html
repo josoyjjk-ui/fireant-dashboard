@@ -2,12 +2,13 @@
 <html lang="ko"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0c10">
 <title>개미 터미널 — 모바일 2안</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',-apple-system,sans-serif;-webkit-tap-highlight-color:transparent;}
 body{font-weight:800;}
-:root{--bg:#0a0c10;--card:#14181f;--line:#252c39;--txt:#f1f5fa;--label:#dbe3ed;--dim:#8a94a3;--up:#22d07a;--down:#ff4d5e;--accent:#ff7a1a;--live:#3aa0ff;}
+:root{color-scheme:dark;--bg:#0a0c10;--card:#14181f;--line:#252c39;--txt:#f1f5fa;--label:#dbe3ed;--dim:#8a94a3;--up:#22d07a;--down:#ff4d5e;--accent:#ff7a1a;--live:#3aa0ff;}
 body{background:var(--bg);color:var(--txt);padding-bottom:80px;}
 .up{color:var(--up);}.down{color:var(--down);}.mono{font-variant-numeric:tabular-nums;}
 .top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:rgba(10,12,16,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
@@ -70,7 +71,7 @@ body{background:var(--bg);color:var(--txt);padding-bottom:80px;}
 .skel{background:linear-gradient(90deg,#1a1f28,#222936,#1a1f28);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:8px;color:transparent;}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .foot{text-align:center;color:var(--dim);font-size:13px;padding:18px;line-height:1.6;}
-</style></head>
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style></head>
 <body>
   <div class="top"><div class="logo">🔥 개미<span> 터미널</span></div><div class="t" id="ageT">로딩…</div></div>
   <div class="wrap">

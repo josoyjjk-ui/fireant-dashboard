@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0c10">
 <title>ANTINFO — 시그니처 수급 상세</title>
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -14,7 +15,7 @@
 <style>
 @view-transition{navigation:auto;}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
-:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff3b30;--down:#3aa0ff;--accent:#ff3b30;--accent2:#ffb547;}
+:root{color-scheme:dark;--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff3b30;--down:#3aa0ff;--accent:#ff3b30;--accent2:#ffb547;}
 html{background:var(--bg);scrollbar-gutter:stable;}body{background:var(--bg);color:var(--txt);}html,body{overflow-x:hidden;}
 .nav{display:flex;align-items:center;justify-content:space-between;padding:15px max(24px, calc((100% - 1240px)/2 + 24px));border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;view-transition-name:site-nav;}
 .logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
@@ -93,7 +94,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   #authSlot a,#authSlot button{font-size:12px;padding:7px 10px;white-space:nowrap;}
   .ham{display:inline-flex;}.tabs{display:none !important;}.nav>.btn{display:none;}
 }
-</style></head>
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style></head>
 <body>
 <div class="backdrop"></div>
 <aside class="drawer">
