@@ -564,6 +564,10 @@
     ];
     const html = sections.map(([key, label]) => {
       if (!groups[key].length) return "";
+      if (key === "ended") {
+        // 종료된 이벤트는 기본 접힘 — 토글로 펼침
+        return `<details class="ended-fold"><summary class="event-group ended-summary">✅ 종료된 이벤트 ${groups[key].length}개 보기</summary>${groups[key].map((e) => eventCard(e, key)).join("")}</details>`;
+      }
       return `<div class="event-group">${label}</div>${groups[key].map((e) => eventCard(e, key)).join("")}`;
     }).join("");
     wrap.innerHTML = html || `<div class="empty">현재 표시할 이벤트가 없습니다.</div>`;
@@ -913,18 +917,18 @@
         if (proof_url) patch.proof_url = proof_url;
         const { error } = await withTimeout(state.sb.from("airdrop_submissions").update(patch).eq("id", state._editSubId), "인증 수정");
         if (error) throw error;
-        toast("인증을 수정했습니다. 재검토 대기 상태입니다.", "ok");
+        toast("인증을 수정했습니다.", "ok");
         closeSubModal();
       } else {
         const ins = await withTimeout(
-          state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_url, proof_note: note || null, status: "pending" }),
+          state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_url, proof_note: note || null, status: "approved" }),
           "인증 제출",
         );
         if (ins.error) {
           if (ins.error.code === "23505" || /duplicate|unique/i.test(ins.error.message || "")) toast("이미 이 미션에 인증을 제출했습니다.", "err");
           else throw ins.error;
         } else {
-          toast("인증 제출 완료했습니다. 검토 후 승인됩니다.", "ok");
+          toast("인증 제출 완료! 응모권이 즉시 지급되었습니다.", "ok");
           closeSubModal();
         }
       }
@@ -946,19 +950,18 @@
       return;
     }
     try {
-      // TODO: onchain/telegram 자동 검증 서버 작업이 붙으면 여기서 status 를 approved 로 전환합니다.
       const note = (t.verify_method || "capture") === "onchain"
         ? `wallets:${(state.wallets || []).map((w) => w.address).join(",")}`
         : "telegram:auto-verify-requested";
       const { error } = await withTimeout(
-        state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_note: note, status: "pending" }),
+        state.sb.from("airdrop_submissions").insert({ task_id: t.id, user_id: state.uid, proof_note: note, status: "approved" }),
         "자동 인증 요청",
       );
       if (error) {
         if (error.code === "23505" || /duplicate|unique/i.test(error.message || "")) toast("이미 이 미션에 인증을 제출했습니다.", "err");
         else throw error;
       } else {
-        toast("자동 인증 요청을 접수했습니다. 검증 대기 상태입니다.", "ok");
+        toast("인증 완료! 응모권이 즉시 지급되었습니다.", "ok");
       }
       await loadMySubs();
       renderTasks();

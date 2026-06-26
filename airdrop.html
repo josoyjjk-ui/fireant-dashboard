@@ -60,6 +60,11 @@ html,body{overflow-x:hidden;}
 .ev a.go{margin-top:4px;align-self:flex-start;display:inline-block;padding:10px 20px;border-radius:10px;background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;text-align:center;box-shadow:0 4px 14px rgba(255,86,40,.28);transition:filter .15s;}
 .ev a.go:hover{filter:brightness(1.08);}
 .event-group{grid-column:1/-1;color:var(--dim);font-size:12px;font-weight:900;margin:4px 0 -2px;}
+.ended-fold{display:contents;}
+.ended-fold>summary.ended-summary{display:block;grid-column:1/-1;cursor:pointer;list-style:none;padding:8px 11px;margin:6px 0 2px;border:1px dashed #2a3140;border-radius:9px;background:#11151c;color:var(--dim);font-weight:900;font-size:12px;user-select:none;}
+.ended-fold>summary.ended-summary::-webkit-details-marker{display:none;}
+.ended-fold>summary.ended-summary::before{content:"▸ ";}
+.ended-fold[open]>summary.ended-summary::before{content:"▾ ";}
 
 /* 주간 고정 리워드 + 기본 미션 통합 카드 */
 .reward-card{margin-top:14px;padding:14px 18px;border-radius:16px;background:linear-gradient(100deg,#2a1408 0%,#1a1206 45%,#13161c 100%);border:1px solid #3a2a14;position:relative;overflow:hidden;}
@@ -533,7 +538,7 @@ html{background:#0a0c10;}</style></head>
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=3"></script>
-<script src="assets/airdrop.js?v=19"></script>
+<script src="assets/airdrop.js?v=20"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js"></script>
 <script defer src="/assets/nav-transition.js"></script>

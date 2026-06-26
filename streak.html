@@ -135,7 +135,9 @@ html{background:#0a0c10;}</style></head>
 
   async function loadLeaderboard() {
     try {
-      const { data, error } = await sb.rpc("streak_leaderboard", { p_limit: 10 });
+      const rpc = sb.rpc("streak_leaderboard", { p_limit: 10 });
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("응답 시간 초과 (네트워크 확인 후 새로고침)")), 12000));
+      const { data, error } = await Promise.race([rpc, timeout]);
       if (error) throw error;
       render((data || []).map((r) => ({ uid: r.user_id, streak: r.streak, name: r.nickname || "익명" })));
     } catch (err) {
