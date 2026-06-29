@@ -218,7 +218,7 @@
     if (!state.uid) { state.user = null; return; }
     try {
       const { data: prof } = await withTimeout(
-        state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,wallet_address,telegram_handle,twitter_handle,youtube_handle,nickname").eq("id", state.uid).single(),
+        state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,wallet_address,telegram_handle,twitter_handle,youtube_handle,nickname,phone").eq("id", state.uid).single(),
         "프로필 로드",
       );
       state.profile = prof || null;
@@ -752,7 +752,7 @@
       ? wallets.map((w) => `<div class="ms-row" style="margin-bottom:6px;"><span class="ms-task" style="font-family:monospace;font-size:12.5px;">${esc(shortAddr(w.address))}</span><button class="mini-btn rej" type="button" data-wdel="${esc(w.id)}">삭제</button></div>`).join("")
       : `<div class="dim-sm" style="margin-bottom:6px;">등록된 지갑이 없습니다. 온체인 미션 인증에 필요합니다.</div>`;
     const addBtn = wallets.length < 5 ? `<button class="btn-ghost" id="pfAddWallet" type="button" style="margin-top:2px;">＋ 지갑 추가</button>` : `<div class="dim-sm" style="margin-top:2px;">최대 5개까지 등록할 수 있습니다.</div>`;
-    wrap.innerHTML = `<div class="af-row"><div class="field"><label>닉네임 <span class="dim-sm">· 필수 (리더보드·당첨 표시에 사용)</span></label><input type="text" id="pf_nick" maxlength="20" placeholder="표시될 닉네임" value="${esc(p.nickname || "")}"></div><div class="field"><label>텔레그램 아이디</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div></div><div class="af-row"><div class="field"><label>X(트위터) 아이디</label><input type="text" id="pf_tw" placeholder="@username" value="${esc(p.twitter_handle || "")}"></div><div class="field"><label>유튜브 닉네임</label><input type="text" id="pf_yt" placeholder="채널명 또는 @핸들" value="${esc(p.youtube_handle || "")}"></div></div><div class="field" style="margin-bottom:6px;"><label>에어드랍 지갑 주소 <span class="dim-sm">· ${wallets.length}/5 · 온체인 인증용</span></label><div id="walletList">${walletRows}</div>${addBtn}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"><button class="btn-sub" id="pfSave" type="button">정보 저장</button></div>`;
+    wrap.innerHTML = `<div class="af-row"><div class="field"><label>닉네임 <span class="dim-sm">· 필수 (리더보드·당첨 표시에 사용)</span></label><input type="text" id="pf_nick" maxlength="20" placeholder="표시될 닉네임" value="${esc(p.nickname || "")}"></div><div class="field"><label>텔레그램 아이디</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div></div><div class="af-row"><div class="field"><label>휴대전화번호 <span class="dim-sm">· 당첨 보상 지급용</span></label><input type="tel" id="pf_phone" inputmode="numeric" placeholder="010-0000-0000" value="${esc(p.phone || "")}"></div><div class="field"><label>X(트위터) 아이디</label><input type="text" id="pf_tw" placeholder="@username" value="${esc(p.twitter_handle || "")}"></div></div><div class="af-row"><div class="field"><label>유튜브 닉네임</label><input type="text" id="pf_yt" placeholder="채널명 또는 @핸들" value="${esc(p.youtube_handle || "")}"></div></div><div class="field" style="margin-bottom:6px;"><label>에어드랍 지갑 주소 <span class="dim-sm">· ${wallets.length}/5 · 온체인 인증용</span></label><div id="walletList">${walletRows}</div>${addBtn}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"><button class="btn-sub" id="pfSave" type="button">정보 저장</button></div>`;
     const s = $("pfSave"); if (s) s.onclick = saveProfile;
     const aw = $("pfAddWallet"); if (aw) aw.onclick = addWallet;
     wrap.querySelectorAll("[data-wdel]").forEach((b) => { b.onclick = () => removeWallet(b.getAttribute("data-wdel")); });
@@ -766,6 +766,7 @@
       telegram_handle: normHandle($("pf_tg") && $("pf_tg").value) || null,
       twitter_handle: normHandle($("pf_tw") && $("pf_tw").value) || null,
       youtube_handle: (($("pf_yt") && $("pf_yt").value) || "").trim() || null,
+      phone: (($("pf_phone") && $("pf_phone").value) || "").trim() || null,
     };
     const btn = $("pfSave"); if (btn) { btn.disabled = true; btn.textContent = "저장 중…"; }
     try {
