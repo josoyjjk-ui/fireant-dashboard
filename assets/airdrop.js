@@ -124,12 +124,13 @@
     d.setUTCDate(d.getUTCDate() + days);
     return fmtDate(d);
   }
-  function weekBounds() {
+  function weekBounds(offsetWeeks) {
+    const off = offsetWeeks || 0;
     const nowKst = kstDate();
     const day = nowKst.getUTCDay() || 7;
     const start = new Date(nowKst);
     start.setUTCHours(0, 0, 0, 0);
-    start.setUTCDate(start.getUTCDate() - day + 1);
+    start.setUTCDate(start.getUTCDate() - day + 1 + off * 7);
     const end = new Date(start);
     end.setUTCDate(end.getUTCDate() + 7);
     return {
@@ -347,7 +348,9 @@
   async function loadEntrants() {
     state.lotEntrants = []; state._lotErr = null; state.lotLoaded = false;
     if (!state.isAdmin) return;
-    const { startDate, endDate } = weekBounds();
+    // 추첨은 기본 '지난 완료주(월~일)' 기준. 월요일에 눌러도 직전 주를 집계한다.
+    if (state.lotWeekOffset === undefined) state.lotWeekOffset = -1;
+    const { startDate, endDate } = weekBounds(state.lotWeekOffset);
     try {
       const { data, error } = await withTimeout(
         state.sb.rpc("weekly_entrants", { p_start: startDate, p_end: endDate }),
@@ -623,22 +626,45 @@
     renderLottery();
     toast(`${picked.length}명을 추첨했습니다. 확인 후 기록하십시오.`, "ok");
   }
+  function lotWeekLabel() {
+    const off = state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset;
+    const wb = weekBounds(off);
+    const range = `${wb.startDate.slice(5)}~${dateAdd(wb.endDate, -1).slice(5)}`;
+    return { off, name: off === -1 ? "지난주" : off === 0 ? "이번주" : `${off}주`, range };
+  }
   function renderLottery() {
     const wrap = $("lotteryWrap");
     if (!wrap || !state.isAdmin) return;
+    const L = lotWeekLabel();
+    // 추첨 대상 주 토글 (기본 지난주). 항상 노출.
+    const toggle = `<div class="lot-wktoggle" style="display:flex;gap:6px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">`
+      + `<span class="dim-sm">추첨 대상:</span>`
+      + `<button class="mini-btn ${L.off === -1 ? "app" : ""}" type="button" data-lotwk="-1">지난주(추첨)</button>`
+      + `<button class="mini-btn ${L.off === 0 ? "app" : ""}" type="button" data-lotwk="0">이번주(현황)</button>`
+      + `<span class="dim-sm">· ${L.name} (${L.range})</span></div>`;
+    const bindToggle = () => wrap.querySelectorAll("[data-lotwk]").forEach((btn) => {
+      btn.onclick = () => {
+        const v = parseInt(btn.getAttribute("data-lotwk"), 10);
+        if (v === (state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset)) return;
+        state.lotWeekOffset = v; state.lotResult = null; state.lotLoaded = false;
+        renderLottery();
+        loadEntrants().then(renderLottery);
+      };
+    });
     const entrants = state.lotEntrants || [];
     const count = $("lotCount"); if (count) count.textContent = entrants.length ? `(${entrants.length}명)` : "";
-    if (state._lotErr) { wrap.innerHTML = `<div class="err">응모자 집계 실패: ${esc(state._lotErr)}</div>`; return; }
-    if (!state.lotLoaded) { wrap.innerHTML = `<div class="loading">응모자 집계 중…</div>`; return; }
-    if (!entrants.length) { wrap.innerHTML = `<div class="empty">이번 주 응모권을 보유한 참여자가 없습니다.</div>`; return; }
+    if (state._lotErr) { wrap.innerHTML = toggle + `<div class="err">응모자 집계 실패: ${esc(state._lotErr)}</div>`; bindToggle(); return; }
+    if (!state.lotLoaded) { wrap.innerHTML = toggle + `<div class="loading">응모자 집계 중…</div>`; bindToggle(); return; }
+    if (!entrants.length) { wrap.innerHTML = toggle + `<div class="empty">${L.name} 응모권을 보유한 참여자가 없습니다.</div>`; bindToggle(); return; }
     const total = entrants.reduce((a, e) => a + e.entries, 0);
     const prizeLine = "🥇 1등 3만원 · 🥈 2등 1만원 · 🥉 3등 5천원 · 🎁 참여상 스타벅스 10명";
-    let html = `<div class="draw-bar"><div class="txt">이번 주 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span></div><button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행</button></div>`;
+    let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span></div><button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행</button></div>`;
     if (state.lotResult && state.lotResult.length) {
       html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전 미저장</span></div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="redrawBtn">다시 뽑기</button></div></div>`;
     }
     html += `<div class="lot-divlbl">참여자 목록 (응모권순)</div><div>${entrants.slice(0, 30).map((e, i) => `<div class="lot-row"><span class="lot-title">${i + 1}. ${esc(entrantName(e))}</span><span class="dim-sm">${e.entries}장 <span style="opacity:.6">(체크인 ${e.checkins}·미션 ${e.approved})</span></span></div>`).join("")}${entrants.length > 30 ? `<div class="dim-sm" style="padding:8px 2px;">외 ${entrants.length - 30}명…</div>` : ""}</div>`;
     wrap.innerHTML = html;
+    bindToggle();
     const b = $("drawBtn"); if (b) b.onclick = drawWinners;
     const c = $("confirmBtn"); if (c) c.onclick = () => recordWinners(state.lotResult);
     const rd = $("redrawBtn"); if (rd) rd.onclick = drawWinners;
@@ -987,8 +1013,9 @@
 
   async function recordWinners(result) {
     if (!result || !result.length) { toast("먼저 추첨을 실행해 주십시오.", "err"); return; }
-    if (!confirm(`추첨 결과 ${result.length}명을 이번 주 당첨자로 확정 기록합니다. 진행하시겠습니까?`)) return;
-    const week = weekBounds().startDate;
+    const L = lotWeekLabel();
+    if (!confirm(`추첨 결과 ${result.length}명을 ${L.name}(${L.range}) 당첨자로 확정 기록합니다. 진행하시겠습니까?`)) return;
+    const week = weekBounds(state.lotWeekOffset).startDate;
     const rows = result.map((e) => ({
       week_start: week,
       user_id: e.user_id,
