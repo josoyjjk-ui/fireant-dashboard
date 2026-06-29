@@ -440,6 +440,16 @@
       boxes += `<div class="${cls}"><span class="d">${DAY_LABELS[i]}</span><span class="v">${done ? "✓" : (i === todayIdx ? "·" : i + 1)}</span></div>`;
     }
     if (!state.uid) {
+      // 세션은 살아있는데 첫 렌더 때 복원이 늦은 경우: 클릭 없이도 자동으로 복원 시도 → 로그인 UI로 전환.
+      if (!state._ckAuto) {
+        state._ckAuto = true;
+        for (const delay of [400, 1500, 3500]) {
+          setTimeout(async () => {
+            if (state.uid) return;
+            if (await ensureSession()) { await loadCheckins(); renderCheckin(); renderTickets(); renderLeaderboard(); }
+          }, delay);
+        }
+      }
       wrap.innerHTML = `<div class="streak-strip">${boxes}</div><div class="ck-row"><div class="ck-meta">로그인하고 매일 체크인하면 응모권을 받을 수 있습니다.<br>체크인 1회마다 응모권 <b>+1장</b>입니다.</div><button class="btn-sub" id="ckLogin" type="button">로그인하고 체크인</button></div><div class="note">🎁 7일 연속 달성 시 이번 주 체크인 응모권이 <b style="color:var(--accent2)">2배</b> 적립됩니다.</div>`;
       const b = $("ckLogin"); if (b) b.onclick = async () => {
         b.disabled = true; const _o = b.textContent; b.textContent = "확인 중…";
