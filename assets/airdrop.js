@@ -209,7 +209,7 @@
     // getSession()은 로컬스토리지 기반이라 빠르다. 로그인된 사용자는 여기서 즉시 복원된다.
     // refreshSession/getUser 같은 네트워크 체인은 핫패스에서 수십 초 먹통을 유발하므로 쓰지 않는다(짧은 3s 상한).
     try {
-      const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 3000);
+      const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 8000);
       const session = r && r.data ? r.data.session : null;
       if (session && session.user) { state.user = session.user; state.uid = session.user.id; return true; }
     } catch (_) {}
@@ -1148,10 +1148,11 @@
     const my = ++bootToken;
     renderAll();
     try {
-      await Promise.allSettled([loadTasks(), loadWinners(), loadLeaderboard()]);
+      // 세션 복원을 최우선으로 — 공개 데이터 쿼리가 navigator.locks를 먼저 점유해 getSession이 밀리는 경합 방지.
+      await loadAuth();
       if (my !== bootToken) return;
       renderAll();
-      await loadAuth();
+      await Promise.allSettled([loadTasks(), loadWinners(), loadLeaderboard()]);
       if (my !== bootToken) return;
       renderAll();
       await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs(), loadEntrants(), loadWallets(), loadVisitStats()]);
