@@ -236,7 +236,15 @@
       if (!session && attempt === 0) await new Promise((res) => setTimeout(res, 400));
     }
     if (session && session.user) { state.user = session.user; state.uid = session.user.id; }
-    // getSession이 실패해도 리스너가 넣어둔 state.uid가 있으면 그대로 진행(거짓 로그아웃 방지).
+    // getSession 실패(액세스 토큰만 만료) 시 refresh 토큰으로 세션 복원 — 네비바 로그인 상태인데 체크인서 재로그인 강요 방지.
+    if (!state.uid) {
+      try {
+        const rr = await withTimeout(state.sb.auth.refreshSession(), "세션 갱신", 6000);
+        const rs = rr && rr.data ? rr.data.session : null;
+        if (rs && rs.user) { state.user = rs.user; state.uid = rs.user.id; }
+      } catch (_) {}
+    }
+    // getSession/refresh 모두 실패해도 리스너가 넣어둔 state.uid가 있으면 그대로 진행(거짓 로그아웃 방지).
     if (!state.uid) { state.user = null; return; }
     try {
       const { data: prof } = await withTimeout(
@@ -777,7 +785,7 @@
     const RQ = '<span style="color:var(--accent);font-weight:900;">*</span>';
     wrap.innerHTML = `<div class="dim-sm" style="margin-bottom:12px;line-height:1.55;padding:10px 12px;background:rgba(255,181,71,.08);border:1px solid #3a2f14;border-radius:10px;">📌 지갑을 제외한 모든 항목을 입력해야 <b style="color:var(--accent2)">데일리 체크인</b>이 가능합니다. ${RQ} 표시는 필수입니다.</div>`
       + `<div class="af-row"><div class="field"><label>닉네임 ${RQ} <span class="dim-sm">· 리더보드·당첨 표시</span></label><input type="text" id="pf_nick" maxlength="20" placeholder="표시될 닉네임" value="${esc(p.nickname || "")}"></div><div class="field"><label>휴대전화번호 ${RQ} <span class="dim-sm">· 보상 지급용</span></label><input type="tel" id="pf_phone" inputmode="numeric" placeholder="010-0000-0000" value="${esc(p.phone || "")}"></div></div>`
-      + `<div class="af-row"><div class="field"><label>이메일 ${RQ} <span class="dim-sm">· 구글 로그인</span></label><input type="email" id="pf_email" value="${esc(p.email || "")}" readonly style="opacity:.65;cursor:not-allowed;"></div><div class="field"><label>텔레그램 아이디 ${RQ}</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div></div>`
+      + `<div class="af-row"><div class="field"><label>이메일 ${RQ} <span class="dim-sm">· 구글 로그인</span></label><input type="email" id="pf_email" value="${esc(p.email || "")}" readonly title="구글 로그인 이메일(수정 불가)"></div><div class="field"><label>텔레그램 아이디 ${RQ}</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div></div>`
       + `<div class="af-row"><div class="field"><label>X(트위터) 아이디 ${RQ}</label><input type="text" id="pf_tw" placeholder="@username" value="${esc(p.twitter_handle || "")}"></div><div class="field"><label>유튜브 닉네임 ${RQ}</label><input type="text" id="pf_yt" placeholder="채널명 또는 @핸들" value="${esc(p.youtube_handle || "")}"></div></div>`
       + `<div class="field" style="margin-top:4px;margin-bottom:6px;"><label>에어드랍 지갑 주소 <span class="dim-sm">· 선택 · ${wallets.length}/5 · 온체인 인증용</span></label><div id="walletList">${walletRows}</div>${addBtn}</div>`
       + `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"><button class="btn-sub" id="pfSave" type="button">정보 저장</button></div>`;
@@ -1161,8 +1169,14 @@
       if (!state.uid) {
         state._authRetry = setTimeout(async () => {
           try {
-            const r = await withTimeout(state.sb.auth.getSession(), "세션 재확인", 5000);
-            const s = r && r.data ? r.data.session : null;
+            let r = await withTimeout(state.sb.auth.getSession(), "세션 재확인", 5000);
+            let s = r && r.data ? r.data.session : null;
+            if (!s) {
+              try {
+                const rr = await withTimeout(state.sb.auth.refreshSession(), "세션 갱신", 6000);
+                s = rr && rr.data ? rr.data.session : null;
+              } catch (_) {}
+            }
             if (s && s.user && !state.uid) { state.user = s.user; state.uid = s.user.id; boot(); }
           } catch (_) {}
         }, 1800);
