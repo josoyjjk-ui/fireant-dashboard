@@ -133,22 +133,56 @@ html{background:#0a0c10;}</style></head>
     }).join("");
   }
 
+  const SUPABASE_URL = "https://jcuuvazpexyinjjruplc.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_mRNYq6Yq9UaYT3bydRhG1w_6wswYTd4";
+
+  function ensureClient() {
+    if (sb) return sb;
+    if (window.__sb) { sb = window.__sb; return sb; }
+    if (window.supabase && window.supabase.createClient) {
+      try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (_) {}
+    }
+    return sb;
+  }
+
+  function renderWithRetry(rows, err) {
+    const wrap = $("lbWrap");
+    if (!wrap) return;
+    if (err) {
+      wrap.innerHTML = `<div class="err">리더보드 로드 실패: ${esc(err)}<br><button id="retryBtn" class="btn" style="margin-top:8px;background:#fff;color:#1f2937;border:1px solid #232936;">🔄 다시 시도</button></div>`;
+      const rb = $("retryBtn"); if (rb) rb.onclick = () => { wrap.innerHTML = `<div class="loading">로드 중…</div>`; loadLeaderboard(); };
+      return;
+    }
+    if (!rows || !rows.length) {
+      wrap.innerHTML = `<div class="empty">아직 리더보드에 표시할 출석 데이터가 없습니다.<br><button id="retryBtn" class="btn" style="margin-top:8px;background:#fff;color:#1f2937;border:1px solid #232936;">🔄 다시 시도</button></div>`;
+      const rb = $("retryBtn"); if (rb) rb.onclick = () => { wrap.innerHTML = `<div class="loading">로드 중…</div>`; loadLeaderboard(); };
+      return;
+    }
+    wrap.innerHTML = rows.map((l, i) => {
+      const rank = i < 3 ? MEDALS[i] : i + 1;
+      const cls = "lb-row" + (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "");
+      return `<div class="${cls}"><div class="lb-rank">${rank}</div><div class="lb-name"><span class="h">${esc(l.name)}님</span></div><div class="lb-days"><b>${Number(l.streak) || 0}</b>일 연속</div></div>`;
+    }).join("");
+  }
+
   async function loadLeaderboard() {
+    const client = ensureClient();
+    if (!client) { renderWithRetry([], "인증 모듈을 불러오지 못했습니다."); return; }
     try {
-      const rpc = sb.rpc("streak_leaderboard", { p_limit: 10 });
+      const rpc = client.rpc("streak_leaderboard", { p_limit: 10 });
       const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("응답 시간 초과 (네트워크 확인 후 새로고침)")), 12000));
       const { data, error } = await Promise.race([rpc, timeout]);
       if (error) throw error;
-      render((data || []).map((r) => ({ uid: r.user_id, streak: r.streak, name: r.nickname || "익명" })));
+      renderWithRetry((data || []).map((r) => ({ uid: r.user_id, streak: r.streak, name: r.nickname || "익명" })));
     } catch (err) {
-      render([], (err && (err.message || err.code)) || "오류");
+      renderWithRetry([], (err && (err.message || err.code)) || "오류");
     }
   }
 
   let tries = 0;
   (function waitForSb() {
     if (window.__sb) { sb = window.__sb; loadLeaderboard(); return; }
-    if (tries++ > 40) { render([], "인증 모듈을 불러오지 못했습니다. 새로고침해 주십시오."); return; }
+    if (tries++ > 40) { ensureClient(); loadLeaderboard(); return; }
     setTimeout(waitForSb, 150);
   })();
 })();
