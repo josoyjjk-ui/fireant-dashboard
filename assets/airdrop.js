@@ -67,6 +67,22 @@
     }
     return true;
   }
+  // 체크인 게이트: 지갑을 제외한 모든 참여정보가 채워져야 한다.
+  function requireProfile() {
+    if (!state.uid) return false;
+    const p = state.profile || {};
+    const need = [
+      ["nickname", "닉네임"], ["phone", "휴대전화번호"], ["email", "이메일"],
+      ["telegram_handle", "텔레그램 아이디"], ["twitter_handle", "트위터(X) 아이디"], ["youtube_handle", "유튜브 닉네임"],
+    ];
+    const missing = need.filter(([k]) => !(p[k] && String(p[k]).trim())).map((x) => x[1]);
+    if (missing.length) {
+      toast("체크인하려면 참여정보를 모두 입력해 주세요 (지갑 제외): " + missing.join(", "), "err");
+      flashProfile();
+      return false;
+    }
+    return true;
+  }
 
   const STATUS = {
     pending: { txt: "대기중", cls: "st-pending" },
@@ -196,6 +212,12 @@
       const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 3000);
       const session = r && r.data ? r.data.session : null;
       if (session && session.user) { state.user = session.user; state.uid = session.user.id; return true; }
+    } catch (_) {}
+    // 폴백: 네비게이션바엔 로그인 표시인데 액세스 토큰만 만료된 경우 — refresh 토큰으로 세션 복원.
+    try {
+      const r2 = await withTimeout(state.sb.auth.refreshSession(), "세션 갱신", 6000);
+      const s2 = r2 && r2.data ? r2.data.session : null;
+      if (s2 && s2.user) { state.user = s2.user; state.uid = s2.user.id; return true; }
     } catch (_) {}
     return false;
   }
@@ -752,7 +774,13 @@
       ? wallets.map((w) => `<div class="ms-row" style="margin-bottom:6px;"><span class="ms-task" style="font-family:monospace;font-size:12.5px;">${esc(shortAddr(w.address))}</span><button class="mini-btn rej" type="button" data-wdel="${esc(w.id)}">삭제</button></div>`).join("")
       : `<div class="dim-sm" style="margin-bottom:6px;">등록된 지갑이 없습니다. 온체인 미션 인증에 필요합니다.</div>`;
     const addBtn = wallets.length < 5 ? `<button class="btn-ghost" id="pfAddWallet" type="button" style="margin-top:2px;">＋ 지갑 추가</button>` : `<div class="dim-sm" style="margin-top:2px;">최대 5개까지 등록할 수 있습니다.</div>`;
-    wrap.innerHTML = `<div class="af-row"><div class="field"><label>닉네임 <span class="dim-sm">· 필수 (리더보드·당첨 표시에 사용)</span></label><input type="text" id="pf_nick" maxlength="20" placeholder="표시될 닉네임" value="${esc(p.nickname || "")}"></div><div class="field"><label>텔레그램 아이디</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div></div><div class="af-row"><div class="field"><label>휴대전화번호 <span class="dim-sm">· 당첨 보상 지급용</span></label><input type="tel" id="pf_phone" inputmode="numeric" placeholder="010-0000-0000" value="${esc(p.phone || "")}"></div><div class="field"><label>X(트위터) 아이디</label><input type="text" id="pf_tw" placeholder="@username" value="${esc(p.twitter_handle || "")}"></div></div><div class="af-row"><div class="field"><label>유튜브 닉네임</label><input type="text" id="pf_yt" placeholder="채널명 또는 @핸들" value="${esc(p.youtube_handle || "")}"></div></div><div class="field" style="margin-bottom:6px;"><label>에어드랍 지갑 주소 <span class="dim-sm">· ${wallets.length}/5 · 온체인 인증용</span></label><div id="walletList">${walletRows}</div>${addBtn}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"><button class="btn-sub" id="pfSave" type="button">정보 저장</button></div>`;
+    const RQ = '<span style="color:var(--accent);font-weight:900;">*</span>';
+    wrap.innerHTML = `<div class="dim-sm" style="margin-bottom:12px;line-height:1.55;padding:10px 12px;background:rgba(255,181,71,.08);border:1px solid #3a2f14;border-radius:10px;">📌 지갑을 제외한 모든 항목을 입력해야 <b style="color:var(--accent2)">데일리 체크인</b>이 가능합니다. ${RQ} 표시는 필수입니다.</div>`
+      + `<div class="af-row"><div class="field"><label>닉네임 ${RQ} <span class="dim-sm">· 리더보드·당첨 표시</span></label><input type="text" id="pf_nick" maxlength="20" placeholder="표시될 닉네임" value="${esc(p.nickname || "")}"></div><div class="field"><label>휴대전화번호 ${RQ} <span class="dim-sm">· 보상 지급용</span></label><input type="tel" id="pf_phone" inputmode="numeric" placeholder="010-0000-0000" value="${esc(p.phone || "")}"></div></div>`
+      + `<div class="af-row"><div class="field"><label>이메일 ${RQ} <span class="dim-sm">· 구글 로그인</span></label><input type="email" id="pf_email" value="${esc(p.email || "")}" readonly style="opacity:.65;cursor:not-allowed;"></div><div class="field"><label>텔레그램 아이디 ${RQ}</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div></div>`
+      + `<div class="af-row"><div class="field"><label>X(트위터) 아이디 ${RQ}</label><input type="text" id="pf_tw" placeholder="@username" value="${esc(p.twitter_handle || "")}"></div><div class="field"><label>유튜브 닉네임 ${RQ}</label><input type="text" id="pf_yt" placeholder="채널명 또는 @핸들" value="${esc(p.youtube_handle || "")}"></div></div>`
+      + `<div class="field" style="margin-top:4px;margin-bottom:6px;"><label>에어드랍 지갑 주소 <span class="dim-sm">· 선택 · ${wallets.length}/5 · 온체인 인증용</span></label><div id="walletList">${walletRows}</div>${addBtn}</div>`
+      + `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"><button class="btn-sub" id="pfSave" type="button">정보 저장</button></div>`;
     const s = $("pfSave"); if (s) s.onclick = saveProfile;
     const aw = $("pfAddWallet"); if (aw) aw.onclick = addWallet;
     wrap.querySelectorAll("[data-wdel]").forEach((b) => { b.onclick = () => removeWallet(b.getAttribute("data-wdel")); });
@@ -812,7 +840,7 @@
 
   async function doCheckin() {
     if (!state.uid && !(await ensureSession())) { toast("로그인이 필요합니다.", "err"); doLogin(); return; }
-    if (!requireNickname()) return;
+    if (!requireProfile()) return;
     const btn = $("ckBtn");
     if (btn) { btn.disabled = true; btn.textContent = "처리 중…"; }
     try {
