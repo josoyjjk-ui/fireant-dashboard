@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-07-01T13:07:58+09:00",
-  "run_id": "1782878886",
-  "status": "ok",
+  "generated_at": "2026-07-01T13:10:24+09:00",
+  "run_id": "1782879031",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -63,7 +63,8 @@
       "change": 0.041999999999999815,
       "change_pct": 1.0135135135135092,
       "currency": "USD",
-      "market_time": 1782845995
+      "market_time": 1782845995,
+      "stale": true
     },
     {
       "name": "미 10년물",
@@ -94,12 +95,12 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 101.332,
+      "price": 101.329,
       "prev_close": 101.19,
-      "change": 0.1419999999999959,
-      "change_pct": 0.1403300721415119,
+      "change": 0.1389999999999958,
+      "change_pct": 0.1373653523075361,
       "currency": "USD",
-      "market_time": 1782878282
+      "market_time": 1782878422
     },
     {
       "name": "VIX 변동성",
@@ -118,49 +119,51 @@
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 3992.3,
+      "price": 3993.4,
       "prev_close": 4022.9,
-      "change": -30.59999999999991,
-      "change_pct": -0.760645305625293,
+      "change": -29.5,
+      "change_pct": -0.7333018469263467,
       "currency": "USD",
-      "market_time": 1782878278
+      "market_time": 1782878423
     },
     {
       "name": "WTI 유가",
       "symbol": "CL=F",
       "group": "원자재",
       "unit": "",
-      "price": 69.81,
+      "price": 69.82,
       "prev_close": 69.5,
-      "change": 0.3100000000000023,
-      "change_pct": 0.4460431654676291,
+      "change": 0.3199999999999932,
+      "change_pct": 0.4604316546762492,
       "currency": "USD",
-      "market_time": 1782878202
+      "market_time": 1782878416
     },
     {
       "name": "코스피",
       "symbol": "KOSPI",
       "group": "한국증시",
       "unit": "",
-      "price": 8381.58,
-      "prev_close": 8286.68,
-      "change": 94.9,
-      "change_pct": 1.12,
+      "price": 8390.15,
+      "prev_close": 8303.82,
+      "change": 86.33,
+      "change_pct": 1.02,
       "currency": "KRW",
-      "market_time": "2026-07-01T13:07:00+09:00"
+      "market_time": "2026-07-01T13:09:00+09:00"
     },
     {
       "name": "코스닥",
       "symbol": "KOSDAQ",
       "group": "한국증시",
       "unit": "",
-      "price": 931.3,
-      "prev_close": 916.18,
-      "change": 15.12,
-      "change_pct": 1.65,
+      "price": 932.22,
+      "prev_close": 916.1800000000001,
+      "change": 16.04,
+      "change_pct": 1.75,
       "currency": "KRW",
-      "market_time": "2026-07-01T13:07:00+09:00"
+      "market_time": "2026-07-01T13:10:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "미 5년물(^FVX): HTTP Error 400: Bad Request"
+  ]
 }
