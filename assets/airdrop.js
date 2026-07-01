@@ -1060,8 +1060,24 @@
   async function recordWinners(result) {
     if (!result || !result.length) { toast("먼저 추첨을 실행해 주십시오.", "err"); return; }
     const L = lotWeekLabel();
-    if (!confirm(`추첨 결과 ${result.length}명을 ${L.name}(${L.range}) 당첨자로 확정 기록합니다. 진행하시겠습니까?`)) return;
     const week = weekBounds(state.lotWeekOffset).startDate;
+    // ── 재추첨/중복확정 차단: 이 주차가 이미 확정되었는지 이중 확인 ──
+    try {
+      const [drawRes, winRes] = await Promise.all([
+        withTimeout(state.sb.from("raffle_draws").select("winner_count,committed_at").eq("week_start", week).maybeSingle(), "확정 잠금 확인"),
+        withTimeout(state.sb.from("raffle_winners").select("id").eq("week_start", week).limit(1), "기존 당첨자 확인"),
+      ]);
+      const locked = drawRes && drawRes.data;
+      const hasWinners = winRes && winRes.data && winRes.data.length;
+      if (locked || hasWinners) {
+        const when = locked && locked.committed_at ? new Date(locked.committed_at).toLocaleString("ko-KR") : "확정됨";
+        const cnt = locked && locked.winner_count != null ? locked.winner_count : (hasWinners ? "기존" : "");
+        toast(`이미 확정된 주차입니다 (${cnt}명, ${when}). 재추첨·재기록은 차단됩니다. 정정이 필요하면 관리자에게 문의하십시오.`, "err");
+        return;
+      }
+    } catch (e) { toast("확정 여부 확인 실패로 기록을 중단합니다: " + errText(e), "err"); return; }
+
+    if (!confirm(`추첨 결과 ${result.length}명을 ${L.name}(${L.range}) 당첨자로 확정 기록합니다.\n\n⚠️ 확정 후에는 이 주차의 재추첨·재기록이 영구 차단됩니다. 진행하시겠습니까?`)) return;
     const rows = result.map((e) => ({
       week_start: week,
       user_id: e.user_id,
@@ -1073,7 +1089,11 @@
     try {
       const { error } = await withTimeout(state.sb.from("raffle_winners").insert(rows), "당첨자 기록");
       if (error) throw error;
-      toast(`${rows.length}명의 당첨자를 확정 기록했습니다.`, "ok");
+      // 확정 잠금 마킹(감사) — 실패해도 winners는 이미 저장됨. uq 제약이 이중저장 방어.
+      try {
+        await withTimeout(state.sb.from("raffle_draws").insert({ week_start: week, drawn_by: state.uid, winner_count: rows.length }), "확정 잠금 기록");
+      } catch (_) {}
+      toast(`${rows.length}명의 당첨자를 확정 기록했습니다. 이 주차는 이제 잠깁니다.`, "ok");
       state.lotResult = null;
       await loadWinners();
       renderWinners(); renderLottery();
