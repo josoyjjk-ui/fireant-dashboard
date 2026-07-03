@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>목업 — K-거래소 거래량 TOP (거래소 로고 2개)</title>
+<style>
+  :root{--bg:#0e1117;--card:#161b22;--line:#232936;--accent:#ff3b30;--txt:#e6edf3;--sub:#8b949e;--up:#26a69a;--down:#ef5350;}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,'Apple SD Gothic Neo',sans-serif;}
+  .wrap{max-width:760px;margin:0 auto;padding:22px 16px;}
+  h1{font-size:18px;margin:0 0 4px} .note{color:var(--sub);font-size:12.5px;margin:0 0 18px;line-height:1.5}
+  .tag{display:inline-block;background:#20262f;color:#9fb0c3;font-size:11px;padding:2px 8px;border-radius:6px;margin-left:6px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .card h2{font-size:14px;margin:0;padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .row{display:grid;grid-template-columns:26px 1fr auto auto;gap:10px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line);}
+  .row:last-child{border-bottom:0}
+  .rk{color:var(--sub);font-weight:800;font-size:13px;text-align:center}
+  .coin{display:flex;align-items:center;gap:8px;min-width:0}
+  .coin img{width:22px;height:22px;border-radius:50%;background:#fff;object-fit:contain;flex-shrink:0}
+  .sym{font-weight:800;font-size:14px} .kn{color:var(--sub);font-size:11.5px;margin-left:2px}
+  .price{text-align:right;font-variant-numeric:tabular-nums}
+  .price .p{font-weight:700;font-size:13.5px} .price .c{font-size:11.5px}
+  .up{color:var(--up)} .down{color:var(--down)}
+  /* ★ 핵심: 거래소 로고 2개 */
+  .exs{display:flex;align-items:center;gap:-6px;justify-content:flex-end;min-width:56px}
+  .exs img{width:24px;height:24px;border-radius:7px;background:#fff;object-fit:contain;padding:2px;border:1.5px solid var(--card);box-shadow:0 0 0 1px var(--line);}
+  .exs img:nth-child(2){margin-left:-8px}      /* 살짝 겹쳐 스택 느낌 */
+  .exs .more{font-size:10px;color:var(--sub);margin-left:4px;align-self:center}
+  .legend{margin-top:16px;color:var(--sub);font-size:12px;line-height:1.7;background:#12161d;border:1px dashed var(--line);border-radius:10px;padding:12px 14px}
+  .legend b{color:var(--txt)}
+</style></head>
+<body><div class="wrap">
+  <h1>📊 실시간 K-거래소 거래량 TOP <span class="tag">목업 · 거래소 로고 2개</span></h1>
+  <p class="note">여러 한국거래소에 상장된 코인은 <b>거래량이 많은 상위 2개 거래소 로고</b>를 함께 표시합니다.<br>(아래는 디자인 시안 — 로고 2개 배치·크기·겹침 스타일 확인용. 데이터는 예시입니다.)</p>
+
+  <div class="card">
+    <h2>🔥 거래량 순위 (24h)</h2>
+    <div id="list"></div>
+  </div>
+
+  <div class="legend">
+    <b>구현 메모</b><br>
+    · 현재 데이터(<code>kr_exchange.json → volume_top10</code>)엔 코인별 <b>거래소별 거래량</b>이 없어 지금은 1위 거래소만 나옵니다.<br>
+    · 상위 2개 로고를 실제로 뿌리려면 파이프라인에 <code>coin → {업비트:vol, 빗썸:vol, ...}</code> 형태를 추가하고, 그중 거래량 상위 2개를 골라 표시하면 됩니다.<br>
+    · 5개 중 3곳 이상 상장 시 <b>"+N"</b> 표기로 나머지 개수 안내(위 목업 참고).
+  </div>
+</div>
+<script>
+const LOGO="/kr-exchange/logos/";
+const EX={upbit:"업비트",bithumb:"빗썸",coinone:"코인원",korbit:"코빗",gopax:"고팍스"};
+// 예시 데이터 (실제 top10 심볼 + 상위 2개 거래소는 데모)
+const rows=[
+ {rk:1,sym:"USDT",kn:"테더",p:"1,507",c:"-0.13",ex:["upbit","bithumb"],more:1},
+ {rk:2,sym:"BTC",kn:"비트코인",p:"81,320,000",c:"+1.24",ex:["upbit","bithumb"],more:3},
+ {rk:3,sym:"XRP",kn:"리플",p:"3,180",c:"+2.05",ex:["upbit","bithumb"],more:2},
+ {rk:4,sym:"ETH",kn:"이더리움",p:"4,120,000",c:"-0.42",ex:["upbit","coinone"],more:3},
+ {rk:5,sym:"SOL",kn:"솔라나",p:"210,500",c:"+3.11",ex:["bithumb","upbit"],more:1},
+ {rk:6,sym:"DOGE",kn:"도지코인",p:"285",c:"-1.02",ex:["upbit","bithumb"],more:0},
+ {rk:7,sym:"ADA",kn:"에이다",p:"920",c:"+0.88",ex:["upbit","korbit"],more:1},
+ {rk:8,sym:"TRX",kn:"트론",p:"420",c:"+0.15",ex:["bithumb","gopax"],more:0},
+];
+document.getElementById("list").innerHTML=rows.map(r=>{
+ const up=r.c.startsWith("+"), cls=up?"up":"down";
+ const logos=r.ex.map(e=>`<img src="${LOGO}${e}.jpg" title="${EX[e]}" alt="${EX[e]}">`).join("");
+ const more=r.more>0?`<span class="more">+${r.more}</span>`:"";
+ return `<div class="row">
+   <div class="rk">${r.rk}</div>
+   <div class="coin"><img src="https://ui-avatars.com/api/?name=${r.sym}&background=1f2937&color=fff&size=44&bold=true" alt=""><span><span class="sym">${r.sym}</span><span class="kn">${r.kn}</span></span></div>
+   <div class="price"><div class="p">₩${r.p}</div><div class="c ${cls}">${r.c}%</div></div>
+   <div class="exs">${logos}${more}</div>
+ </div>`;
+}).join("");
+</script>
+</body></html>
