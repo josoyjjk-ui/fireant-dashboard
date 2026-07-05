@@ -165,26 +165,50 @@ html{background:#0a0c10;}</style></head>
     }).join("");
   }
 
-  async function loadLeaderboard() {
-    const client = ensureClient();
-    if (!client) { renderWithRetry([], "인증 모듈을 불러오지 못했습니다."); return; }
+  // 리더보드는 공개 읽기 전용 → supabase JS 번들에 의존하지 않고 REST RPC 직접 호출(견고).
+  // 번들 로드 실패/레이스와 무관하게 항상 순위를 불러온다. 실패 시 JS 클라이언트로 2차 폴백.
+  async function loadViaRest() {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 12000);
     try {
-      const rpc = client.rpc("streak_leaderboard", { p_limit: 10 });
-      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("응답 시간 초과 (네트워크 확인 후 새로고침)")), 12000));
-      const { data, error } = await Promise.race([rpc, timeout]);
-      if (error) throw error;
-      renderWithRetry((data || []).map((r) => ({ uid: r.user_id, streak: r.streak, name: r.nickname || "익명" })));
-    } catch (err) {
-      renderWithRetry([], (err && (err.message || err.code)) || "오류");
+      const res = await fetch(SUPABASE_URL + "/rest/v1/rpc/streak_leaderboard", {
+        method: "POST",
+        headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY, "content-type": "application/json" },
+        body: JSON.stringify({ p_limit: 10 }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(to);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return await res.json();
+    } finally {
+      clearTimeout(to);
     }
   }
 
-  let tries = 0;
-  (function waitForSb() {
-    if (window.__sb) { sb = window.__sb; loadLeaderboard(); return; }
-    if (tries++ > 40) { ensureClient(); loadLeaderboard(); return; }
-    setTimeout(waitForSb, 150);
-  })();
+  async function loadViaClient() {
+    const client = ensureClient() || window.__sb;
+    if (!client) throw new Error("no-client");
+    const rpc = client.rpc("streak_leaderboard", { p_limit: 10 });
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 12000));
+    const { data, error } = await Promise.race([rpc, timeout]);
+    if (error) throw error;
+    return data;
+  }
+
+  async function loadLeaderboard() {
+    try {
+      let data;
+      try { data = await loadViaRest(); }
+      catch (e1) { data = await loadViaClient(); }  // REST 실패 시 JS 클라이언트로 재시도
+      renderWithRetry((data || []).map((r) => ({ uid: r.user_id, streak: r.streak, name: r.nickname || "익명" })));
+    } catch (err) {
+      renderWithRetry([], (err && (err.message || err.code)) || "네트워크 오류");
+    }
+  }
+
+  // 번들 대기 없이 즉시 로드(REST). DOM 준비 후 1회 실행.
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", loadLeaderboard);
+  else loadLeaderboard();
 })();
 </script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
