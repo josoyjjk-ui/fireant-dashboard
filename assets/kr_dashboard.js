@@ -34,26 +34,6 @@
     }).join('');
     return '<span class="kr-exch-logos">' + html + '</span>';
   }
-  // per_exchange 데이터를 심볼 기준으로 교차 집계 → { SYMBOL: [상위2 거래소key] }
-  function buildTop2Map(data) {
-    var per = data && data.per_exchange;
-    var map = {};
-    if (!per) return map;
-    var acc = {};
-    Object.keys(per).forEach(function (k) {
-      var list = (per[k] && per[k].volume_top10) || [];
-      list.forEach(function (it) {
-        if (!it || !it.symbol) return;
-        var s = it.symbol;
-        (acc[s] || (acc[s] = [])).push({ k: k, v: toNum(it.vol_krw) || 0 });
-      });
-    });
-    Object.keys(acc).forEach(function (s) {
-      acc[s].sort(function (a, b) { return b.v - a.v; });
-      map[s] = acc[s].map(function (x) { return x.k; });
-    });
-    return map;
-  }
 
   function coinLogoHTML(url) {
     if (!url) return '';
@@ -180,13 +160,13 @@
   }
 
   /* ---------- 3. TOP 10 표 ---------- */
-  function tableHTML(rows, top2Map) {
+  function tableHTML(rows) {
     if (!rows || !rows.length) return statusHTML('데이터 없음');
     var body = '';
     rows.forEach(function (r) {
       if (!r) return;
       var ch = toNum(r.change_pct);
-      var keys = top2Map && r.symbol ? top2Map[r.symbol] : null;
+      var keys = r.top_exchanges || null;  // 파이프라인이 코인별 상위 거래소 부여
       body += ''
         + '<tr>'
         + '<td class="rank">' + esc(r.rank != null ? r.rank : '') + '</td>'
@@ -210,9 +190,8 @@
   function renderTops(data) {
     var v = document.getElementById('kr-vol-top');
     var g = document.getElementById('kr-gain-top');
-    var top2 = buildTop2Map(data);
-    if (v) v.innerHTML = tableHTML(data.volume_top10, top2);
-    if (g) g.innerHTML = tableHTML(data.gainers_top10, top2);
+    if (v) v.innerHTML = tableHTML(data.volume_top10);
+    if (g) g.innerHTML = tableHTML(data.gainers_top10);
   }
 
   /* ---------- 4. 차익거래 기회 (거래소간 가격 이격) ---------- */
