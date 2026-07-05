@@ -40,6 +40,19 @@
     return '<img class="kr-coin-logo" src="' + esc(url) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
   }
 
+  // 심볼 기반 생성 아바타(로고 없거나 URL 깨질 때 대체 — 절대 빈칸 없음)
+  function coinAvatar(sym) {
+    var s = encodeURIComponent((sym || '?').slice(0, 4));
+    return 'https://ui-avatars.com/api/?name=' + s + '&background=1f2937&color=fff&size=44&bold=true&length=4';
+  }
+  // 코인 아이콘: CoinGecko 로고 우선, 없거나 깨지면 심볼 아바타로 폴백
+  function coinIconHTML(url, sym, cls) {
+    var av = coinAvatar(sym);
+    var src = url ? esc(url) : av;
+    return '<img class="' + (cls || 'kr-coin-logo') + '" src="' + src + '" alt="' + esc(sym || '') + '" loading="lazy"'
+      + ' onerror="this.onerror=null;this.src=\'' + av + '\'">';
+  }
+
   /* ---------- 숫자 포맷 (한국식: 조/억/만) ---------- */
   function toNum(v) {
     if (v === null || v === undefined || v === '') return null;
@@ -215,7 +228,7 @@
       var gap = toNum(r.gap_pct);
       var kim = toNum(r.kimchi_pct);
       var hot = (gap !== null && gap >= 2) ? ' class="hot"' : '';
-      var logo = r.logo ? '<img src="' + esc(r.logo) + '" alt="" width="18" height="18" loading="lazy" style="border-radius:50%;vertical-align:middle;margin-right:6px">' : '';
+      var logo = coinIconHTML(r.logo, r.symbol, 'kr-arb-coin');
       body += ''
         + '<tr' + hot + '>'
         +   '<td class="l sym">' + logo + esc(r.symbol) + '</td>'
