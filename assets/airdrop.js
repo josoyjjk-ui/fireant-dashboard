@@ -135,6 +135,11 @@
   }
   function fmtDate(d) { return d.toISOString().slice(0, 10); }
   function kstToday() { return fmtDate(kstDate()); }
+  // ISO 타임스탬프 → KST 기준 'YYYY-MM-DD' (kstToday와 동일 방식: +9h 시프트)
+  function kstDateOf(iso) {
+    try { return fmtDate(new Date(new Date(iso).getTime() + 9 * 3600 * 1000)); } catch (_) { return ""; }
+  }
+  function submittedToday(sub) { return !!(sub && sub.created_at && kstDateOf(sub.created_at) === kstToday()); }
   function dateAdd(dateStr, days) {
     const d = new Date(`${dateStr}T00:00:00Z`);
     d.setUTCDate(d.getUTCDate() + days);
@@ -499,16 +504,18 @@
     const method = t.verify_method || "capture";
     const vm = vmInfo(method);
     const sub = state.mySubs[t.id];
-    const statusBadge = sub ? `<span class="badge ${st(sub.status).cls}">${st(sub.status).txt}</span>` : "";
-    const editBtn = (sub && sub.status === "pending")
+    const doneToday = submittedToday(sub); // 1일 1회: 오늘 제출했으면 오늘은 잠금, 내일 다시 가능
+    const statusBadge = doneToday ? `<span class="badge ${st(sub.status).cls}">오늘 ${st(sub.status).txt}</span>` : "";
+    const editBtn = (doneToday && sub.status === "pending")
       ? `<button class="btn-ghost" type="button" data-editsub="${esc(t.id)}">수정</button>`
       : "";
-    const action = sub ? "" : method === "onchain"
+    const action = doneToday ? "" : method === "onchain"
       ? `<button class="btn-wallet" type="button" data-auto="${esc(t.id)}">지갑 주소 등록 · 인증요청</button>`
       : method === "telegram"
         ? `<button class="btn-sub" type="button" data-auto="${esc(t.id)}">자동 인증요청</button>`
         : `<button class="btn-sub" type="button" data-sub="${esc(t.id)}">✅ 인증하기</button>`;
-    return `<div class="task"><div class="task-head"><div><div class="task-title">${esc(t.title)}</div>${t.reward_note ? `<span class="reward">${esc(t.reward_note)}</span>` : `<span class="reward">응모권 +5장</span>`}</div><span class="vm ${vm.cls}">${vm.label}</span></div>${t.description ? `<div class="task-desc">${mdLinks(t.description)}</div>` : ""}${t.steps ? `<div class="task-steps">${mdLinks(t.steps, true)}</div>` : ""}<div class="task-foot">${t.link ? `<a class="btn-go ghost" href="${safeURL(t.link)}" target="_blank" rel="noopener">작업하러 가기 ↗</a>` : ""}${action}${editBtn}${statusBadge}</div></div>`;
+    const rewardTxt = t.reward_note ? esc(t.reward_note) : "응모권 +5장";
+    return `<div class="task"><div class="task-head"><div><div class="task-title">${esc(t.title)}</div><span class="reward">${rewardTxt} · <b>1일 1회</b></span></div><span class="vm ${vm.cls}">${vm.label}</span></div>${t.description ? `<div class="task-desc">${mdLinks(t.description)}</div>` : ""}${t.steps ? `<div class="task-steps">${mdLinks(t.steps, true)}</div>` : ""}<div class="task-foot">${t.link ? `<a class="btn-go ghost" href="${safeURL(t.link)}" target="_blank" rel="noopener">작업하러 가기 ↗</a>` : ""}${action}${editBtn}${statusBadge}${doneToday ? `<span class="dim-sm">· 내일 다시 인증할 수 있습니다</span>` : ""}</div></div>`;
   }
   function renderTasks() {
     const wrap = $("tasksWrap");
@@ -998,7 +1005,7 @@
       const sb = $("subSubmit"); if (sb) sb.textContent = "수정 저장";
     } else {
       $("subModalTitle").textContent = t.title;
-      if (sub) sub.textContent = "완료 화면 스크린샷을 올려 주십시오. 운영진이 확인 후 승인합니다. 작업별 1회만 인증할 수 있습니다.";
+      if (sub) sub.textContent = "완료 화면 스크린샷을 올려 주십시오. 운영진이 확인 후 승인합니다. 미션당 하루 1회 인증할 수 있습니다.";
       $("subFile").value = ""; $("subNote").value = ""; $("subPreview").innerHTML = "";
       $("subFile").required = true;
       const sb = $("subSubmit"); if (sb) sb.textContent = "인증 제출하기";
@@ -1053,7 +1060,7 @@
           "인증 제출",
         );
         if (ins.error) {
-          if (ins.error.code === "23505" || /duplicate|unique/i.test(ins.error.message || "")) toast("이미 이 미션에 인증을 제출했습니다.", "err");
+          if (ins.error.code === "23505" || /duplicate|unique/i.test(ins.error.message || "")) toast("오늘은 이미 이 미션을 인증했습니다. 내일 다시 인증할 수 있습니다.", "err");
           else throw ins.error;
         } else {
           toast("인증 제출 완료! 응모권이 즉시 지급되었습니다.", "ok");
@@ -1086,7 +1093,7 @@
         "자동 인증 요청",
       );
       if (error) {
-        if (error.code === "23505" || /duplicate|unique/i.test(error.message || "")) toast("이미 이 미션에 인증을 제출했습니다.", "err");
+        if (error.code === "23505" || /duplicate|unique/i.test(error.message || "")) toast("오늘은 이미 이 미션을 인증했습니다. 내일 다시 인증할 수 있습니다.", "err");
         else throw error;
       } else {
         toast("인증 완료! 응모권이 즉시 지급되었습니다.", "ok");
