@@ -110,24 +110,48 @@
       if (slot && slot.dataset.mobile !== "1") { try { localStorage.setItem("antinfo_navauth", slot.innerHTML); } catch (e) {} }
     }
 
-    async function refresh() {
+    // 세션(단일 진실원천) 기준 렌더. session === undefined 일 때만 getSession으로 조회.
+    // getSession은 5초 타임아웃으로 감싸 어떤 경우에도 슬롯 렌더(스테일 navauth 캐시 교정)가 보장되게 한다.
+    async function refresh(session) {
       const slot = ensureSlot();
       if (!slot) return;
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) { renderLoggedOut(slot); return; }
+      try {
+        if (session === undefined) {
+          const r = await Promise.race([
+            sb.auth.getSession(),
+            new Promise((res) => setTimeout(() => res(null), 5000)),
+          ]);
+          session = r && r.data ? r.data.session : null;
+        }
+      } catch (_) { session = null; }
+      if (!session) {
+        window.__user = null; window.__profile = null; window.__session = null;
+        renderLoggedOut(slot); // cacheSlot이 스테일 '로그인됨' 캐시를 로그아웃 상태로 덮어씀
+        return;
+      }
       const user = session.user;
+      window.__user = user; window.__session = session;
+      renderLoggedIn(slot, window.__profile || null, user); // 프로필 조회 전 즉시 실세션 기준 렌더
       let profile = null;
       try {
         const { data } = await sb.from("profiles").select("full_name,avatar_url,tier").eq("id", user.id).single();
         profile = data;
       } catch (e) { /* 프로필 아직 없을 수 있음 */ }
-      renderLoggedIn(slot, profile, user);
-      window.__user = user; window.__profile = profile;
+      window.__profile = profile;
+      if (profile) renderLoggedIn(slot, profile, user);
     }
 
-    sb.auth.onAuthStateChange(() => refresh());
-    if (document.readyState !== "loading") refresh();
-    else document.addEventListener("DOMContentLoaded", refresh);
+    // ⚠️ onAuthStateChange 콜백 안에서 supabase API(getSession·from 쿼리)를 직접 await 하면
+    // navigator.locks 데드락 → 이 탭/다른 탭의 모든 getSession이 먹통(네비=로그인, 페이지=비로그인 어긋남의 근원).
+    // 이벤트가 준 session을 그대로 쓰고, 후속 작업은 setTimeout으로 콜백 밖(락 해제 후)에서 실행한다.
+    sb.auth.onAuthStateChange((event, session) => {
+      window.__session = session || null;
+      window.__user = session ? session.user : null;
+      setTimeout(() => { refresh(session || null); }, 0);
+    });
+    const kick = () => refresh(undefined);
+    if (document.readyState !== "loading") kick();
+    else document.addEventListener("DOMContentLoaded", kick);
   }
 
   // supabase-js 로드 대기(최대 ~6초) — 느린 로드/지연에도 버튼이 사라지지 않게 폴링

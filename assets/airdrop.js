@@ -216,41 +216,53 @@
     try {
       const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 8000);
       const session = r && r.data ? r.data.session : null;
-      if (session && session.user) { state.user = session.user; state.uid = session.user.id; return true; }
+      if (session && session.user) { state.user = session.user; state.uid = session.user.id; }
     } catch (_) {}
     // 폴백: 네비게이션바엔 로그인 표시인데 액세스 토큰만 만료된 경우 — refresh 토큰으로 세션 복원.
-    try {
-      const r2 = await withTimeout(state.sb.auth.refreshSession(), "세션 갱신", 6000);
-      const s2 = r2 && r2.data ? r2.data.session : null;
-      if (s2 && s2.user) { state.user = s2.user; state.uid = s2.user.id; return true; }
-    } catch (_) {}
-    return false;
+    if (!state.uid) {
+      try {
+        const r2 = await withTimeout(state.sb.auth.refreshSession(), "세션 갱신", 6000);
+        const s2 = r2 && r2.data ? r2.data.session : null;
+        if (s2 && s2.user) { state.user = s2.user; state.uid = s2.user.id; }
+      } catch (_) {}
+    }
+    if (!state.uid) return false;
+    // 늦게 복원된 세션: 프로필이 비어 있으면 채워서 requireProfile/requireNickname 오탐 방지.
+    if (!state.profile) { try { await loadProfile(); } catch (_) {} }
+    return true;
   }
 
   async function loadAuth() {
     // uid/user는 함부로 비우지 않는다. onAuthStateChange가 먼저 세션을 넣었을 수 있고,
     // getSession이 경합으로 느리면 그걸 null로 덮어 "로그인됐는데 비로그인 화면"이 뜬다.
     state.profile = null; state.isAdmin = false; state.wallets = [];
-    // 세션 조회는 navigator.locks/토큰 리프레시 경합으로 느릴 수 있어 넉넉한 타임아웃 + 1회 재시도로 false 로그아웃을 방지합니다.
-    let session = null;
-    for (let attempt = 0; attempt < 2 && !session; attempt++) {
-      try {
-        const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 10000);
-        session = r && r.data ? r.data.session : null;
-      } catch (_) { session = null; }
-      if (!session && attempt === 0) await new Promise((res) => setTimeout(res, 400));
-    }
-    if (session && session.user) { state.user = session.user; state.uid = session.user.id; }
-    // getSession 실패(액세스 토큰만 만료) 시 refresh 토큰으로 세션 복원 — 네비바 로그인 상태인데 체크인서 재로그인 강요 방지.
+    // 리스너(onAuthStateChange)가 이미 세션을 넣었으면 getSession 재호출 없이 프로필만 로드.
     if (!state.uid) {
-      try {
-        const rr = await withTimeout(state.sb.auth.refreshSession(), "세션 갱신", 6000);
-        const rs = rr && rr.data ? rr.data.session : null;
-        if (rs && rs.user) { state.user = rs.user; state.uid = rs.user.id; }
-      } catch (_) {}
+      // 세션 조회는 navigator.locks/토큰 리프레시 경합으로 느릴 수 있어 넉넉한 타임아웃 + 1회 재시도로 false 로그아웃을 방지합니다.
+      let session = null;
+      for (let attempt = 0; attempt < 2 && !session; attempt++) {
+        try {
+          const r = await withTimeout(state.sb.auth.getSession(), "세션 확인", 10000);
+          session = r && r.data ? r.data.session : null;
+        } catch (_) { session = null; }
+        if (!session && attempt === 0) await new Promise((res) => setTimeout(res, 400));
+      }
+      if (session && session.user) { state.user = session.user; state.uid = session.user.id; }
+      // getSession 실패(액세스 토큰만 만료) 시 refresh 토큰으로 세션 복원 — 네비바 로그인 상태인데 체크인서 재로그인 강요 방지.
+      if (!state.uid) {
+        try {
+          const rr = await withTimeout(state.sb.auth.refreshSession(), "세션 갱신", 6000);
+          const rs = rr && rr.data ? rr.data.session : null;
+          if (rs && rs.user) { state.user = rs.user; state.uid = rs.user.id; }
+        } catch (_) {}
+      }
     }
     // getSession/refresh 모두 실패해도 리스너가 넣어둔 state.uid가 있으면 그대로 진행(거짓 로그아웃 방지).
     if (!state.uid) { state.user = null; return; }
+    await loadProfile();
+  }
+  // 프로필/관리자 여부 로드 — loadAuth·ensureSession 공용
+  async function loadProfile() {
     try {
       const { data: prof } = await withTimeout(
         state.sb.from("profiles").select("id,email,full_name,avatar_url,tier,is_admin,wallet_address,telegram_handle,twitter_handle,youtube_handle,nickname,phone").eq("id", state.uid).single(),
@@ -989,8 +1001,9 @@
     }
   }
 
-  function openSubModal(t, editSub) {
-    if (!state.uid) { toast("인증하려면 먼저 로그인해 주십시오.", "err"); doLogin(); return; }
+  async function openSubModal(t, editSub) {
+    // 세션은 살아있는데 state.uid 복원이 늦은 경우 재로그인 강요 방지 — 복원 시도 후 진짜 없을 때만 로그인 요구.
+    if (!state.uid && !(await ensureSession())) { toast("인증하려면 먼저 로그인해 주십시오.", "err"); doLogin(); return; }
     if (!requireNickname()) return;
     state._subTask = t;
     state._editSubId = editSub ? editSub.id : null;
@@ -1077,7 +1090,7 @@
   }
 
   async function submitAutoTask(t) {
-    if (!state.uid) { toast("인증하려면 먼저 로그인해 주십시오.", "err"); doLogin(); return; }
+    if (!state.uid && !(await ensureSession())) { toast("인증하려면 먼저 로그인해 주십시오.", "err"); doLogin(); return; }
     if (!requireNickname()) return;
     if ((t.verify_method || "capture") === "onchain" && !hasWallet()) {
       toast("온체인 인증을 위해 먼저 프로필에서 에어드랍 지갑을 추가해 주십시오.", "err");
@@ -1310,7 +1323,9 @@
       // 이벤트가 주는 세션을 직접 반영(getSession 경합에 의존하지 않음) → 로그인 즉시 인증 뷰로.
       if (session && session.user) { state.user = session.user; state.uid = session.user.id; }
       else if (event === "SIGNED_OUT") { state.user = null; state.uid = null; }
-      boot();
+      // ⚠️ 콜백 안에서 boot()(→getSession/쿼리)를 직접 await 경로에 태우면 navigator.locks 데드락
+      // → 이후 모든 getSession 타임아웃 → "네비=로그인, 체크인=재로그인" 어긋남. setTimeout으로 락 해제 후 실행.
+      setTimeout(boot, 0);
     });
     tickCountdown();
     clearInterval(state._clock);
