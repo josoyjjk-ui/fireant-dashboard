@@ -377,11 +377,22 @@
   }
   async function loadEntrants() {
     state.lotEntrants = []; state._lotErr = null; state.lotLoaded = false;
+    state.prevWinnerIds = new Set(); state.prevWinnerCount = 0;
     if (!state.isAdmin) return;
     // 추첨은 기본 '지난 완료주(월~일)' 기준. 월요일에 눌러도 직전 주를 집계한다.
     if (state.lotWeekOffset === undefined) state.lotWeekOffset = -1;
     const { startDate, endDate } = weekBounds(state.lotWeekOffset);
+    const prevWeekStart = dateAdd(startDate, -7); // 추첨 대상 주의 직전 주(겹침 방지 제외 대상)
     try {
+      // 직전주 당첨자 user_id 로드 → 이번 추첨 풀에서 제외(연속 당첨 방지)
+      try {
+        const { data: pw } = await withTimeout(
+          state.sb.from("raffle_winners").select("user_id").eq("week_start", prevWeekStart),
+          "직전주 당첨자 로드",
+        );
+        (pw || []).forEach((r) => { if (r.user_id) state.prevWinnerIds.add(r.user_id); });
+        state.prevWinnerCount = state.prevWinnerIds.size;
+      } catch (_) { /* 직전주 없으면 제외 없음 */ }
       const { data, error } = await withTimeout(
         state.sb.rpc("weekly_entrants", { p_start: startDate, p_end: endDate }),
         "응모자 집계",
@@ -658,13 +669,18 @@
     return picked;
   }
   function drawWinners() {
-    const pool = state.lotEntrants || [];
-    if (!pool.length) { toast("추첨할 참여자가 없습니다.", "err"); return; }
+    const all = state.lotEntrants || [];
+    if (!all.length) { toast("추첨할 참여자가 없습니다.", "err"); return; }
+    // 직전주 당첨자 제외(연속 당첨 방지) 후 가중 추첨
+    const prev = state.prevWinnerIds || new Set();
+    const pool = all.filter((e) => !prev.has(e.user_id));
+    const excluded = all.length - pool.length;
+    if (!pool.length) { toast("직전주 당첨자를 제외하니 추첨 대상이 없습니다.", "err"); return; }
     const n = Math.min(RAFFLE_PRIZES.length, pool.length);
     const picked = weightedDrawN(pool, n);
     state.lotResult = picked.map((e, i) => ({ ...e, tier: RAFFLE_PRIZES[i].tier, prize: RAFFLE_PRIZES[i].prize }));
     renderLottery();
-    toast(`${picked.length}명을 추첨했습니다. 확인 후 기록하십시오.`, "ok");
+    toast(`${picked.length}명 추첨 완료${excluded ? ` · 직전주 당첨자 ${excluded}명 제외됨` : ""}. 확인 후 기록하십시오.`, "ok");
   }
   function lotWeekLabel() {
     const off = state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset;
@@ -698,7 +714,8 @@
     if (!entrants.length) { wrap.innerHTML = toggle + `<div class="empty">${L.name} 응모권을 보유한 참여자가 없습니다.</div>`; bindToggle(); return; }
     const total = entrants.reduce((a, e) => a + e.entries, 0);
     const prizeLine = "🥇 1등 3만원 · 🥈 2등 1만원 · 🥉 3등 5천원 · 🎁 참여상 스타벅스 10명";
-    let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span></div><button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행</button></div>`;
+    const exclNote = state.prevWinnerCount ? `<br><span class="dim-sm">🚫 직전주 당첨자 ${state.prevWinnerCount}명은 추첨에서 자동 제외(연속 당첨 방지)</span>` : "";
+    let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span>${exclNote}</div><button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행</button></div>`;
     if (state.lotResult && state.lotResult.length) {
       html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전 미저장</span></div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="redrawBtn">다시 뽑기</button></div></div>`;
     }
