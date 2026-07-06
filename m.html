@@ -50,7 +50,7 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .stats .s.plain .l{color:var(--gray);}
 
 .sig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
-.sig .c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;min-height:186px;min-width:0;overflow:hidden;display:grid;grid-template-rows:20px 38px 34px 18px 34px;position:relative;text-align:left;transition:border-color .15s,transform .15s;}
+.sig .c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 14px 26px;min-height:132px;min-width:0;overflow:hidden;display:grid;grid-template-rows:20px 38px 34px 18px;position:relative;text-align:left;transition:border-color .15s,transform .15s;}
 .sig .c:hover{border-color:#ff3b30;transform:translateY(-2px);}
 .sig .c:last-child:nth-child(odd){grid-column:span 2;}
 .sig .c.tile.pos,.sig .c.tile.neg,.sig .c.tile.plain{background:var(--card);border-color:var(--line);}
@@ -62,7 +62,6 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .sig .c .big{font-size:clamp(21px,7vw,30px);font-weight:900;line-height:1.05;align-self:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sig .c.pos .big{color:var(--redText);}.sig .c.neg .big{color:var(--blueText);}
 .sig .c .sub{font-size:12px;color:rgba(255,255,255,.6);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sig .c .spark{height:34px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0));border:1px solid rgba(255,255,255,.035);}
 .sig .c .more{position:absolute;bottom:10px;right:12px;font-size:11px;font-weight:900;color:#ff3b30;opacity:.85;}
 
 /* 급등/급락 좌우 2단 */
@@ -347,7 +346,7 @@ async function loadSig(){
   try{
     const s=await getJSON("data/v1/signature.json"),M=s.metrics||{};
     const defs=[["btc_etf","💵 BTC ETF 순유입",1,"signal?m=btc_etf"],["eth_etf","💵 ETH ETF 순유입",1,"signal?m=eth_etf"],["btc_oi_24h","📊 BTC 미결제약정",0,"signal?m=oi"],["cb_premium","🇺🇸 코인베이스 프리미엄",0,"signal?m=cb"],["dat_weekly","🏦 DAT 주간 순유입",1,"signal?m=dat"]];
-    $("sig").innerHTML=defs.map(([k,t,money,link])=>{const m=M[k]||{},val=m.value;const disp=money?usd(val):(m.raw??(val!=null?val+"%":"—"));const c=dir(val);const pill=val==null?"":`<span class="pill ${val>=0?"u":"d"}">${val>=0?(money?"유입":"증가"):(money?"유출":"감소")}</span>`;return `<a class="c tile ${c}" href="${link}" style="text-decoration:none;color:inherit;">${pill}<span class="asof">${esc(m.basis||"—")}</span><div class="t">${t}</div><div class="big mono">${disp}</div><div class="sub">${esc((m.as_of||m.basis||"기준 미상").slice(0,28))}</div><div class="spark"></div><span class="more">자세히 →</span></a>`;}).join("");
+    $("sig").innerHTML=defs.map(([k,t,money,link])=>{const m=M[k]||{},val=m.value;const disp=money?usd(val):(m.raw??(val!=null?val+"%":"—"));const c=dir(val);const pill=val==null?"":`<span class="pill ${val>=0?"u":"d"}">${val>=0?(money?"유입":"증가"):(money?"유출":"감소")}</span>`;return `<a class="c tile ${c}" href="${link}" style="text-decoration:none;color:inherit;">${pill}<span class="asof">${esc(m.basis||"—")}</span><div class="t">${t}</div><div class="big mono">${disp}</div><div class="sub">${esc((m.as_of||m.basis||"기준 미상").slice(0,28))}</div><span class="more">자세히 →</span></a>`;}).join("");
   }catch(e){$("sig").innerHTML='';}
 }
 $("sig").innerHTML=Array(4).fill('<div class="c tile plain"><div class="big skel">····</div></div>').join("");
