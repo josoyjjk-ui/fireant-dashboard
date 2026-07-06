@@ -49,8 +49,8 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .stats .s .v{font-size:clamp(19px,6.8vw,28px);font-weight:800;margin-top:9px;}
 .stats .s.plain .l{color:var(--gray);}
 
-.sig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
-.sig .c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 14px 26px;min-height:132px;min-width:0;overflow:hidden;display:grid;grid-template-rows:20px 38px 34px 18px;position:relative;text-align:left;transition:border-color .15s,transform .15s;}
+.sig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:14px;width:100%;min-width:0;max-width:100%;}
+.sig .c{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 12px 20px;min-height:104px;min-width:0;overflow:hidden;display:grid;grid-template-rows:18px 24px 28px 15px;row-gap:1px;position:relative;text-align:left;transition:border-color .15s,transform .15s;}
 .sig .c:hover{border-color:#ff3b30;transform:translateY(-2px);}
 .sig .c:last-child:nth-child(odd){grid-column:span 2;}
 .sig .c.tile.pos,.sig .c.tile.neg,.sig .c.tile.plain{background:var(--card);border-color:var(--line);}
@@ -58,11 +58,11 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .sig .c .asof{font-size:10px;font-weight:900;color:#ffb547;background:#231a0c;padding:2px 7px;border-radius:6px;justify-self:start;max-width:calc(100% - 58px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sig .c .pill{position:absolute;top:13px;right:13px;font-size:10px;font-weight:900;padding:3px 7px;border-radius:6px;}
 .sig .c .pill.u{background:#2a1116;color:var(--redText);}.sig .c .pill.d{background:#0e2236;color:var(--blueText);}
-.sig .c .t{font-size:clamp(13px,4vw,16px);color:var(--gray);font-weight:800;align-self:end;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sig .c .big{font-size:clamp(21px,7vw,30px);font-weight:900;line-height:1.05;align-self:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sig .c .t{font-size:clamp(12px,3.6vw,15px);color:var(--gray);font-weight:800;align-self:end;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sig .c .big{font-size:clamp(19px,6vw,26px);font-weight:900;line-height:1.05;align-self:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sig .c.pos .big{color:var(--redText);}.sig .c.neg .big{color:var(--blueText);}
-.sig .c .sub{font-size:12px;color:rgba(255,255,255,.6);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sig .c .more{position:absolute;bottom:10px;right:12px;font-size:11px;font-weight:900;color:#ff3b30;opacity:.85;}
+.sig .c .sub{font-size:11px;color:rgba(255,255,255,.6);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sig .c .more{position:absolute;bottom:7px;right:11px;font-size:10.5px;font-weight:900;color:#ff3b30;opacity:.85;}
 
 /* 급등/급락 좌우 2단 */
 .duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
