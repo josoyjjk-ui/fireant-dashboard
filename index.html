@@ -64,7 +64,7 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
 .card.has-detail{padding-bottom:38px;}
 .card.has-detail:hover{border-color:var(--accent);transform:translateY(-2px);}
 .ch{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;}.ch h3{font-size:15px;font-weight:800;}.ch .meta{font-size:11px;color:var(--dim);white-space:nowrap;}
-.detail-link{position:absolute;right:15px;bottom:13px;font-size:11px;font-weight:800;color:var(--accent);opacity:.75;text-decoration:none;}
+.detail-link{position:absolute;right:3px;bottom:1px;padding:12px;font-size:11px;font-weight:800;color:var(--accent);opacity:.75;text-decoration:none;}
 .detail-link:hover{opacity:1;}
 .daily-r{display:flex;gap:16px;}.daily-r .img{width:280px;height:180px;border-radius:12px;object-fit:cover;background:linear-gradient(135deg,#1a1f2a,#0e1116);border:1px solid var(--line);flex-shrink:0;}.daily-r .sum{font-size:13.5px;line-height:1.65;color:#cdd6e0;}.daily-r .sum b{color:#fff;}
 .li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;}.li:last-child{border:none;}.tag{font-size:11px;padding:2px 7px;border-radius:6px;background:#1c2330;color:var(--dim);font-weight:700;}.when{font-size:12px;color:var(--accent2);font-weight:700;}
@@ -132,7 +132,8 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
 .prop-icon{font-size:20px;flex:0 0 auto;line-height:1;}
 .prop-title{font-size:14px;font-weight:800;color:#fff;line-height:1.3;}
 @media(max-width:920px){
-  .r3{grid-template-columns:1fr;}.now-grid{grid-template-columns:repeat(3,1fr);}
+  .r3{grid-template-columns:minmax(0,1fr);}.now-grid{grid-template-columns:repeat(3,1fr);}
+  .row>*{min-width:0;}
   .hero-banner{grid-template-columns:1fr;gap:16px;padding:20px;}
   .hero-cta{order:2;white-space:normal;}
   .value-props{grid-template-columns:1fr;gap:12px;}
@@ -156,7 +157,8 @@ a.sigcard:hover{border-color:var(--accent);transform:translateY(-2px);}
   .sig-grid>.sigcard,.sig-grid>.sigcard:nth-child(4),.sig-grid>.sigcard:nth-child(5){grid-column:auto;}
   .sigcard{min-height:218px;padding:19px;grid-template-rows:24px 24px 44px 22px 54px;}
   .sigcard .t{font-size:16px;}.sigcard .big{font-size:34px;}.sigcard .sub{font-size:14px;}.sigcard .asof{font-size:12px;}
-  .r2,.r3{grid-template-columns:1fr;}
+  .r2,.r3{grid-template-columns:minmax(0,1fr);}
+  .row>*{min-width:0;}.li.mv{min-width:0;}
   .card{padding:18px;}
   .ch h3{font-size:18.5px;}.ch .meta{font-size:13.5px;}
   .li{font-size:17px;padding:12px 0;}.when{font-size:14.5px;}.tag{font-size:13px;}
