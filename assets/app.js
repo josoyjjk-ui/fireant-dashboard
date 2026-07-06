@@ -222,25 +222,26 @@ function calRowHTML(x, today) {
 async function loadCalendar() {
   const ev = $("calEvent"), ul = $("calUnlock");
   if (!ev && !ul) return;
-  try {
-    const cal = await getJSON(`${BASE}/calendar.json?t=${Date.now()}`);
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    const all = (cal.items || [])
-      .map((x) => ({ ...x, _d: new Date(x.date + "T00:00:00+09:00") }))
-      .filter((x) => !isNaN(x._d) && x._d >= today)
-      .sort((a, b) => a._d - b._d);
-    const empty = '<div class="li"><div style="color:var(--dim)">예정된 일정이 없습니다.</div></div>';
-    if (ev) {
-      const evItems = all.filter((x) => x.type !== "unlock").slice(0, 6);
-      ev.innerHTML = evItems.length ? evItems.map((x) => calRowHTML(x, today)).join("") : empty;
-    }
-    if (ul) {
-      const ulItems = all.filter((x) => x.type === "unlock").slice(0, 6);
-      ul.innerHTML = ulItems.length ? ulItems.map((x) => calRowHTML(x, today)).join("") : empty;
-    }
-  } catch (e) {
-    if (ev) ev.innerHTML = `<div class="li"><div style="color:var(--down)">캘린더 로드 실패</div></div>`;
-    if (ul) ul.innerHTML = `<div class="li"><div style="color:var(--down)">캘린더 로드 실패</div></div>`;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const empty = '<div class="li"><div style="color:var(--dim)">예정된 일정이 없습니다.</div></div>';
+  const fmtUsd = (v) => { v = Number(v) || 0; return v >= 1e9 ? "$" + (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? "$" + (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? "$" + Math.round(v / 1e3) + "K" : "$" + Math.round(v); };
+  // 이벤트: econ_calendar.json (일1회 cron, 최신) — 낡은 calendar.json 대체
+  if (ev) {
+    try {
+      const c = await getJSON(`${BASE}/econ_calendar.json?t=${Date.now()}`);
+      const items = (c.items || []).map((x) => ({ ...x, _d: new Date(x.date + "T00:00:00+09:00") }))
+        .filter((x) => !isNaN(x._d) && x._d >= today).sort((a, b) => a._d - b._d).slice(0, 6);
+      ev.innerHTML = items.length ? items.map((x) => calRowHTML(x, today)).join("") : empty;
+    } catch (e) { ev.innerHTML = `<div class="li"><div style="color:var(--down)">캘린더 로드 실패</div></div>`; }
+  }
+  // 언락: unlocks.json (DefiLlama, 최신) — project→title, usd→amount 매핑
+  if (ul) {
+    try {
+      const c = await getJSON(`${BASE}/unlocks.json?t=${Date.now()}`);
+      const items = (c.items || []).map((x) => ({ date: x.date, type: "unlock", title: x.project, amount: fmtUsd(x.usd), _d: new Date(x.date + "T00:00:00+09:00") }))
+        .filter((x) => !isNaN(x._d) && x._d >= today).sort((a, b) => a._d - b._d).slice(0, 6);
+      ul.innerHTML = items.length ? items.map((x) => calRowHTML(x, today)).join("") : empty;
+    } catch (e) { ul.innerHTML = `<div class="li"><div style="color:var(--down)">캘린더 로드 실패</div></div>`; }
   }
 }
 
