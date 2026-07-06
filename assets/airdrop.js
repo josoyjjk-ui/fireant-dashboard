@@ -668,7 +668,20 @@
     }
     return picked;
   }
+  function resetDraw() {
+    if (!state.lotResult || !state.lotResult.length) return;
+    if (!confirm("현재 추첨 결과를 취소하고 초기화합니다.\n(아직 확정 기록 전이라 저장된 것은 없습니다) 진행하시겠습니까?")) return;
+    try { console.warn("[raffle] draw reset by admin", { week: weekBounds(state.lotWeekOffset).startDate, at: new Date().toISOString() }); } catch (_) {}
+    state.lotResult = null;
+    renderLottery();
+    toast("추첨을 초기화했습니다. 다시 추첨할 수 있습니다.", "ok");
+  }
   function drawWinners() {
+    // 1회 추첨 잠금: 이미 뽑은 상태면 재추첨 차단(취소 후 재시작만 허용)
+    if (state.lotResult && state.lotResult.length) {
+      toast("이미 추첨했습니다. 다시 뽑으려면 '취소(초기화)'를 먼저 누르십시오.", "err");
+      return;
+    }
     const all = state.lotEntrants || [];
     if (!all.length) { toast("추첨할 참여자가 없습니다.", "err"); return; }
     // 직전주 당첨자 제외(연속 당첨 방지) 후 가중 추첨
@@ -715,16 +728,21 @@
     const total = entrants.reduce((a, e) => a + e.entries, 0);
     const prizeLine = "🥇 1등 3만원 · 🥈 2등 1만원 · 🥉 3등 5천원 · 🎁 참여상 스타벅스 10명";
     const exclNote = state.prevWinnerCount ? `<br><span class="dim-sm">🚫 직전주 당첨자 ${state.prevWinnerCount}명은 추첨에서 자동 제외(연속 당첨 방지)</span>` : "";
-    let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span>${exclNote}</div><button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행</button></div>`;
+    const drawn = state.lotResult && state.lotResult.length;
+    // 1회 추첨 잠금: 뽑기 전에만 추첨 버튼 노출. 뽑은 뒤엔 확정/취소만.
+    const drawBtnHtml = drawn
+      ? `<span class="dim-sm" style="align-self:center;">✅ 추첨 완료 — 아래에서 확정하거나 취소하십시오</span>`
+      : `<button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행 (1회)</button>`;
+    let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span>${exclNote}</div>${drawBtnHtml}</div>`;
     if (state.lotResult && state.lotResult.length) {
-      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전 미저장</span></div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="redrawBtn">다시 뽑기</button></div></div>`;
+      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전 미저장</span></div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="resetBtn">❌ 취소(초기화)</button></div></div>`;
     }
     html += `<div class="lot-divlbl">참여자 목록 (응모권순)</div><div>${entrants.slice(0, 30).map((e, i) => `<div class="lot-row"><span class="lot-title">${i + 1}. ${esc(entrantName(e))}</span><span class="dim-sm">${e.entries}장 <span style="opacity:.6">(체크인 ${e.checkins}·미션 ${e.approved})</span></span></div>`).join("")}${entrants.length > 30 ? `<div class="dim-sm" style="padding:8px 2px;">외 ${entrants.length - 30}명…</div>` : ""}</div>`;
     wrap.innerHTML = html;
     bindToggle();
     const b = $("drawBtn"); if (b) b.onclick = drawWinners;
     const c = $("confirmBtn"); if (c) c.onclick = () => recordWinners(state.lotResult);
-    const rd = $("redrawBtn"); if (rd) rd.onclick = drawWinners;
+    const rs = $("resetBtn"); if (rs) rs.onclick = resetDraw;
   }
   function renderReview() {
     const list = $("revList");
