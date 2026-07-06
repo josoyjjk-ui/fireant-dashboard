@@ -411,6 +411,11 @@
       state._lotErr = errText(err);
     } finally {
       state.lotLoaded = true;
+      // 미확정 추첨 미리보기 복원(새로고침에도 결과 유지). 현재 추첨 주차와 일치할 때만.
+      if (!state.lotResult || !state.lotResult.length) {
+        const draft = loadDraft(startDate);
+        if (draft) state.lotResult = draft;
+      }
     }
   }
 
@@ -668,11 +673,26 @@
     }
     return picked;
   }
+  // ── 미확정 추첨 미리보기 임시저장(새로고침 대비) ──
+  const DRAFT_KEY = "antinfo_raffle_draft";
+  function saveDraft(week, result) {
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ week, result, savedAt: Date.now() })); } catch (_) {}
+  }
+  function loadDraft(week) {
+    try {
+      const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+      if (d && d.week === week && Array.isArray(d.result) && d.result.length) return d.result;
+    } catch (_) {}
+    return null;
+  }
+  function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (_) {} }
+
   function resetDraw() {
     if (!state.lotResult || !state.lotResult.length) return;
     if (!confirm("현재 추첨 결과를 취소하고 초기화합니다.\n(아직 확정 기록 전이라 저장된 것은 없습니다) 진행하시겠습니까?")) return;
     try { console.warn("[raffle] draw reset by admin", { week: weekBounds(state.lotWeekOffset).startDate, at: new Date().toISOString() }); } catch (_) {}
     state.lotResult = null;
+    clearDraft();
     renderLottery();
     toast("추첨을 초기화했습니다. 다시 추첨할 수 있습니다.", "ok");
   }
@@ -692,6 +712,7 @@
     const n = Math.min(RAFFLE_PRIZES.length, pool.length);
     const picked = weightedDrawN(pool, n);
     state.lotResult = picked.map((e, i) => ({ ...e, tier: RAFFLE_PRIZES[i].tier, prize: RAFFLE_PRIZES[i].prize }));
+    saveDraft(weekBounds(state.lotWeekOffset).startDate, state.lotResult); // 새로고침 대비 임시저장
     renderLottery();
     toast(`${picked.length}명 추첨 완료${excluded ? ` · 직전주 당첨자 ${excluded}명 제외됨` : ""}. 확인 후 기록하십시오.`, "ok");
   }
@@ -735,7 +756,7 @@
       : `<button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행 (1회)</button>`;
     let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span>${exclNote}</div>${drawBtnHtml}</div>`;
     if (state.lotResult && state.lotResult.length) {
-      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전 미저장</span></div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="resetBtn">❌ 취소(초기화)</button></div></div>`;
+      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전(임시저장됨 · 새로고침해도 유지)</span></div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="resetBtn">❌ 취소(초기화)</button></div></div>`;
     }
     html += `<div class="lot-divlbl">참여자 목록 (응모권순)</div><div>${entrants.slice(0, 30).map((e, i) => `<div class="lot-row"><span class="lot-title">${i + 1}. ${esc(entrantName(e))}</span><span class="dim-sm">${e.entries}장 <span style="opacity:.6">(체크인 ${e.checkins}·미션 ${e.approved})</span></span></div>`).join("")}${entrants.length > 30 ? `<div class="dim-sm" style="padding:8px 2px;">외 ${entrants.length - 30}명…</div>` : ""}</div>`;
     wrap.innerHTML = html;
@@ -1130,6 +1151,7 @@
       } catch (_) {}
       toast(`${rows.length}명의 당첨자를 확정 기록했습니다. 이 주차는 이제 잠깁니다.`, "ok");
       state.lotResult = null;
+      clearDraft(); // 확정됐으니 임시저장 미리보기 제거
       await loadWinners();
       renderWinners(); renderLottery();
     } catch (err) {
