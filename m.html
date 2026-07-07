@@ -4,6 +4,7 @@
 <title>ANTINFO — 개미들이 필요한 모든 투자정보</title>
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
 <meta property="og:image" content="https://antinfo.io/assets/og-image.png">
 <meta name="description" content="ANTINFO 모바일 홈 — 실시간 마켓·급등급락·시그니처 수급·뉴스와 시장지표를 한눈에.">
 <meta property="og:title" content="ANTINFO — 모바일 투자정보">
@@ -22,7 +23,7 @@
   --redText:#ff5d6c;--blueText:#4d9bff;--up:#ff5d6c;--down:#4d9bff;--accent2:#ffb547;--dim:#8a94a3;
   --posBg:linear-gradient(150deg,#6b1f2e,#3a1620);--posBd:#7a2a3a;
   --negBg:linear-gradient(150deg,#1f3a6b,#16203a);--negBd:#2a4a7a;}
-html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var(--txt);padding-bottom:20px;font-weight:600;overflow-x:hidden;}
+html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var(--txt);padding-bottom:calc(76px + env(safe-area-inset-bottom));font-weight:600;overflow-x:hidden;}
 .mono{font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
 .top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:var(--bg);}
 .top .logo{font-size:22px;font-weight:800;}.top .logo span{color:var(--blue);}
@@ -34,19 +35,19 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .tile.pos{background:var(--posBg);border-color:var(--posBd);}
 .tile.neg{background:var(--negBg);border-color:var(--negBd);}
 
-.hero{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
-.hero .cell{border-radius:24px;padding:18px 12px;text-align:center;min-width:0;overflow:hidden;}
-.hero .lab{font-size:clamp(15px,4.6vw,18px);color:rgba(255,255,255,.82);font-weight:800;}
-.hero .px{font-size:clamp(22px,8vw,35px);font-weight:800;margin-top:12px;line-height:1;white-space:nowrap;}
-.hero .chg{font-size:clamp(15px,5vw,19px);font-weight:800;margin-top:13px;color:#fff;}
+.hero{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:12px;width:100%;min-width:0;max-width:100%;}
+.hero .cell{border-radius:14px;padding:11px 10px;text-align:center;min-width:0;overflow:hidden;}
+.hero .lab{font-size:clamp(12px,3.7vw,14px);color:rgba(255,255,255,.82);font-weight:800;}
+.hero .px{font-size:clamp(19px,6.4vw,26px);font-weight:800;margin-top:6px;line-height:1;white-space:nowrap;}
+.hero .chg{font-size:clamp(12px,3.9vw,15px);font-weight:800;margin-top:6px;color:#fff;}
 
-.sec{display:flex;align-items:center;justify-content:space-between;margin:0 4px 14px;}
-.seclink{font-size:14px;font-weight:800;color:#ff3b30;text-decoration:none;white-space:nowrap;padding:12px 4px 12px 14px;margin:-12px -4px -12px 0;}
-.sec h2{font-size:clamp(19px,6vw,24px);font-weight:800;}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;width:100%;min-width:0;max-width:100%;}
-.stats .s{border-radius:24px;padding:16px 10px;text-align:center;min-width:0;overflow:hidden;}
-.stats .s .l{font-size:clamp(14px,4.3vw,17px);color:rgba(255,255,255,.82);font-weight:800;}
-.stats .s .v{font-size:clamp(19px,6.8vw,28px);font-weight:800;margin-top:9px;}
+.sec{display:flex;align-items:center;justify-content:space-between;margin:0 4px 10px;}
+.seclink{font-size:13px;font-weight:800;color:#ff3b30;text-decoration:none;white-space:nowrap;padding:12px 4px 12px 14px;margin:-12px -4px -12px 0;}
+.sec h2{font-size:clamp(16px,4.9vw,19px);font-weight:800;}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:12px;width:100%;min-width:0;max-width:100%;}
+.stats .s{border-radius:14px;padding:10px 8px;text-align:center;min-width:0;overflow:hidden;}
+.stats .s .l{font-size:clamp(12px,3.6vw,14px);color:rgba(255,255,255,.82);font-weight:800;}
+.stats .s .v{font-size:clamp(15px,5vw,20px);font-weight:800;margin-top:4px;}
 .stats .s.plain .l{color:var(--gray);}
 
 .sig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:14px;width:100%;min-width:0;max-width:100%;}
@@ -287,6 +288,13 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
     </section>
     <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보</div>
   </div>
+  <nav class="nav" aria-label="하단 메뉴">
+    <a class="on" href="/m" aria-current="page"><span class="ic">🏠</span>홈</a>
+    <a href="market"><span class="ic">📊</span>마켓</a>
+    <a href="macro-news"><span class="ic">📰</span>뉴스</a>
+    <a href="charts"><span class="ic">🕯️</span>차트</a>
+    <a href="events"><span class="ic">🎉</span>이벤트</a>
+  </nav>
 <script>
 document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});
 </script>
@@ -326,8 +334,8 @@ async function loadHome(){
     }
     $("stats").innerHTML=cells.map(([l,v,c,link])=>{
       const content=`<div class="l">${l}</div><div class="v mono">${v}</div>`;
-      const more=link?`<div style="position:absolute;bottom:8px;right:10px;font-size:12px;font-weight:900;color:#ff3b30;">자세히 →</div>`:"";
-      const tileHTML=`<div class="s tile ${c}" style="position:relative;${link?"min-height:74px;":""}">${content}${more}</div>`;
+      const more=link?`<div style="position:absolute;bottom:5px;right:9px;font-size:10.5px;font-weight:900;color:#ff3b30;">자세히 →</div>`:"";
+      const tileHTML=`<div class="s tile ${c}" style="position:relative;${link?"padding-bottom:22px;":""}">${content}${more}</div>`;
       return link?`<a href="${link}" style="display:block;text-decoration:none;color:inherit;">${tileHTML}</a>`:tileHTML;
     }).join("");
     lastFetch=Date.now();
@@ -405,4 +413,5 @@ start();
 })();
 </script>
 <script defer src="/assets/visit.js"></script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){try{navigator.serviceWorker.register("/sw.js").catch(function(){});}catch(e){}});}</script>
 </body></html>
