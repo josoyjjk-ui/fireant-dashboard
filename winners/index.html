@@ -245,35 +245,30 @@ function renderRaffle(filter=''){
   const weeks=Object.keys(groups).sort().reverse();
   if(sub) sub.textContent=`· ${weeks[0].slice(5).replace('-','/')} 주차 · ${groups[weeks[0]].length}명`;
   let html='';
-  weeks.forEach((wk,wi)=>{
+  // 최근 주차만 렌더(이전 주차 폴드는 '전체 당첨자 펼치기'와 기능이 겹쳐 제거)
+  {
+    const wk=weeks[0];
     // 등수는 prize 문자열에서 파싱(같은 주차 created_at 동일 → 인덱스 불가)
     const list=groups[wk].slice().sort((a,b)=>tierOrder(a.prize)-tierOrder(b.prize));
-    const isRecent = wi===0;
     const label = `${wk.slice(5).replace('-','/')} 주차 · ${list.length}명`;
     const rowHtml=(w,big)=>{
       const nm=raffleName(w);
       const {tier,reward}=splitPrize(w.prize);
       return `<div class="wrow${big?' big':''}"><span class="wtier">${esc(tier)} <span class="whandle">${esc(nm)}</span></span><span class="prize">${esc(reward)}</span></div>`;
     };
-    if(isRecent){
-      // 최근 주차: 🥇🥈🥉만 크게 노출, 참여상은 '전체 당첨자 펼치기'로 숨김
-      let medal='', rest='';
-      list.forEach((w)=>{
-        const nm=raffleName(w);
-        if(filter && !norm(nm).includes(filter)) return;
-        (tierOrder(w.prize)<=2 ? (medal+=rowHtml(w,true)) : (rest+=rowHtml(w,false)));
-      });
-      if(!medal && !rest) return; // 검색 결과 없음
+    // 🥇🥈🥉만 크게 노출, 참여상은 '전체 당첨자 펼치기'로 숨김
+    let medal='', rest='';
+    list.forEach((w)=>{
+      const nm=raffleName(w);
+      if(filter && !norm(nm).includes(filter)) return;
+      (tierOrder(w.prize)<=2 ? (medal+=rowHtml(w,true)) : (rest+=rowHtml(w,false)));
+    });
+    if(medal || rest){
       let block=`<div class="wkblock"><div class="wkhead">🗓️ ${label}</div>${medal}`;
       if(rest) block+=`<details class="allfold"${filter?' open':''}><summary class="fold">전체 당첨자 펼치기 ▾ (참여상 포함)</summary><div style="margin-top:8px">${rest}</div></details>`;
       html+=block+`</div>`;
-    }else{
-      let rows='';
-      list.forEach((w)=>{ const nm=raffleName(w); if(filter && !norm(nm).includes(filter)) return; rows+=rowHtml(w,false); });
-      if(!rows) return;
-      html+=`<details class="wkblock"${filter?' open':''}><summary class="fold">🗓️ ${label} 펼치기 ▾</summary><div style="margin-top:8px">${rows}</div></details>`;
     }
-  });
+  }
   el.innerHTML=html || '<div class="empty">일치하는 주간 당첨자가 없습니다.</div>';
 }
 
