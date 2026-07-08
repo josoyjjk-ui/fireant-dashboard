@@ -272,15 +272,33 @@ function renderRaffle(filter=''){
   el.innerHTML=html || '<div class="empty">일치하는 주간 당첨자가 없습니다.</div>';
 }
 
-/* ── 이벤트 당첨자 (winners.json) ── */
+/* ── 이벤트 당첨자 (winners.json + event_winners) ── */
 const tierOrder = t => { const s=String(t||''); if(s.includes('🥇'))return 0; if(s.includes('🥈'))return 1; if(s.includes('🥉'))return 2; if(s.includes('🎁'))return 3; return 4; };
+function winnerKey(w){ return `${String(w.event||'').trim().toLowerCase()}::${String(w.telegram||'').trim().replace(/^@/,'').toLowerCase()}`; }
+function mergeEventWinners(baseRows, webRows){
+  const map=new Map();
+  (baseRows||[]).forEach(w=>{ const k=winnerKey(w); if(k!=='::')map.set(k,w); });
+  (webRows||[]).forEach(w=>{
+    const row={event:w.event||'',tier:w.tier||'',prize:w.prize||'',telegram:w.telegram||'',twitter:w.twitter||'',date:w.created_at||w.date||'',note:w.note||''};
+    const k=winnerKey(row); if(k!=='::')map.set(k,row);
+  });
+  return Array.from(map.values());
+}
 async function loadEvents(){
   const el=document.getElementById('eventsBody');
   try{
     const res=await timeout(fetch('../winners.json?t='+Date.now()));
     if(!res.ok)throw new Error('winners.json '+res.status);
     const json=await res.json();
-    eventData=Array.isArray(json)?json:[];
+    const baseRows=Array.isArray(json)?json:[];
+    let webRows=[];
+    if(sb){
+      try{
+        const {data,error}=await timeout(sb.from('event_winners').select('event,tier,prize,telegram,twitter,note,created_at').order('created_at',{ascending:false}),6000);
+        if(!error && data) webRows=data;
+      }catch(_){}
+    }
+    eventData=mergeEventWinners(baseRows,webRows);
     renderEvents();
     renderEvSummary();
   }catch(e){el.innerHTML='<div class="err">이벤트 당첨자를 불러오지 못했습니다.</div>';}

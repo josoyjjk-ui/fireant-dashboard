@@ -109,10 +109,14 @@
     user: null, uid: null, profile: null, isAdmin: false,
     tasks: [], tasksLoaded: false, _tasksErr: null,
     mySubs: {}, mySubList: [],
+    allSubs: [], _adminErr: null,
     checkins: [], streak: 0, checkedInToday: false,
     leaderboard: [], winners: [], _winnersErr: null, _winnerNicks: {},
     events: [], _eventsErr: null, eventsLoaded: false,
+    lotEntrants: [], _lotErr: null, lotLoaded: false, lotResult: null, lotDrawing: false,
     wallets: [],
+    visitStats: null, _vsErr: null, _vsClock: null,
+    eventWinners: [], _ewErr: null, _editEventWinnerId: null,
     _subTask: null, _editSubId: null, _editTaskId: null, _clock: null,
   };
   const numfmt = (n) => String(Number(n) || 0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -365,6 +369,114 @@
       state._winnersErr = errText(err);
     }
   }
+  async function loadAllSubs() {
+    state.allSubs = []; state._adminErr = null;
+    if (!state.isAdmin) return;
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.from("airdrop_submissions")
+          .select("id,task_id,user_id,proof_url,proof_note,status,created_at, task:airdrop_tasks(title,verify_method), user:profiles!airdrop_submissions_user_id_fkey(email,full_name,nickname)")
+          .order("created_at", { ascending: false }),
+        "관리자 제출 로드",
+      );
+      if (error) { state._adminErr = error.message || "오류"; return; }
+      state.allSubs = data || [];
+      // 비공개 버킷: 관리자 열람용 서명 URL 생성(1시간 유효)
+      await Promise.all((state.allSubs || []).map(async (s) => {
+        if (!s.proof_url) return;
+        try {
+          const { data: sig } = await state.sb.storage.from(PROOF_BUCKET).createSignedUrl(proofPath(s.proof_url), 3600);
+          if (sig && sig.signedUrl) s.signedUrl = sig.signedUrl;
+        } catch (_) {}
+      }));
+    } catch (err) {
+      state._adminErr = errText(err);
+    }
+  }
+  async function loadEntrants() {
+    state.lotEntrants = []; state._lotErr = null; state.lotLoaded = false;
+    state.prevWinnerIds = new Set(); state.prevWinnerCount = 0;
+    if (!state.isAdmin) return;
+    // 추첨은 기본 '지난 완료주(월~일)' 기준. 월요일에 눌러도 직전 주를 집계한다.
+    if (state.lotWeekOffset === undefined) state.lotWeekOffset = -1;
+    const { startDate, endDate } = weekBounds(state.lotWeekOffset);
+    const prevWeekStart = dateAdd(startDate, -7); // 추첨 대상 주의 직전 주(겹침 방지 제외 대상)
+    try {
+      // 직전주 당첨자 user_id 로드 → 이번 추첨 풀에서 제외(연속 당첨 방지)
+      try {
+        const { data: pw } = await withTimeout(
+          state.sb.from("raffle_winners").select("user_id").eq("week_start", prevWeekStart),
+          "직전주 당첨자 로드",
+        );
+        (pw || []).forEach((r) => { if (r.user_id) state.prevWinnerIds.add(r.user_id); });
+        state.prevWinnerCount = state.prevWinnerIds.size;
+      } catch (_) { /* 직전주 없으면 제외 없음 */ }
+      const { data, error } = await withTimeout(
+        state.sb.rpc("weekly_entrants", { p_start: startDate, p_end: endDate }),
+        "응모자 집계",
+      );
+      if (error) { state._lotErr = error.message || "오류"; return; }
+      state.lotEntrants = (data || []).map((r) => ({
+        user_id: r.user_id,
+        email: r.email,
+        full_name: r.full_name,
+        nickname: r.nickname,
+        checkins: r.checkins,
+        approved: r.approved,
+        entries: Math.max(0, Number(r.entries) || 0),
+      }));
+    } catch (err) {
+      state._lotErr = errText(err);
+    } finally {
+      state.lotLoaded = true;
+      // 미확정 추첨 미리보기 복원(새로고침에도 결과 유지). 현재 추첨 주차와 일치할 때만.
+      if (!state.lotResult || !state.lotResult.length) {
+        const draft = loadDraft(startDate);
+        if (draft) state.lotResult = draft;
+      }
+    }
+  }
+
+  async function loadVisitStats() {
+    state._vsErr = null;
+    if (!state.isAdmin) { state.visitStats = null; return; }
+    try {
+      const { data, error } = await withTimeout(state.sb.rpc("visit_stats"), "방문 통계");
+      if (error) { state._vsErr = error.message || "오류"; return; }
+      state.visitStats = data || null;
+    } catch (err) {
+      state._vsErr = errText(err);
+    }
+  }
+  async function loadEventWinners() {
+    state.eventWinners = []; state._ewErr = null;
+    if (!state.isAdmin) return;
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.from("event_winners")
+          .select("id,event,tier,prize,telegram,twitter,note,created_at")
+          .order("event", { ascending: true })
+          .order("created_at", { ascending: false }),
+        "이벤트 당첨자 로드",
+      );
+      if (error) { state._ewErr = error.message || "오류"; return; }
+      state.eventWinners = data || [];
+    } catch (err) {
+      state._ewErr = errText(err);
+    }
+  }
+  function renderVisitStats() {
+    const wrap = $("visitStats");
+    if (!wrap || !state.isAdmin) return;
+    if (state._vsErr) { wrap.innerHTML = `<div class="err">방문 통계 로드 실패: ${esc(state._vsErr)}</div>`; return; }
+    const s = state.visitStats;
+    if (!s) { wrap.innerHTML = `<div class="loading">로드 중…</div>`; return; }
+    wrap.innerHTML = `
+      <div class="vstat live"><div class="vlab"><span class="vdot"></span>실시간 접속</div><div class="vnum">${numfmt(s.realtime)}</div></div>
+      <div class="vstat"><div class="vlab">오늘(일일)</div><div class="vnum">${numfmt(s.daily)}</div></div>
+      <div class="vstat"><div class="vlab">최근 7일</div><div class="vnum">${numfmt(s.weekly)}</div></div>
+      <div class="vstat"><div class="vlab">누적</div><div class="vnum">${numfmt(s.cumulative)}</div></div>`;
+  }
   function renderCheckin() {
     const wrap = $("checkinBody");
     if (!wrap) return;
@@ -570,6 +682,208 @@
       return `<div class="winrow"><span class="n">${i < 3 ? MEDALS[i] : ""} ${esc(name)}님</span><span class="c">${esc(w.prize || "기프티콘")} · ${Number(w.entries || 0)}장</span></div>`;
     }).join("");
   }
+  function revRow(s) {
+    const thumb = (s.proof_url && s.signedUrl)
+      ? `<a class="rev-thumb-a" href="${safeURL(s.signedUrl)}" target="_blank" rel="noopener"><img class="rev-thumb" src="${safeURL(s.signedUrl)}" alt="인증 이미지"></a>`
+      : s.proof_url
+        ? `<div class="rev-thumb" style="display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--dim);text-align:center;">이미지<br>로드중</div>`
+        : `<div class="rev-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px;">${(s.task && s.task.verify_method) === "telegram" ? "✈️" : "🔗"}</div>`;
+    return `<div class="rev-row">${thumb}<div class="rev-body"><div class="rev-task">${esc(joinTitle(s.task))}</div><div class="rev-user">${esc(joinEmail(s.user) || "익명")} · ${esc(s.status)}</div>${s.proof_note ? `<div class="rev-note">${esc(s.proof_note)}</div>` : ""}</div><div class="rev-actions"><span class="rev-status ${st(s.status).cls}">${st(s.status).txt}</span><div style="display:flex;gap:6px;"><button class="mini-btn app" type="button" data-app="${esc(s.id)}">승인</button><button class="mini-btn rej" type="button" data-rej="${esc(s.id)}">반려</button></div></div></div>`;
+  }
+  function entrantName(e) {
+    return (e && (e.nickname || e.full_name || (e.email ? e.email.split("@")[0] : e.user_id))) || "참여자";
+  }
+  // 응모권 가중 랜덤 추첨(복원 없음): 응모권이 많을수록 뽑힐 확률↑
+  function weightedDrawN(pool, n) {
+    const arr = pool.map((e) => ({ ...e }));
+    const picked = [];
+    for (let k = 0; k < n && arr.length; k++) {
+      const total = arr.reduce((a, e) => a + Math.max(1, e.entries), 0);
+      let r = Math.random() * total;
+      let idx = arr.length - 1;
+      for (let i = 0; i < arr.length; i++) {
+        r -= Math.max(1, arr[i].entries);
+        if (r <= 0) { idx = i; break; }
+      }
+      picked.push(arr[idx]);
+      arr.splice(idx, 1);
+    }
+    return picked;
+  }
+  // ── 미확정 추첨 미리보기 임시저장(새로고침 대비) ──
+  const DRAFT_KEY = "antinfo_raffle_draft";
+  function saveDraft(week, result) {
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ week, result, savedAt: Date.now() })); } catch (_) {}
+  }
+  function loadDraft(week) {
+    try {
+      const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+      if (d && d.week === week && Array.isArray(d.result) && d.result.length) return d.result;
+    } catch (_) {}
+    return null;
+  }
+  function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (_) {} }
+
+  function resetDraw() {
+    if (!state.lotResult || !state.lotResult.length) return;
+    if (!confirm("현재 추첨 결과를 취소하고 초기화합니다.\n(아직 확정 기록 전이라 저장된 것은 없습니다) 진행하시겠습니까?")) return;
+    try { console.warn("[raffle] draw reset by admin", { week: weekBounds(state.lotWeekOffset).startDate, at: new Date().toISOString() }); } catch (_) {}
+    state.lotResult = null;
+    clearDraft();
+    renderLottery();
+    toast("추첨을 초기화했습니다. 다시 추첨할 수 있습니다.", "ok");
+  }
+  function drawWinners() {
+    // 1회 추첨 잠금: 이미 뽑은 상태면 재추첨 차단(취소 후 재시작만 허용)
+    if (state.lotResult && state.lotResult.length) {
+      toast("이미 추첨했습니다. 다시 뽑으려면 '취소(초기화)'를 먼저 누르십시오.", "err");
+      return;
+    }
+    const all = state.lotEntrants || [];
+    if (!all.length) { toast("추첨할 참여자가 없습니다.", "err"); return; }
+    // 직전주 당첨자 제외(연속 당첨 방지) 후 가중 추첨
+    const prev = state.prevWinnerIds || new Set();
+    const pool = all.filter((e) => !prev.has(e.user_id));
+    const excluded = all.length - pool.length;
+    if (!pool.length) { toast("직전주 당첨자를 제외하니 추첨 대상이 없습니다.", "err"); return; }
+    const n = Math.min(RAFFLE_PRIZES.length, pool.length);
+    const picked = weightedDrawN(pool, n);
+    state.lotResult = picked.map((e, i) => ({ ...e, tier: RAFFLE_PRIZES[i].tier, prize: RAFFLE_PRIZES[i].prize }));
+    saveDraft(weekBounds(state.lotWeekOffset).startDate, state.lotResult); // 새로고침 대비 임시저장
+    renderLottery();
+    toast(`${picked.length}명 추첨 완료${excluded ? ` · 직전주 당첨자 ${excluded}명 제외됨` : ""}. 확인 후 기록하십시오.`, "ok");
+  }
+  function lotWeekLabel() {
+    const off = state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset;
+    const wb = weekBounds(off);
+    const range = `${wb.startDate.slice(5)}~${dateAdd(wb.endDate, -1).slice(5)}`;
+    return { off, name: off === -1 ? "지난주" : off === 0 ? "이번주" : `${off}주`, range };
+  }
+  function renderLottery() {
+    const wrap = $("lotteryWrap");
+    if (!wrap || !state.isAdmin) return;
+    const L = lotWeekLabel();
+    // 추첨 대상 주 토글 (기본 지난주). 항상 노출.
+    const toggle = `<div class="lot-wktoggle" style="display:flex;gap:6px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">`
+      + `<span class="dim-sm">추첨 대상:</span>`
+      + `<button class="mini-btn ${L.off === -1 ? "app" : ""}" type="button" data-lotwk="-1">지난주(추첨)</button>`
+      + `<button class="mini-btn ${L.off === 0 ? "app" : ""}" type="button" data-lotwk="0">이번주(현황)</button>`
+      + `<span class="dim-sm">· ${L.name} (${L.range})</span></div>`;
+    const bindToggle = () => wrap.querySelectorAll("[data-lotwk]").forEach((btn) => {
+      btn.onclick = () => {
+        const v = parseInt(btn.getAttribute("data-lotwk"), 10);
+        if (v === (state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset)) return;
+        state.lotWeekOffset = v; state.lotResult = null; state.lotLoaded = false;
+        renderLottery();
+        loadEntrants().then(renderLottery);
+      };
+    });
+    const entrants = state.lotEntrants || [];
+    const count = $("lotCount"); if (count) count.textContent = entrants.length ? `(${entrants.length}명)` : "";
+    if (state._lotErr) { wrap.innerHTML = toggle + `<div class="err">응모자 집계 실패: ${esc(state._lotErr)}</div>`; bindToggle(); return; }
+    if (!state.lotLoaded) { wrap.innerHTML = toggle + `<div class="loading">응모자 집계 중…</div>`; bindToggle(); return; }
+    if (!entrants.length) { wrap.innerHTML = toggle + `<div class="empty">${L.name} 응모권을 보유한 참여자가 없습니다.</div>`; bindToggle(); return; }
+    const total = entrants.reduce((a, e) => a + e.entries, 0);
+    const prizeLine = "🥇 1등 3만원 · 🥈 2등 1만원 · 🥉 3등 5천원 · 🎁 참여상 스타벅스 10명";
+    const exclNote = state.prevWinnerCount ? `<br><span class="dim-sm">🚫 직전주 당첨자 ${state.prevWinnerCount}명은 추첨에서 자동 제외(연속 당첨 방지)</span>` : "";
+    const drawn = state.lotResult && state.lotResult.length;
+    // 1회 추첨 잠금: 뽑기 전에만 추첨 버튼 노출. 뽑은 뒤엔 확정/취소만.
+    const drawBtnHtml = drawn
+      ? `<span class="dim-sm" style="align-self:center;">✅ 추첨 완료 — 아래에서 확정하거나 취소하십시오</span>`
+      : `<button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행 (1회)</button>`;
+    let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span>${exclNote}</div>${drawBtnHtml}</div>`;
+    if (state.lotResult && state.lotResult.length) {
+      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전(임시저장됨 · 새로고침해도 유지)</span></div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="resetBtn">❌ 취소(초기화)</button></div></div>`;
+    }
+    html += `<div class="lot-divlbl">참여자 목록 (응모권순)</div><div>${entrants.slice(0, 30).map((e, i) => `<div class="lot-row"><span class="lot-title">${i + 1}. ${esc(entrantName(e))}</span><span class="dim-sm">${e.entries}장 <span style="opacity:.6">(체크인 ${e.checkins}·미션 ${e.approved})</span></span></div>`).join("")}${entrants.length > 30 ? `<div class="dim-sm" style="padding:8px 2px;">외 ${entrants.length - 30}명…</div>` : ""}</div>`;
+    wrap.innerHTML = html;
+    bindToggle();
+    const b = $("drawBtn"); if (b) b.onclick = drawWinners;
+    const c = $("confirmBtn"); if (c) c.onclick = () => recordWinners(state.lotResult);
+    const rs = $("resetBtn"); if (rs) rs.onclick = resetDraw;
+  }
+  function renderReview() {
+    const list = $("revList");
+    if (!list || !state.isAdmin) return;
+    const pending = (state.allSubs || []).filter((s) => s.status === "pending");
+    const count = $("revCount"); if (count) count.textContent = pending.length ? `(${pending.length}건 대기)` : "";
+    if (state._adminErr) { list.innerHTML = `<div class="err">로드 실패: ${esc(state._adminErr)}</div>`; return; }
+    if (!pending.length) { list.innerHTML = `<div class="empty">검토할 대기 제출이 없습니다.</div>`; return; }
+    list.innerHTML = pending.map(revRow).join("");
+    pending.forEach((s) => {
+      const a = list.querySelector(`[data-app="${cssEscape(s.id)}"]`);
+      const r = list.querySelector(`[data-rej="${cssEscape(s.id)}"]`);
+      if (a) a.onclick = () => reviewSub(s, "approved");
+      if (r) r.onclick = () => reviewSub(s, "rejected");
+    });
+  }
+  function renderManage() {
+    const wrap = $("manageWrap");
+    if (!wrap || !state.isAdmin) return;
+    const tasks = state.tasks || [];
+    const count = $("mgmtCount"); if (count) count.textContent = tasks.length ? `(${tasks.length}건 진행중)` : "";
+    if (state._tasksErr) { wrap.innerHTML = `<div class="err">로드 실패: ${esc(state._tasksErr)}</div>`; return; }
+    if (!tasks.length) { wrap.innerHTML = `<div class="empty">진행중인 미션이 없습니다.</div>`; return; }
+    wrap.innerHTML = tasks.map((t) => {
+      const ends = t.ends_at ? `<span class="dim-sm">~ ${esc(String(t.ends_at).slice(0, 10))}</span>` : `<span class="dim-sm">기한 없음</span>`;
+      return `<div class="rev-row"><div class="rev-body"><div class="rev-task">${esc(t.title)}</div><div class="rev-user">${esc(t.category || "미분류")} · ${ends}</div></div><div class="rev-actions"><div style="display:flex;gap:6px;"><button class="mini-btn app" type="button" data-edittask="${esc(t.id)}">수정</button><button class="mini-btn rej" type="button" data-end="${esc(t.id)}">종료</button><button class="mini-btn" type="button" data-del="${esc(t.id)}" style="background:#3a2530;color:#ff8aa0;">삭제</button></div></div></div>`;
+    }).join("");
+    tasks.forEach((t) => {
+      const et = wrap.querySelector(`[data-edittask="${cssEscape(t.id)}"]`);
+      const e = wrap.querySelector(`[data-end="${cssEscape(t.id)}"]`);
+      const d = wrap.querySelector(`[data-del="${cssEscape(t.id)}"]`);
+      if (et) et.onclick = () => editTask(t);
+      if (e) e.onclick = () => endTask(t);
+      if (d) d.onclick = () => deleteTask(t);
+    });
+  }
+  async function endTask(t) {
+    if (!confirm(`"${t.title}" 미션을 지금 종료합니다. (기한과 무관하게 목록에서 내려갑니다)`)) return;
+    try {
+      const { error } = await withTimeout(state.sb.from("airdrop_tasks").update({ status: "ended" }).eq("id", t.id), "미션 종료");
+      if (error) throw error;
+      toast("미션을 종료했습니다.", "ok");
+      await loadTasks();
+      renderTasks(); renderManage();
+    } catch (err) {
+      toast("종료 실패: " + errText(err), "err");
+    }
+  }
+  async function deleteTask(t) {
+    if (!confirm(`"${t.title}" 미션을 완전히 삭제합니다. 되돌릴 수 없습니다.`)) return;
+    try {
+      const { error } = await withTimeout(state.sb.from("airdrop_tasks").delete().eq("id", t.id), "미션 삭제");
+      if (error) throw error;
+      toast("미션을 삭제했습니다.", "ok");
+      await loadTasks();
+      renderTasks(); renderManage();
+    } catch (err) {
+      toast("삭제 실패: " + errText(err), "err");
+    }
+  }
+  function renderAdmin() {
+    const wrap = $("adminWrap");
+    const gate = $("adminGate");
+    if (!wrap) return;
+    if (!state.uid) {
+      wrap.style.display = "none";
+      if (gate) gate.innerHTML = `<div class="ck-row"><div class="ck-meta">관리자 전용 페이지입니다. 관리자 계정으로 로그인해 주십시오.</div><button class="btn-sub" id="adminLogin" type="button">로그인</button></div>`;
+      const b = $("adminLogin"); if (b) b.onclick = doLogin;
+      return;
+    }
+    if (!state.isAdmin) {
+      wrap.style.display = "none";
+      if (gate) gate.innerHTML = `<div class="empty">관리자 전용입니다. 현재 계정에는 관리자 권한이 없습니다.</div>`;
+      return;
+    }
+    wrap.style.display = "";
+    if (gate) gate.style.display = "none";
+    renderVisitStats();
+    renderManage();
+    renderLottery();
+    renderReview();
+    renderEventWinners();
+  }
   const normHandle = (v) => (v || "").trim().replace(/^@+/, "");
   function renderProfile() {
     const wrap = $("profileBody");
@@ -631,6 +945,7 @@
     renderLeaderboard();
     renderAirdropEvents();
     renderWinners();
+    renderAdmin();
   }
 
   function tickCountdown() {
@@ -834,6 +1149,231 @@
       toast("인증 요청 실패: " + errText(err), "err");
     }
   }
+
+  async function reviewSub(s, status) {
+    try {
+      const { error } = await withTimeout(
+        state.sb.from("airdrop_submissions").update({ status, reviewed_by: state.uid, reviewed_at: new Date().toISOString() }).eq("id", s.id),
+        "제출 검토",
+      );
+      if (error) throw error;
+      toast(`${st(status).txt} 처리 완료했습니다.`, "ok");
+      await Promise.allSettled([loadAllSubs(), loadMySubs(), loadEntrants()]);
+      renderReview(); renderLottery(); renderTasks(); renderTickets();
+    } catch (err) {
+      toast("처리 실패: " + errText(err), "err");
+    }
+  }
+
+  async function recordWinners(result) {
+    if (!result || !result.length) { toast("먼저 추첨을 실행해 주십시오.", "err"); return; }
+    const L = lotWeekLabel();
+    const week = weekBounds(state.lotWeekOffset).startDate;
+    // ── 재추첨/중복확정 차단: 이 주차가 이미 확정되었는지 이중 확인 ──
+    try {
+      const [drawRes, winRes] = await Promise.all([
+        withTimeout(state.sb.from("raffle_draws").select("winner_count,committed_at").eq("week_start", week).maybeSingle(), "확정 잠금 확인"),
+        withTimeout(state.sb.from("raffle_winners").select("id").eq("week_start", week).limit(1), "기존 당첨자 확인"),
+      ]);
+      const locked = drawRes && drawRes.data;
+      const hasWinners = winRes && winRes.data && winRes.data.length;
+      if (locked || hasWinners) {
+        const when = locked && locked.committed_at ? new Date(locked.committed_at).toLocaleString("ko-KR") : "확정됨";
+        const cnt = locked && locked.winner_count != null ? locked.winner_count : (hasWinners ? "기존" : "");
+        toast(`이미 확정된 주차입니다 (${cnt}명, ${when}). 재추첨·재기록은 차단됩니다. 정정이 필요하면 관리자에게 문의하십시오.`, "err");
+        return;
+      }
+    } catch (e) { toast("확정 여부 확인 실패로 기록을 중단합니다: " + errText(e), "err"); return; }
+
+    if (!confirm(`추첨 결과 ${result.length}명을 ${L.name}(${L.range}) 당첨자로 확정 기록합니다.\n\n⚠️ 확정 후에는 이 주차의 재추첨·재기록이 영구 차단됩니다. 진행하시겠습니까?`)) return;
+    const rows = result.map((e) => ({
+      week_start: week,
+      user_id: e.user_id,
+      telegram: e.full_name || (e.email ? e.email.split("@")[0] : null),
+      prize: `${e.tier} ${e.prize}`,
+      entries: e.entries,
+    }));
+    const btn = $("confirmBtn"); if (btn) { btn.disabled = true; btn.textContent = "기록 중…"; }
+    try {
+      const { error } = await withTimeout(state.sb.from("raffle_winners").insert(rows), "당첨자 기록");
+      if (error) throw error;
+      // 확정 잠금 마킹(감사) — 실패해도 winners는 이미 저장됨. uq 제약이 이중저장 방어.
+      try {
+        await withTimeout(state.sb.from("raffle_draws").insert({ week_start: week, drawn_by: state.uid, winner_count: rows.length }), "확정 잠금 기록");
+      } catch (_) {}
+      toast(`${rows.length}명의 당첨자를 확정 기록했습니다. 이 주차는 이제 잠깁니다.`, "ok");
+      state.lotResult = null;
+      clearDraft(); // 확정됐으니 임시저장 미리보기 제거
+      await loadWinners();
+      renderWinners(); renderLottery();
+    } catch (err) {
+      toast("당첨자 기록 실패: " + errText(err), "err");
+      if (btn) { btn.disabled = false; btn.textContent = "✅ 당첨자 확정 기록"; }
+    }
+  }
+
+  function resetEdit() {
+    state._editTaskId = null;
+    const btn = $("taskSubmit"); if (btn) btn.textContent = "미션 등록";
+    const cancel = $("taskCancel"); if (cancel) cancel.style.display = "none";
+  }
+  function cancelEdit() {
+    resetEdit();
+    const f = $("taskForm"); if (f) f.reset();
+    toast("수정을 취소했습니다.", "");
+  }
+  function editTask(t) {
+    state._editTaskId = t.id;
+    $("f_title").value = t.title || "";
+    $("f_verify").value = t.verify_method || "capture";
+    $("f_desc").value = t.description || "";
+    $("f_steps").value = t.steps || "";
+    $("f_link").value = t.link || "";
+    $("f_reward").value = t.reward_note || "";
+    $("f_cat").value = t.category || "";
+    $("f_sort").value = (t.sort_order != null ? t.sort_order : 0);
+    $("f_ends").value = toLocalInput(t.ends_at);
+    const btn = $("taskSubmit"); if (btn) btn.textContent = "미션 수정";
+    const cancel = $("taskCancel"); if (cancel) cancel.style.display = "";
+    const form = $("taskForm"); if (form) { try { form.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {} }
+    toast(`수정 모드입니다. "${t.title || ""}" 편집 후 저장하십시오.`, "");
+  }
+  async function submitTask(e) {
+    e.preventDefault();
+    const title = $("f_title").value.trim();
+    if (!title) { toast("제목을 입력해 주십시오.", "err"); return; }
+    const editing = !!state._editTaskId;
+    const btn = $("taskSubmit");
+    btn.disabled = true; btn.textContent = editing ? "수정 중…" : "등록 중…";
+    const payload = {
+      title,
+      verify_method: $("f_verify").value || "capture",
+      description: $("f_desc").value.trim() || null,
+      steps: $("f_steps").value.trim() || null,
+      link: $("f_link").value.trim() || null,
+      reward_note: $("f_reward").value.trim() || "응모권 +5장",
+      category: $("f_cat").value.trim() || null,
+      sort_order: parseInt($("f_sort").value, 10) || 0,
+      ends_at: $("f_ends").value ? new Date($("f_ends").value).toISOString() : null,
+    };
+    try {
+      if (editing) {
+        // 상태(status)는 변경하지 않고 필드만 갱신합니다.
+        const { error } = await withTimeout(state.sb.from("airdrop_tasks").update(payload).eq("id", state._editTaskId), "미션 수정");
+        if (error) throw error;
+        toast("미션을 수정했습니다.", "ok");
+      } else {
+        const { error } = await withTimeout(
+          state.sb.from("airdrop_tasks").insert({ ...payload, status: "active", created_by: state.uid }),
+          "미션 등록",
+        );
+        if (error) throw error;
+        toast("미션이 등록되었습니다.", "ok");
+      }
+      resetEdit();
+      e.target.reset();
+      await loadTasks();
+      renderTasks(); renderManage();
+    } catch (err) {
+      toast((editing ? "수정" : "등록") + " 실패: " + errText(err), "err");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = state._editTaskId ? "미션 수정" : "미션 등록";
+    }
+  }
+
+  function resetEventWinnerEdit() {
+    state._editEventWinnerId = null;
+    const form = $("ewForm"); if (form) form.reset();
+    const id = $("ew_id"); if (id) id.value = "";
+    const btn = $("ewSubmit"); if (btn) btn.textContent = "당첨자 추가";
+    const cancel = $("ewCancel"); if (cancel) cancel.style.display = "none";
+  }
+  function eventWinnerPayload() {
+    return {
+      event: (($("ew_event") && $("ew_event").value) || "").trim(),
+      tier: (($("ew_tier") && $("ew_tier").value) || "").trim(),
+      prize: (($("ew_prize") && $("ew_prize").value) || "").trim(),
+      telegram: (($("ew_telegram") && $("ew_telegram").value) || "").trim(),
+      twitter: (($("ew_twitter") && $("ew_twitter").value) || "").trim(),
+      note: (($("ew_note") && $("ew_note").value) || "").trim(),
+    };
+  }
+  function editEventWinner(w) {
+    state._editEventWinnerId = w.id;
+    $("ew_id").value = w.id || "";
+    $("ew_event").value = w.event || "";
+    $("ew_tier").value = w.tier || "";
+    $("ew_prize").value = w.prize || "";
+    $("ew_telegram").value = w.telegram || "";
+    $("ew_twitter").value = w.twitter || "";
+    $("ew_note").value = w.note || "";
+    const btn = $("ewSubmit"); if (btn) btn.textContent = "당첨자 수정";
+    const cancel = $("ewCancel"); if (cancel) cancel.style.display = "";
+    const form = $("ewForm"); if (form) { try { form.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {} }
+  }
+  async function deleteEventWinner(w) {
+    if (!confirm(`"${w.event}" / "${w.telegram}" 당첨자 항목을 삭제하시겠습니까?`)) return;
+    try {
+      const { error } = await withTimeout(state.sb.from("event_winners").delete().eq("id", w.id), "이벤트 당첨자 삭제");
+      if (error) throw error;
+      toast("이벤트 당첨자를 삭제했습니다.", "ok");
+      await loadEventWinners();
+      renderEventWinners();
+    } catch (err) {
+      toast("삭제 실패: " + errText(err), "err");
+    }
+  }
+  async function submitEventWinner(e) {
+    e.preventDefault();
+    const payload = eventWinnerPayload();
+    if (!payload.event || !payload.telegram) { toast("이벤트와 텔레그램/닉은 필수입니다.", "err"); return; }
+    const btn = $("ewSubmit"); const editing = !!state._editEventWinnerId;
+    if (btn) { btn.disabled = true; btn.textContent = editing ? "수정 중..." : "추가 중..."; }
+    try {
+      const clean = {
+        event: payload.event,
+        tier: payload.tier || "",
+        prize: payload.prize || "",
+        telegram: payload.telegram,
+        twitter: payload.twitter || "",
+        note: payload.note || "",
+      };
+      const res = editing
+        ? await withTimeout(state.sb.from("event_winners").update(clean).eq("id", state._editEventWinnerId), "이벤트 당첨자 수정")
+        : await withTimeout(state.sb.from("event_winners").insert({ ...clean, created_by: state.uid }), "이벤트 당첨자 추가");
+      if (res.error) throw res.error;
+      toast(editing ? "이벤트 당첨자를 수정했습니다." : "이벤트 당첨자를 추가했습니다.", "ok");
+      resetEventWinnerEdit();
+      await loadEventWinners();
+      renderEventWinners();
+    } catch (err) {
+      toast((editing ? "수정" : "추가") + " 실패: " + errText(err), "err");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = state._editEventWinnerId ? "당첨자 수정" : "당첨자 추가"; }
+    }
+  }
+  function renderEventWinners() {
+    const wrap = $("eventWinnersWrap");
+    if (!wrap || !state.isAdmin) return;
+    const count = $("ewCount"); if (count) count.textContent = state.eventWinners.length ? `(${state.eventWinners.length}건)` : "";
+    if (state._ewErr) { wrap.innerHTML = `<div class="err">로드 실패: ${esc(state._ewErr)}</div>`; return; }
+    if (!state.eventWinners.length) { wrap.innerHTML = `<div class="empty">등록된 웹 관리 당첨자가 없습니다.</div>`; return; }
+    const byEvent = {};
+    state.eventWinners.forEach((w) => { (byEvent[w.event] = byEvent[w.event] || []).push(w); });
+    wrap.innerHTML = Object.keys(byEvent).sort((a, b) => a.localeCompare(b)).map((ev) => (
+      `<div class="wkblock"><div class="wkhead">${esc(ev)} <span class="dim-sm">· ${byEvent[ev].length}명</span></div>`
+      + byEvent[ev].map((w) => `<div class="rev-row"><div class="rev-body"><div class="rev-task">${esc(w.tier || "등수 없음")} · ${esc(w.telegram)}</div><div class="rev-user">${esc(w.prize || "상품 없음")}${w.twitter ? ` · X ${esc(w.twitter)}` : ""}</div>${w.note ? `<div class="rev-note">${esc(w.note)}</div>` : ""}</div><div class="rev-actions"><div style="display:flex;gap:6px;"><button class="mini-btn app" type="button" data-ewedit="${esc(w.id)}">수정</button><button class="mini-btn rej" type="button" data-ewdel="${esc(w.id)}">삭제</button></div></div></div>`).join("")
+      + `</div>`
+    )).join("");
+    state.eventWinners.forEach((w) => {
+      const e = wrap.querySelector(`[data-ewedit="${cssEscape(w.id)}"]`);
+      const d = wrap.querySelector(`[data-ewdel="${cssEscape(w.id)}"]`);
+      if (e) e.onclick = () => editEventWinner(w);
+      if (d) d.onclick = () => deleteEventWinner(w);
+    });
+  }
+
   let bootToken = 0;
   async function boot() {
     const my = ++bootToken;
@@ -846,9 +1386,14 @@
       await Promise.allSettled([loadTasks(), loadWinners(), loadLeaderboard()]);
       if (my !== bootToken) return;
       renderAll();
-      await Promise.allSettled([loadMySubs(), loadCheckins(), loadWallets()]);
+      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs(), loadEntrants(), loadWallets(), loadVisitStats(), loadEventWinners()]);
       if (my !== bootToken) return;
       renderAll();
+      // 관리자: 실시간 방문 통계 30초마다 갱신
+      clearInterval(state._vsClock);
+      if (state.isAdmin) {
+        state._vsClock = setInterval(async () => { await loadVisitStats(); renderVisitStats(); }, 30000);
+      }
       // self-heal: 첫 부팅 때 세션이 늦게 복원돼(INITIAL_SESSION 누락/지연) uid가 비면,
       // 잠시 뒤 한 번 더 getSession 해서 세션이 있으면 자동 재부팅(거짓 비로그인 화면 제거).
       clearTimeout(state._authRetry);
@@ -894,6 +1439,11 @@
       if (!f.type.startsWith("image/")) { p.innerHTML = `<div class="err" style="margin-top:8px;">이미지 파일만 가능합니다.</div>`; return; }
       p.innerHTML = `<img src="${URL.createObjectURL(f)}" alt="" style="max-height:140px;border-radius:10px;border:1px solid var(--line);margin-top:8px;display:block;">`;
     };
+    if ($("taskForm")) $("taskForm").onsubmit = submitTask;
+    if ($("taskCancel")) $("taskCancel").onclick = cancelEdit;
+    if ($("ewForm")) $("ewForm").onsubmit = submitEventWinner;
+    if ($("ewCancel")) $("ewCancel").onclick = resetEventWinnerEdit;
+    if ($("admToggle")) $("admToggle").onclick = () => $("adminCard").classList.toggle("admin-open");
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("subModal") && $("subModal").classList.contains("on")) closeSubModal(); });
     state.sb.auth.onAuthStateChange((event, session) => {
       // 이벤트가 주는 세션을 직접 반영(getSession 경합에 의존하지 않음) → 로그인 즉시 인증 뷰로.
