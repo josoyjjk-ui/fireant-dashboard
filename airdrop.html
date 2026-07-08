@@ -39,6 +39,15 @@ html,body{overflow-x:hidden;}
 .anchor-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;}
 .anchor-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--txt);text-decoration:none;font-size:13px;font-weight:800;transition:border-color .15s;}
 .anchor-chip:hover{border-color:var(--accent);}
+/* ★ 상단 결과 바로가기 배너 → /winners 결과 허브 */
+.results-cta{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;background:linear-gradient(100deg,#2a1408,#1a1206 55%,#13161c);border:1px solid #3a2a14;border-radius:16px;padding:16px 20px;text-decoration:none;color:var(--txt);position:relative;overflow:hidden;}
+.results-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 160% at 0% 0%,rgba(255,150,40,.16),transparent 55%);}
+.results-cta:hover{border-color:var(--accent2);}
+.results-cta .rc-l{position:relative;z-index:1;}
+.results-cta .rc-l .t{font-size:16px;font-weight:900;}
+.results-cta .rc-l .s{font-size:12.5px;color:#cdb98a;font-weight:700;margin-top:4px;}
+.results-cta .rc-btn{position:relative;z-index:1;background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;font-weight:900;font-size:14px;padding:12px 20px;border-radius:11px;white-space:nowrap;box-shadow:0 4px 14px rgba(255,86,40,.3);}
+@media(max-width:600px){.results-cta{flex-direction:column;align-items:stretch;text-align:center;}.results-cta .rc-btn{text-align:center;}}
 .link-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,#2a2210,#161208);border:1px solid #3a2f14;border-radius:13px;padding:13px 15px;margin-bottom:12px;text-decoration:none;color:var(--txt);}
 .link-card:hover{border-color:var(--accent2);}
 .link-card .t{font-size:13.5px;font-weight:900;}
@@ -378,6 +387,13 @@ html{background:#0a0c10;}</style></head>
       <a class="anchor-chip" href="#airdropEvents">🎉 이벤트 모음</a>
     </div>
 
+    <!-- 상단 결과 바로가기 → /winners 결과·리더보드·당첨자 허브 -->
+    <a class="results-cta" href="/winners">
+      <div class="rc-l"><div class="t">🏆 이벤트 결과 · 리더보드 · 당첨자 확인</div>
+        <div class="s">출석 리더보드 · 지난주 추첨 당첨자 · 이벤트 당첨자 명단을 한 곳에서</div></div>
+      <span class="rc-btn">결과 보러가기 →</span>
+    </a>
+
     <div class="reward-card">
       <div class="rc-top">
         <div class="rc-info">
@@ -435,27 +451,6 @@ html{background:#0a0c10;}</style></head>
 
     <div class="seclabel">🪂 진행중 미션 <span class="dim-sm">· 인증완료 건마다 응모권 +5장</span></div>
     <div class="tasks-grid" id="tasksWrap"><div class="loading">작업을 불러오는 중…</div></div>
-
-    <div class="row">
-      <div class="card">
-        <a class="link-card" href="/streak">
-          <span class="t">🔥 출석 스트릭 리더보드 전체 보기 →</span>
-          <span class="go">TOP 10</span>
-        </a>
-        <div class="ck-h">🎰 이번 주 추첨 안내</div>
-        <div class="flow">
-          <div class="flow-step"><div class="ic">🗓️</div><div class="t">일요일 자정 마감</div><div class="s">이번 주 모든 응모권이 일괄 마감됩니다.</div></div>
-          <span class="flow-arr">→</span>
-          <div class="flow-step"><div class="ic">⚖️</div><div class="t">응모권 가중 추첨</div><div class="s">응모권 수만큼 가중치를 둬 추첨합니다.</div></div>
-          <span class="flow-arr">→</span>
-          <div class="flow-step"><div class="ic">🔍</div><div class="t">당첨자 검증</div><div class="s">당첨자만 온체인·캡쳐 재검증 후 확정합니다.</div></div>
-          <span class="flow-arr">→</span>
-          <div class="flow-step"><div class="ic">🎁</div><div class="t">기프티콘 지급</div><div class="s">확정 당첨자에게 기프티콘을 전송합니다.</div></div>
-        </div>
-        <div class="win-mini-title" id="winnersTitle">🏆 지난주 당첨자</div>
-        <div id="winnersWrap"><div class="empty">지난주 당첨자를 불러오는 중입니다.</div></div>
-      </div>
-    </div>
 
     <div class="seclabel" id="airdropEvents">🎉 이벤트 모음</div>
     <div class="cards" id="airdropEventsWrap"><div class="loading">이벤트를 불러오는 중…</div></div>
