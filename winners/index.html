@@ -1,830 +1,285 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏆 DSCVR 친구초대 이벤트 당첨자 공지 — 불개미 CRYPTO</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏆 결과 · 리더보드 · 당첨자 | 개미투자정보</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap');
-  @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css');
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;--gold:#ffce5c;}
+body{background:var(--bg);color:var(--txt);padding-bottom:40px;}
+a{color:var(--accent2);text-decoration:none;}a:hover{text-decoration:underline;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
+.logo{font-size:20px;font-weight:900;color:var(--accent);}
+.back{font-size:13px;font-weight:800;color:var(--dim);text-decoration:none;}
+.main{max-width:1000px;margin:0 auto;padding:20px;}
+.head h1{font-size:24px;font-weight:900;}.head .sub{color:var(--dim);font-size:13px;margin-top:5px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;}
+.seclabel{font-size:16px;font-weight:900;margin:22px 0 11px;display:flex;align-items:center;gap:8px;}
+.dim-sm{font-size:12px;color:var(--dim);font-weight:700;}
+.row{display:grid;gap:14px;margin-top:14px;}
+.r2{grid-template-columns:1fr 1fr;}
+.tabbar{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px;}
+.tabbar a{padding:9px 14px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--txt);font-size:13px;font-weight:800;text-decoration:none;}
+.tabbar a.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+.tabbar a:hover{text-decoration:none;border-color:var(--accent2);}
+.searchbar{display:flex;gap:8px;margin-top:12px;}
+.searchbar input{flex:1;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 15px;color:var(--txt);font-size:14px;outline:none;}
+.searchbar input:focus{border-color:var(--accent);}
+.lb-row{display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;padding:9px 11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;margin-bottom:6px;}
+.lb-rank{font-weight:900;color:var(--dim);text-align:center;}.lb-name{font-weight:800;font-size:13.5px;}.lb-days{color:var(--accent2);font-weight:800;font-size:12.5px;}
+.lb-row.top1{background:linear-gradient(135deg,#2a2210,#14100a);border-color:#3a2f14;}
+.flow-v{display:flex;flex-direction:column;gap:8px;}
+.fstep{display:flex;align-items:center;gap:11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+.fstep .ic{font-size:19px;width:26px;text-align:center;}.fstep .t{font-size:13px;font-weight:800;}.fstep .s{font-size:11px;color:var(--dim);}
+.ck-h{font-size:15px;font-weight:800;margin-bottom:11px;}
+.wrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px;border-bottom:1px solid var(--line);font-size:13px;}
+.wrow:last-child{border:none;}.wtier{font-weight:800;}.whandle{color:var(--dim);font-weight:700;}
+.prize{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:6px;background:#231a0c;color:var(--accent2);white-space:nowrap;}
+.fold{font-size:12px;color:var(--accent2);font-weight:800;cursor:pointer;margin-top:8px;display:inline-block;}
+.wkblock{margin-bottom:14px;}.wkblock:last-child{margin-bottom:0;}
+.wkhead{font-size:13px;font-weight:900;margin-bottom:8px;color:var(--txt);}
+.ev-search{display:flex;gap:8px;margin:2px 0 4px;}
+.ev-search input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--txt);font-size:13.5px;outline:none;}
+.ev-search input:focus{border-color:var(--accent);}
+.evgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.evgrp{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.evgrp>summary{cursor:pointer;list-style:none;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.evgrp>summary::-webkit-details-marker{display:none;}
+.evgrp .et{font-size:14px;font-weight:900;color:var(--gold);line-height:1.3;}
+.evgrp .esum{font-size:12px;color:var(--dim);font-weight:700;white-space:nowrap;}
+.evgrp .ebody{padding:0 15px 13px;max-height:360px;overflow-y:auto;}
+.tierhead{font-size:12.5px;font-weight:900;margin:9px 0 5px;}
+.chips{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{font-size:11.5px;font-weight:700;padding:4px 8px;border-radius:7px;background:var(--bg);border:1px solid var(--line);}
+.chip.hit{background:#231a0c;border-color:var(--accent2);color:var(--accent2);}
+.loading{color:var(--dim);font-size:13px;padding:6px 2px;}
+.empty{color:var(--dim);font-size:13px;padding:6px 2px;}
+.err{color:#ff6b6b;font-size:13px;padding:6px 2px;}
+.claim-cta{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:linear-gradient(135deg,rgba(255,181,71,.1),rgba(255,107,53,.06));border:1px solid #3a2f14;border-radius:12px;padding:12px 16px;}
+.claim-cta .ct{font-size:13px;font-weight:800;}.claim-cta .cs{font-size:11.5px;color:var(--dim);margin-top:2px;}
+.claim-btn{background:linear-gradient(135deg,#ff8c00,#ff4d00);color:#fff;font-weight:800;font-size:13px;padding:10px 20px;border-radius:10px;text-decoration:none;white-space:nowrap;}
+.claim-btn:hover{text-decoration:none;filter:brightness(1.08);}
+@media(max-width:720px){.r2,.evgrid{grid-template-columns:1fr;}.tabbar{overflow-x:auto;flex-wrap:nowrap;}}
+</style></head><body>
+<div class="nav"><span class="logo">🐜 개미투자정보</span><a class="back" href="/airdrop">← 에어드랍으로</a></div>
+<div class="main">
+  <div class="head"><h1>🏆 결과 · 리더보드 · 당첨자</h1><div class="sub">출석 리더보드, 주간 추첨 당첨자, 이벤트 당첨자 명단을 한 곳에서 확인하세요.</div></div>
 
-  :root, [data-theme="dark"] {
-    --bg: #08080f;
-    --surface: rgba(255,255,255,0.04);
-    --surface-hover: rgba(255,255,255,0.07);
-    --border: rgba(255,255,255,0.08);
-    --border-hover: rgba(255,68,68,0.4);
-    --red: #FF3B3B;
-    --orange: #FF6B35;
-    --gold: #FFD740;
-    --blue: #5B8DEF;
-    --green: #4ADE80;
-    --text: #E8E8ED;
-    --text-dim: #6B6B80;
-    --text-muted: #8A8AA8;
-    --glow-red: rgba(255,59,59,0.15);
-    --glow-orange: rgba(255,107,53,0.12);
-    --radius: 16px;
-    --radius-sm: 10px;
-    --nav-bg: rgba(8,8,15,0.85);
-    --particle-opacity: 1;
-    --ambient-opacity: 1;
-  }
-
-  [data-theme="light"] {
-    --bg: #F5F5F7;
-    --surface: rgba(0,0,0,0.03);
-    --surface-hover: rgba(0,0,0,0.06);
-    --border: rgba(0,0,0,0.08);
-    --border-hover: rgba(255,68,68,0.3);
-    --red: #E02020;
-    --orange: #E85D2A;
-    --gold: #D4A017;
-    --blue: #3B6FD4;
-    --green: #22A855;
-    --text: #1A1A2E;
-    --text-dim: #5A5A72;
-    --text-muted: #9E9EB5;
-    --glow-red: rgba(224,32,32,0.08);
-    --glow-orange: rgba(232,93,42,0.06);
-    --nav-bg: rgba(245,245,247,0.9);
-    --particle-opacity: 0.3;
-    --ambient-opacity: 0.4;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Geist', 'Noto Sans KR', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    transition: background 0.4s, color 0.4s;
-  }
-
-  canvas#particles {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0; pointer-events: none;
-    opacity: var(--particle-opacity);
-    transition: opacity 0.4s;
-  }
-
-  .ambient {
-    position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
-    width: 600px; height: 400px;
-    background: radial-gradient(ellipse, rgba(255,215,64,0.06) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
-    opacity: var(--ambient-opacity);
-    transition: opacity 0.4s;
-  }
-
-  .theme-toggle {
-    width: 34px; height: 34px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text-dim);
-    font-size: 1rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-    margin-left: 6px;
-    flex-shrink: 0;
-  }
-  .theme-toggle:hover {
-    border-color: var(--border-hover);
-    color: var(--text);
-    background: var(--surface-hover);
-  }
-
-  .wrap {
-    position: relative; z-index: 1;
-    max-width: 520px;
-    margin: 0 auto;
-    padding: 0 16px 60px;
-  }
-
-  /* ── NAV ── */
-  .nav {
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px 0;
-    position: sticky; top: 0; z-index: 10;
-    background: var(--nav-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-inner { display: flex; align-items: center; width: 100%; max-width: 720px; position: relative; }
-  .nav-links { display: flex; gap: 8px; align-items: center; position: absolute; left: 50%; transform: translateX(-50%); flex-wrap: nowrap; white-space: nowrap; }
-  .nav-links a {
-    color: var(--text-dim); text-decoration: none;
-    font-size: 1.00rem; font-weight: 600;
-    padding: 6px 10px; border-radius: 8px;
-    transition: all 0.2s;
-  }
-  .nav-links a:hover { color: var(--text); background: var(--surface); }
-
-  /* ── PAGE HEADER ── */
-  .page-header {
-    text-align: center;
-    padding: 40px 0 28px;
-  }
-  .page-header .icon {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 12px;
-  }
-  .page-header h1 {
-    font-size: 1.8rem; font-weight: 900;
-    background: linear-gradient(135deg, var(--gold), var(--orange));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.2;
-  }
-  .page-header p {
-    color: var(--text-dim); font-size: 0.86rem;
-    margin-top: 8px;
-  }
-
-  /* ── SECTION ── */
-  .section { margin-top: 32px; }
-  .section-head {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 14px;
-  }
-  .section-head h2 {
-    font-size: 1rem; font-weight: 800; color: var(--text);
-  }
-
-  /* ── SEARCH BOX ── */
-  .search-wrap {
-    position: relative; margin-bottom: 16px;
-  }
-  .search-wrap .search-icon {
-    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-    font-size: 1rem; color: var(--text-muted);
-    pointer-events: none;
-  }
-  .search-input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 0.9rem;
-    padding: 14px 14px 14px 42px;
-    outline: none;
-    transition: all 0.2s;
-  }
-  .search-input::placeholder { color: var(--text-muted); }
-  .search-input:focus {
-    border-color: rgba(255,215,64,0.4);
-    background: var(--surface-hover);
-    box-shadow: 0 0 0 3px rgba(255,215,64,0.08);
-  }
-  .search-hint {
-    font-size: 0.78rem; color: var(--text-dim); font-weight: 500;
-    margin-top: 6px; padding-left: 2px;
-  }
-
-  /* ── WINNER CARD ── */
-  .winner-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  .winner-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0;
-    width: 3px; height: 100%;
-    background: linear-gradient(180deg, var(--gold), var(--orange));
-    border-radius: 3px 0 0 3px;
-  }
-  .winner-card:hover {
-    border-color: rgba(255,215,64,0.3);
-    background: var(--surface-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 30px rgba(255,215,64,0.08);
-  }
-  .winner-event {
-    font-size: 0.72rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.4px;
-    color: var(--gold);
-    background: rgba(255,215,64,0.1);
-    display: inline-block;
-    padding: 3px 10px; border-radius: 6px;
-    margin-bottom: 10px;
-  }
-  .winner-handles {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    margin-bottom: 10px;
-  }
-  .winner-handle {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 0.82rem; font-weight: 600;
-    padding: 4px 10px; border-radius: 6px;
-    background: rgba(255,255,255,0.06);
-    color: var(--text-dim);
-  }
-  .winner-handle .platform { font-size: 0.7rem; opacity: 0.6; }
-  .winner-reward { display:none !important; /* hidden */ 
-    display: flex; align-items: center; gap: 6px;
-    font-size: 0.88rem; font-weight: 700;
-    color: var(--text);
-  }
-  .winner-reward::before { content: '🎁'; font-size: 0.85rem; }
-
-  /* ── EMPTY / STATES ── */
-  .state-box {
-    text-align: center;
-    padding: 40px 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text-dim);
-  }
-  .state-box .state-icon { font-size: 2.5rem; margin-bottom: 12px; }
-  .state-box p { font-size: 0.86rem; line-height: 1.6; }
-  .state-box .state-title { font-size: 1rem; font-weight: 700; color: var(--text-dim); margin-bottom: 6px; }
-
-  /* ── HIT BANNER ── */
-  .hit-banner {
-    background: linear-gradient(135deg, rgba(255,215,64,0.12), rgba(255,107,53,0.08));
-    border: 1px solid rgba(255,215,64,0.25);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .hit-banner .hit-icon { font-size: 1.8rem; flex-shrink: 0; }
-  .hit-banner .hit-text { flex: 1; }
-  .hit-banner .hit-title { font-size: 0.9rem; font-weight: 800; color: var(--gold); }
-  .hit-banner .hit-sub { font-size: 0.78rem; color: var(--text-dim); margin-top: 3px; }
-
-  /* ── REWARD FORM ── */
-  .form-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    margin-top: 8px;
-    transition: all 0.3s ease;
-  }
-  .form-title {
-    font-size: 1rem; font-weight: 800; color: var(--text);
-    margin-bottom: 4px;
-  }
-  .form-desc {
-    font-size: 0.78rem; color: var(--text-dim);
-    margin-bottom: 20px; line-height: 1.5;
-  }
-  .form-group { margin-bottom: 14px; }
-  .form-label {
-    display: block;
-    font-size: 0.78rem; font-weight: 700;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-  }
-  .form-label .req { color: var(--red); margin-left: 2px; }
-  .form-label .opt { color: var(--text-muted); font-weight: 400; margin-left: 4px; }
-  .form-input, .form-select, .form-textarea {
-    width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 0.86rem;
-    padding: 11px 14px;
-    outline: none;
-    transition: all 0.2s;
-    -webkit-appearance: none;
-  }
-  .form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
-  .form-input:focus, .form-select:focus, .form-textarea:focus {
-    border-color: rgba(255,107,53,0.4);
-    background: var(--surface-hover);
-    box-shadow: 0 0 0 3px rgba(255,107,53,0.08);
-  }
-  .form-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B80' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    padding-right: 36px;
-    cursor: pointer;
-  }
-  .form-select option { background: #1a1a2e; color: var(--text); }
-
-  .contact-row {
-    display: grid; grid-template-columns: 140px 1fr; gap: 8px;
-  }
-
-  /* Checkbox */
-  .checkbox-wrap {
-    display: flex; align-items: flex-start; gap: 10px;
-    cursor: pointer;
-  }
-  .checkbox-wrap input[type=checkbox] {
-    width: 18px; height: 18px; flex-shrink: 0;
-    accent-color: var(--orange);
-    margin-top: 1px; cursor: pointer;
-  }
-  .checkbox-label {
-    font-size: 0.78rem; color: var(--text-dim); line-height: 1.5;
-  }
-  .checkbox-label strong { color: var(--text); }
-
-  .form-submit {
-    width: 100%;
-    padding: 13px 24px;
-    background: linear-gradient(135deg, var(--gold), var(--orange));
-    color: #1a0f00;
-    border: none; border-radius: var(--radius-sm);
-    font-family: inherit;
-    font-size: 0.9rem; font-weight: 800;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 18px;
-  }
-  .form-submit:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 20px rgba(255,215,64,0.25);
-  }
-  .form-submit:disabled {
-    opacity: 0.5; cursor: not-allowed; transform: none;
-  }
-
-  .form-note {
-    font-size: 0.72rem; color: var(--text-muted);
-    text-align: center; margin-top: 10px; line-height: 1.5;
-  }
-
-  /* ── TABS ── */
-  .tabs {
-    display: flex; gap: 4px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 4px;
-    margin-bottom: 20px;
-  }
-  .tab-btn {
-    flex: 1;
-    padding: 9px 12px;
-    background: transparent;
-    border: none; border-radius: 7px;
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 0.82rem; font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .tab-btn.active {
-    background: rgba(255,215,64,0.12);
-    color: var(--gold);
-  }
-  .tab-btn:hover:not(.active) { background: var(--surface-hover); color: var(--text); }
-
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  /* ── SUCCESS STATE ── */
-  .success-box {
-    text-align: center;
-    padding: 32px 20px;
-    background: rgba(74,222,128,0.05);
-    border: 1px solid rgba(74,222,128,0.2);
-    border-radius: var(--radius);
-  }
-  .success-box .s-icon { font-size: 3rem; margin-bottom: 12px; }
-  .success-box h3 { font-size: 1rem; font-weight: 800; color: var(--green); margin-bottom: 8px; }
-  .success-box p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
-
-  /* ── EV-CARD transition (for shared style) ── */
-  .ev-card { transition: all 0.3s ease; }
-
-  /* ── FOOTER ── */
-  .footer {
-    text-align: center;
-    margin-top: 48px; padding-top: 24px;
-    border-top: 1px solid var(--border);
-  }
-  .footer p { font-size: 0.72rem; color: var(--text-muted); }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 600px) {
-    .nav-inner { max-width: 100%; padding: 0 8px; }
-    .nav-links { position: static; transform: none; left: auto; flex-wrap: nowrap; justify-content: center; white-space: nowrap; gap: 2px; width: 100%; overflow-x: auto; }
-    .nav-links a { font-size: 0.72rem; padding: 4px 6px; }
-  }
-
-  @media (max-width: 420px) {
-    .page-header h1 { font-size: 1.5rem; }
-    .contact-row { grid-template-columns: 1fr; }
-  }
-</style>
-</head>
-<body>
-
-<div class="nav">
-  <div class="nav-inner">
-    <div class="nav-links">
-        <a href="/" style="color:var(--text);font-weight:800;">불개미 Crypto</a>
-        <a href="/feed/" style="color:var(--text-dim);">정기 시장분석</a>
-        <a href="/events/" style="color:var(--text-dim);">이벤트</a>
-        <a href="/indicators/" style="color:var(--text-dim);">불개미지표</a>
-      </div>
+  <div class="tabbar">
+    <a class="on" href="#lb">🔥 출석 리더보드</a><a href="#draw">🎰 이번주 추첨 안내</a>
+    <a href="#raffle">🎁 지난주 당첨자</a><a href="#events">🏅 이벤트 당첨자</a>
   </div>
-</div>
+  <div class="searchbar"><input id="globalSearch" placeholder="🔍 전체 검색 — 내 핸들/닉네임 (리더보드·주간추첨·이벤트 통합)" oninput="filterAll()"></div>
 
-<canvas id="particles"></canvas>
-<div class="ambient"></div>
-
-<div class="wrap">
-
-  <!-- PAGE HEADER -->
-  <div class="page-header">
-    <span class="icon">🏆</span>
-    <h1>DSCVR 친구초대 이벤트 당첨자 공지</h1>
-    <div style="background:rgba(255,165,0,0.1);border:1px solid rgba(255,165,0,0.4);border-left:4px solid var(--orange);border-radius:8px;padding:14px 16px;margin-top:8px;text-align:left;">
-  <p style="margin:0 0 6px 0;font-size:0.9rem;font-weight:700;color:var(--orange);">📢 클레임 안내</p>
-  <p style="margin:0 0 6px 0;font-size:0.87rem;line-height:1.7;color:var(--text);">청취자 에어드랍 당첨자, 야핑 당첨자는 조회만 하시고 <strong>쿠포니봇 운영시간에 클레임</strong> 하시면됩니다.</p>
-  <p style="margin:0;font-size:0.83rem;line-height:1.6;color:var(--text-muted);">⚠️ 리워드 신청은 별도 안내가 나간 특정 이벤트 당첨자 <strong>(예 : AMA 질문선정)</strong> 만 작성하는 칸입니다.</p>
-</div>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('search')">🔍 당첨자 조회</button>
-    <button class="tab-btn" onclick="switchTab('apply')">📬 리워드 신청</button>
-  </div>
-
-
-  <!-- TAB: 당첨자 조회 -->
-  <div class="tab-panel active" id="tab-search">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input
-        type="text"
-        class="search-input"
-        id="searchInput"
-        placeholder="@텔레그램 핸들 or @트위터 유저네임"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-      >
+  <!-- 좌: 리더보드 / 우: 추첨안내 (좌우 대칭 1:1) -->
+  <div class="row r2">
+    <div class="card">
+      <div class="ck-h" id="lb">🔥 출석 스트릭 리더보드 <span class="dim-sm">· TOP 10</span></div>
+      <div id="lbBody"><div class="loading">불러오는 중…</div></div>
     </div>
-    <p class="search-hint">@ 포함하여 입력 · 대소문자 구분 없음 · 텔레그램 / 트위터 닉네임 조회</p>
-
-    <div id="searchResults"></div>
-    <div id="allWinners"></div>
-  </div>
-
-  <!-- TAB: 리워드 신청 -->
-  <div class="tab-panel" id="tab-apply">
-    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 48px 20px; gap: 20px;">
-      <div style="font-size:2.5rem;">🎁</div>
-      <div style="font-size:1.15rem; font-weight:700; color:var(--text);">리워드 수령 신청</div>
-      <div style="font-size:0.88rem; color:var(--text-muted); text-align:center; line-height:1.7;">
-        아래 링크에서 리워드 수령 신청을 진행해 주세요.<br>
-        당첨자 확인 후 순차적으로 지급됩니다.
+    <div class="card">
+      <div class="ck-h" id="draw">🎰 이번 주 추첨 안내</div>
+      <div class="flow-v">
+        <div class="fstep"><span class="ic">🗓️</span><div><div class="t">일요일 자정 마감</div><div class="s">이번 주 응모권 일괄 마감</div></div></div>
+        <div class="fstep"><span class="ic">⚖️</span><div><div class="t">응모권 가중 추첨</div><div class="s">응모권 수만큼 가중치</div></div></div>
+        <div class="fstep"><span class="ic">🔍</span><div><div class="t">당첨자 검증</div><div class="s">온체인·캡쳐 재검증 후 확정</div></div></div>
+        <div class="fstep"><span class="ic">🎁</span><div><div class="t">기프티콘 지급</div><div class="s">확정 당첨자에게 전송</div></div></div>
       </div>
-      <a href="https://couponybot.com/" target="_blank" rel="noopener"
-        style="display:inline-block; padding: 16px 40px; background: linear-gradient(135deg, #ff4d00, #ff8c00); color:#fff; font-weight:700; font-size:1rem; border-radius:12px; text-decoration:none; box-shadow: 0 4px 16px rgba(255,100,0,0.35); transition: transform .15s, box-shadow .15s;"
-        onmouseover="this.style.transform='scale(1.03)'; this.style.boxShadow='0 6px 22px rgba(255,100,0,0.5)';"
-        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(255,100,0,0.35)';">
-        🔗 쿠포니봇 바로가기
-      </a>
-      <div style="font-size:0.78rem; color:var(--text-muted);">couponybot.com</div>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <div class="footer">
-    <p>🔥 불개미 CRYPTO · <a href="https://t.me/fireantcrypto" target="_blank" style="color:var(--text-muted);text-decoration:none;">@fireantcrypto</a></p>
+  <!-- 좌: 지난주 당첨자 / 우: 이벤트 당첨자 검색·요약 -->
+  <div class="row r2">
+    <div class="card">
+      <div class="ck-h" id="raffle">🎁 지난주 당첨자 <span class="dim-sm" id="raffleSub"></span></div>
+      <div id="raffleBody"><div class="loading">불러오는 중…</div></div>
+    </div>
+    <div class="card">
+      <div class="ck-h">🔎 이벤트 당첨자 검색</div>
+      <div class="dim-sm" style="margin-bottom:9px;">이벤트 당첨자 명단에서 내 핸들을 바로 찾아보세요.</div>
+      <div class="ev-search"><input id="eventSearch" placeholder="🔍 핸들 입력 (예: agyyjj)" oninput="filterEvents()"></div>
+      <div class="dim-sm" id="evSummary" style="margin-top:11px;line-height:1.9;">📊 등록 이벤트 집계 중…</div>
+      <div class="claim-cta">
+        <div><div class="ct">🎁 당첨 리워드 수령</div><div class="cs">당첨자는 쿠포니봇에서 리워드를 신청하세요.</div></div>
+        <a class="claim-btn" href="https://couponybot.com/" target="_blank" rel="noopener">쿠포니봇 바로가기 →</a>
+      </div>
+    </div>
   </div>
 
+  <!-- 이벤트 당첨자 (2단 그리드) -->
+  <div class="seclabel" id="events">🏅 이벤트 당첨자 <span class="dim-sm">· 이벤트별 명단</span></div>
+  <div class="evgrid" id="eventsBody"><div class="loading">불러오는 중…</div></div>
+
+  <div class="dim-sm" style="text-align:center;margin-top:24px;">🐜 ANTINFO · 당첨자는 확정 명단만 게시 · 연락처는 비공개</div>
 </div>
 
-  <!-- 하단 테마 토글 -->
-  <div style="text-align:center; padding: 20px 0 10px; position:relative; z-index:1;">
-    <button id="themeToggle" title="테마 전환" style="background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-dim); padding:6px 14px; cursor:pointer; font-size:0.8rem;">🌙</button>
-  </div>
-
+<script src="/assets/vendor/supabase.js"></script>
 <script>
-// ── THEME ──
-const root = document.documentElement;
-const saved = localStorage.getItem('theme') || 'dark';
-root.setAttribute('data-theme', saved);
-document.getElementById('themeToggle').textContent = saved === 'dark' ? '🌙' : '☀️';
-document.getElementById('themeToggle').addEventListener('click', () => {
-  const cur = root.getAttribute('data-theme');
-  const next = cur === 'dark' ? 'light' : 'dark';
-  root.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
-  document.getElementById('themeToggle').textContent = next === 'dark' ? '🌙' : '☀️';
-});
+const SB_URL="https://jcuuvazpexyinjjruplc.supabase.co";
+const SB_KEY="sb_publishable_mRNYq6Yq9UaYT3bydRhG1w_6wswYTd4";
+const sb = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SB_URL,SB_KEY) : null;
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const timeout = (p,ms=8000)=>Promise.race([Promise.resolve(p),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),ms))]);
+const norm = s => String(s==null?'':s).toLowerCase().replace(/^@/,'').trim();
+const MEDALS=['🥇','🥈','🥉'];
 
-// ── PARTICLES ──
-(function() {
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
-  resize(); window.addEventListener('resize', resize);
-  for (let i = 0; i < 50; i++) {
-    particles.push({
-      x: Math.random() * innerWidth, y: Math.random() * innerHeight,
-      r: Math.random() * 1.5 + 0.3,
-      vx: (Math.random() - 0.5) * 0.15, vy: (Math.random() - 0.5) * 0.15,
-      o: Math.random() * 0.4 + 0.1
-    });
-  }
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,215,64,${p.o})`;
-      ctx.fill();
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = innerWidth; if (p.x > innerWidth) p.x = 0;
-      if (p.y < 0) p.y = innerHeight; if (p.y > innerHeight) p.y = 0;
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
+let lbData=[], raffleData=[], eventData=[];
 
-// ── TABS ──
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => {
-    b.classList.toggle('active', (i === 0 && tab === 'search') || (i === 1 && tab === 'apply'));
+/* ── 출석 스트릭 리더보드 ── */
+async function loadLB(){
+  const el=document.getElementById('lbBody');
+  if(!sb){el.innerHTML='<div class="err">데이터 연결 실패</div>';return;}
+  try{
+    const {data,error}=await timeout(sb.rpc('streak_leaderboard',{p_limit:10}));
+    if(error)throw error;
+    lbData=(data||[]).map(r=>({name:r.nickname||'익명',streak:r.streak||0}));
+    renderLB();
+  }catch(e){el.innerHTML='<div class="err">리더보드를 불러오지 못했습니다.</div>';}
+}
+function renderLB(filter=''){
+  const el=document.getElementById('lbBody');
+  if(!lbData.length){el.innerHTML='<div class="empty">아직 출석 데이터가 없습니다.</div>';return;}
+  let html='',shown=0;
+  lbData.forEach((r,i)=>{
+    if(filter && !norm(r.name).includes(filter))return;
+    shown++;
+    const rank=i<3?MEDALS[i]:(i+1);
+    html+=`<div class="lb-row${i===0?' top1':''}"><div class="lb-rank">${rank}</div><div class="lb-name">${esc(r.name)}님</div><div class="lb-days"><b>${r.streak}</b>일 연속</div></div>`;
   });
-  document.getElementById('tab-search').classList.toggle('active', tab === 'search');
-  document.getElementById('tab-apply').classList.toggle('active', tab === 'apply');
+  el.innerHTML=html || '<div class="empty">검색 결과가 없습니다.</div>';
+  if(filter && !shown) el.innerHTML='<div class="empty">리더보드에서 일치하는 핸들이 없습니다.</div>';
 }
 
-// ── WINNERS DATA ──
-let winnersData = [];
-let dataLoaded = false;
-
-async function loadWinners() {
-  try {
-    const res = await fetch('../winners.json?t=' + Date.now());
-    if (!res.ok) throw new Error('not found');
-    const data = await res.json();
-    winnersData = Array.isArray(data) ? data : [];
-    dataLoaded = true;
-    renderAllWinners();
-  } catch (e) {
-    winnersData = [];
-    dataLoaded = true;
-    renderAllWinners();
-  }
+/* ── 주간 추첨 당첨자 (raffle_winners, 최근 여러 주차) ── */
+async function loadRaffle(){
+  const el=document.getElementById('raffleBody');
+  if(!sb){el.innerHTML='<div class="err">데이터 연결 실패</div>';return;}
+  try{
+    const {data,error}=await timeout(sb.from('raffle_winners')
+      .select('week_start,user_id,telegram,prize,entries,created_at')
+      .order('week_start',{ascending:false}).order('created_at',{ascending:true}).limit(120));
+    if(error)throw error;
+    raffleData=data||[];
+    // 닉네임 보강 (public_nicknames RPC)
+    const ids=[...new Set(raffleData.map(w=>w.user_id).filter(Boolean))];
+    if(ids.length){
+      try{
+        const {data:nicks}=await timeout(sb.rpc('public_nicknames',{p_ids:ids}));
+        const map={}; (nicks||[]).forEach(n=>{map[n.id]=n.nickname;});
+        raffleData.forEach(w=>{w._nick=map[w.user_id]||'';});
+      }catch(_){}
+    }
+    renderRaffle();
+  }catch(e){el.innerHTML='<div class="err">주간 당첨자를 불러오지 못했습니다.</div>';}
 }
-
-function normalize(str) {
-  if (!str) return '';
-  return str.toLowerCase().replace(/^@/, '').trim();
+function raffleName(w){ return w._nick || w.telegram || '익명'; }
+// prize 문자열("🥇 1등 3만원권")에서 등수/보상 분리
+function splitPrize(p){
+  const s=String(p||'').trim();
+  const m=s.match(/^(\S+\s*(?:\d+등|참여상))\s*(.*)$/);
+  if(m) return {tier:m[1].trim(), reward:(m[2].trim()||'기프티콘')};
+  return {tier:'🎁 참여상', reward:s||'기프티콘'};
 }
-
-function renderCard(w) {
-  const tg = w.telegram || '';
-  const tw = w.twitter || '';
-  return `
-    <div class="winner-card">
-      <span class="winner-event">${escHtml(w.event || '이벤트')}${w.prize ? ' · ' + escHtml(w.prize) : ''}</span>
-      ${w.note ? `<span style="font-size:0.72rem;color:var(--gold);font-weight:700;margin-bottom:4px;display:block;">(${escHtml(w.note)})</span>` : ''}
-      <div class="winner-handles">
-        ${tg ? `<span class="winner-handle"><span class="platform">텔레그램</span> ${escHtml(tg)}</span>` : ''}
-        ${tw ? `<span class="winner-handle"><span class="platform">트위터</span> ${escHtml(tw)}</span>` : ''}
-      </div>
-      <div class="winner-reward">${escHtml(w.reward || '리워드 미정')}</div>
-      ${w.points ? `<div style="margin-top:8px;font-size:0.82rem;font-weight:700;color:var(--gold);">🏅 포인트: ${escHtml(w.points)}점</div>` : ''}
-    </div>`;
-}
-
-function renderAllWinners() {
-  const el = document.getElementById('allWinners');
-  if (!dataLoaded) return;
-  if (winnersData.length === 0) {
-    el.innerHTML = `<div class="state-box">
-      <div class="state-icon">📋</div>
-      <div class="state-title">등록된 당첨자 없음</div>
-      <p style="color:var(--text-dim);font-size:0.9rem;line-height:1.6;">현재 등록된 당첨자 데이터가 없습니다.<br>이벤트 종료 후 공지되면 업데이트됩니다.</p>
-    </div>`;
-    return;
-  }
-  const byEvent = {};
-  winnersData.forEach(w => {
-    const ev = w.event || '기타';
-    if (!byEvent[ev]) byEvent[ev] = [];
-    byEvent[ev].push(w);
-  });
-  let html = `<div style="margin-top:20px">`;
-  Object.entries(byEvent).forEach(([ev, list]) => {
-    html += `<div style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span style="font-size:0.85rem;font-weight:700;color:var(--gold)">🏅 ${escHtml(ev)}</span>
-        
-      </div>
-      <div style="
-        background:rgba(255,255,255,0.04);
-        border:1px solid rgba(255,255,255,0.1);
-        border-radius:var(--radius-sm);
-        height:320px;
-        overflow-y:auto;
-        display:grid;
-        grid-template-columns:repeat(4,1fr);
-        align-content:start;
-        gap:4px;
-        padding:10px;
-      ">`;
-    list.forEach(w => {
-      html += `<span style="
-        font-size:0.81rem;
-        font-weight:700;
-        color:#ffffff;
-        padding:0;
-        border-radius:6px;
-        background:rgba(255,255,255,0.12);
-        border:1px solid rgba(255,255,255,0.2);
-        white-space:nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
-        text-align:center;
-        line-height:1.2;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        min-height:35px;
-      ">${escHtml(w.telegram || '')}</span>`;
+function renderRaffle(filter=''){
+  const el=document.getElementById('raffleBody');
+  const sub=document.getElementById('raffleSub');
+  if(!raffleData.length){el.innerHTML='<div class="empty">주간 당첨자 기록이 아직 없습니다.</div>';if(sub)sub.textContent='';return;}
+  // 주차별 그룹
+  const groups={};
+  raffleData.forEach(w=>{ (groups[w.week_start]=groups[w.week_start]||[]).push(w); });
+  const weeks=Object.keys(groups).sort().reverse();
+  if(sub) sub.textContent=`· ${weeks[0].slice(5).replace('-','/')} 주차 · ${groups[weeks[0]].length}명`;
+  let html='';
+  weeks.forEach((wk,wi)=>{
+    // 등수는 prize 문자열에서 파싱(같은 주차 created_at 동일 → 인덱스 불가)
+    const list=groups[wk].slice().sort((a,b)=>tierOrder(a.prize)-tierOrder(b.prize));
+    const open = wi===0;
+    let rows='';
+    list.forEach((w)=>{
+      const nm=raffleName(w);
+      if(filter && !norm(nm).includes(filter)) return;
+      const {tier,reward}=splitPrize(w.prize);
+      rows+=`<div class="wrow"><span class="wtier">${esc(tier)} <span class="whandle">${esc(nm)}</span></span><span class="prize">${esc(reward)}</span></div>`;
     });
-    html += `</div></div>`;
+    if(!rows) return; // 검색 필터로 빈 주차는 숨김
+    const label = `${wk.slice(5).replace('-','/')} 주차 · ${list.length}명`;
+    if(open){
+      html+=`<div class="wkblock"><div class="wkhead">🗓️ ${label}</div>${rows}</div>`;
+    }else{
+      html+=`<details class="wkblock"><summary class="fold">🗓️ ${label} 펼치기 ▾</summary><div style="margin-top:8px">${rows}</div></details>`;
+    }
   });
-  html += `</div>`;
-  el.innerHTML = html;
+  el.innerHTML=html || '<div class="empty">일치하는 주간 당첨자가 없습니다.</div>';
 }
 
-function runSearch(query) {
-  const resEl = document.getElementById('searchResults');
-  const allEl = document.getElementById('allWinners');
-  if (!query) {
-    resEl.innerHTML = '';
-    allEl.style.display = '';
-    return;
-  }
-  allEl.style.display = 'none';
-  const q = normalize(query);
-  if (!dataLoaded) {
-    resEl.innerHTML = '<div class="state-box"><div class="state-icon">⏳</div><p>데이터 로딩 중...</p></div>';
-    return;
-  }
-  const hits = winnersData.filter(w =>
-    normalize(w.telegram) === q || normalize(w.telegram).includes(q) ||
-    normalize(w.twitter) === q || normalize(w.twitter).includes(q)
-  );
-
-  if (hits.length === 0) {
-    resEl.innerHTML = `<div class="state-box">
-      <div class="state-icon">😔</div>
-      <div class="state-title">당첨 내역 없음</div>
-      <p><strong>${escHtml(query)}</strong>로 등록된 당첨 내역이 없습니다.<br>닉네임을 다시 확인해 주세요.</p>
-    </div>`;
-    return;
-  }
-
-  let html = `<div class="hit-banner">
-    <span class="hit-icon">🎉</span>
-    <div class="hit-text">
-      <div class="hit-title">당첨 확인! ${hits.length}건</div>
-      <div class="hit-sub">아래에서 이벤트를 확인하세요</div>
-    </div>
-  </div>`;
-  hits.forEach(w => { html += renderCard(w); });
-  html += `<div style="margin-top:16px;text-align:center">
-    
-  </div>`;
-  resEl.innerHTML = html;
+/* ── 이벤트 당첨자 (winners.json) ── */
+const tierOrder = t => { const s=String(t||''); if(s.includes('🥇'))return 0; if(s.includes('🥈'))return 1; if(s.includes('🥉'))return 2; if(s.includes('🎁'))return 3; return 4; };
+async function loadEvents(){
+  const el=document.getElementById('eventsBody');
+  try{
+    const res=await timeout(fetch('../winners.json?t='+Date.now()));
+    if(!res.ok)throw new Error('winners.json '+res.status);
+    const json=await res.json();
+    eventData=Array.isArray(json)?json:[];
+    renderEvents();
+    renderEvSummary();
+  }catch(e){el.innerHTML='<div class="err">이벤트 당첨자를 불러오지 못했습니다.</div>';}
+}
+function renderEvSummary(){
+  const el=document.getElementById('evSummary');
+  if(!el)return;
+  const byEvent={};
+  eventData.forEach(w=>{ byEvent[w.event]=(byEvent[w.event]||0)+1; });
+  const rows=Object.entries(byEvent).map(([ev,n])=>`· ${esc(ev)} — <b>${n}명</b>`).join('<br>');
+  el.innerHTML='📊 등록 이벤트<br>'+(rows||'집계 없음');
+}
+function renderEvents(filter=''){
+  const el=document.getElementById('eventsBody');
+  const byEvent={};
+  eventData.forEach(w=>{ (byEvent[w.event]=byEvent[w.event]||[]).push(w); });
+  const events=Object.keys(byEvent);
+  if(!events.length){el.innerHTML='<div class="empty">등록된 이벤트 당첨자가 없습니다.</div>';return;}
+  let html='';
+  events.forEach((ev,ei)=>{
+    const list=byEvent[ev];
+    const total=list.length;
+    // tier 그룹
+    const tiers={};
+    list.forEach(w=>{ const t=w.tier||''; (tiers[t]=tiers[t]||[]).push(w); });
+    const tierKeys=Object.keys(tiers).sort((a,b)=>tierOrder(a)-tierOrder(b) || a.localeCompare(b));
+    let body='', hitCount=0;
+    tierKeys.forEach(t=>{
+      const members=tiers[t];
+      const chips=members.map(w=>{
+        const h=w.telegram||w.twitter||'';
+        const hit = filter && norm(h).includes(filter);
+        if(hit)hitCount++;
+        return {h,hit};
+      });
+      const anyHit = chips.some(c=>c.hit);
+      // 검색 중이면 일치 항목이 있는 tier만, 아니면 전부
+      if(filter && !anyHit) return;
+      if(t) body+=`<div class="tierhead">${esc(t)} <span class="dim-sm">(${members.length}명)</span></div>`;
+      body+=`<div class="chips">${chips.filter(c=>!filter||c.hit).map(c=>`<span class="chip${c.hit?' hit':''}">${esc(c.h)}</span>`).join('')}</div>`;
+    });
+    if(filter && !hitCount) return; // 검색 중 일치 없는 이벤트 숨김
+    const open = ei===0 || (filter && hitCount);
+    const hitBadge = filter && hitCount ? ` · <span style="color:var(--accent2)">🎉 ${hitCount}건 일치</span>` : '';
+    html+=`<details class="evgrp"${open?' open':''}><summary><span class="et">🏅 ${esc(ev)}</span><span class="esum">${total}명${hitBadge} ▾</span></summary><div class="ebody">${body||'<div class="empty">일치 없음</div>'}</div></details>`;
+  });
+  el.innerHTML=html || '<div class="empty">일치하는 이벤트 당첨자가 없습니다.</div>';
 }
 
-// Search input with debounce
-let searchTimer;
-document.getElementById('searchInput').addEventListener('input', function() {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => runSearch(this.value.trim()), 300);
-});
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+/* ── 검색 ── */
+function filterAll(){
+  const q=norm(document.getElementById('globalSearch').value);
+  renderLB(q); renderRaffle(q); renderEvents(q);
+  // 이벤트 전용 검색창도 동기화 표시(선택)
 }
-function escAttr(s) {
-  return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+function filterEvents(){
+  const q=norm(document.getElementById('eventSearch').value);
+  renderEvents(q);
 }
 
-function prefillAndSwitch(nick) {
-  switchTab('apply');
-  const q = nick.replace(/^@/, '');
-  // Try to detect platform by checking against winners data
-  const tgMatch = winnersData.find(w => normalize(w.telegram) === normalize(nick));
-  const twMatch = winnersData.find(w => normalize(w.twitter) === normalize(nick));
-  if (tgMatch) {
-    document.getElementById('f_telegram').value = tgMatch.telegram;
-    document.getElementById('f_twitter').value = tgMatch.twitter || '';
-    document.getElementById('f_event').value = tgMatch.event || '';
-  } else if (twMatch) {
-    document.getElementById('f_twitter').value = twMatch.twitter;
-    document.getElementById('f_telegram').value = twMatch.telegram || '';
-    document.getElementById('f_event').value = twMatch.event || '';
-  } else {
-    document.getElementById('f_telegram').value = nick.startsWith('@') ? nick : '@' + nick;
-  }
-  document.getElementById('tab-apply').scrollIntoView({ behavior: 'smooth' });
-}
-
-// ── FORM SUBMIT ──
-// Google Apps Script Web App URL (doPost endpoint)
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxS89ovB-E8iXkqoKJ_643AJJoJu1flCSx7HLGKDSWhJZsW5_RhDNCSwStoF2fbCQ/exec';
-
-function selectApplyType(type) {
-  const applyType = document.getElementById('f_apply_type');
-  const btnError  = document.getElementById('type-btn-error');
-  const btnWinner = document.getElementById('type-btn-winner');
-  const noticeError = document.getElementById('notice-error');
-  const form = document.getElementById('rewardForm');
-
-  applyType.value = type === 'error' ? '쿠포니봇 오류 신청' : '당첨자 리워드 신청';
-
-  btnError.style.border  = type === 'error'  ? '2px solid #f90' : '2px solid #e0e0e0';
-  btnError.style.background  = type === 'error'  ? '#fff8e1' : '#fff';
-  btnError.style.color   = type === 'error'  ? '#b8860b' : '#666';
-  btnWinner.style.border = type === 'winner' ? '2px solid #FF6B2C' : '2px solid #e0e0e0';
-  btnWinner.style.background = type === 'winner' ? '#fff3ee' : '#fff';
-  btnWinner.style.color  = type === 'winner' ? '#FF6B2C' : '#666';
-
-  noticeError.style.display = type === 'error' ? 'block' : 'none';
-  form.style.display = 'block';
-}
-
-async function submitForm(e) {
-  e.preventDefault();
-  const applyType = document.getElementById('f_apply_type').value;
-  if (!applyType) { showToast('신청 유형을 먼저 선택해 주세요.', true); return; }
-  const agree = document.getElementById('f_agree').checked;
-  if (!agree) { showToast('개인정보 수집에 동의해 주세요.', true); return; }
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ 제출 중...';
-
-  const form = new FormData();
-  form.append('entry.2010035811', (applyType ? '[' + applyType + '] ' : '') + (document.getElementById('f_telegram').value || ''));
-  form.append('entry.255925888',  document.getElementById('f_twitter').value || '');
-  form.append('entry.512449725',  document.getElementById('f_event').value || '');
-  form.append('entry.300366735',  document.getElementById('f_email').value || '');
-  form.append('entry.751056827',  document.getElementById('f_contact_type').value || '');
-  form.append('entry.700922868',  document.getElementById('f_contact').value || '');
-  form.append('entry.1181800932', document.getElementById('f_reward_item').value || '');
-  form.append('entry.775141613',  document.getElementById('f_wallet').value || '');
-  form.append('entry.1927096291', '✅ 동의합니다');
-
-  try {
-    await fetch(
-      'https://docs.google.com/forms/d/12Athk-r6r_5y2lJOUbDXw8PAIveNAAqZ06g0H6oic9Y/formResponse',
-      { method: 'POST', body: form, mode: 'no-cors' }
-    );
-    document.getElementById('applyFormWrap').style.display = 'none';
-    document.getElementById('applySuccess').style.display = '';
-  } catch(err) {
-    showToast('제출 중 오류가 발생했습니다. 다시 시도해 주세요.', true);
-    btn.disabled = false;
-    btn.textContent = '🎁 리워드 신청하기';
-  }
-}
-
-// ── INIT ──
-loadWinners();
-// URL 해시로 탭 자동 전환 (#tab-apply → 리워드 신청 탭)
-(function() {
-  if (window.location.hash === '#tab-apply') {
-    switchTab('apply');
-    setTimeout(() => {
-      document.getElementById('tab-apply').scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  }
-})();
+/* ── init ── */
+loadLB(); loadRaffle(); loadEvents();
 </script>
-</body>
-</html>
+</body></html>
