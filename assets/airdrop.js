@@ -310,7 +310,10 @@
         "내 인증 로드",
       );
       if (error || !data) return;
-      data.forEach((s) => { state.mySubs[s.task_id] = s; });
+      // data 는 created_at DESC(최신 우선). task별 "가장 최근" 제출만 유지해야
+      // '오늘 인증완료/내일 다시' 배지·수정 버튼이 오늘 제출을 정확히 가리킨다.
+      // (예전엔 forEach 덮어쓰기로 최신이 아닌 최구 제출이 남아 배지·잠금이 스테일했음)
+      data.forEach((s) => { if (!state.mySubs[s.task_id]) state.mySubs[s.task_id] = s; });
       state.mySubList = data;
     } catch (_) {}
   }
