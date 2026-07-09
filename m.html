@@ -182,6 +182,15 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .mcal .li>div:first-child{min-width:0;overflow:hidden;}
 .mcal .when{font-size:13px;color:#ffb547;font-weight:800;white-space:nowrap;flex-shrink:0;}
 .mcal .sub{font-size:11px;color:#8b93a3;margin-top:2px;font-weight:600;}
+.now{font-size:12px;font-weight:800;color:#8b93a3;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.pulse{width:7px;height:7px;border-radius:50%;background:#2ec26b;box-shadow:0 0 0 0 rgba(46,194,107,.6);animation:pl 1.6s infinite;flex:0 0 auto;}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(46,194,107,.55)}70%{box-shadow:0 0 0 7px rgba(46,194,107,0)}100%{box-shadow:0 0 0 0 rgba(46,194,107,0)}}
+.mapcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:8px 0 12px;}
+.mapcard h3{font-size:14px;font-weight:900;margin-bottom:4px;}
+.flowcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 15px;margin-bottom:12px;}
+.flowcard h3{font-size:14px;font-weight:900;margin-bottom:8px;}
+.flowsoon{font-size:12.5px;line-height:1.7;color:#cdd6e0;background:#0f1219;border:1px dashed #2a3040;border-radius:12px;padding:12px 13px;}
+.flowsoon b{color:#ffb547;}
 ::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style></head><body>
 <div class="backdrop"></div>
 <aside class="drawer">
@@ -226,43 +235,36 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
         </a>
       </div>
     </div>
+    <div class="sec"><h2>📈 Market Now</h2><span class="now"><span class="pulse"></span><span id="marketAge">실시간</span></span></div>
     <div class="hero">
       <div class="cell tile" id="btcCell"><div class="lab">BTC 비트코인</div><div class="px mono skel" id="btcPx">·····</div><div class="chg" id="btcChg">—</div></div>
       <div class="cell tile" id="ethCell"><div class="lab">ETH 이더리움</div><div class="px mono skel" id="ethPx">·····</div><div class="chg" id="ethChg">—</div></div>
     </div>
-    <div class="sec"><h2>시장 지표</h2><a class="seclink" href="charts">자세히 →</a></div>
     <div class="stats" id="stats"></div>
-    <div class="sec"><h2>시그니처 수급</h2></div>
+    <div class="sec"><h2>⭐ 시그니처 수급</h2><span class="now">일 1회 갱신</span></div>
     <div class="sig" id="sig"></div>
-    <div class="sec"><h2>🇰🇷 국내 수급 · 5대 통합</h2><a class="seclink" href="kr-exchange/">자세히 →</a></div>
-    <div id="krSupply"><div class="krs-empty">로딩 중…</div></div>
-    <div class="sec"><h2>급등 · 급락</h2><a class="seclink" href="market">자세히 →</a></div>
+    <div class="sec"><h2>🚀 급등 · 급락 TOP 10</h2><span class="now"><span class="pulse"></span>24h · 시총 250위</span></div>
     <div class="duo">
       <div class="col"><div class="colh up">📈 급등</div><div id="gainers"></div></div>
       <div class="col"><div class="colh down">📉 급락</div><div id="losers"></div></div>
     </div>
+    <div class="sec"><h2>🇰🇷 국내 수급 · 5대 통합</h2><a class="seclink" href="kr-exchange/">자세히 →</a></div>
+    <div id="krSupply"><div class="krs-empty">로딩 중…</div></div>
+    <div class="sec"><h2>📅 이벤트 캘린더</h2><a class="seclink" href="calendar">자세히 →</a></div>
+    <div class="mcal" id="mCalEvent"><div class="li"><div style="color:#8b93a3">로딩 중…</div></div></div>
+    <div class="sec"><h2>🔓 언락 캘린더</h2><a class="seclink" href="unlocks">자세히 →</a></div>
+    <div class="mcal" id="mCalUnlock"><div class="li"><div style="color:#8b93a3">로딩 중…</div></div></div>
     <div class="sec"><h2>🐋 파생·고래 시그널</h2><a class="seclink" href="signal?m=oi">자세히 →</a></div>
     <div class="wsline"><span id="derivAge">로딩…</span><span id="wsStat">🟡 연결 중…</span></div>
-    <div id="derivGrid"><div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div><div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div><div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div><div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div></div>
+    <div id="derivGrid"><div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div><div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div><div class="nowcard"><div class="l skel">···</div><div class="v skel">····</div></div><div class="nowcard"><div class="l skel">····</div><div class="v skel">····</div></div></div>
     <div class="whsub">💥 실시간 청산 <span>BTC·ETH 선물</span></div>
     <div class="feedwrap" id="liqFeed"></div>
     <div class="whsub">🐋 고래 청산 <span>≥ $100K</span></div>
     <div class="feedwrap" id="whaleLiq"></div>
     <div class="whsub">🐋 고래 체결 <span>≥ $500K</span></div>
     <div class="feedwrap" id="whaleTrades"></div>
-    <div class="whsub">💥 청산 분포 <span>세션 누적</span></div>
-    <div id="liqMap"></div>
-    <div class="sec" style="margin-top:18px;"><h2>📅 이벤트 캘린더</h2><a class="seclink" href="calendar">자세히 →</a></div>
-    <div class="mcal" id="mCalEvent"><div class="li"><div style="color:#8b93a3">로딩 중…</div></div></div>
-    <div class="sec"><h2>🔓 언락 캘린더</h2><a class="seclink" href="unlocks">자세히 →</a></div>
-    <div class="mcal" id="mCalUnlock"><div class="li"><div style="color:#8b93a3">로딩 중…</div></div></div>
-    <div class="sec"><h2>바로가기</h2></div>
-    <div class="menu">
-      <a class="mitem" href="events"><span class="mi">🎉</span><div><div class="ml">이벤트·당첨자</div><div class="md">진행 이벤트·당첨</div></div><span class="mc">›</span></a>
-      <a class="mitem" href="calendar"><span class="mi">📅</span><div><div class="ml">이벤트 캘린더</div><div class="md">CPI·FOMC·IPO 일정</div></div><span class="mc">›</span></a>
-      <a class="mitem" href="unlocks"><span class="mi">🔓</span><div><div class="ml">언락 캘린더</div><div class="md">토큰 언락 일정</div></div><span class="mc">›</span></a>
-      <a class="mitem" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="mi">✈️</span><div><div class="ml">텔레그램 채널</div><div class="md">실시간 시그널</div></div><span class="mc">›</span></a>
-    </div>
+    <div class="mapcard"><h3>💥 실시간 청산 분포(맵) <span style="font-size:11px;color:#8b93a3;font-weight:700;">· 세션 누적</span></h3><div id="liqMap"></div></div>
+    <div class="flowcard"><h3>🏦 고래 입출금 <span style="font-size:11px;color:#8b93a3;font-weight:700;">· 거래소 유출입</span></h3><div class="flowsoon">🔧 <b>준비중</b> — 거래소 온체인 유출입은 Whale Alert 등 유료 데이터가 필요합니다.<br>추후 ANTINFO 지갑 추적봇(<b>@fireant_wallet_track_bot</b>)과 연동 예정입니다.</div></div>
     <section class="mtrust">
       <div class="mtrust-card">
         <h3>🐜 운영자 소개</h3>
@@ -339,6 +341,7 @@ async function loadHome(){
       return link?`<a href="${link}" style="display:block;text-decoration:none;color:inherit;">${tileHTML}</a>`:tileHTML;
     }).join("");
     lastFetch=Date.now();
+    {const _ma=$("marketAge");if(_ma)_ma.textContent="방금 갱신";}
     renderMovers();
   }catch(e){if($("btcChg"))$("btcChg").textContent="재시도…";}
 }
