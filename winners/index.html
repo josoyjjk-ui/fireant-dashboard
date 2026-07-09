@@ -38,8 +38,8 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .dim-sm{font-size:12px;color:var(--dim);font-weight:700;}
 .row{display:grid;gap:14px;margin-top:14px;}
 .r2{grid-template-columns:1fr 1fr;}
-.tabbar{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px;}
-.tabbar a{padding:9px 14px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--txt);font-size:13px;font-weight:800;text-decoration:none;}
+.tabbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:16px;}
+.tabbar a{display:flex;align-items:center;justify-content:center;min-height:40px;padding:9px 12px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--txt);font-size:13px;font-weight:800;text-align:center;text-decoration:none;line-height:1.2;}
 .tabbar a.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
 .tabbar a:hover{text-decoration:none;border-color:var(--accent2);}
 .searchbar{display:flex;gap:8px;margin-top:12px;}
@@ -48,9 +48,6 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .lb-row{display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;padding:9px 11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;margin-bottom:6px;}
 .lb-rank{font-weight:900;color:var(--dim);text-align:center;}.lb-name{font-weight:800;font-size:13.5px;}.lb-days{color:var(--accent2);font-weight:800;font-size:12.5px;}
 .lb-row.top1{background:linear-gradient(135deg,#2a2210,#14100a);border-color:#3a2f14;}
-.flow-v{display:flex;flex-direction:column;gap:8px;}
-.fstep{display:flex;align-items:center;gap:11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
-.fstep .ic{font-size:19px;width:26px;text-align:center;}.fstep .t{font-size:13px;font-weight:800;}.fstep .s{font-size:11px;color:var(--dim);}
 .ck-h{font-size:15px;font-weight:800;margin-bottom:11px;}
 .wrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px;border-bottom:1px solid var(--line);font-size:13px;}
 .wrow:last-child{border:none;}.wtier{font-weight:800;}.whandle{color:var(--dim);font-weight:700;}
@@ -65,9 +62,6 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .fold{font-size:12px;color:var(--accent2);font-weight:800;cursor:pointer;margin-top:8px;display:inline-block;}
 .wkblock{margin-bottom:14px;}.wkblock:last-child{margin-bottom:0;}
 .wkhead{font-size:13px;font-weight:900;margin-bottom:8px;color:var(--txt);}
-.ev-search{display:flex;gap:8px;margin:2px 0 4px;}
-.ev-search input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--txt);font-size:13.5px;outline:none;}
-.ev-search input:focus{border-color:var(--accent);}
 .evgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .evgrp{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
 .evgrp>summary{cursor:pointer;list-style:none;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
@@ -82,11 +76,15 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .loading{color:var(--dim);font-size:13px;padding:6px 2px;}
 .empty{color:var(--dim);font-size:13px;padding:6px 2px;}
 .err{color:#ff6b6b;font-size:13px;padding:6px 2px;}
-.claim-cta{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:linear-gradient(135deg,rgba(255,181,71,.1),rgba(255,107,53,.06));border:1px solid #3a2f14;border-radius:12px;padding:12px 16px;}
-.claim-cta .ct{font-size:13px;font-weight:800;}.claim-cta .cs{font-size:11.5px;color:var(--dim);margin-top:2px;}
-.claim-btn{background:linear-gradient(135deg,#ff8c00,#ff4d00);color:#fff;font-weight:800;font-size:13px;padding:10px 20px;border-radius:10px;text-decoration:none;white-space:nowrap;}
-.claim-btn:hover{text-decoration:none;filter:brightness(1.08);}
-@media(max-width:720px){.r2,.evgrid{grid-template-columns:1fr;}.tabbar{overflow-x:auto;flex-wrap:nowrap;}}
+@media(max-width:720px){
+  .main{padding:16px 14px;}
+  .head h1{font-size:21px;}
+  .tabbar{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .tabbar a{min-height:38px;padding:8px 9px;font-size:12px;}
+  .r2,.evgrid{grid-template-columns:1fr;}
+  .row{gap:10px;margin-top:12px;}
+  .card{padding:14px;}
+}
 </style></head><body>
 <div class="backdrop"></div>
 <aside class="drawer">
@@ -119,43 +117,20 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   <div class="head"><h1>🏆 결과 · 리더보드 · 당첨자</h1><div class="sub">출석 리더보드, 주간 추첨 당첨자, 이벤트 당첨자 명단을 한 곳에서 확인하세요.</div></div>
 
   <div class="tabbar">
-    <a class="on" href="#lb">🔥 출석 리더보드</a><a href="#draw">🎰 이번주 추첨 안내</a>
+    <a class="on" href="#globalSearch">🔎 전체검색</a><a href="#lb">🔥 출석 스트릭 리더보드</a>
     <a href="#raffle">🎁 지난주 당첨자</a><a href="#events">🏅 이벤트 당첨자</a>
   </div>
-  <div class="searchbar"><input id="globalSearch" placeholder="🔍 전체 검색 — 내 핸들/닉네임 (리더보드·주간추첨·이벤트 통합)" oninput="filterAll()"></div>
+  <div class="searchbar"><input id="globalSearch" placeholder="🔍 전체 검색 — 내 핸들/닉네임 (리더보드·지난주 당첨자·이벤트 통합)" oninput="filterAll()"></div>
 
-  <!-- 좌: 리더보드 / 우: 추첨안내 (좌우 대칭 1:1) -->
+  <!-- 전체검색 아래 핵심 결과 2열 배치 -->
   <div class="row r2">
     <div class="card">
       <div class="ck-h" id="lb">🔥 출석 스트릭 리더보드 <span class="dim-sm">· TOP 5</span></div>
       <div id="lbBody"><div class="loading">불러오는 중…</div></div>
     </div>
     <div class="card">
-      <div class="ck-h" id="draw">🎰 이번 주 추첨 안내</div>
-      <div class="flow-v">
-        <div class="fstep"><span class="ic">🗓️</span><div><div class="t">일요일 자정 마감</div><div class="s">이번 주 응모권 일괄 마감</div></div></div>
-        <div class="fstep"><span class="ic">⚖️</span><div><div class="t">응모권 가중 추첨</div><div class="s">응모권 수만큼 가중치</div></div></div>
-        <div class="fstep"><span class="ic">🔍</span><div><div class="t">당첨자 검증</div><div class="s">온체인·캡쳐 재검증 후 확정</div></div></div>
-        <div class="fstep"><span class="ic">🎁</span><div><div class="t">기프티콘 지급</div><div class="s">확정 당첨자에게 전송</div></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 좌: 지난주 당첨자 / 우: 이벤트 당첨자 검색·요약 -->
-  <div class="row r2">
-    <div class="card">
       <div class="ck-h" id="raffle">🎁 지난주 당첨자 <span class="dim-sm" id="raffleSub"></span></div>
       <div id="raffleBody"><div class="loading">불러오는 중…</div></div>
-    </div>
-    <div class="card">
-      <div class="ck-h">🔎 이벤트 당첨자 검색</div>
-      <div class="dim-sm" style="margin-bottom:9px;">이벤트 당첨자 명단에서 내 핸들을 바로 찾아보세요.</div>
-      <div class="ev-search"><input id="eventSearch" placeholder="🔍 핸들 입력 (예: agyyjj)" oninput="filterEvents()"></div>
-      <div class="dim-sm" id="evSummary" style="margin-top:11px;line-height:1.9;">📊 등록 이벤트 집계 중…</div>
-      <div class="claim-cta">
-        <div><div class="ct">🎁 당첨 리워드 수령</div><div class="cs">당첨자는 쿠포니봇에서 리워드를 신청하세요.</div></div>
-        <a class="claim-btn" href="https://couponybot.com/" target="_blank" rel="noopener">쿠포니봇 바로가기 →</a>
-      </div>
     </div>
   </div>
 
@@ -300,16 +275,7 @@ async function loadEvents(){
     }
     eventData=mergeEventWinners(baseRows,webRows);
     renderEvents();
-    renderEvSummary();
   }catch(e){el.innerHTML='<div class="err">이벤트 당첨자를 불러오지 못했습니다.</div>';}
-}
-function renderEvSummary(){
-  const el=document.getElementById('evSummary');
-  if(!el)return;
-  const byEvent={};
-  eventData.forEach(w=>{ byEvent[w.event]=(byEvent[w.event]||0)+1; });
-  const rows=Object.entries(byEvent).map(([ev,n])=>`· ${esc(ev)} — <b>${n}명</b>`).join('<br>');
-  el.innerHTML='📊 등록 이벤트<br>'+(rows||'집계 없음');
 }
 function renderEvents(filter=''){
   const el=document.getElementById('eventsBody');
@@ -352,11 +318,6 @@ function renderEvents(filter=''){
 function filterAll(){
   const q=norm(document.getElementById('globalSearch').value);
   renderLB(q); renderRaffle(q); renderEvents(q);
-  // 이벤트 전용 검색창도 동기화 표시(선택)
-}
-function filterEvents(){
-  const q=norm(document.getElementById('eventSearch').value);
-  renderEvents(q);
 }
 
 /* ── init ── */
