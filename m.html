@@ -82,8 +82,8 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .menu .mi{font-size:27px;width:32px;text-align:center;}.menu .ml{font-size:20px;font-weight:800;}.menu .md{font-size:13px;color:var(--gray);font-weight:600;margin-top:2px;}
 .menu .mc{margin-left:auto;color:var(--gray);font-size:24px;}
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:var(--bg);border-top:1px solid var(--line);padding:9px 0 calc(9px + env(safe-area-inset-bottom));}
-.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--gray);font-size:12px;font-weight:700;}
-.nav a .ic{font-size:23px;}.nav a.on{color:var(--blue);}
+.nav a{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--gray);font-size:10px;font-weight:700;white-space:nowrap;letter-spacing:-.4px;text-align:center;}
+.nav a .ic{font-size:20px;}.nav a.on{color:var(--blue);}
 .skel{background:rgba(127,127,127,.18);color:transparent;border-radius:7px;}
 @keyframes fUp{0%{color:#ff5d6c}100%{color:inherit}}
 @keyframes fDn{0%{color:#4d9bff}100%{color:inherit}}
@@ -123,7 +123,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 #authSlot{flex:0 1 auto !important;min-width:0 !important;max-width:34vw;overflow:hidden;}
 #authSlot button{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;}
 #authSlot img{flex:0 0 auto;}
-@media(max-width:820px){.sig .c{min-height:176px;}.duo .col{padding:6px 12px 8px;}}
+@media(max-width:820px){.duo .col{padding:6px 12px 8px;}}
 @media(max-width:380px){#authSlot{max-width:30vw;margin-left:6px !important;}}
 .mverdict{background:linear-gradient(135deg,#1a1f2a 0%,#13161c 100%);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:10px;position:relative;overflow:hidden;width:100%;max-width:100%;min-width:0;}
 .mverdict::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,#ff5d6c,#ff3b30);}
@@ -195,15 +195,15 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 <div class="backdrop"></div>
 <aside class="drawer">
   <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;vertical-align:middle;margin-right:7px;">개미투자정보</span><button class="x" type="button">✕</button></div>
-  <a class="on" href="/"><span class="ic">🏠</span>홈</a>
-  <a href="macro-news"><span class="ic">📰</span>뉴스</a>
-  <a href="market"><span class="ic">📊</span>마켓</a>
-  <a href="signal"><span class="ic">🐋</span>시그널</a>
-  <a href="charts"><span class="ic">🕯️</span>차트</a>
+  <a class="on" href="/"><span class="ic">🏠</span>대시보드</a>
+  <a href="market"><span class="ic">📈</span>마켓</a>
+  <a href="macro-news"><span class="ic">📰</span>매크로뉴스</a>
+  <a href="charts"><span class="ic">🕯️</span>주요자산차트</a>
   <a href="kr-exchange/"><span class="ic">🏦</span>K-거래소 현황</a>
+  <a href="airdrop"><span class="ic">🪂</span>에어드랍</a>
   <div class="ddiv"></div>
+  <a class="sub" href="signal"><span class="ic">🐋</span>파생·고래 시그널</a>
   <a class="sub" href="events"><span class="ic">🎉</span>이벤트·당첨</a>
-  <a class="sub" href="airdrop"><span class="ic">🪂</span>에어드랍</a>
   <a class="sub" href="calendar"><span class="ic">📅</span>캘린더</a>
   <a class="sub" href="unlocks"><span class="ic">🔓</span>언락 캘린더</a>
   <a class="sub" href="fng"><span class="ic">😨</span>공포·탐욕지수</a>
@@ -291,11 +291,12 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
     <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보</div>
   </div>
   <nav class="nav" aria-label="하단 메뉴">
-    <a class="on" href="/m" aria-current="page"><span class="ic">🏠</span>홈</a>
-    <a href="market"><span class="ic">📊</span>마켓</a>
-    <a href="macro-news"><span class="ic">📰</span>뉴스</a>
-    <a href="charts"><span class="ic">🕯️</span>차트</a>
-    <a href="events"><span class="ic">🎉</span>이벤트</a>
+    <a class="on" href="/m" aria-current="page"><span class="ic">🏠</span>대시보드</a>
+    <a href="market"><span class="ic">📈</span>마켓</a>
+    <a href="macro-news"><span class="ic">📰</span>매크로뉴스</a>
+    <a href="charts"><span class="ic">🕯️</span>주요자산차트</a>
+    <a href="kr-exchange/"><span class="ic">🏦</span>K-거래소 현황</a>
+    <a href="airdrop"><span class="ic">🪂</span>에어드랍</a>
   </nav>
 <script>
 document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});
