@@ -14,6 +14,7 @@
 <link rel="canonical" href="https://antinfo.io/market">
 <style>
 @view-transition{navigation:auto;}
+::view-transition-group(site-nav){animation:none!important;}::view-transition-old(site-nav),::view-transition-new(site-nav){animation:none!important;mix-blend-mode:normal!important;}  /* site-nav 고정: 페이지 이동 시 헤더 흔들림 제거 */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
 :root{color-scheme:dark;--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff5d6c;--down:#4d9bff;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;}
 html{background:var(--bg);scrollbar-gutter:stable;}

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한국거래소 완전정복 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root {
+  --bg: #0a0c10;
+  --card: #13161c;
+  --border: #232936;
+  --text: #e7edf3;
+  --muted: #8a94a3;
+  --red: #ff3b30;
+  --gold: #ffb547;
+  --up: #ff5d6c;
+  --down: #4d9bff;
+  --green: #3ddc97;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Pretendard Variable', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.header h1 { font-size: 28px; font-weight: 700; }
+.header .subtitle { color: var(--muted); font-size: 15px; }
+.badge {
+  background: #1f242e;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.alert-banner {
+  background: #2a1f1f;
+  border: 1px solid #4a2e2e;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.alert-banner .logo-chip {
+  width: 26px; height: 26px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alert-banner .logo-chip img {
+  max-width: 100%; max-height: 100%; object-fit: contain;
+}
+.event-section {
+  margin-bottom: 40px;
+}
+.event-section h2 {
+  font-size: 22px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.event-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+}
+.event-card .logo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.logo-chip {
+  width: 22px; height: 22px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-chip img {
+  max-width: 100%; max-height: 100%; object-fit: contain;
+}
+.event-card .title { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+.event-card .meta { font-size: 13px; color: var(--muted); }
+.event-card .reward { color: var(--gold); font-weight: 600; margin: 8px 0; }
+.btn-orange {
+  background: linear-gradient(90deg, #ff8a3d, #ff5e00);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  width: 100%;
+}
+.countdown {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.section-title {
+  font-size: 18px;
+  margin: 32px 0 16px;
+  font-weight: 600;
+}
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 900px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+th, td {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  background: #1a1d25;
+  color: var(--muted);
+  font-weight: 500;
+}
+.exchange-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+.exchange-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.exchange-header .logo-chip { width: 28px; height: 28px; }
+.exchange-header h3 { font-size: 17px; }
+.top-list {
+  font-size: 14px;
+}
+.top-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.top-list li:last-child { border-bottom: none; }
+.up { color: var(--up); }
+.down { color: var(--down); }
+.kimchi-up { background: rgba(255, 59, 48, 0.12); }
+.kimchi-down { background: rgba(77, 155, 255, 0.12); }
+.calendar {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+  font-size: 13px;
+}
+.calendar-grid div {
+  padding: 8px 0;
+  border-radius: 6px;
+}
+.calendar-grid .today {
+  background: var(--gold);
+  color: #000;
+  font-weight: 700;
+}
+.tab-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.tab-btn {
+  padding: 8px 18px;
+  background: #1a1d25;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+.tab-btn.active {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--gold);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.footer {
+  margin-top: 60px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.kr-ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+.kr-ev-row{display:flex;align-items:center;gap:10px;padding:14px 4px;border-bottom:1px solid #232936;cursor:pointer}
+.kr-ev-row b{font-size:16px}
+.exch-en{font-size:11px;color:#8a94a3;background:#1a1f28;border-radius:6px;padding:2px 8px}
+.cnt{font-size:12px;font-weight:700;color:#fff;background:#ff3b30;border-radius:999px;padding:2px 9px}
+.cnt0{background:#2a3038;color:#8a94a3}
+.arr{margin-left:auto;color:#5c6675;font-size:12px}
+@media(max-width:680px){.kr-ev-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 1. Header -->
+  <div class="header">
+    <div>
+      <h1>🏦 한국거래소 완전정복 대시보드</h1>
+      <div class="subtitle">antinfo.io · 실시간 시장 모니터링</div>
+    </div>
+    <div class="badge">갱신: 2026-06-15 14:32:17</div>
+  </div>
+
+  <!-- 2. Emergency Alert Banner -->
+  <div class="alert-banner">
+    <div class="logo-chip"><img src="logos/upbit.jpg" alt="업비트"></div>
+    <div><strong>업비트</strong> · 원화 입출금 일시 중단 (06.15 14:00~16:00 점검)</div>
+    <div class="logo-chip"><img src="logos/bithumb.jpg" alt="빗썸"></div>
+    <div><strong>빗썸</strong> · 시스템 점검 완료</div>
+  </div>
+
+  <!-- 3. Participation Events (Independent Top Section) -->
+  <div class="event-section">
+    <h2>🎁 참여가능 한국거래소 이벤트</h2>
+    <div class="kr-ev-grid">
+      <div class="kr-ev-row"><div class="logo-chip"><img src="logos/gopax.jpg"></div><b style="color:#3ddc97">고팍스</b><span class="exch-en">GOPAX</span><span class="cnt">2개</span><span class="arr">▶</span></div>
+      <div class="kr-ev-row"><div class="logo-chip"><img src="logos/bithumb.jpg"></div><b style="color:#ff8a3c">빗썸</b><span class="exch-en">Bithumb</span><span class="cnt">3개</span><span class="arr">▶</span></div>
+      <div class="kr-ev-row"><div class="logo-chip"><img src="logos/upbit.jpg"></div><b style="color:#4d9bff">업비트</b><span class="exch-en">Upbit</span><span class="cnt cnt0">0개</span><span class="arr">▶</span></div>
+      <div class="kr-ev-row"><div class="logo-chip"><img src="logos/korbit.jpg"></div><b style="color:#b18cff">코빗</b><span class="exch-en">Korbit</span><span class="cnt">2개</span><span class="arr">▶</span></div>
+      <div class="kr-ev-row"><div class="logo-chip"><img src="logos/coinone.jpg"></div><b style="color:#4d9bff">코인원</b><span class="exch-en">Coinone</span><span class="cnt">5개</span><span class="arr">▶</span></div>
+    </div>
+  </div>
+
+  <!-- 4. TOP10 -->
+  <div class="section-title">통합 상승률 TOP10 &amp; 거래량 TOP10</div>
+  <div class="two-col">
+    <!-- 상승률 TOP10 -->
+    <div>
+      <table>
+        <thead><tr><th>코인</th><th>거래소</th><th>상승률</th></tr></thead>
+        <tbody>
+          <tr><td>BTC</td><td><div class="logo-chip"><img src="logos/upbit.jpg"></div></td><td class="up">+8.42%</td></tr>
+          <tr><td>ETH</td><td><div class="logo-chip"><img src="logos/bithumb.jpg"></div></td><td class="up">+6.91%</td></tr>
+          <tr><td>SOL</td><td><div class="logo-chip"><img src="logos/coinone.jpg"></div></td><td class="up">+12.35%</td></tr>
+          <tr><td>XRP</td><td><div class="logo-chip"><img src="logos/korbit.jpg"></div></td><td class="up">+5.77%</td></tr>
+          <tr><td>ADA</td><td><div class="logo-chip"><img src="logos/gopax.jpg"></div></td><td class="up">+9.14%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- 거래량 TOP10 -->
+    <div>
+      <table>
+        <thead><tr><th>코인</th><th>거래소</th><th>거래량</th></tr></thead>
+        <tbody>
+          <tr><td>BTC</td><td><div class="logo-chip"><img src="logos/upbit.jpg"></div></td><td>142.8K BTC</td></tr>
+          <tr><td>ETH</td><td><div class="logo-chip"><img src="logos/bithumb.jpg"></div></td><td>98.4K ETH</td></tr>
+          <tr><td>SOL</td><td><div class="logo-chip"><img src="logos/coinone.jpg"></div></td><td>1.24M SOL</td></tr>
+          <tr><td>XRP</td><td><div class="logo-chip"><img src="logos/korbit.jpg"></div></td><td>320.5M XRP</td></tr>
+          <tr><td>ADA</td><td><div class="logo-chip"><img src="logos/gopax.jpg"></div></td><td>89.2M ADA</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 5. Arbitrage Table -->
+  <div class="section-title">⚡ 차익거래 기회 (가격 이격)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>코인</th>
+        <th>국내 최저가</th>
+        <th>국내 최고가</th>
+        <th>글로벌가 (CoinGecko)</th>
+        <th>국내 이격률</th>
+        <th>김프</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>BTC</strong></td>
+        <td><div class="logo-chip"><img src="logos/coinone.jpg"></div> 92,450,000</td>
+        <td><div class="logo-chip"><img src="logos/upbit.jpg"></div> 94,120,000</td>
+        <td>91,850,000</td>
+        <td class="up">+2.47%</td>
+        <td class="up kimchi-up">+2.47%</td>
+      </tr>
+      <tr>
+        <td><strong>ETH</strong></td>
+        <td><div class="logo-chip"><img src="logos/gopax.jpg"></div> 4,820,000</td>
+        <td><div class="logo-chip"><img src="logos/bithumb.jpg"></div> 4,980,000</td>
+        <td>4,765,000</td>
+        <td class="up">+4.51%</td>
+        <td class="up kimchi-up">+4.51%</td>
+      </tr>
+      <tr>
+        <td><strong>SOL</strong></td>
+        <td><div class="logo-chip"><img src="logos/korbit.jpg"></div> 218,400</td>
+        <td><div class="logo-chip"><img src="logos/upbit.jpg"></div> 225,800</td>
+        <td>221,300</td>
+        <td class="down">-1.12%</td>
+        <td class="down kimchi-down">-1.12%</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size:11px;color:var(--muted);margin-top:6px;">* 글로벌가는 CoinGecko 기준 (USD 환산)</div>
+
+  <!-- 6. Exchange Cards -->
+  <div class="section-title">거래소별 TOP</div>
+  <div class="two-col">
+    <div class="exchange-card">
+      <div class="exchange-header">
+        <div class="logo-chip"><img src="logos/upbit.jpg"></div>
+        <h3>업비트</h3>
+      </div>
+      <div class="top-list">
+        <div><strong>상승률 TOP3</strong></div>
+        <li>SOL <span class="up">+12.35%</span></li>
+        <li>BTC <span class="up">+8.42%</span></li>
+        <li>ADA <span class="up">+9.14%</span></li>
+        <div style="margin-top:12px"><strong>거래량 TOP3</strong></div>
+        <li>BTC <span>142.8K</span></li>
+        <li>ETH <span>98.4K</span></li>
+      </div>
+    </div>
+    <div class="exchange-card">
+      <div class="exchange-header">
+        <div class="logo-chip"><img src="logos/bithumb.jpg"></div>
+        <h3>빗썸</h3>
+      </div>
+      <div class="top-list">
+        <div><strong>상승률 TOP3</strong></div>
+        <li>ETH <span class="up">+6.91%</span></li>
+        <li>XRP <span class="up">+5.77%</span></li>
+        <li>BTC <span class="up">+4.82%</span></li>
+        <div style="margin-top:12px"><strong>거래량 TOP3</strong></div>
+        <li>ETH <span>98.4K</span></li>
+        <li>BTC <span>89.2K</span></li>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Notice Timeline + Calendar -->
+  <div class="section-title">📢 주요 공지 타임라인</div>
+  <div class="calendar">
+    <div style="margin-bottom:12px;font-weight:600;">2026년 6월</div>
+    <div class="calendar-grid">
+      <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      <div></div><div></div><div></div><div></div><div></div><div></div><div>1 🟡</div>
+      <div>2</div><div>3 🔵</div><div>4</div><div>5</div><div>6</div><div>7 🔴</div><div>8</div>
+      <div>9</div><div>10 🟡</div><div>11</div><div>12 🔵</div><div>13</div><div>14</div><div class="today">15</div>
+      <div>16</div><div>17 🔴</div><div>18</div><div>19</div><div>20 🟡</div><div>21</div><div>22</div>
+      <div>23</div><div>24</div><div>25 🔵</div><div>26</div><div>27</div><div>28 🔴</div><div>29</div>
+      <div>30</div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--muted);">
+      🟡 이벤트 &nbsp; 🔵 입출금·점검 &nbsp; 🔴 유의종목 결정기한
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-buttons">
+    <button class="tab-btn active" onclick="showTab(0)">참여가능 이벤트</button>
+    <button class="tab-btn" onclick="showTab(1)">입출금·점검</button>
+    <button class="tab-btn" onclick="showTab(2)">유의종목</button>
+  </div>
+  <div class="tab-content active" id="tab-0">
+    <div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--border);">
+      • 업비트 6월 신규가입 이벤트 (06.30 마감)<br>
+      • 빗썸 트레이딩 챌린지 (06.25 마감)
+    </div>
+  </div>
+  <div class="tab-content" id="tab-1">
+    <div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--border);">
+      • 업비트 원화 입출금 중단 (06.15 14:00~16:00)<br>
+      • 코인원 시스템 점검 (06.18 03:00~05:00)
+    </div>
+  </div>
+  <div class="tab-content" id="tab-2">
+    <div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--border);">
+      • SOL 유의종목 지정 검토 (06.17)<br>
+      • XRP 상장폐지 검토 (06.28)
+    </div>
+  </div>
+
+  <!-- 8. Footer -->
+  <div class="footer">
+    🐜 ANTINFO · 데이터 출처 거래소 공개 API·CoinGecko · 투자권유 아님
+  </div>
+
+</div>
+
+<script>
+function showTab(n) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n].classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한국거래소 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { font-family: 'Pretendard Variable', system-ui, sans-serif; }
+.card { background: #13161c; border: 1px solid #232936; border-radius: 16px; }
+.badge { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 9999px; font-size: 11px; font-weight: 700; color: white; }
+.bar { height: 10px; background: linear-gradient(90deg, #ff5d6c, #ffb547); border-radius: 9999px; }
+</style>
+</head>
+<body class="bg-[#0a0c10] text-[#e7edf3]">
+<div class="max-w-[1240px] mx-auto px-4 py-8">
+  <!-- 1. 헤더 -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🏦</span>
+        <span class="text-3xl font-bold tracking-tight">한국거래소 대시보드</span>
+      </div>
+      <div class="text-[#8a94a3] mt-1 text-sm">업비트·빗썸·코인원·코빗·고팍스</div>
+    </div>
+    <div class="px-3 py-1.5 bg-[#13161c] border border-[#232936] rounded-full text-xs flex items-center gap-2">
+      <div class="w-2 h-2 bg-[#3ddc97] rounded-full animate-pulse"></div>
+      <span>갱신 2025-04-05 14:32:17</span>
+    </div>
+  </div>
+
+  <!-- 2. 이벤트 섹션 (가장 눈에 띄게) -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-xl">🎁</span>
+      <span class="text-xl font-semibold">거래소별 진행중 이벤트 (참여가능)</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- 이벤트 6개 -->
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="badge" style="background:#3b82f6">U</div>
+          <span class="font-semibold">업비트</span>
+        </div>
+        <div class="font-medium mb-1">신규 회원 10만원 입금 이벤트</div>
+        <div class="text-xs text-[#8a94a3] mb-3">4/1 ~ 4/30 · 리워드 5만원 상당</div>
+        <div class="flex items-center justify-between">
+          <button class="px-4 py-1.5 text-sm rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium">참여하기 →</button>
+          <span class="text-xs text-[#8a94a3]">⏰ 종료까지 25일</span>
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="badge" style="background:#f97316">B</div>
+          <span class="font-semibold">빗썸</span>
+        </div>
+        <div class="font-medium mb-1">SOL 스테이킹 12% 보너스</div>
+        <div class="text-xs text-[#8a94a3] mb-3">4/5 ~ 4/25 · 리워드 SOL 0.5</div>
+        <div class="flex items-center justify-between">
+          <button class="px-4 py-1.5 text-sm rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium">참여하기 →</button>
+          <span class="text-xs text-[#8a94a3]">⏰ 종료까지 20일</span>
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="badge" style="background:#eab308">C</div>
+          <span class="font-semibold">코인원</span>
+        </div>
+        <div class="font-medium mb-1">BTC 마켓 거래량 경진대회</div>
+        <div class="text-xs text-[#8a94a3] mb-3">4/3 ~ 4/17 · 리워드 300만원</div>
+        <div class="flex items-center justify-between">
+          <button class="px-4 py-1.5 text-sm rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium">참여하기 →</button>
+          <span class="text-xs text-[#8a94a3]">⏰ 종료까지 12일</span>
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="badge" style="background:#14b8a6">K</div>
+          <span class="font-semibold">코빗</span>
+        </div>
+        <div class="font-medium mb-1">ETH 출금 수수료 0원 이벤트</div>
+        <div class="text-xs text-[#8a94a3] mb-3">4/1 ~ 4/20 · 리워드 수수료 면제</div>
+        <div class="flex items-center justify-between">
+          <button class="px-4 py-1.5 text-sm rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium">참여하기 →</button>
+          <span class="text-xs text-[#8a94a3]">⏰ 종료까지 15일</span>
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="badge" style="background:#a855f7">G</div>
+          <span class="font-semibold">고팍스</span>
+        </div>
+        <div class="font-medium mb-1">신규 상장 코인 에어드랍</div>
+        <div class="text-xs text-[#8a94a3] mb-3">4/7 ~ 4/21 · 리워드 10만원</div>
+        <div class="flex items-center justify-between">
+          <button class="px-4 py-1.5 text-sm rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium">참여하기 →</button>
+          <span class="text-xs text-[#8a94a3]">⏰ 종료까지 16일</span>
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="badge" style="background:#3b82f6">U</div>
+          <span class="font-semibold">업비트</span>
+        </div>
+        <div class="font-medium mb-1">4월 거래량 챌린지</div>
+        <div class="text-xs text-[#8a94a3] mb-3">4/1 ~ 4/30 · 리워드 1,000만원</div>
+        <div class="flex items-center justify-between">
+          <button class="px-4 py-1.5 text-sm rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium">참여하기 →</button>
+          <span class="text-xs text-[#8a94a3]">⏰ 종료까지 25일</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 거래대금 점유율 -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-xl">📊</span>
+      <span class="text-xl font-semibold">거래대금 점유율 (24h)</span>
+    </div>
+    <div class="card p-6 space-y-4">
+      <div class="flex items-center gap-4"><div class="w-16 text-sm">업비트</div><div class="flex-1 bg-[#232936] rounded-full"><div class="bar w-[58%]"></div></div><div class="w-12 text-right text-sm font-medium">58.4%</div></div>
+      <div class="flex items-center gap-4"><div class="w-16 text-sm">빗썸</div><div class="flex-1 bg-[#232936] rounded-full"><div class="bar w-[22%]" style="background:linear-gradient(90deg,#f97316,#fbbf24)"></div></div><div class="w-12 text-right text-sm font-medium">22.1%</div></div>
+      <div class="flex items-center gap-4"><div class="w-16 text-sm">코인원</div><div class="flex-1 bg-[#232936] rounded-full"><div class="bar w-[10%]" style="background:linear-gradient(90deg,#eab308,#fde047)"></div></div><div class="w-12 text-right text-sm font-medium">10.3%</div></div>
+      <div class="flex items-center gap-4"><div class="w-16 text-sm">코빗</div><div class="flex-1 bg-[#232936] rounded-full"><div class="bar w-[6%]" style="background:linear-gradient(90deg,#14b8a6,#67e8f9)"></div></div><div class="w-12 text-right text-sm font-medium">6.2%</div></div>
+      <div class="flex items-center gap-4"><div class="w-16 text-sm">고팍스</div><div class="flex-1 bg-[#232936] rounded-full"><div class="bar w-[3%]" style="background:linear-gradient(90deg,#a855f7,#c084fc)"></div></div><div class="w-12 text-right text-sm font-medium">3.0%</div></div>
+      <div class="pt-2 border-t border-[#232936] text-right text-sm text-[#8a94a3]">합계 <span class="font-semibold text-[#e7edf3]">12.8조 원</span></div>
+    </div>
+  </div>
+
+  <!-- 4. AI 상장·유의 감지 -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-xl">🤖</span>
+      <span class="text-xl font-semibold">AI 상장·유의 감지</span>
+      <span class="text-xs px-2 py-0.5 bg-[#232936] rounded-full">Powered by Grok Live Search</span>
+    </div>
+    <div class="card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-[#1a1d24] text-[#8a94a3]">
+          <tr><th class="py-3 px-4 text-left">종목</th><th class="py-3 px-4 text-left">거래소</th><th class="py-3 px-4 text-left">유형</th><th class="py-3 px-4 text-left">시각</th><th class="py-3 px-4 text-left">원문</th></tr>
+        </thead>
+        <tbody class="divide-y divide-[#232936]">
+          <tr><td class="py-3 px-4">PEPE</td><td class="py-3 px-4">업비트</td><td class="py-3 px-4"><span class="text-[#ff3b30]">상장</span></td><td class="py-3 px-4 text-[#8a94a3]">14:12</td><td class="py-3 px-4 text-xs">신규 상장</td></tr>
+          <tr><td class="py-3 px-4">WIF</td><td class="py-3 px-4">빗썸</td><td class="py-3 px-4"><span class="text-[#ffb547]">유의</span></td><td class="py-3 px-4 text-[#8a94a3]">13:45</td><td class="py-3 px-4 text-xs">거래 주의</td></tr>
+          <tr><td class="py-3 px-4">BONK</td><td class="py-3 px-4">코인원</td><td class="py-3 px-4"><span class="text-[#ff3b30]">상장</span></td><td class="py-3 px-4 text-[#8a94a3]">12:58</td><td class="py-3 px-4 text-xs">신규 상장</td></tr>
+          <tr><td class="py-3 px-4">SUI</td><td class="py-3 px-4">코빗</td><td class="py-3 px-4"><span class="text-gray-400">상폐</span></td><td class="py-3 px-4 text-[#8a94a3]">11:20</td><td class="py-3 px-4 text-xs">상장 폐지</td></tr>
+          <tr><td class="py-3 px-4">JUP</td><td class="py-3 px-4">고팍스</td><td class="py-3 px-4"><span class="text-[#ffb547]">유의</span></td><td class="py-3 px-4 text-[#8a94a3]">10:33</td><td class="py-3 px-4 text-xs">시장 경고</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 5. 김치프리미엄 -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-xl">🇰🇷</span>
+      <span class="text-xl font-semibold">김치프리미엄</span>
+    </div>
+    <div class="card p-5">
+      <div class="flex items-baseline gap-2 mb-4">
+        <span class="text-3xl font-bold">+4.82%</span>
+        <span class="text-[#8a94a3]">BTC</span>
+      </div>
+      <table class="w-full text-sm">
+        <thead class="text-[#8a94a3]"><tr><th class="text-left py-1">거래소</th><th class="text-right">가격</th><th class="text-right">프리미엄</th></tr></thead>
+        <tbody class="divide-y divide-[#232936]">
+          <tr><td class="py-1.5">업비트</td><td class="text-right">98,450,000</td><td class="text-right text-[#ff5d6c]">+5.1%</td></tr>
+          <tr><td class="py-1.5">빗썸</td><td class="text-right">97,820,000</td><td class="text-right text-[#ff5d6c]">+4.4%</td></tr>
+          <tr><td class="py-1.5">코인원</td><td class="text-right">97,150,000</td><td class="text-right text-[#ff5d6c]">+3.7%</td></tr>
+          <tr><td class="py-1.5">코빗</td><td class="text-right">96,980,000</td><td class="text-right text-[#ff5d6c]">+3.5%</td></tr>
+          <tr><td class="py-1.5">고팍스</td><td class="text-right">96,420,000</td><td class="text-right text-[#ff5d6c]">+2.9%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 6. 원화마켓 TOP -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-xl">🔥</span>
+      <span class="text-xl font-semibold">원화마켓 인기종목 TOP</span>
+    </div>
+    <div class="card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-[#1a1d24] text-[#8a94a3]">
+          <tr><th class="py-3 px-4 w-8">#</th><th class="py-3 px-4 text-left">종목</th><th class="py-3 px-4 text-right">가격</th><th class="py-3 px-4 text-right">24h</th><th class="py-3 px-4 text-right">거래대금</th><th class="py-3 px-4 text-left">주거래소</th></tr>
+        </thead>
+        <tbody class="divide-y divide-[#232936]">
+          <tr><td class="py-3 px-4">1</td><td>BTC</td><td class="text-right">98,450,000</td><td class="text-right text-[#ff5d6c]">+3.2%</td><td class="text-right">4.2조</td><td>업비트</td></tr>
+          <tr><td class="py-3 px-4">2</td><td>ETH</td><td class="text-right">4,850,000</td><td class="text-right text-[#4d9bff]">-1.8%</td><td class="text-right">1.8조</td><td>빗썸</td></tr>
+          <tr><td class="py-3 px-4">3</td><td>SOL</td><td class="text-right">248,500</td><td class="text-right text-[#ff5d6c]">+7.4%</td><td class="text-right">920억</td><td>업비트</td></tr>
+          <tr><td class="py-3 px-4">4</td><td>XRP</td><td class="text-right">3,240</td><td class="text-right text-[#4d9bff]">-2.1%</td><td class="text-right">680억</td><td>코인원</td></tr>
+          <tr><td class="py-3 px-4">5</td><td>DOGE</td><td class="text-right">312</td><td class="text-right text-[#ff5d6c]">+5.9%</td><td class="text-right">510억</td><td>빗썸</td></tr>
+          <tr><td class="py-3 px-4">6</td><td>PEPE</td><td class="text-right">0.0324</td><td class="text-right text-[#ff5d6c]">+12.3%</td><td class="text-right">380억</td><td>업비트</td></tr>
+          <tr><td class="py-3 px-4">7</td><td>AVAX</td><td class="text-right">48,900</td><td class="text-right text-[#4d9bff]">-0.9%</td><td class="text-right">290억</td><td>코빗</td></tr>
+          <tr><td class="py-3 px-4">8</td><td>SHIB</td><td class="text-right">0.0281</td><td class="text-right text-[#ff5d6c]">+4.1%</td><td class="text-right">210억</td><td>고팍스</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 7. 거래소별 상세 보기 -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-xl">⬇️</span>
+      <span class="text-xl font-semibold">거래소별 상세 보기</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div class="card p-5 hover:border-[#ff5d6c] cursor-pointer"><div class="flex items-center gap-2 mb-3"><div class="badge" style="background:#3b82f6">U</div><span class="font-semibold">업비트</span></div><div class="text-xs text-[#8a94a3]">점유율 58.4% · 7.5조</div><div class="mt-3 text-sm text-[#ffb547]">상세페이지 →</div></div>
+      <div class="card p-5 hover:border-[#ff5d6c] cursor-pointer"><div class="flex items-center gap-2 mb-3"><div class="badge" style="background:#f97316">B</div><span class="font-semibold">빗썸</span></div><div class="text-xs text-[#8a94a3]">점유율 22.1% · 2.8조</div><div class="mt-3 text-sm text-[#ffb547]">상세페이지 →</div></div>
+      <div class="card p-5 hover:border-[#ff5d6c] cursor-pointer"><div class="flex items-center gap-2 mb-3"><div class="badge" style="background:#eab308">C</div><span class="font-semibold">코인원</span></div><div class="text-xs text-[#8a94a3]">점유율 10.3% · 1.3조</div><div class="mt-3 text-sm text-[#ffb547]">상세페이지 →</div></div>
+      <div class="card p-5 hover:border-[#ff5d6c] cursor-pointer"><div class="flex items-center gap-2 mb-3"><div class="badge" style="background:#14b8a6">K</div><span class="font-semibold">코빗</span></div><div class="text-xs text-[#8a94a3]">점유율 6.2% · 790억</div><div class="mt-3 text-sm text-[#ffb547]">상세페이지 →</div></div>
+      <div class="card p-5 hover:border-[#ff5d6c] cursor-pointer"><div class="flex items-center gap-2 mb-3"><div class="badge" style="background:#a855f7">G</div><span class="font-semibold">고팍스</span></div><div class="text-xs text-[#8a94a3]">점유율 3.0% · 380억</div><div class="mt-3 text-sm text-[#ffb547]">상세페이지 →</div></div>
+    </div>
+  </div>
+
+  <!-- 8. 푸터 -->
+  <div class="text-center text-xs text-[#8a94a3] pt-6 border-t border-[#232936]">
+    🐜 ANTINFO · 투자권유 아님
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>nav 개편 목업 A/B</title>
+<style>
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff3b30;--accent2:#ffb547;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;}
+body{background:var(--bg);color:var(--txt);padding:0 0 40px;}
+.lbl{max-width:1240px;margin:26px auto 10px;padding:0 24px;font-size:13px;font-weight:900;color:var(--accent2);letter-spacing:.5px;}
+.note{max-width:1240px;margin:0 auto 8px;padding:0 24px;font-size:12.5px;color:var(--dim);line-height:1.6;}
+/* nav 실제 스타일 복제 */
+.nav{border-bottom:1px solid var(--line);background:#0c0e13;padding:15px 0;}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:0 24px;max-width:1240px;margin:0 auto;width:100%;}
+.brand{display:flex;align-items:center;gap:10px;}
+.blogo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#ff5628,#ffb547);display:flex;align-items:center;justify-content:center;font-weight:900;color:#0a0c10;font-size:16px;}
+.bname{font-size:15px;font-weight:900;}
+.lede{font-size:10px;color:var(--dim);display:block;}
+.tabs{display:flex;gap:5px;align-items:center;}
+.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;white-space:nowrap;}
+.tab.on{background:var(--accent);color:#0a0c10;}
+.right{display:flex;align-items:center;gap:8px;}
+.glogin{padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:#fff;color:#1f2937;font-weight:700;font-size:12px;}
+.btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;background:var(--accent);color:#0a0c10;text-decoration:none;}
+/* A안 드롭다운 */
+.has-drop{position:relative;}
+.caret{font-size:10px;opacity:.8;margin-left:3px;}
+.drop{position:absolute;top:calc(100% + 8px);left:0;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:6px;min-width:150px;box-shadow:0 12px 30px rgba(0,0,0,.5);}
+.drop a{display:block;padding:9px 12px;border-radius:8px;font-size:13.5px;font-weight:700;color:var(--txt);text-decoration:none;}
+.drop a.cur{color:var(--accent2);}
+.drop a:hover{background:var(--bg);}
+.drop .arrowup{position:absolute;top:-6px;left:18px;width:10px;height:10px;background:var(--card);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg);}
+/* B안 서브탭 */
+.subwrap{max-width:1240px;margin:0 auto;padding:14px 24px 0;}
+.subbar{display:flex;gap:6px;border-bottom:1px solid var(--line);padding-bottom:0;}
+.subtab{padding:9px 16px;border-radius:9px 9px 0 0;font-size:14px;font-weight:800;color:var(--dim);text-decoration:none;border:1px solid transparent;border-bottom:none;}
+.subtab.on{background:var(--card);color:var(--txt);border-color:var(--line);}
+.page-h{max-width:1240px;margin:18px auto 0;padding:0 24px;}
+.page-h h1{font-size:22px;font-weight:900;}
+.page-h .s{font-size:13px;color:var(--dim);margin-top:5px;}
+.divider{height:1px;background:var(--line);max-width:1240px;margin:34px auto;}
+</style></head>
+<body>
+
+<!-- ============ A안: 드롭다운 ============ -->
+<div class="lbl">A안 — 에어드랍 드롭다운 (이벤트모음을 에어드랍 하위 메뉴로)</div>
+<div class="note">상단 nav에서 이벤트모음 제거. 에어드랍에 ▾ 표시, 올리면 하위로 펼침. (아래는 펼친 상태)</div>
+<div class="nav"><div class="nav-inner">
+  <div class="brand"><div class="blogo">🐜</div><div><span class="bname">개미투자정보</span><span class="lede">개미투자자들이 필요한 모든 정보</span></div></div>
+  <div class="tabs">
+    <a class="tab" href="#">대시보드</a>
+    <a class="tab" href="#">마켓</a>
+    <a class="tab" href="#">매크로뉴스</a>
+    <a class="tab" href="#">주요자산차트</a>
+    <a class="tab" href="#">K-거래소 현황</a>
+    <div class="has-drop">
+      <a class="tab on" href="#">에어드랍 <span class="caret">▾</span></a>
+      <div class="drop">
+        <div class="arrowup"></div>
+        <a class="cur" href="#">🎯 에어드랍</a>
+        <a href="#">🎉 이벤트모음</a>
+      </div>
+    </div>
+  </div>
+  <div class="right"><span class="glogin">Google 로그인</span><a class="btn" href="#">텔레그램</a></div>
+</div></div>
+<div class="note" style="margin-top:14px;">⚠️ 모바일에선 드롭다운 터치 UX가 다소 번거롭고, 11개 페이지에 드롭다운 CSS/JS 추가 필요.</div>
+
+<div class="divider"></div>
+
+<!-- ============ B안: 서브탭 ============ -->
+<div class="lbl">B안 — 에어드랍 페이지 안 서브탭 (추천)</div>
+<div class="note">상단 nav엔 에어드랍만. 에어드랍 페이지로 들어가면 그 안에서 [에어드랍][이벤트모음] 서브탭으로 전환.</div>
+<div class="nav"><div class="nav-inner">
+  <div class="brand"><div class="blogo">🐜</div><div><span class="bname">개미투자정보</span><span class="lede">개미투자자들이 필요한 모든 정보</span></div></div>
+  <div class="tabs">
+    <a class="tab" href="#">대시보드</a>
+    <a class="tab" href="#">마켓</a>
+    <a class="tab" href="#">매크로뉴스</a>
+    <a class="tab" href="#">주요자산차트</a>
+    <a class="tab" href="#">K-거래소 현황</a>
+    <a class="tab on" href="#">에어드랍</a>
+  </div>
+  <div class="right"><span class="glogin">Google 로그인</span><a class="btn" href="#">텔레그램</a></div>
+</div></div>
+
+<div class="subwrap">
+  <div class="subbar">
+    <a class="subtab on" href="#">🎯 에어드랍</a>
+    <a class="subtab" href="#">🎉 이벤트모음</a>
+  </div>
+</div>
+<div class="page-h">
+  <h1>🎯 에어드랍 미션</h1>
+  <div class="s">매일 체크인 · 미션 인증으로 응모권을 모으십시오. (서브탭에서 이벤트모음으로 전환 가능)</div>
+</div>
+<div class="note" style="margin-top:16px;">✅ 모바일 친화 · 구조 단순 · 작업량 적음 · /events URL 그대로 유지(SEO 보존).</div>
+
+</body></html>

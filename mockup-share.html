@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ANTINFO — 공유 이미지 목업</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+    <style>
+        @view-transition{navigation:auto;}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
+
+        :root{
+            --bg:#0a0c10;
+            --card:#13161c;
+            --card2:#171b22;
+            --line:#232936;
+            --txt:#e7edf3;
+            --dim:#8a94a3;
+            --up:#ff5d6c;
+            --down:#4d9bff;
+            --accent:#ff3b30;
+            --accent2:#ffb547;
+            --live:#3aa0ff;
+        }
+
+        html,body{
+            background:var(--bg);
+            color:var(--txt);
+            overflow-x:hidden;
+            max-width:100vw;
+        }
+
+        body{
+            padding:20px;
+            line-height:1.6;
+        }
+
+        .mockup-header{
+            text-align:center;
+            margin-bottom:32px;
+            padding:20px;
+            border-bottom:1px solid var(--line);
+        }
+
+        .mockup-header h1{
+            font-size:24px;
+            font-weight:900;
+            color:var(--accent);
+            margin-bottom:8px;
+        }
+
+        .mockup-header p{
+            font-size:14px;
+            color:var(--dim);
+        }
+
+        /* ===== 섹션 공통 ===== */
+        .section{
+            margin-bottom:48px;
+        }
+
+        .section-title{
+            font-size:18px;
+            font-weight:800;
+            margin-bottom:16px;
+            color:var(--accent2);
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+
+        .section-title::before{
+            content:"";
+            display:inline-block;
+            width:4px;
+            height:20px;
+            background:var(--accent);
+            border-radius:2px;
+        }
+
+        /* ===== 공유 카드 이미지 (1200x630 비율) ===== */
+        .share-card-container{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(500px,1fr));
+            gap:24px;
+            margin-bottom:24px;
+        }
+
+        .share-card{
+            position:relative;
+            aspect-ratio:1200/630;
+            border-radius:16px;
+            padding:32px 40px;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            box-shadow:0 20px 60px rgba(0,0,0,0.5);
+            overflow:hidden;
+        }
+
+        .share-card-label{
+            position:absolute;
+            top:-12px;
+            left:16px;
+            font-size:11px;
+            font-weight:800;
+            color:var(--accent2);
+            background:var(--bg);
+            padding:4px 10px;
+            border-radius:8px;
+            border:1px solid var(--line);
+        }
+
+        /* ===== 공포탐욕지수 카드 ===== */
+        .fng-card{
+            background:linear-gradient(135deg,#1a1f2a 0%,#13161c 100%);
+            border:1px solid var(--line);
+        }
+
+        .fng-card .card-header{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+
+        .fng-card .logo-area{
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .fng-card .logo-area img{
+            height:32px;
+        }
+
+        .fng-card .logo-area .brand-name{
+            font-size:18px;
+            font-weight:900;
+            color:#fff;
+        }
+
+        .fng-card .date-area{
+            font-size:13px;
+            color:var(--dim);
+            font-weight:700;
+        }
+
+        .fng-card .card-body{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            flex:1;
+        }
+
+        .fng-card .gauge-wrapper{
+            position:relative;
+            width:180px;
+            height:180px;
+        }
+
+        .fng-card .gauge-value{
+            font-size:72px;
+            font-weight:900;
+            text-align:center;
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            color:var(--up);
+        }
+
+        .fng-card .gauge-label{
+            font-size:24px;
+            font-weight:800;
+            text-align:center;
+            margin-top:8px;
+            color:var(--up);
+        }
+
+        .fng-card .gauge-sub{
+            font-size:14px;
+            color:var(--dim);
+            text-align:center;
+            margin-top:4px;
+        }
+
+        .fng-card .card-footer{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+            font-size:14px;
+            color:var(--dim);
+            font-weight:700;
+        }
+
+        .fng-card .card-footer .url{
+            color:var(--accent);
+        }
+
+        /* ===== 김치프리미엄 카드 ===== */
+        .kimchi-card{
+            background:linear-gradient(135deg,#0f2a1c 0%,#13161c 100%);
+            border:1px solid var(--line);
+        }
+
+        .kimchi-card .card-header{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+
+        .kimchi-card .logo-area{
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .kimchi-card .logo-area img{
+            height:32px;
+        }
+
+        .kimchi-card .date-area{
+            font-size:13px;
+            color:var(--dim);
+            font-weight:700;
+        }
+
+        .kimchi-card .card-body{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            flex:1;
+        }
+
+        .kimchi-card .value-main{
+            font-size:64px;
+            font-weight:900;
+            color:var(--up);
+            letter-spacing:-2px;
+        }
+
+        .kimchi-card .value-desc{
+            font-size:18px;
+            color:var(--txt);
+            font-weight:700;
+            margin-top:8px;
+        }
+
+        .kimchi-card .card-footer{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+            font-size:14px;
+            color:var(--dim);
+            font-weight:700;
+        }
+
+        .kimchi-card .card-footer .url{
+            color:var(--accent);
+        }
+
+        /* ===== 미니멀 버전 ===== */
+        .share-card.minimal{
+            background:var(--card);
+            border:1px solid var(--line);
+        }
+
+        .share-card.minimal .logo-area img{
+            height:28px;
+        }
+
+        .share-card.minimal .gauge-value,
+        .share-card.minimal .value-main{
+            font-size:56px;
+        }
+
+        /* ===== 강조 버전 ===== */
+        .share-card.accented{
+            background:linear-gradient(135deg,rgba(255,59,48,0.15) 0%,rgba(26,31,42,0.9) 100%);
+            border:2px solid var(--accent);
+        }
+
+        .share-card.accented .gauge-value,
+        .share-card.accented .value-main{
+            text-shadow:0 0 30px rgba(255,59,48,0.5);
+        }
+
+        /* ===== 공유 버튼 UI ===== */
+        .share-buttons-demo{
+            background:var(--card);
+            border:1px solid var(--line);
+            border-radius:16px;
+            padding:24px;
+            display:flex;
+            flex-direction:column;
+            gap:16px;
+        }
+
+        .share-buttons-demo .demo-title{
+            font-size:14px;
+            font-weight:800;
+            color:var(--dim);
+            margin-bottom:8px;
+        }
+
+        .share-buttons-row{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .share-btn{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding:10px 16px;
+            border-radius:10px;
+            font-size:14px;
+            font-weight:700;
+            text-decoration:none;
+            cursor:pointer;
+            transition:transform 0.15s,box-shadow 0.15s;
+        }
+
+        .share-btn:hover{
+            transform:translateY(-2px);
+        }
+
+        .share-btn.save{
+            background:var(--card);
+            border:1px solid var(--line);
+            color:var(--txt);
+        }
+
+        .share-btn.save:hover{
+            border-color:var(--accent);
+            box-shadow:0 4px 12px rgba(255,59,48,0.2);
+        }
+
+        .share-btn.twitter{
+            background:#000;
+            border:1px solid #333;
+            color:#fff;
+        }
+
+        .share-btn.twitter:hover{
+            border-color:#fff;
+            box-shadow:0 4px 12px rgba(255,255,255,0.2);
+        }
+
+        .share-btn.telegram{
+            background:#0088cc;
+            border:1px solid #0066aa;
+            color:#fff;
+        }
+
+        .share-btn.telegram:hover{
+            border-color:#3399dd;
+            box-shadow:0 4px 12px rgba(0,136,204,0.4);
+        }
+
+        /* ===== 반응형 ===== */
+        @media(max-width:768px){
+            body{
+                padding:12px;
+            }
+
+            .mockup-header h1{
+                font-size:20px;
+            }
+
+            .share-card-container{
+                grid-template-columns:1fr;
+            }
+
+            .share-card{
+                padding:24px;
+            }
+
+            .share-card .gauge-value,
+            .share-card .value-main{
+                font-size:48px;
+            }
+
+            .share-card-label{
+                font-size:10px;
+                padding:3px 8px;
+            }
+
+            .share-buttons-row{
+                flex-direction:column;
+            }
+
+            .share-btn{
+                width:100%;
+                justify-content:center;
+            }
+        }
+
+        /* ===== 공유 카드 게이지 SVG ===== */
+        .gauge-svg{
+            width:100%;
+            height:100%;
+            transform:rotate(-90deg);
+        }
+
+        .gauge-bg{
+            fill:none;
+            stroke:var(--line);
+            stroke-width:12;
+        }
+
+        .gauge-fill{
+            fill:none;
+            stroke:var(--up);
+            stroke-width:12;
+            stroke-linecap:round;
+            stroke-dasharray:0 1000;
+            transition:stroke-dasharray 1s ease;
+        }
+
+        /* ===== 빨간색 그라데이션 배경 (탐욕) ===== */
+        .greed-gradient{
+            background:linear-gradient(135deg,rgba(255,59,48,0.2) 0%,rgba(26,31,42,0.95) 50%,rgba(255,93,108,0.15) 100%)!important;
+        }
+
+        /* ===== 파란색 그라데이션 배경 (공포) ===== */
+        .fear-gradient{
+            background:linear-gradient(135deg,rgba(77,155,255,0.2) 0%,rgba(26,31,42,0.95) 50%,rgba(77,155,255,0.15) 100%)!important;
+        }
+
+        .fear-gradient .gauge-value,
+        .fear-gradient .gauge-label{
+            color:var(--down)!important;
+        }
+    </style>
+</head>
+<body>
+    <div class="mockup-header">
+        <h1>🐜 ANTINFO 공유 이미지 목업</h1>
+        <p>단톡방·X에 퍼뜨릴 공유용 카드 이미지와 버튼 UI</p>
+    </div>
+
+    <!-- ===== A) 공유 카드 이미지 (1200x630 비율) ===== -->
+    <div class="section">
+        <h2 class="section-title">공유 카드 이미지 — 기본형</h2>
+        <div class="share-card-container">
+            <!-- 공포탐욕지수 카드 -->
+            <div class="share-card fng-card greed-gradient">
+                <div class="share-card-label">공유 카드 — 공포탐욕지수</div>
+                <div class="card-header">
+                    <div class="logo-area">
+                        <img src="assets/antinfo-logo.png" alt="ANTINFO">
+                        <span class="brand-name">ANTINFO</span>
+                    </div>
+                    <div class="date-area">2026.06.13</div>
+                </div>
+                <div class="card-body">
+                    <div class="gauge-wrapper">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                            <circle class="gauge-bg" cx="50" cy="50" r="44"/>
+                            <circle class="gauge-fill" cx="50" cy="50" r="44"
+                                stroke-dasharray="207 276"
+                                stroke-dashoffset="0"/>
+                        </svg>
+                        <div class="gauge-value">52</div>
+                    </div>
+                    <div class="gauge-label">탐욕</div>
+                    <div class="gauge-sub">시장 낙관론 확산</div>
+                </div>
+                <div class="card-footer">
+                    <span>📊 데이터 출처:</span>
+                    <span class="url">antinfo.io</span>
+                </div>
+            </div>
+
+            <!-- 김치프리미엄 카드 -->
+            <div class="share-card kimchi-card">
+                <div class="share-card-label">공유 카드 — 김치프리미엄</div>
+                <div class="card-header">
+                    <div class="logo-area">
+                        <img src="assets/antinfo-logo.png" alt="ANTINFO">
+                        <span class="brand-name">ANTINFO</span>
+                    </div>
+                    <div class="date-area">2026.06.13</div>
+                </div>
+                <div class="card-body">
+                    <div class="value-main">+1.05%</div>
+                    <div class="value-desc">국내 매수세 우위</div>
+                </div>
+                <div class="card-footer">
+                    <span>🇰🇷 김치프리미엄:</span>
+                    <span class="url">antinfo.io</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 미니멀 버전 ===== -->
+    <div class="section">
+        <h2 class="section-title">공유 카드 이미지 — 미니멀형</h2>
+        <div class="share-card-container">
+            <!-- 미니멀 공포탐욕지수 -->
+            <div class="share-card fng-card minimal">
+                <div class="share-card-label">미니멀 — 공포탐욕지수</div>
+                <div class="card-header">
+                    <div class="logo-area">
+                        <img src="assets/antinfo-logo.png" alt="ANTINFO">
+                        <span class="brand-name">ANTINFO</span>
+                    </div>
+                    <div class="date-area">2026.06.13</div>
+                </div>
+                <div class="card-body">
+                    <div class="gauge-value" style="font-size:56px;">52</div>
+                    <div class="gauge-label" style="font-size:20px;">탐욕</div>
+                </div>
+                <div class="card-footer">
+                    <span class="url">antinfo.io</span>
+                </div>
+            </div>
+
+            <!-- 미니멀 김치프리미엄 -->
+            <div class="share-card kimchi-card minimal">
+                <div class="share-card-label">미니멀 — 김치프리미엄</div>
+                <div class="card-header">
+                    <div class="logo-area">
+                        <img src="assets/antinfo-logo.png" alt="ANTINFO">
+                        <span class="brand-name">ANTINFO</span>
+                    </div>
+                    <div class="date-area">2026.06.13</div>
+                </div>
+                <div class="card-body">
+                    <div class="value-main" style="font-size:56px;">+1.05%</div>
+                    <div class="value-desc">국내 매수세 우위</div>
+                </div>
+                <div class="card-footer">
+                    <span class="url">antinfo.io</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 강조 버전 ===== -->
+    <div class="section">
+        <h2 class="section-title">공유 카드 이미지 — 강조형</h2>
+        <div class="share-card-container">
+            <!-- 강조 공포탐욕지수 -->
+            <div class="share-card fng-card accented greed-gradient">
+                <div class="share-card-label">강조 — 공포탐욕지수</div>
+                <div class="card-header">
+                    <div class="logo-area">
+                        <img src="assets/antinfo-logo.png" alt="ANTINFO">
+                        <span class="brand-name">ANTINFO</span>
+                    </div>
+                    <div class="date-area">2026.06.13</div>
+                </div>
+                <div class="card-body">
+                    <div class="gauge-value">52</div>
+                    <div class="gauge-label">⚠️ 탐욕</div>
+                    <div class="gauge-sub">시장 과열 신호</div>
+                </div>
+                <div class="card-footer">
+                    <span>📊 실시간:</span>
+                    <span class="url">antinfo.io</span>
+                </div>
+            </div>
+
+            <!-- 강조 김치프리미엄 -->
+            <div class="share-card kimchi-card accented">
+                <div class="share-card-label">강조 — 김치프리미엄</div>
+                <div class="card-header">
+                    <div class="logo-area">
+                        <img src="assets/antinfo-logo.png" alt="ANTINFO">
+                        <span class="brand-name">ANTINFO</span>
+                    </div>
+                    <div class="date-area">2026.06.13</div>
+                </div>
+                <div class="card-body">
+                    <div class="value-main">+1.05%</div>
+                    <div class="value-desc">🇰🇷 국내 매수세 강함</div>
+                </div>
+                <div class="card-footer">
+                    <span>실시간:</span>
+                    <span class="url">antinfo.io</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== B) 공유 버튼 UI ===== -->
+    <div class="section">
+        <h2 class="section-title">공유 버튼 UI — 페이지에 들어갈 모습</h2>
+        <div class="share-buttons-demo">
+            <div class="demo-title">공포·탐욕 지수</div>
+            <div class="share-buttons-row">
+                <button class="share-btn save">📷 이미지로 저장</button>
+                <button class="share-btn twitter">𝕏 X로 공유</button>
+                <button class="share-btn telegram">✈️ 텔레그램 공유</button>
+            </div>
+        </div>
+
+        <div class="share-buttons-demo" style="margin-top:16px;">
+            <div class="demo-title">김치프리미엄</div>
+            <div class="share-buttons-row">
+                <button class="share-btn save">📷 이미지로 저장</button>
+                <button class="share-btn twitter">𝕏 X로 공유</button>
+                <button class="share-btn telegram">✈️ 텔레그램 공유</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 공포 상태 예시 ===== -->
+    <div class="section">
+        <h2 class="section-title">공포 상태 예시</h2>
+        <div class="share-card-container">
+            <div class="share-card fng-card fear-gradient">
+                <div class="share-card-label">공포 상태 — 공포탐욕지수</div>
+                <div class="card-header">
+                    <div class="logo-area">
+                        <img src="assets/antinfo-logo.png" alt="ANTINFO">
+                        <span class="brand-name">ANTINFO</span>
+                    </div>
+                    <div class="date-area">2026.06.13</div>
+                </div>
+                <div class="card-body">
+                    <div class="gauge-wrapper">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                            <circle class="gauge-bg" cx="50" cy="50" r="44"/>
+                            <circle class="gauge-fill" cx="50" cy="50" r="44"
+                                stroke-dasharray="82 276"
+                                stroke-dashoffset="0"
+                                style="stroke:var(--down)"/>
+                        </svg>
+                        <div class="gauge-value" style="color:var(--down);">28</div>
+                    </div>
+                    <div class="gauge-label" style="color:var(--down);">공포</div>
+                    <div class="gauge-sub">투자자 불안 심리 우세</div>
+                </div>
+                <div class="card-footer">
+                    <span>📊 데이터 출처:</span>
+                    <span class="url">antinfo.io</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

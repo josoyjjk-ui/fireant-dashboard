@@ -1,0 +1,123 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>목업 — 결과·리더보드·당첨자 허브 (리뉴얼)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo',-apple-system,sans-serif;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;--gold:#ffce5c;}
+body{background:var(--bg);color:var(--txt);padding-bottom:40px;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
+.logo{font-size:20px;font-weight:900;color:var(--accent);}
+.back{font-size:13px;font-weight:800;color:var(--dim);text-decoration:none;}
+.main{max-width:1000px;margin:0 auto;padding:20px;}   /* ① 목업1과 동일 너비 */
+.head h1{font-size:24px;font-weight:900;}.head .sub{color:var(--dim);font-size:13px;margin-top:5px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;}
+.seclabel{font-size:16px;font-weight:900;margin:22px 0 11px;display:flex;align-items:center;gap:8px;}
+.dim-sm{font-size:12px;color:var(--dim);font-weight:700;}
+/* ② 좌우 2단 (목업1처럼) */
+.row{display:grid;gap:14px;margin-top:14px;}
+.r2{grid-template-columns:1fr 1fr;}
+.r-lb{grid-template-columns:1.15fr 1fr;}
+/* 탭 */
+.tabbar{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px;}
+.tabbar a{padding:9px 14px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--txt);font-size:13px;font-weight:800;text-decoration:none;}
+.tabbar a.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+/* 검색 */
+.search input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:12px 14px;color:var(--txt);font-size:14px;}
+.searchbar{display:flex;gap:8px;margin-top:12px;}
+.searchbar input{flex:1;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 15px;color:var(--txt);font-size:14px;}
+/* 리더보드 */
+.lb-row{display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;padding:9px 11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;margin-bottom:6px;}
+.lb-rank{font-weight:900;color:var(--dim);text-align:center;}.lb-name{font-weight:800;font-size:13.5px;}.lb-days{color:var(--accent2);font-weight:800;font-size:12.5px;}
+.lb-row.top1{background:linear-gradient(135deg,#2a2210,#14100a);border-color:#3a2f14;}
+/* 추첨 flow (세로 컴팩트) */
+.flow-v{display:flex;flex-direction:column;gap:8px;}
+.fstep{display:flex;align-items:center;gap:11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+.fstep .ic{font-size:19px;width:26px;text-align:center;}.fstep .t{font-size:13px;font-weight:800;}.fstep .s{font-size:11px;color:var(--dim);}
+/* 당첨자 행 */
+.ck-h{font-size:15px;font-weight:800;margin-bottom:11px;}
+.wrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px;border-bottom:1px solid var(--line);font-size:13px;}
+.wrow:last-child{border:none;}.wtier{font-weight:800;}.whandle{color:var(--dim);font-weight:700;}
+.prize{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:6px;background:#231a0c;color:var(--accent2);white-space:nowrap;}
+.fold{font-size:12px;color:var(--accent2);font-weight:800;cursor:pointer;margin-top:8px;}
+/* 이벤트 당첨자 카드(2단 그리드) */
+.ev-search{display:flex;gap:8px;margin:2px 0 4px;}
+.ev-search input{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--txt);font-size:13.5px;}
+.evgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.evgrp{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.evgrp>summary{cursor:pointer;list-style:none;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.evgrp>summary::-webkit-details-marker{display:none;}
+.evgrp .et{font-size:14px;font-weight:900;color:var(--gold);line-height:1.3;}
+.evgrp .esum{font-size:12px;color:var(--dim);font-weight:700;white-space:nowrap;}
+.evgrp .ebody{padding:0 15px 13px;}
+.tierhead{font-size:12.5px;font-weight:900;margin:9px 0 5px;}
+.chips{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{font-size:11.5px;font-weight:700;padding:4px 8px;border-radius:7px;background:var(--bg);border:1px solid var(--line);}
+@media(max-width:720px){.r2,.r-lb,.evgrid{grid-template-columns:1fr;}.tabbar{overflow-x:auto;flex-wrap:nowrap;}}
+</style></head><body>
+<div class="nav"><span class="logo">개미투자정보</span><a class="back" href="/airdrop">← 에어드랍으로</a></div>
+<div class="main">
+  <div class="head"><h1>🏆 결과 · 리더보드 · 당첨자</h1><div class="sub">출석 리더보드, 주간 추첨 당첨자, 이벤트 당첨자 명단을 한 곳에서 확인하세요.</div></div>
+
+  <div class="tabbar">
+    <a class="on" href="#lb">🔥 출석 리더보드</a><a href="#draw">🎰 이번주 추첨 안내</a>
+    <a href="#raffle">🎁 지난주 당첨자</a><a href="#events">🏅 이벤트 당첨자</a>
+  </div>
+  <div class="searchbar"><input placeholder="🔍 전체 검색 — 내 핸들/닉네임 (리더보드·주간추첨·이벤트 통합)"></div>
+
+  <!-- 좌: 리더보드 / 우: 추첨안내 (좌우 대칭 1:1) -->
+  <div class="row r2">
+    <div class="card">
+      <div class="ck-h" id="lb">🔥 출석 스트릭 리더보드 <span class="dim-sm">· TOP 10</span></div>
+      <div class="lb-row top1"><div class="lb-rank">🥇</div><div class="lb-name">Yumi님</div><div class="lb-days">13일</div></div>
+      <div class="lb-row"><div class="lb-rank">🥈</div><div class="lb-name">icefit5님</div><div class="lb-days">13일</div></div>
+      <div class="lb-row"><div class="lb-rank">🥉</div><div class="lb-name">kwon님</div><div class="lb-days">13일</div></div>
+      <div class="lb-row"><div class="lb-rank">4</div><div class="lb-name">용라이즈님</div><div class="lb-days">13일</div></div>
+      <div class="lb-row"><div class="lb-rank">5</div><div class="lb-name">Bravethecoin3님</div><div class="lb-days">13일</div></div>
+      <div class="fold">전체 TOP 10 보기 ▾</div>
+    </div>
+    <div class="card">
+      <div class="ck-h" id="draw">🎰 이번 주 추첨 안내</div>
+      <div class="flow-v">
+        <div class="fstep"><span class="ic">🗓️</span><div><div class="t">일요일 자정 마감</div><div class="s">이번 주 응모권 일괄 마감</div></div></div>
+        <div class="fstep"><span class="ic">⚖️</span><div><div class="t">응모권 가중 추첨</div><div class="s">응모권 수만큼 가중치</div></div></div>
+        <div class="fstep"><span class="ic">🔍</span><div><div class="t">당첨자 검증</div><div class="s">온체인·캡쳐 재검증 후 확정</div></div></div>
+        <div class="fstep"><span class="ic">🎁</span><div><div class="t">기프티콘 지급</div><div class="s">확정 당첨자에게 전송</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 좌: 지난주 당첨자 / 우: 이벤트 당첨자 검색·요약 (좌우배치) -->
+  <div class="row r2">
+    <div class="card">
+      <div class="ck-h" id="raffle">🎁 지난주 당첨자 <span class="dim-sm">· 6/29 주차 · 13명</span></div>
+      <div class="wrow"><span class="wtier">🥇 1등 <span class="whandle">liveanzel365</span></span><span class="prize">3만원권</span></div>
+      <div class="wrow"><span class="wtier">🥈 2등 <span class="whandle">ETH10K</span></span><span class="prize">1만원권</span></div>
+      <div class="wrow"><span class="wtier">🥉 3등 <span class="whandle">2252</span></span><span class="prize">5천원권</span></div>
+      <div class="wrow"><span class="wtier">🎁 참여상 <span class="whandle">무우 · 이미라 · 김광준 …</span></span><span class="prize">외 10명</span></div>
+      <div class="fold">지난 주차 더 보기 ▾ (6/22 …)</div>
+    </div>
+    <div class="card">
+      <div class="ck-h">🔎 이벤트 당첨자 검색</div>
+      <div class="dim-sm" style="margin-bottom:9px;">이벤트 당첨자 명단에서 내 핸들을 바로 찾아보세요.</div>
+      <div class="ev-search"><input placeholder="🔍 핸들 입력 (예: agyyjj)"></div>
+      <div class="dim-sm" style="margin-top:11px;line-height:1.9;">📊 등록 이벤트<br>· Dapp OS AMA — <b>488명</b><br>· DSCVR 리캡 — <b>245명</b><br>· DSCVR 친구초대 — <b>297명</b></div>
+    </div>
+  </div>
+
+  <!-- 이벤트 당첨자 (2단 그리드) -->
+  <div class="seclabel" id="events">🏅 이벤트 당첨자 <span class="dim-sm">· 이벤트별 명단</span></div>
+  <div class="evgrid">
+    <details class="evgrp" open><summary><span class="et">🏅 Dapp OS AMA 당첨자</span><span class="esum">488명 ▾</span></summary>
+      <div class="ebody"><div class="tierhead">🥇 5만원권 (3)</div><div class="chips"><span class="chip">agyyjj</span><span class="chip">eddkimi</span><span class="chip">flower197412</span></div>
+        <div class="tierhead">🥈 1만원권 (10)</div><div class="chips"><span class="chip">choco3710</span><span class="chip">namal111</span><span class="chip">doomang</span><span class="chip">…</span></div>
+        <div class="fold">🥉5천 100 · ☕스타벅스 100 · ☕메가커피 275 펼치기 ▾</div></div></details>
+    <details class="evgrp" open><summary><span class="et">🏅 DSCVR 리캡 당첨자</span><span class="esum">245명 ▾</span></summary>
+      <div class="ebody"><div class="tierhead">🥇 1등 (5)</div><div class="chips"><span class="chip">soeolinyoung</span><span class="chip">kkkjoh</span><span class="chip">wseok2527</span><span class="chip">…</span></div>
+        <div class="fold">2등·3등·참여상 240명 펼치기 ▾</div></div></details>
+    <details class="evgrp"><summary><span class="et">🏅 DSCVR 친구초대 당첨자</span><span class="esum">297명 ▸</span></summary>
+      <div class="ebody"><div class="chips"><span class="chip">achist11</span><span class="chip">…</span></div><div class="fold">전체 297명 펼치기 ▾</div></div></details>
+    <details class="evgrp"><summary><span class="et">🏅 (다음 이벤트 …)</span><span class="esum">예정 ▸</span></summary>
+      <div class="ebody"><div class="dim-sm">종료 이벤트 당첨자가 여기에 계속 추가됩니다.</div></div></details>
+  </div>
+
+  <div class="dim-sm" style="text-align:center;margin-top:24px;">🐜 ANTINFO · 당첨자는 확정 명단만 게시 · 연락처는 비공개</div>
+</div></body></html>

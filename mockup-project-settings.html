@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>프로젝트 설정/템플릿 + 로그인 게이트 (MOCKUP)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff3b30;--accent2:#ffb547;--up:#3ddc97;--blue:#4d9bff;}
+body{background:var(--bg);color:var(--txt);}
+.section-tag{max-width:1180px;margin:30px auto 8px;padding:0 24px;font-size:12px;font-weight:900;color:var(--accent2);letter-spacing:1px;}
+/* ===== 로그인 게이트 ===== */
+.gate-wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+.gate{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:38px;max-width:430px;margin:0 auto;text-align:center;}
+.gate .lg{font-size:22px;font-weight:900;color:var(--accent);margin-bottom:6px;}
+.gate .lg span{color:#fff;}
+.gate p{color:var(--dim);font-size:13px;margin-bottom:22px;line-height:1.6;}
+.gbtn{width:100%;padding:13px;border-radius:11px;font-size:14px;font-weight:800;border:1px solid var(--line);background:#fff;color:#222;display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;margin-bottom:14px;}
+.gate .note{font-size:11.5px;color:var(--dim);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px;line-height:1.6;}
+.gate .deny{margin-top:14px;font-size:12px;color:var(--accent);background:rgba(255,59,48,.08);border:1px solid #3a1c1a;border-radius:10px;padding:11px;}
+/* ===== 공통 ===== */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--line);background:#0c0e13;}
+.logo{font-size:18px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
+.me{display:flex;align-items:center;gap:9px;font-size:13px;}
+.av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#ff5628,#ffb547);display:flex;align-items:center;justify-content:center;font-weight:900;color:#0a0c10;font-size:12px;}
+.main{max-width:1180px;margin:0 auto;padding:20px 24px;}
+.bc{font-size:12.5px;color:var(--dim);font-weight:700;margin-bottom:6px;}
+.bc b{color:var(--txt);}
+.h1{font-size:21px;font-weight:900;margin-bottom:16px;display:flex;align-items:center;gap:9px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px;}
+.box h3{font-size:14px;font-weight:900;margin-bottom:13px;display:flex;align-items:center;gap:7px;}
+.fld{margin-bottom:13px;}
+.fld label{display:block;font-size:11.5px;color:var(--dim);font-weight:800;margin-bottom:5px;}
+.inp{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:9px 11px;color:var(--txt);font-size:13px;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* 모듈 토글 */
+.mod{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin-bottom:7px;background:var(--bg);}
+.mod span{font-size:12.5px;font-weight:700;}
+.sw{position:relative;width:36px;height:20px;border-radius:10px;background:#2a3140;cursor:pointer;flex-shrink:0;}
+.sw.on{background:var(--up);}.sw i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s;}.sw.on i{left:18px;}
+.seg{display:flex;gap:6px;flex-wrap:wrap;}
+.seg button{flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:800;border:1px solid var(--line);background:var(--bg);color:var(--dim);cursor:pointer;}
+.seg button.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+.swatch{display:flex;gap:7px;}
+.sc{width:26px;height:26px;border-radius:7px;cursor:pointer;border:2px solid transparent;}
+.sc.on{border-color:#fff;}
+/* 템플릿 에디터 */
+.ta{width:100%;min-height:185px;background:#0b0e13;border:1px solid var(--line);border-radius:10px;padding:13px;color:var(--txt);font-size:13px;font-family:ui-monospace,Menlo,monospace;line-height:1.7;resize:vertical;}
+.vars{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
+.var{font-size:11px;font-weight:800;padding:4px 9px;border-radius:7px;background:rgba(77,155,255,.13);color:var(--blue);border:1px solid #1d2c44;cursor:pointer;}
+/* 미리보기 카드 */
+.preview{background:linear-gradient(160deg,#101622,#0b0e13);border:1px solid #1c2740;border-radius:13px;padding:15px;}
+.pv-h{font-weight:900;font-size:14px;margin-bottom:8px;color:var(--accent2);}
+.pv-l{font-size:12.5px;color:var(--txt);line-height:1.85;}
+.pv-l .g{color:var(--up);font-weight:800;}.pv-l .r{color:var(--accent);font-weight:800;}
+.pv-tag{margin-top:8px;font-size:11px;color:var(--blue);}
+/* 접근제어 이메일 */
+.emrow{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin-bottom:7px;background:var(--bg);font-size:13px;}
+.emrow .role{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:6px;background:#2a1c0a;color:var(--accent2);}
+.x{color:var(--dim);cursor:pointer;font-weight:900;}
+.save{margin-top:16px;display:flex;gap:9px;justify-content:flex-end;}
+.btn{padding:10px 18px;border-radius:10px;font-size:13px;font-weight:800;border:none;cursor:pointer;}
+.btn-pri{background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;}
+.btn-gh{background:transparent;border:1px solid var(--line);color:var(--txt);}
+@media(max-width:820px){.grid2{grid-template-columns:1fr;}}
+</style></head>
+<body>
+
+<!-- ===== ① 로그인 게이트 ===== -->
+<div class="section-tag">① 접근 제어 — 지정 이메일만 로그인 가능</div>
+<div class="gate-wrap">
+  <div class="gate">
+    <div class="lg">🐜 ANTINFO <span>봇 콘솔</span></div>
+    <p>관리자 전용 페이지입니다.<br>허용된 이메일 계정만 접근할 수 있습니다.</p>
+    <button class="gbtn">🔵 Google로 로그인</button>
+    <div class="note">✅ 허용 이메일만 입장 — 그 외 계정은 자동 차단<br>(서버측 allowlist + RLS 이중 검증)</div>
+    <div class="deny">⛔ 예: stranger@gmail.com — 접근 거부됨 (허용 목록에 없음)</div>
+  </div>
+</div>
+
+<!-- ===== ② 프로젝트 설정/템플릿 편집 ===== -->
+<div class="section-tag">② 프로젝트별 설정 · 템플릿 편집 화면</div>
+<div class="nav">
+  <div class="logo">🐜 ANTINFO <span>봇 콘솔</span></div>
+  <div class="me"><span style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:6px;background:#2a1c0a;color:#ffb547;">소유자</span><span>불개미</span><div class="av">불</div></div>
+</div>
+<div class="main">
+  <div class="bc">봇 관리 › <b>MegaETH</b> › 설정·템플릿</div>
+  <div class="h1">⚙️ MegaETH 봇 커스터마이징</div>
+
+  <div class="grid2">
+    <!-- 왼쪽: 기본설정 + 모듈 + 브랜딩 -->
+    <div>
+      <div class="box" style="margin-bottom:16px;">
+        <h3>📋 기본 설정</h3>
+        <div class="two">
+          <div class="fld"><label>토큰 심볼</label><input class="inp" value="MEGA"></div>
+          <div class="fld"><label>발송 시간</label><input class="inp" value="매일 09:00"></div>
+        </div>
+        <div class="fld"><label>텔레그램 채널</label><input class="inp" value="@megaeth_kr"></div>
+        <div class="fld"><label>봇 토큰 (마스킹)</label><input class="inp" value="••••••••••••••••8b2f" disabled></div>
+        <div class="fld"><label>말투</label><div class="seg"><button>존댓말</button><button class="on">반말</button><button>영문병기</button></div></div>
+        <div class="fld" style="margin-bottom:0;"><label>길이</label><div class="seg"><button class="on">숏폼</button><button>표준</button><button>롱폼</button></div></div>
+      </div>
+
+      <div class="box" style="margin-bottom:16px;">
+        <h3>🧩 콘텐츠 모듈 (켜고 끄기)</h3>
+        <div class="mod"><span>💰 가격 · 등락률</span><div class="sw on"><i></i></div></div>
+        <div class="mod"><span>📊 거래량</span><div class="sw on"><i></i></div></div>
+        <div class="mod"><span>🇰🇷 김치프리미엄</span><div class="sw on"><i></i></div></div>
+        <div class="mod"><span>📈 펀딩비 · 미결제약정</span><div class="sw on"><i></i></div></div>
+        <div class="mod"><span>😱 공포탐욕지수</span><div class="sw"><i></i></div></div>
+        <div class="mod" style="margin-bottom:0;"><span>🔒 토큰 언락 일정</span><div class="sw"><i></i></div></div>
+      </div>
+
+      <div class="box">
+        <h3>🎨 브랜딩</h3>
+        <div class="fld"><label>강조 색상</label><div class="swatch"><div class="sc on" style="background:#7b5cff;"></div><div class="sc" style="background:#ff3b30;"></div><div class="sc" style="background:#3ddc97;"></div><div class="sc" style="background:#ffb547;"></div><div class="sc" style="background:#4d9bff;"></div></div></div>
+        <div class="fld" style="margin-bottom:0;"><label>로고 / 이미지 스타일</label><div class="seg"><button class="on">카드형</button><button>칠판형</button><button>미니멀</button></div></div>
+      </div>
+    </div>
+
+    <!-- 오른쪽: 템플릿 에디터 + 미리보기 -->
+    <div>
+      <div class="box" style="margin-bottom:16px;">
+        <h3>✏️ 메시지 템플릿</h3>
+        <div class="vars">
+          <span class="var">{project}</span><span class="var">{symbol}</span><span class="var">{price}</span><span class="var">{change_24h}</span><span class="var">{volume}</span><span class="var">{kimchi}</span><span class="var">{funding}</span><span class="var">{date}</span>
+        </div>
+        <textarea class="ta">📌 {project} 일일 업데이트 | {date}
+
+💰 {symbol} {price} ({change_24h})
+📊 24h 거래량 {volume}
+🇰🇷 김프 {kimchi}
+📈 펀딩비 {funding}
+
+{up_or_down_comment}
+
+👉 채널: t.me/megaeth_kr
+#암호화폐 #{symbol} #MegaETH</textarea>
+        <div style="font-size:11px;color:var(--dim);margin-top:8px;">변수 클릭 시 커서 위치에 삽입 · {up_or_down_comment}=상승/하락 자동 분기 멘트</div>
+      </div>
+
+      <div class="box">
+        <h3>👁️ 카드 미리보기 (실시간)</h3>
+        <div class="preview">
+          <div class="pv-h">📌 MegaETH 일일 업데이트 | 2026.06.24</div>
+          <div class="pv-l">
+            💰 MEGA $0.0842 (<span class="g">+6.3%</span>)<br>
+            📊 24h 거래량 $128.4M<br>
+            🇰🇷 김프 <span class="r">-0.8%</span><br>
+            📈 펀딩비 +0.011%<br><br>
+            🔥 오늘도 강하게 올라간다, 가즈아!
+          </div>
+          <div class="pv-tag">#암호화폐 #MEGA #MegaETH</div>
+        </div>
+        <div style="font-size:11px;color:var(--dim);margin-top:9px;">실데이터 + 이 프로젝트 템플릿으로 생성된 결과 미리보기</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="save"><button class="btn btn-gh">테스트 발송</button><button class="btn btn-pri">저장</button></div>
+
+  <!-- 접근제어: 허용 이메일 -->
+  <div class="section-tag" style="padding:0;margin:30px 0 8px;">③ 접근 허용 이메일 관리 (소유자 전용)</div>
+  <div class="box">
+    <h3>🔑 허용된 이메일</h3>
+    <div class="emrow"><span>josoyjjk@gmail.com</span><span><span class="role">소유자</span> <span class="x" style="margin-left:10px;">✕</span></span></div>
+    <div class="emrow"><span>manager@bridge34.com</span><span><span class="role" style="background:rgba(77,155,255,.15);color:#4d9bff;">관리자</span> <span class="x" style="margin-left:10px;">✕</span></span></div>
+    <div class="emrow"><span>staff1@bridge34.com</span><span><span class="role" style="background:rgba(61,220,151,.12);color:#3ddc97;">운영자</span> <span class="x" style="margin-left:10px;">✕</span></span></div>
+    <div class="two" style="margin-top:10px;"><input class="inp" placeholder="추가할 이메일 입력"><button class="btn btn-pri">+ 추가</button></div>
+    <div style="font-size:11px;color:var(--dim);margin-top:10px;">이 목록에 없는 계정은 로그인해도 즉시 차단됩니다 (서버 allowlist + DB RLS 이중 검증).</div>
+  </div>
+</div>
+</body></html>

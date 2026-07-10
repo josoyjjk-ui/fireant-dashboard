@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>봇 관리 콘솔 (MOCKUP)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff3b30;--accent2:#ffb547;--up:#3ddc97;--blue:#4d9bff;}
+body{background:var(--bg);color:var(--txt);}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
+.logo{font-size:19px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
+.me{display:flex;align-items:center;gap:10px;font-size:13px;}
+.me .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#ff5628,#ffb547);display:flex;align-items:center;justify-content:center;font-weight:900;color:#0a0c10;}
+.role-badge{font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;background:#2a1c0a;color:var(--accent2);}
+.main{max-width:1180px;margin:0 auto;padding:22px 24px;}
+.head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+.head h1{font-size:23px;font-weight:900;}
+.sub{color:var(--dim);font-size:13px;font-weight:700;margin-bottom:18px;}
+.tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.tab{padding:8px 15px;border-radius:9px;font-size:13.5px;font-weight:800;background:var(--card);border:1px solid var(--line);color:var(--dim);cursor:pointer;}
+.tab.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+.row{display:grid;gap:14px;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;}
+.stat .l{font-size:11.5px;color:var(--dim);font-weight:800;}
+.stat .v{font-size:24px;font-weight:900;margin-top:4px;letter-spacing:-.5px;}
+.stat .v.g{color:var(--up);}
+.seclabel{font-size:15px;font-weight:900;margin:6px 0 11px;display:flex;align-items:center;gap:8px;}
+.btn{padding:9px 15px;border-radius:9px;font-size:13px;font-weight:800;border:none;cursor:pointer;}
+.btn-pri{background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;}
+.btn-gh{background:transparent;border:1px solid var(--line);color:var(--txt);}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;}
+/* 봇 카드 */
+.bots{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px;}
+.bot{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;}
+.bot-h{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.bot-name{font-size:16px;font-weight:900;display:flex;align-items:center;gap:8px;}
+.dot{width:8px;height:8px;border-radius:50%;}.dot.on{background:var(--up);box-shadow:0 0 8px var(--up);}.dot.off{background:#555;}
+.tok{font-size:11px;font-weight:800;color:var(--accent2);background:#231a0c;padding:3px 9px;border-radius:6px;}
+.bot-meta{font-size:12px;color:var(--dim);margin-top:9px;line-height:1.7;}
+.bot-meta b{color:var(--txt);}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;}
+.chip{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:6px;background:var(--bg);border:1px solid var(--line);color:var(--dim);}
+.chip.act{color:var(--up);border-color:#1c3a2c;}
+.naver{font-size:11px;font-weight:800;}
+.naver.ok{color:var(--up);}.naver.q{color:var(--accent2);}.naver.no{color:var(--dim);}
+.bot-foot{display:flex;gap:6px;margin-top:13px;flex-wrap:wrap;}
+.mini{font-size:11.5px;font-weight:800;padding:6px 11px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--txt);cursor:pointer;}
+.mini.send{background:rgba(255,181,71,.12);border-color:#3a2f14;color:var(--accent2);}
+.sw{position:relative;width:38px;height:21px;border-radius:11px;background:#2a3140;cursor:pointer;}
+.sw.on{background:var(--up);}.sw i{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:.15s;}.sw.on i{left:19px;}
+/* 팀 테이블 */
+table{width:100%;border-collapse:collapse;}
+th,td{text-align:left;padding:11px 12px;font-size:13px;border-bottom:1px solid var(--line);}
+th{color:var(--dim);font-size:11.5px;font-weight:800;}
+.rb{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:6px;}
+.rb.owner{background:#2a1c0a;color:var(--accent2);}.rb.admin{background:rgba(77,155,255,.15);color:var(--blue);}
+.rb.op{background:rgba(61,220,151,.12);color:var(--up);}.rb.view{background:#1c2330;color:var(--dim);}
+.assign{font-size:11px;color:var(--dim);}
+.log-row{display:grid;grid-template-columns:120px 1fr 90px 80px;gap:10px;font-size:12.5px;padding:9px 2px;border-bottom:1px solid var(--line);align-items:center;}
+.st{font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px;text-align:center;}
+.st.ok{background:rgba(61,220,151,.12);color:var(--up);}.st.fail{background:rgba(255,59,48,.14);color:var(--accent);}
+.foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:30px;}
+@media(max-width:820px){.stat-grid{grid-template-columns:1fr 1fr;}.bots{grid-template-columns:1fr;}.log-row{grid-template-columns:1fr 70px;}}
+</style></head>
+<body>
+<div class="nav">
+  <div class="logo">🐜 ANTINFO <span>봇 관리 콘솔</span></div>
+  <div class="me"><span class="role-badge">소유자</span><span>불개미</span><div class="av">불</div></div>
+</div>
+<div class="main">
+  <div class="head"><h1>🤖 프로젝트 봇 관리</h1><button class="btn btn-pri">+ 새 봇 추가</button></div>
+  <div class="sub">프로젝트별 전담 봇이 담당 한국 채널에 자동 게시합니다 · 팀원과 권한별로 함께 운영</div>
+
+  <div class="tabs"><div class="tab on">봇 관리</div><div class="tab">팀 · 권한</div><div class="tab">발송 로그</div><div class="tab">네이버 연동</div><div class="tab">설정</div></div>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="l">운영 봇</div><div class="v">5</div></div>
+    <div class="stat"><div class="l">오늘 발송</div><div class="v g">23</div></div>
+    <div class="stat"><div class="l">팀원</div><div class="v">4</div></div>
+    <div class="stat"><div class="l">네이버 발행(오늘)</div><div class="v g">5</div></div>
+  </div>
+
+  <div class="seclabel">🤖 프로젝트 봇</div>
+  <div class="bots">
+    <div class="bot">
+      <div class="bot-h"><div class="bot-name"><span class="dot on"></span>MegaETH</div><div class="sw on"><i></i></div></div>
+      <div class="bot-meta">채널 <b>@megaeth_kr</b> · 봇 <b>@megaeth_ant_bot</b> · 토큰 <span class="tok">MEGA</span><br>담당 <b>김운영</b> · 발송 매일 09:00 · 최근 발송 <b>오늘 09:00 ✅</b></div>
+      <div class="chips"><span class="chip act">가격</span><span class="chip act">거래량</span><span class="chip act">김프</span><span class="chip act">펀딩/OI</span><span class="chip">공탐</span></div>
+      <div class="bot-meta" style="margin-top:8px;">네이버: <span class="naver ok">● 자동발행 ON</span></div>
+      <div class="bot-foot"><button class="mini send">▶ 지금 발송</button><button class="mini">미리보기</button><button class="mini">편집</button><button class="mini">로그</button></div>
+    </div>
+    <div class="bot">
+      <div class="bot-h"><div class="bot-name"><span class="dot on"></span>DSCVR</div><div class="sw on"><i></i></div></div>
+      <div class="bot-meta">채널 <b>@dscvr_kr</b> · 봇 <b>@dscvr_ant_bot</b> · 토큰 <span class="tok">미상장</span><br>담당 <b>이매니저</b> · 발송 매일 10:00 · 최근 발송 <b>오늘 10:00 ✅</b></div>
+      <div class="chips"><span class="chip act">카운트다운</span><span class="chip act">기본미션</span><span class="chip act">생태계요약</span><span class="chip">인원증가</span></div>
+      <div class="bot-meta" style="margin-top:8px;">네이버: <span class="naver q">● 큐 대기 2건</span></div>
+      <div class="bot-foot"><button class="mini send">▶ 지금 발송</button><button class="mini">미리보기</button><button class="mini">편집</button><button class="mini">로그</button></div>
+    </div>
+    <div class="bot">
+      <div class="bot-h"><div class="bot-name"><span class="dot on"></span>EigenCloud</div><div class="sw on"><i></i></div></div>
+      <div class="bot-meta">채널 <b>@eigen_kr</b> · 봇 <b>@eigen_ant_bot</b> · 토큰 <span class="tok">EIGEN</span><br>담당 <b>김운영</b> · 발송 매일 09:30 · 최근 발송 <b>오늘 09:30 ✅</b></div>
+      <div class="chips"><span class="chip act">가격</span><span class="chip act">TVL</span><span class="chip act">거래량</span><span class="chip">공탐</span></div>
+      <div class="bot-meta" style="margin-top:8px;">네이버: <span class="naver ok">● 자동발행 ON</span></div>
+      <div class="bot-foot"><button class="mini send">▶ 지금 발송</button><button class="mini">미리보기</button><button class="mini">편집</button><button class="mini">로그</button></div>
+    </div>
+    <div class="bot">
+      <div class="bot-h"><div class="bot-name"><span class="dot off"></span>Arc Network</div><div class="sw"><i></i></div></div>
+      <div class="bot-meta">채널 <b>@arc_kr</b> · 봇 <b>@arc_ant_bot</b> · 토큰 <span class="tok">미상장</span><br>담당 <b>박인턴</b> · 발송 <b>일시정지</b> · 최근 발송 6/22</div>
+      <div class="chips"><span class="chip">카운트다운</span><span class="chip">기본미션</span></div>
+      <div class="bot-meta" style="margin-top:8px;">네이버: <span class="naver no">● OFF</span></div>
+      <div class="bot-foot"><button class="mini send">▶ 지금 발송</button><button class="mini">미리보기</button><button class="mini">편집</button><button class="mini">로그</button></div>
+    </div>
+  </div>
+
+  <div class="seclabel">👥 팀 · 권한 <span style="margin-left:auto;"><button class="btn btn-gh">+ 팀원 초대</button></span></div>
+  <div class="card" style="margin-bottom:24px;overflow-x:auto;">
+    <table>
+      <tr><th>멤버</th><th>역할</th><th>담당 프로젝트</th><th>마지막 활동</th><th></th></tr>
+      <tr><td>불개미 (나)</td><td><span class="rb owner">소유자</span></td><td class="assign">전체</td><td>방금</td><td><span class="mini">관리</span></td></tr>
+      <tr><td>김관리</td><td><span class="rb admin">관리자</span></td><td class="assign">전체</td><td>10분 전</td><td><span class="mini">관리</span></td></tr>
+      <tr><td>김운영</td><td><span class="rb op">운영자</span></td><td class="assign">MegaETH · EigenCloud</td><td>1시간 전</td><td><span class="mini">관리</span></td></tr>
+      <tr><td>박인턴</td><td><span class="rb view">뷰어</span></td><td class="assign">Arc Network (조회)</td><td>어제</td><td><span class="mini">관리</span></td></tr>
+    </table>
+    <div class="bot-meta" style="margin-top:12px;">권한: <b>소유자</b>=전체+결제+팀 · <b>관리자</b>=봇 CRUD+팀초대 · <b>운영자</b>=담당 프로젝트 발송·편집 · <b>뷰어</b>=조회만</div>
+  </div>
+
+  <div class="seclabel">📜 최근 발송 로그</div>
+  <div class="card">
+    <div class="log-row"><b>오늘 10:00</b><span>DSCVR 데일리 — @dscvr_kr</span><span class="st ok">발송 OK</span><span style="color:var(--dim);font-size:11px;">이매니저</span></div>
+    <div class="log-row"><b>오늘 09:30</b><span>EigenCloud 데일리 — @eigen_kr</span><span class="st ok">발송 OK</span><span style="color:var(--dim);font-size:11px;">자동</span></div>
+    <div class="log-row"><b>오늘 09:00</b><span>MegaETH 데일리 — @megaeth_kr (+네이버)</span><span class="st ok">발송 OK</span><span style="color:var(--dim);font-size:11px;">자동</span></div>
+    <div class="log-row"><b>오늘 09:00</b><span>Arc Network — 봇 일시정지로 스킵</span><span class="st fail">스킵</span><span style="color:var(--dim);font-size:11px;">시스템</span></div>
+  </div>
+</div>
+<div class="foot">🐜 ANTINFO 봇 관리 콘솔 · MOCKUP (시안) · 실데이터 아님</div>
+</body></html>

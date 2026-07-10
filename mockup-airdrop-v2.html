@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ANTINFO — 에어드랍 미션 (목업 v2)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<meta name="description" content="데일리 체크인과 미션 인증으로 응모권을 모으세요. 매주 일요일 자정 가중 추첨으로 기프티콘을 드립니다. (정적 목업)">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff5d6c;--down:#4d9bff;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;--ok:#3ddc97;}
+html,body{background:var(--bg);color:var(--txt);overflow-x:hidden;}
+html{scrollbar-gutter:stable;}
+
+/* ── NAV (antinfo 그대로) ───────────────────────── */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:15px max(24px, calc((100% - 1240px)/2 + 24px));border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;}
+.logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
+.tabs{display:flex;gap:5px;flex-wrap:wrap;}.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;transition:color .15s,background .15s;}.tab:hover{color:var(--txt);}.tab.on{background:var(--accent);color:#0a0c10;}
+.btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
+.brand2{display:flex;align-items:center;gap:12px;min-width:0;text-decoration:none;color:inherit;cursor:pointer;}
+.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}
+.lede2{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-width:1100px){.lede2{display:none;}}
+.ham{display:none;font-size:25px;background:none;border:none;color:var(--txt);font-weight:800;line-height:1;cursor:pointer;padding:0 4px 0 0;}
+
+/* ── LAYOUT (index.html .main 스타일 + 그리드) ──── */
+.main{padding:22px 24px;max-width:1240px;margin:0 auto;}
+.head h1{font-size:25px;font-weight:900;letter-spacing:-0.4px;}.head .sub{color:var(--dim);font-size:13.5px;margin-top:4px;font-weight:700;}
+.seclabel{font-size:15px;font-weight:900;margin:15px 0 10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;transition:border-color .18s;}
+.card.hoverable:hover{border-color:#39414f;}
+.foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:28px;}
+.dim-sm{font-size:11.5px;color:var(--dim);font-weight:700;}
+
+/* 멀티컬럼 그리드 행 (index.html .row 참고) */
+.row{display:grid;gap:14px;margin-bottom:14px;}
+.row.r2{grid-template-columns:1.3fr 1fr;}
+.row.split{grid-template-columns:1fr 1fr;}
+
+/* ── ROW A 좌: 데일리 체크인 ─────────────────────── */
+.ck-card{display:flex;flex-direction:column;}
+.ck-h{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.streak-strip{display:flex;align-items:center;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+.sq{width:46px;height:50px;border-radius:11px;border:1px solid var(--line);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;flex-shrink:0;}
+.sq .d{font-size:10.5px;font-weight:800;color:var(--dim);}
+.sq .v{font-size:14px;font-weight:900;color:var(--dim);}
+.sq.done{background:rgba(61,220,151,.12);border-color:#1c3a2c;}
+.sq.done .d{color:#3ddc97;}.sq.done .v{color:#3ddc97;}
+.sq.today{border-color:var(--accent2);background:rgba(255,181,71,.07);box-shadow:0 0 0 2px rgba(255,181,71,.18) inset;animation:pulse 1.8s ease-in-out infinite;}
+.sq.today .d{color:var(--accent2);}.sq.today .v{color:var(--accent2);}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 2px rgba(255,181,71,.10) inset;}50%{box-shadow:0 0 0 3px rgba(255,181,71,.28) inset;}}
+.ck-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:auto;}
+.ck-meta{font-size:12.5px;color:var(--dim);font-weight:700;line-height:1.5;}
+.ck-meta b{color:var(--accent2);font-size:14.5px;}
+.btn-sub{padding:11px 16px;border-radius:11px;border:none;background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;font-weight:800;font-size:13px;cursor:pointer;transition:filter .15s,transform .12s;}
+.btn-sub:hover{filter:brightness(1.08);}.btn-sub:active{transform:translateY(1px);}
+.btn-sub:disabled{opacity:.5;cursor:default;filter:none;}
+.note{font-size:11.5px;color:#cdb98a;font-weight:700;margin-top:10px;display:flex;align-items:center;gap:6px;}
+
+/* ── ROW A 우: 이번 주 추첨 (카운트다운 + 응모권 + 적립) ── */
+.lot-card{display:flex;flex-direction:column;gap:0;}
+.cd-label{font-size:12px;color:var(--dim);font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:6px;}
+.cd-clock{display:flex;align-items:baseline;gap:7px;margin-top:9px;flex-wrap:wrap;}
+.cd-unit{display:inline-flex;flex-direction:column;align-items:center;min-width:50px;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:7px 5px 5px;}
+.cd-num{font-size:26px;font-weight:900;color:#fff;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1px;}
+.cd-num.cd-days{color:var(--accent);}
+.cd-tag{font-size:10px;color:var(--dim);font-weight:800;margin-top:3px;letter-spacing:.04em;}
+.cd-sep{font-size:21px;font-weight:900;color:#3a3f4a;line-height:1;}
+.cd-foot{font-size:11.5px;color:#ff9a6b;font-weight:700;margin-top:10px;display:flex;align-items:center;gap:6px;}
+.lot-div{height:1px;background:var(--line);margin:13px 0;}
+.tickets-label{font-size:12px;color:var(--dim);font-weight:800;}
+.tickets-big{font-size:48px;font-weight:900;color:var(--accent2);line-height:1;letter-spacing:-2px;margin-top:4px;text-shadow:0 0 28px rgba(255,181,71,.32);}
+.tickets-unit{font-size:18px;font-weight:800;color:var(--accent2);margin-left:4px;}
+.tickets-foot{font-size:11.5px;color:#cdb98a;font-weight:700;margin-top:7px;display:flex;align-items:center;gap:6px;}
+
+/* 응모권 적립 내역 */
+.eq-formula{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;font-weight:800;margin-top:13px;}
+.eq-chip{display:inline-flex;flex-direction:column;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:7px 12px;min-width:80px;}
+.eq-chip .lab{font-size:10.5px;color:var(--dim);font-weight:800;}
+.eq-chip .val{font-size:16px;font-weight:900;color:var(--txt);margin-top:2px;letter-spacing:-.5px;}
+.eq-chip .mul{font-size:10.5px;color:var(--dim);font-weight:700;margin-top:1px;}
+.eq-chip.sum{background:rgba(255,181,71,.1);border-color:#3a2f14;}
+.eq-chip.sum .val{color:var(--accent2);}
+.eq-op{font-size:16px;font-weight:900;color:#3a3f4a;}
+
+/* ── ROW B: 미션 카드 그리드 ────────────────────── */
+.tasks-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:14px;}
+.task{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:11px;transition:border-color .18s;}
+.task:hover{border-color:#39414f;}
+.task-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.task-title{font-size:16px;font-weight:800;line-height:1.34;}
+.vm{font-size:11px;font-weight:800;padding:5px 11px;border-radius:20px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;}
+.vm-chain{color:#5cb0ff;background:rgba(77,155,255,.14);}
+.vm-tg{color:#7ab8ff;background:rgba(58,160,255,.14);}
+.vm-cap{color:var(--accent2);background:#231a0c;}
+.reward{font-size:11px;font-weight:800;color:var(--accent2);background:#231a0c;padding:5px 11px;border-radius:20px;white-space:nowrap;margin-top:6px;display:inline-block;}
+.task-steps{font-size:12.5px;color:#cdd6e0;line-height:1.6;font-weight:500;background:#0e1116;border:1px solid var(--line);border-radius:10px;padding:10px 13px;white-space:pre-wrap;}
+.task-foot{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:auto;padding-top:2px;}
+.btn-go{display:inline-flex;align-items:center;gap:5px;padding:9px 14px;border-radius:10px;background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;text-decoration:none;font-weight:800;font-size:12.5px;box-shadow:0 4px 14px rgba(255,86,40,.22);transition:filter .15s;}
+.btn-go:hover{filter:brightness(1.08);}
+.btn-go.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);box-shadow:none;}
+.btn-go.ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-wallet{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:10px;background:transparent;color:#5cb0ff;border:1px solid #23425f;font-weight:800;font-size:12.5px;cursor:pointer;transition:filter .15s,border-color .15s;}
+.btn-wallet:hover{border-color:#4d9dff;}
+.badge{font-size:11.5px;font-weight:800;padding:6px 12px;border-radius:20px;display:inline-block;}
+.st-approved{color:var(--ok);background:#0c2419;}
+.st-pending{color:var(--accent2);background:#231a0c;}
+
+/* ── ROW C 좌: 리더보드 ─────────────────────────── */
+.lb{display:flex;flex-direction:column;gap:7px;}
+.lb-row{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;padding:9px 13px;background:var(--bg);border:1px solid var(--line);border-radius:11px;transition:border-color .15s;}
+.lb-row:hover{border-color:#39414f;}
+.lb-rank{font-size:14px;font-weight:900;color:var(--dim);text-align:center;}
+.lb-row.top1{background:linear-gradient(135deg,#2a2210,#14100a);border-color:#3a2f14;}
+.lb-row.top2{background:linear-gradient(135deg,#1f2128,#13161c);border-color:#2b3038;}
+.lb-row.top3{background:linear-gradient(135deg,#241b14,#13161c);border-color:#33271c;}
+.lb-name{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:7px;min-width:0;}
+.lb-name .h{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-days{font-size:12.5px;font-weight:800;color:var(--accent2);white-space:nowrap;}
+.lb-days b{font-size:14.5px;}
+.lb-row.top1 .lb-rank,.lb-row.top2 .lb-rank,.lb-row.top3 .lb-rank{font-size:17px;}
+
+/* ── ROW C 우: 추첡 안내 + 지난주 당첨자 ────────── */
+.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;margin-bottom:13px;}
+.flow-step{flex:1;min-width:130px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 12px;}
+.flow-step .ic{font-size:18px;}.flow-step .t{font-size:12.5px;font-weight:800;margin-top:4px;}
+.flow-step .s{font-size:11px;color:var(--dim);font-weight:700;margin-top:3px;line-height:1.4;}
+.flow-arr{display:flex;align-items:center;color:#3a3f4a;font-size:16px;font-weight:900;}
+.win-mini-title{font-size:12.5px;font-weight:800;color:var(--dim);margin:4px 0 8px;}
+.winrow{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;background:var(--bg);border:1px solid var(--line);border-radius:11px;margin-bottom:7px;}
+.winrow:last-child{margin-bottom:0;}
+.winrow .n{font-weight:800;font-size:13px;display:flex;align-items:center;gap:8px;}
+.winrow .c{font-size:12px;color:var(--accent2);font-weight:800;}
+
+/* ── ROW D: 관리자 패널 (토글, full width) ──────── */
+.adm-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.adm-toggle .tit{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.adm-chev{font-size:13px;color:var(--dim);font-weight:900;transition:transform .2s;}
+.adm-wrap{max-height:0;overflow:hidden;transition:max-height .3s ease;opacity:.6;}
+.admin-open .adm-wrap{max-height:4000px;opacity:1;}
+.admin-open .adm-chev{transform:rotate(180deg);}
+.admin-form .field{margin-bottom:12px;}
+.af-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--dim);}
+.field input[type=text],.field input[type=number],.field input[type=datetime-local]{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px 12px;font-size:13.5px;font-family:inherit;}
+.field select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px 12px;font-size:13.5px;font-family:inherit;}
+.rev-row{display:grid;grid-template-columns:58px 1fr auto;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:flex-start;}
+.rev-row:last-child{border-bottom:none;}
+.rev-thumb-ph{width:58px;height:58px;border-radius:10px;border:1px solid var(--line);background:linear-gradient(135deg,#0e1116,#161b22);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.rev-task{font-weight:800;font-size:13px;}
+.rev-user{font-size:11.5px;color:var(--dim);margin-top:3px;}
+.rev-note{font-size:12px;color:#cdd6e0;margin-top:5px;line-height:1.5;}
+.rev-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+.mini-btn{padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--txt);font-weight:700;font-size:11.5px;cursor:pointer;white-space:nowrap;transition:filter .15s;}
+.mini-btn.app{color:var(--ok);border-color:#1c3a2c;}
+.mini-btn.rej{color:var(--up);border-color:#2a1014;}
+.draw-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:6px;background:linear-gradient(135deg,#221a0c,#13161c);border:1px solid #3a2f14;border-radius:12px;padding:14px 16px;}
+.draw-bar .txt{font-size:13px;color:#cdb98a;font-weight:700;line-height:1.5;}
+.draw-bar .txt b{color:var(--accent2);}
+.btn-draw{padding:12px 20px;border-radius:11px;border:none;background:linear-gradient(95deg,#ffd24a,#ffb547);color:#0a0c10;font-weight:900;font-size:13.5px;cursor:pointer;box-shadow:0 4px 16px rgba(255,181,71,.25);transition:filter .15s,transform .12s;}
+.btn-draw:hover{filter:brightness(1.06);}.btn-draw:active{transform:translateY(1px);}
+
+/* ── 토스트 ────────────────────────────────────── */
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#1c2330;border:1px solid var(--line);color:var(--txt);padding:13px 20px;border-radius:12px;font-size:13.5px;font-weight:700;z-index:90;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.4);}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:var(--ok);color:var(--ok);}
+.toast.err{border-color:var(--up);color:var(--up);}
+
+/* ── 모바일 드로어 ─────────────────────────────── */
+.drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:60;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
+body.navopen .drawer{transform:none;}
+.drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 14px;}
+.drawer .dh .dlogo{font-size:18px;font-weight:900;color:#ff3b30;display:flex;align-items:center;gap:7px;}
+.drawer .x{font-size:20px;color:var(--dim);background:none;border:none;cursor:pointer;}
+.drawer a{display:flex;align-items:center;gap:14px;padding:15px 12px;border-radius:14px;text-decoration:none;color:var(--txt);font-size:17px;font-weight:800;}
+.drawer a .ic{font-size:22px;width:26px;text-align:center;}
+.drawer a.on{background:rgba(255,59,48,.14);color:#ff3b30;}
+.drawer .ddiv{height:1px;background:var(--line);margin:9px 6px;}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:55;}
+body.navopen .backdrop{opacity:1;pointer-events:auto;}
+
+/* ── 반응형 (index.html 브레이크포인트 스타일) ──── */
+@media(max-width:920px){
+  .row.r2,.row.split,.tasks-grid{grid-template-columns:1fr;}
+  .flow-arr{display:none;}
+}
+@media(max-width:600px){
+  body{font-size:16px;}
+  .af-row{grid-template-columns:1fr;}
+  .nav{flex-wrap:wrap;justify-content:flex-start;padding:13px 15px;gap:8px;}.logo{font-size:22px;}
+  .tabs{display:none !important;}.ham{display:inline-flex;}.nav>.btn{display:none;}.nav{justify-content:flex-start;gap:10px;}
+  .main{padding:16px 14px;}
+  .head h1{font-size:22px;}
+  .tickets-big{font-size:42px;}
+  .cd-unit{min-width:46px;}
+  .sq{width:42px;height:46px;}
+  .task-steps{font-size:13.5px;}
+  .rev-row{grid-template-columns:50px 1fr;}.rev-thumb-ph{width:50px;height:50px;}
+  .rev-actions{flex-direction:row;align-items:center;flex-wrap:wrap;grid-column:1/-1;justify-content:flex-start;}
+}
+</style></head>
+<body>
+<div class="backdrop"></div>
+<aside class="drawer">
+  <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;vertical-align:middle;">개미투자정보</span><button class="x" type="button">✕</button></div>
+  <a href="/"><span class="ic">🏠</span>홈</a>
+  <a href="market"><span class="ic">📊</span>마켓</a>
+  <a href="signals"><span class="ic">🐋</span>시그널</a>
+  <a href="charts"><span class="ic">🕯️</span>주요자산차트</a>
+  <div class="ddiv"></div>
+  <a href="events"><span class="ic">🎉</span>이벤트·당첨</a>
+  <a class="on" href="airdrop"><span class="ic">🪂</span>에어드랍</a>
+  <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>
+</aside>
+
+  <!-- 1) NAV -->
+  <div class="nav">
+    <button class="ham" type="button" aria-label="메뉴">☰</button>
+    <a class="brand2" href="/"><span class="logo" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:34px;display:block"></span><div class="btext"><span class="bname">개미투자정보</span><span class="lede2">개미투자자들이 필요한 모든 정보</span></div></a>
+    <div class="tabs">
+      <a class="tab" href="./">대시보드</a>
+      <a class="tab" href="market">마켓</a>
+      <a class="tab" href="macro-news">매크로뉴스</a>
+      <a class="tab" href="charts">주요자산차트</a>
+      <a class="tab" href="events">이벤트모음</a>
+      <a class="tab" href="kr-exchange/">K-거래소 현황</a>
+      <a class="tab on" href="airdrop">에어드랍</a>
+    </div>
+    <a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
+  </div>
+
+  <div class="main">
+    <!-- 2) HERO (컴팩트 1줄) -->
+    <div class="head">
+      <h1>🎯 에어드랍 미션</h1>
+      <div class="sub">매일 체크인 · 미션 인증으로 응모권을 모으세요. 모은 응모권은 매주 일요일 자정 가중 추첨으로 기프티콘과 교환됩니다.</div>
+    </div>
+
+    <!-- ROW A: 데일리 체크인 | 이번 주 추첨 -->
+    <div class="row r2" style="margin-top:14px;">
+      <!-- 좌: 데일리 체크인 (7박스 스트릭 + 오늘 체크인) -->
+      <div class="card ck-card">
+        <div class="ck-h">🔥 데일리 체크인</div>
+        <div class="streak-strip" id="streakStrip"></div>
+        <div class="ck-row">
+          <div class="ck-meta"><b id="streakNum">4</b>일 연속 출석 중 · 내일도 체크인하면 <b>5일</b>!<br>체크인 1회마다 응모권 <b>+1장</b></div>
+          <button class="btn-sub" id="checkinBtn" type="button">오늘 체크인 ✅ (+1)</button>
+        </div>
+        <div class="note">🎁 7일 연속 달성 시 이번 주 응모권이 <b style="color:var(--accent2)">2배</b> 적립</div>
+      </div>
+
+      <!-- 우: 이번 주 추첨 (카운트다운 + 내 응모권 + 적립 내역) -->
+      <div class="card lot-card">
+        <div class="cd-label">⏰ 이번 주 마감까지 (D-3)</div>
+        <div class="cd-clock">
+          <div class="cd-unit"><span class="cd-num cd-days" id="cdD">3</span><span class="cd-tag">DAYS</span></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit"><span class="cd-num" id="cdH">12</span><span class="cd-tag">HOURS</span></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit"><span class="cd-num" id="cdM">34</span><span class="cd-tag">MIN</span></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit"><span class="cd-num" id="cdS">56</span><span class="cd-tag">SEC</span></div>
+        </div>
+        <div class="cd-foot">📅 매주 일요일 자정(24:00) 일괄 마감</div>
+        <div class="lot-div"></div>
+        <div class="tickets-label">내 응모권 (이번 주 누적)</div>
+        <div><span class="tickets-big">19</span><span class="tickets-unit">장</span></div>
+        <div class="tickets-foot">🎟️ 추첨 가중치 1배 · 등록된 총 응모권 2,184장</div>
+        <div class="eq-formula">
+          <span class="eq-chip"><span class="lab">체크인</span><span class="val">4</span><span class="mul">×1장</span></span>
+          <span class="eq-op">+</span>
+          <span class="eq-chip"><span class="lab">미션 인증</span><span class="val">3건</span><span class="mul">×5장</span></span>
+          <span class="eq-op">=</span>
+          <span class="eq-chip sum"><span class="lab">총 응모권</span><span class="val">19장</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW B: 진행중 미션 (2-up 그리드) -->
+    <div class="seclabel">🪂 진행중 미션 <span class="dim-sm">· 완료 건마다 응모권 +5장</span></div>
+    <div class="tasks-grid" id="tasksWrap"></div>
+
+    <!-- ROW C: 스트릭 리더보드 | 추첨 안내 + 지난주 당첨자 -->
+    <div class="row split">
+      <!-- 좌: 리더보드 TOP 10 -->
+      <div class="card">
+        <div class="ck-h">🔥 출석 스트릭 리더보드 <span class="dim-sm">· 연속 출석일 TOP 10</span></div>
+        <div class="lb" id="lbWrap"></div>
+      </div>
+
+      <!-- 우: 추첨 안내 + 지난주 당첨자 -->
+      <div class="card">
+        <div class="ck-h">🎰 이번 주 추첨 안내</div>
+        <div class="flow">
+          <div class="flow-step"><div class="ic">🗓️</div><div class="t">일요일 자정 마감</div><div class="s">이번 주 모든 응모권이 일괄 마감됩니다.</div></div>
+          <span class="flow-arr">→</span>
+          <div class="flow-step"><div class="ic">⚖️</div><div class="t">응모권 가중 추첨</div><div class="s">응모권 수만큼 가중치를 둬 공정하게 추첡합니다.</div></div>
+          <span class="flow-arr">→</span>
+          <div class="flow-step"><div class="ic">🔍</div><div class="t">당첨자 검증</div><div class="s">당첨자만 온체인·캡쳐 재검증 후 확정합니다.</div></div>
+          <span class="flow-arr">→</span>
+          <div class="flow-step"><div class="ic">🎁</div><div class="t">기프티콘 지급</div><div class="s">확정 당첨자에게 기프티콘을 전송합니다.</div></div>
+        </div>
+        <div class="win-mini-title">🏆 지난주 당첨자 (총 5명)</div>
+        <div class="winrow"><span class="n">🥇 불개미님</span><span class="c">스타벅스 3만원권</span></div>
+        <div class="winrow"><span class="n">🥈 코인초보님</span><span class="c">스타벅스 1만원권</span></div>
+        <div class="winrow"><span class="n">🥉 호돌이님</span><span class="c">올리브영 1만원권</span></div>
+        <div class="winrow"><span class="n">달려라하이님</span><span class="c">배달의민족 5천원권</span></div>
+        <div class="winrow"><span class="n">야간비행님</span><span class="c">배달의민족 5천원권</span></div>
+      </div>
+    </div>
+
+    <!-- ROW D: 관리자 패널 미리보기 (full width, 토글) -->
+    <div class="seclabel">🛠️ 관리자 패널 미리보기 <span class="dim-sm">· 시안 전용</span></div>
+    <div class="card" id="adminCard">
+      <div class="adm-toggle" id="admToggle">
+        <span class="tit">운영진 전용 · 미션 등록 · 제출 검토 · 가중 추첨</span>
+        <span class="adm-chev">▼</span>
+      </div>
+      <div class="adm-wrap">
+        <!-- 미션 등록 폼 시안 -->
+        <div style="margin-top:16px;">
+          <div class="ck-h">➕ 미션 등록</div>
+          <form class="admin-form" onsubmit="return false;">
+            <div class="af-row">
+              <div class="field"><label>제목 *</label><input type="text" placeholder="예) X 팔로우 + 리트윗"></div>
+              <div class="field"><label>인증 방식</label><select><option>🔗 온체인 자동확인</option><option>✈️ 텔레그램 자동확인</option><option>📸 캡쳐 제출</option></select></div>
+            </div>
+            <div class="field"><label>참여 단계 (줄바꿈 가능)</label><input type="text" placeholder="1. 지정 트윗 리트윗  2. 완료 화면 캡쳐  3. 인증 제출"></div>
+            <div class="af-row">
+              <div class="field"><label>작업 링크</label><input type="text" placeholder="https://..."></div>
+              <div class="field"><label>리워드 표기</label><input type="text" placeholder="응모권 +5장"></div>
+            </div>
+            <div class="af-row">
+              <div class="field"><label>종료 일시</label><input type="datetime-local"></div>
+              <div class="field"><label>sort_order</label><input type="number" placeholder="0"></div>
+            </div>
+            <button class="btn-sub" type="button" data-toast="미션이 등록되었습니다. (시안)">미션 등록</button>
+          </form>
+        </div>
+
+        <!-- 제출 검토 리스트 시안 -->
+        <div style="margin-top:20px;">
+          <div class="ck-h">📋 제출 검토 <span class="dim-sm">· 4건 대기</span></div>
+          <div class="rev-row">
+            <div class="rev-thumb-ph">📸</div>
+            <div class="rev-body"><div class="rev-task">X 팔로우 + 리트윗</div><div class="rev-user">@fireant_user · 3분 전</div><div class="rev-note">리트윗 완료 화면 첨부합니다.</div></div>
+            <div class="rev-actions"><span class="badge st-pending">대기중</span><button class="mini-btn app" data-toast="승인 완료 (시안)">승인</button><button class="mini-btn rej" data-toast="반려 처리 (시안)">반려</button></div>
+          </div>
+          <div class="rev-row">
+            <div class="rev-thumb-ph">📸</div>
+            <div class="rev-body"><div class="rev-task">Berachain 테스트넷 거래</div><div class="rev-user">@bearninja · 1시간 전</div><div class="rev-note">지갑 0x9F…c2A · 스왑 3회 확인됨.</div></div>
+            <div class="rev-actions"><span class="badge st-pending">대기중</span><button class="mini-btn app" data-toast="승인 완료 (시안)">승인</button><button class="mini-btn rej" data-toast="반려 처리 (시안)">반려</button></div>
+          </div>
+        </div>
+
+        <!-- 가중 추첨 돌리기 시안 -->
+        <div style="margin-top:20px;">
+          <div class="ck-h">🎫 가중 추첨</div>
+          <div class="draw-bar">
+            <div class="txt">이번 주 응모권 <b>2,184장</b> · 참여자 <b>312명</b> · 당첨 <b>5석</b><br>응모권 수 비례 가중 추첨이 가능합니다.</div>
+            <button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 돌리기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · antinfo.io · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── 더미 데이터 ───────────────────────────────── */
+var STREAK_DAYS = ["월","화","수","목","금","토","일"];
+var TASKS = [
+  { title:"Berachain bArtio 테스트넷 거래", reward:"응모권 +5장", vm:"chain", steps:"1. Berachain 테스트넷 지갑 연결\n2. BEX에서 $BERA 스왑 3회 실행\n3. 온체인 기록 자동 확인", status:"approved", statusLabel:"인증완료", btn:"지갑 연결" },
+  { title:"ANTINFO 텔레그램 채널 구독", reward:"응모권 +5장", vm:"tg", steps:"1. @fireant_crypto 채널 입장\n2. 구독(알림 켜기) 상태 유지\n3. 텔레그램 봇이 자동으로 인증합니다", status:"approved", statusLabel:"인증완료", btn:null },
+  { title:"X(트위터) 팔로우 + 리트윗", reward:"응모권 +5장", vm:"cap", steps:"1. @fireant_korea 팔로우\n2. 지정 캠페인 트윗 리트윗\n3. 완료 화면 캡쳐 후 제출", status:"pending", statusLabel:"대기중", btn:"✅ 인증하기" },
+  { title:"Monad 테스트넷 브릿지", reward:"응모권 +5장", vm:"chain", steps:"1. Monad 테스트넷 지갑 연결\n2. 테스트 ETH를 브릿지로 이동\n3. 온체인 기록 자동 확인", status:"approved", statusLabel:"인증완료", btn:"지갑 연결" }
+];
+var LEADERS = [
+  { name:"불개미", days:47 }, { name:"야간비행", days:41 }, { name:"코인초보", days:38 },
+  { name:"달려라하이", days:33 }, { name:"호돌이", days:29 }, { name:"한강산", days:26 },
+  { name:"비트맥스", days:22 }, { name:"문어발", days:19 }, { name:"사토시친구", days:15 }, { name:"초전도체", days:12 }
+];
+var VM_MAP = {
+  chain:{ cls:"vm-chain", label:"🔗 온체인 자동확인" },
+  tg:{ cls:"vm-tg", label:"✈️ 텔레그램 자동확인" },
+  cap:{ cls:"vm-cap", label:"📸 캡쳐 제출" }
+};
+var MEDALS = ["🥇","🥈","🥉"];
+
+/* ── 토스트 ────────────────────────────────────── */
+var toastEl = document.getElementById("toast"), toastTimer;
+function toast(msg, kind){
+  toastEl.textContent = msg;
+  toastEl.className = "toast on" + (kind ? " "+kind : "");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ toastEl.className = "toast"; }, 2200);
+}
+
+/* ── 카운트다운 (D-3 12:34:56 부터 실시간 감소) ── */
+var DEADLINE = Date.now() + (3*86400 + 12*3600 + 34*60 + 56) * 1000;
+function pad(n){ return String(n).padStart(2,"0"); }
+function tick(){
+  var diff = Math.max(0, DEADLINE - Date.now());
+  document.getElementById("cdD").textContent = Math.floor(diff/86400000);
+  document.getElementById("cdH").textContent = pad(Math.floor(diff/3600000)%24);
+  document.getElementById("cdM").textContent = pad(Math.floor(diff/60000)%60);
+  document.getElementById("cdS").textContent = pad(Math.floor(diff/1000)%60);
+}
+tick(); setInterval(tick, 1000);
+
+/* ── 스트릭 박스 (4 완료 + 오늘 + 2 미래) ──────── */
+function renderStreak(doneCount){
+  var html = "";
+  for (var i=0; i<7; i++){
+    var cls = "sq", v = (i+1);
+    if (i < doneCount) { cls += " done"; v = "✓"; }
+    else if (i === doneCount) { cls += " today"; v = "·"; }
+    html += '<div class="'+cls+'"><span class="d">'+STREAK_DAYS[i]+'</span><span class="v">'+v+'</span></div>';
+  }
+  document.getElementById("streakStrip").innerHTML = html;
+}
+var streakDone = 4;
+renderStreak(streakDone);
+document.getElementById("checkinBtn").addEventListener("click", function(){
+  if (streakDone >= 7){ toast("이번 주 7일을 모두 채우셨어요! 🎉", "ok"); return; }
+  streakDone += 1;
+  renderStreak(streakDone);
+  document.getElementById("streakNum").textContent = streakDone;
+  var doubled = (streakDone === 7) ? " · 응모권 2배 적립! 🎁" : "";
+  toast("오늘 체크인 완료 · 응모권 +1장" + doubled, "ok");
+  this.disabled = true; this.textContent = "오늘 체크인 완료 ✓";
+});
+
+/* ── 미션 카드 렌더 ────────────────────────────── */
+function renderTasks(){
+  var html = "";
+  TASKS.forEach(function(t, idx){
+    var vm = VM_MAP[t.vm];
+    var foot = '<a class="btn-go ghost" href="#" data-toast="외부 작업 페이지로 이동합니다. (시안)">작업하러 가기 ↗</a>';
+    if (t.btn === "지갑 연결") foot += '<button class="btn-wallet" type="button" data-toast="지갑 연결 팝업 (시안)">🦊 지갑 연결</button>';
+    if (t.btn === "✅ 인증하기") foot += '<button class="btn-sub" type="button" data-toast="캡쳐 인증 모달 (시안)">✅ 인증하기</button>';
+    var statusBadge = t.status === "approved"
+      ? '<span class="badge st-approved">'+t.statusLabel+'</span>'
+      : '<span class="badge st-pending">'+t.statusLabel+'</span>';
+    html += ''
+      + '<div class="task">'
+      +   '<div class="task-head">'
+      +     '<div><div class="task-title">'+t.title+'</div><span class="reward">'+t.reward+'</span></div>'
+      +     '<span class="vm '+vm.cls+'">'+vm.label+'</span>'
+      +   '</div>'
+      +   '<div class="task-steps">'+t.steps+'</div>'
+      +   '<div class="task-foot">'+foot+statusBadge+'</div>'
+      + '</div>';
+  });
+  document.getElementById("tasksWrap").innerHTML = html;
+}
+renderTasks();
+
+/* ── 리더보드 ──────────────────────────────────── */
+function renderLeaderboard(){
+  var html = "";
+  LEADERS.forEach(function(l, i){
+    var rank = (i < 3) ? MEDALS[i] : (i+1);
+    var cls = "lb-row" + (i===0?" top1":i===1?" top2":i===2?" top3":"");
+    html += '<div class="'+cls+'"><div class="lb-rank">'+rank+'</div><div class="lb-name"><span class="h">'+l.name+'님</span></div><div class="lb-days"><b>'+l.days+'</b>일 연속</div></div>';
+  });
+  document.getElementById("lbWrap").innerHTML = html;
+}
+renderLeaderboard();
+
+/* ── 관리자 토글 ───────────────────────────────── */
+document.getElementById("admToggle").addEventListener("click", function(){
+  document.getElementById("adminCard").classList.toggle("admin-open");
+});
+document.getElementById("drawBtn").addEventListener("click", function(){
+  toast("🎲 가중 추첨을 실행했습니다 · 당첨자 5명 확정 (시안)", "ok");
+});
+
+/* ── data-toast 위임 ───────────────────────────── */
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-toast]");
+  if (el){ e.preventDefault(); toast(el.getAttribute("data-toast"), "ok"); }
+});
+
+/* ── 모바일 드로어 ─────────────────────────────── */
+document.addEventListener("click", function(e){
+  var b = document.body;
+  if (e.target.closest(".ham")) b.classList.add("navopen");
+  else if (e.target.closest(".drawer .x") || e.target.classList.contains("backdrop")) b.classList.remove("navopen");
+});
+</script>
+</body></html>

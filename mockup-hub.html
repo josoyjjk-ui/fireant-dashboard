@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ANTINFO 홈 상단 개편 목업</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
+:root{--bg:#0a0c10;--card:#13161c;--card2:#171b22;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff5d6c;--down:#4d9bff;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;}
+html{background:var(--bg);scrollbar-gutter:stable;}
+body{background:var(--bg);color:var(--txt);padding-bottom:60px;}
+html,body{overflow-x:hidden;max-width:100%;}
+img{max-width:100%;}
+
+/* 네비게이션 */
+.nav{border-bottom:1px solid var(--line);background:#0c0e13;position:sticky;top:0;z-index:10;padding:15px 0;}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:0 24px;max-width:1240px;margin:0 auto;width:100%;}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;text-decoration:none;color:inherit;}
+.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}
+.lede{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;}
+.tabs{display:flex;gap:5px;}
+.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}
+.tab.on{background:var(--accent);color:#0a0c10;}
+.btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
+
+/* 목업 라벨 */
+.mockup-label{font-size:11px;font-weight:900;color:var(--accent2);background:#2a1c0a;padding:4px 10px;border-radius:20px;display:inline-block;margin:20px 0 12px;}
+.mockup-label:first-child{margin-top:30px;}
+
+/* 불개미 히어로 공통 */
+.hero-section{margin-bottom:24px;}
+.up{color:var(--up);}.down{color:var(--down);}
+
+/* 변형 A: 가로 배너형 */
+.hero-banner{background:linear-gradient(135deg,#1a1f2a 0%,#13161c 100%);border:1px solid var(--line);border-radius:16px;padding:24px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;position:relative;overflow:hidden;}
+.hero-banner::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--up),var(--accent));}
+.hero-brand{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.hero-brand img{height:32px;display:block;}
+.hero-badge{font-size:11px;font-weight:900;color:var(--up);background:#2a1116;padding:4px 10px;border-radius:20px;margin-left:auto;}
+.hero-date{font-size:12px;color:var(--dim);font-weight:700;}
+.hero-title{font-size:18px;font-weight:900;color:#fff;margin-bottom:6px;}
+.hero-content{font-size:14px;line-height:1.7;color:#cdd6e0;max-width:580px;}
+.hero-note{font-size:11px;color:var(--dim);font-weight:700;margin-top:12px;display:flex;align-items:center;gap:6px;}
+.hero-note::before{content:"※";font-size:10px;}
+.hero-cta{background:linear-gradient(135deg,var(--accent),#ff5d6c);color:#fff;padding:16px 24px;border-radius:12px;text-decoration:none;font-size:14px;font-weight:900;text-align:center;white-space:nowrap;box-shadow:0 4px 15px rgba(255,59,48,0.3);transition:transform 0.15s,box-shadow 0.15s;}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,59,48,0.4);}
+
+/* 변형 B: 카드 강조형 */
+.hero-card-grid{display:grid;grid-template-columns:1fr 280px;gap:16px;}
+.hero-main-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;position:relative;overflow:hidden;}
+.hero-main-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--up),var(--accent),var(--accent2));}
+.hero-card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.hero-card-header img{height:28px;display:block;}
+.hero-card-label{font-size:12px;font-weight:800;color:var(--dim);background:rgba(255,255,255,0.05);padding:4px 10px;border-radius:8px;}
+.hero-card-meta{font-size:11px;color:var(--dim);font-weight:700;margin-left:auto;}
+.hero-card-badge{font-size:11px;font-weight:900;color:#fff;background:var(--up);padding:4px 10px;border-radius:20px;}
+.hero-card-title{font-size:16px;font-weight:900;color:#fff;margin-bottom:12px;}
+.hero-card-text{font-size:14px;line-height:1.7;color:#cdd6e0;margin-bottom:12px;}
+.hero-card-credit{font-size:11px;color:var(--dim);font-weight:700;display:flex;align-items:center;gap:6px;}
+.hero-card-credit::before{content:"✍️";font-size:10px;}
+.hero-cta-card{background:linear-gradient(180deg,rgba(255,59,48,0.15),rgba(255,59,48,0.05));border:2px solid var(--accent);border-radius:16px;padding:20px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+.hero-cta-icon{font-size:32px;margin-bottom:12px;}
+.hero-cta-title{font-size:15px;font-weight:900;color:#fff;margin-bottom:8px;}
+.hero-cta-text{font-size:12px;color:var(--dim);font-weight:700;margin-bottom:16px;}
+.hero-cta-btn{background:var(--accent);color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:900;display:inline-flex;align-items:center;gap:6px;transition:background 0.15s,transform 0.15s;}
+.hero-cta-btn:hover{background:#ff5d6c;transform:translateY(-2px);}
+
+/* 포지셔닝 후크 */
+.positioning{margin-bottom:32px;}
+.positioning-head{font-size:22px;font-weight:900;color:#fff;margin-bottom:4px;}
+.positioning-sub{font-size:14px;color:var(--dim);font-weight:700;margin-bottom:20px;}
+.value-props{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.prop-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;text-decoration:none;color:inherit;transition:border-color 0.15s,transform 0.15s;}
+.prop-card:hover{border-color:var(--accent);transform:translateY(-3px);}
+.prop-icon{font-size:28px;margin-bottom:12px;}
+.prop-title{font-size:15px;font-weight:900;color:#fff;margin-bottom:8px;}
+.prop-desc{font-size:13px;color:var(--dim);line-height:1.5;}
+
+/* Market Now 더미 */
+.market-now{margin-bottom:24px;}
+.seclabel{display:flex;align-items:center;gap:10px;margin:6px 0 12px;}
+.seclabel h2{font-size:17px;font-weight:900;}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 8px var(--live);}
+.now{font-size:11px;font-weight:800;color:var(--live);background:#0e2236;padding:3px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;}
+.now-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+.nowcard{background:linear-gradient(180deg,#141a24,#10141b);border:1px solid #1e2c3c;border-radius:13px;padding:13px 15px;}
+.nowcard .l{font-size:12px;color:var(--dim);font-weight:700;}
+.nowcard .v{font-size:19px;font-weight:800;margin-top:4px;color:#fff;}
+.nowcard .c{font-size:12px;font-weight:700;margin-top:2px;}
+.nowcard .c.up{color:var(--up);}
+.nowcard .c.down{color:var(--down);}
+
+/* 모바일 */
+@media(max-width:920px){
+  .nav-inner{flex-wrap:wrap;padding:0 15px;gap:10px;}
+  .tabs{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;gap:7px;padding-bottom:4px;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .hero-banner{grid-template-columns:1fr;gap:16px;padding:20px;}
+  .hero-cta{order:2;white-space:normal;}
+  .hero-card-grid{grid-template-columns:1fr;}
+  .hero-cta-card{order:2;margin-top:16px;}
+  .value-props{grid-template-columns:1fr;gap:12px;}
+  .now-grid{grid-template-columns:repeat(3,1fr);}
+  .positioning-head{font-size:20px;}
+  .prop-card{padding:18px;}
+}
+@media(max-width:600px){
+  .nav-inner{padding:0 14px;}
+  .bname{font-size:15px;}.lede{font-size:11px;}
+  .now-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .nowcard .v{font-size:17px;}
+  .hero-banner,.hero-main-card{padding:16px;}
+  .hero-brand{flex-wrap:wrap;gap:8px;}
+  .hero-badge{margin-left:0;}
+  .hero-card-header{flex-wrap:wrap;gap:8px;}
+  .hero-card-meta{margin-left:0;}
+  .positioning-head{font-size:18px;}
+  .hero-content,.hero-card-text{font-size:13px;}
+  body > div[style*="max-width:1240px"]{padding:16px 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- 네비게이션 -->
+<div class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#" style="text-decoration:none;color:inherit;cursor:pointer">
+      <span style="display:inline-flex;align-items:center">
+        <img src="assets/antinfo-logo.png" alt="ANTINFO" style="height:34px;display:block">
+      </span>
+      <div class="btext">
+        <span class="bname">개미투자정보</span>
+        <span class="lede">개미투자자들이 필요한 모든 정보</span>
+      </div>
+    </a>
+    <div class="tabs">
+      <a class="tab on" href="#">대시보드</a>
+      <a class="tab" href="#">마켓</a>
+      <a class="tab" href="#">매크로뉴스</a>
+      <a class="tab" href="#">차트</a>
+      <a class="tab" href="#">이벤트</a>
+      <a class="tab" href="#">시그널</a>
+    </div>
+    <a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
+  </div>
+</div>
+
+<div style="max-width:1240px;margin:0 auto;padding:22px 24px;">
+
+<!-- 변형 A: 가로 배너형 -->
+<span class="mockup-label">변형 A — 가로 배너형</span>
+<div class="hero-section">
+  <div class="hero-banner">
+    <div>
+      <div class="hero-brand">
+        <img src="assets/antinfo-logo.png" alt="ANTINFO">
+        <span class="hero-title">불개미의 오늘 시황</span>
+        <span class="hero-badge">상승</span>
+      </div>
+      <div class="hero-content">
+        비트코인 변동성 축소 구간입니다. 매도세가 눈에 띄게 잦아들었습니다 — 단기 반등 가능성에 무게를 둡니다.
+      </div>
+      <div class="hero-note">불개미 직접 작성</div>
+    </div>
+    <a class="hero-cta" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">
+      📡 불개미 시그널, 텔레그램으로 받기 →
+    </a>
+  </div>
+</div>
+
+<!-- 포지셔닝 후크 -->
+<div class="positioning">
+  <div class="positioning-head">개미가 이기는 한국형 투자 대시보드</div>
+  <div class="positioning-sub">왜 antinfo?</div>
+  <div class="value-props">
+    <a class="prop-card" href="#">
+      <div class="prop-icon">🇰🇷</div>
+      <div class="prop-title">김치프리미엄·원화 유출입</div>
+      <div class="prop-desc">업비트·빗썸 실시간 프리미엄과 원화 마켓 유출입 데이터를 한눈에 확인</div>
+    </a>
+    <a class="prop-card" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">
+      <div class="prop-icon">🐜</div>
+      <div class="prop-title">불개미 실시간 시그널</div>
+      <div class="prop-desc">운영자 직접 분석한 시황 해석과 투자 의견을 텔레그램으로 실시간 수신</div>
+    </a>
+    <a class="prop-card" href="#">
+      <div class="prop-icon">🎉</div>
+      <div class="prop-title">한국거래소 이벤트 총정리</div>
+      <div class="prop-desc">업비트·빗썸 이벤트와 당첨자 발표, 에어드랍 정보를 빠짐없이 큐레이션</div>
+    </a>
+  </div>
+</div>
+
+<!-- Market Now 더미 -->
+<div class="market-now">
+  <div class="seclabel">
+    <h2>📈 Market Now</h2>
+    <span class="now"><span class="pulse"></span>실시간</span>
+  </div>
+  <div class="now-grid">
+    <div class="nowcard">
+      <div class="l">BTC</div>
+      <div class="v">$67,245</div>
+      <div class="c up">▲ 2.4%</div>
+    </div>
+    <div class="nowcard">
+      <div class="l">ETH</div>
+      <div class="v">$3,521</div>
+      <div class="c up">▲ 1.8%</div>
+    </div>
+    <div class="nowcard">
+      <div class="l">도미넌스</div>
+      <div class="v">54.2%</div>
+      <div class="c down">▼ 0.1%</div>
+    </div>
+    <div class="nowcard">
+      <div class="l">김치프리미엄</div>
+      <div class="v">+6.8%</div>
+      <div class="c">안정세</div>
+    </div>
+    <div class="nowcard">
+      <div class="l">공포·탐욕</div>
+      <div class="v">52 탐욕</div>
+      <div class="c up">▲ 3</div>
+    </div>
+    <div class="nowcard">
+      <div class="l">총 시가총액</div>
+      <div class="v">$2.58T</div>
+      <div class="c up">▲ 1.9%</div>
+    </div>
+  </div>
+</div>
+
+<!-- 변형 B: 카드 강조형 -->
+<span class="mockup-label">변형 B — 카드 강조형</span>
+<div class="hero-section">
+  <div class="hero-card-grid">
+    <div class="hero-main-card">
+      <div class="hero-card-header">
+        <img src="assets/antinfo-logo.png" alt="ANTINFO">
+        <span class="hero-card-label">불개미의 오늘 시황</span>
+        <span class="hero-card-meta">2026.06.13</span>
+        <span class="hero-card-badge">상승</span>
+      </div>
+      <div class="hero-card-title">비트코인 변동성 축소 구간</div>
+      <div class="hero-card-text">
+        매도세가 눈에 띄게 잦아들었습니다 — 단기 반등 가능성에 무게를 둡니다. 거래량은 감소했지만 가격 방향성이 전환될 조짐이 보입니다.
+      </div>
+      <div class="hero-card-credit">불개미 직접 작성</div>
+    </div>
+    <div class="hero-cta-card">
+      <div class="hero-cta-icon">📡</div>
+      <div class="hero-cta-title">불개미 시그널</div>
+      <div class="hero-cta-text">텔레그램으로 실시간 수신</div>
+      <a class="hero-cta-btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">
+        채널 입장 →
+      </a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

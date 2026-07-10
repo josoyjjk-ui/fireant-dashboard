@@ -26,6 +26,7 @@
     * { margin:0; padding:0; box-sizing:border-box; }
     button, input, select, textarea { font-family: inherit; }  /* 버튼은 기본 폰트 상속 안 함 → 로그인 버튼이 Arial로 떠 크기 달라지던 문제 해결 */
     @view-transition { navigation: auto; }  /* 표준 페이지와 동일한 크로스문서 뷰 트랜지션 — 전환 시 nav morph(흔들림 방지) */
+    ::view-transition-group(site-nav){animation:none!important;}::view-transition-old(site-nav),::view-transition-new(site-nav){animation:none!important;mix-blend-mode:normal!important;}  /* site-nav 고정: 페이지 이동 시 헤더 흔들림 제거 */
     ::view-transition { background:#0a0c10!important; }
     ::view-transition-group(root), ::view-transition-image-pair(root) { background:#0a0c10!important; }
     ::view-transition-old(root), ::view-transition-new(root) { background:#0a0c10!important; mix-blend-mode:normal!important; }

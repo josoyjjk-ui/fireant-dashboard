@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>업비트 — ANTINFO</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css');
+        
+        :root {
+            --font-pretendard: 'Pretendard Variable', sans-serif;
+        }
+        
+        body {
+            font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .card {
+            background-color: #13161c;
+            border: 1px solid #232936;
+            border-radius: 16px;
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #e7edf3;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #232936 #13161c;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #232936;
+        }
+        
+        th {
+            color: #8a94a3;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        .coin-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            background-color: #232936;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: #e7edf3;
+        }
+        
+        .positive {
+            color: #ff5d6c;
+        }
+        
+        .negative {
+            color: #4d9bff;
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+        /* PC: 거래량 TOP10 + 상승률 TOP10 좌우 2단 */
+        .duo-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;margin-bottom:32px;}
+        .duo-grid>div{margin-bottom:0;}
+        @media(max-width:768px){.duo-grid{grid-template-columns:1fr;}.duo-grid>div{margin-bottom:32px;}}
+    </style>
+</head>
+<body class="bg-[#0a0c10] text-[#e7edf3]">
+    <div class="max-w-[1100px] mx-auto px-4 py-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <a href="#" class="text-[#8a94a3] hover:text-[#e7edf3] flex items-center gap-1 text-sm">
+                    ← 대시보드
+                </a>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-[#4d9bff] rounded-full flex items-center justify-center text-white font-bold text-xl">U</div>
+                    <div>
+                        <div class="font-semibold text-xl">업비트 <span class="text-[#8a94a3]">Upbit</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <div class="text-sm">
+                    <span class="text-[#8a94a3]">점유율</span> <span class="font-semibold">58.4%</span> · 
+                    <span class="text-[#8a94a3]">24h 거래대금</span> <span class="font-semibold">7.5조</span> · 
+                    <span class="text-[#8a94a3]">김프</span> <span class="font-semibold text-[#ff5d6c]">+3.7%</span>
+                </div>
+                <div class="badge bg-[#232936] text-[#8a94a3]">갱신 14:32</div>
+            </div>
+        </div>
+
+        <!-- 1. 이벤트 -->
+        <div class="mb-8">
+            <div class="section-title mb-3 flex items-center gap-2">
+                <span>🎁</span> 참여가능 이벤트
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Event 1 -->
+                <div class="card p-5">
+                    <div class="font-semibold mb-1">신규 상장 기념 에어드랍</div>
+                    <div class="text-sm text-[#8a94a3] mb-3">2025.01.15 ~ 2025.01.31</div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="text-[#ffb547] font-medium">리워드: 500 USDT</div>
+                            <div class="text-xs text-[#8a94a3]">23시간 45분 남음</div>
+                        </div>
+                        <button class="px-4 py-1.5 text-sm bg-[#3ddc97] hover:bg-[#34c485] text-black font-medium rounded-xl">참여하기</button>
+                    </div>
+                </div>
+                
+                <!-- Event 2 -->
+                <div class="card p-5">
+                    <div class="font-semibold mb-1">거래량 이벤트</div>
+                    <div class="text-sm text-[#8a94a3] mb-3">2025.01.10 ~ 2025.01.25</div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="text-[#ffb547] font-medium">리워드: 최대 1,000 USDT</div>
+                            <div class="text-xs text-[#8a94a3]">12일 8시간 남음</div>
+                        </div>
+                        <button class="px-4 py-1.5 text-sm bg-[#3ddc97] hover:bg-[#34c485] text-black font-medium rounded-xl">참여하기</button>
+                    </div>
+                </div>
+                
+                <!-- Event 3 -->
+                <div class="card p-5">
+                    <div class="font-semibold mb-1">스테이킹 챌린지</div>
+                    <div class="text-sm text-[#8a94a3] mb-3">2025.01.20 ~ 2025.02.05</div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="text-[#ffb547] font-medium">리워드: 3,000 USDT 풀</div>
+                            <div class="text-xs text-[#8a94a3]">28일 14시간 남음</div>
+                        </div>
+                        <button class="px-4 py-1.5 text-sm bg-[#3ddc97] hover:bg-[#34c485] text-black font-medium rounded-xl">참여하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 거래유의 종목 및 일정 -->
+        <div class="mb-8">
+            <div class="section-title mb-3 flex items-center gap-2">
+                <span>⚠️</span> 거래유의 종목 및 일정
+            </div>
+            <div class="card p-1">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>종목</th>
+                                <th>구분</th>
+                                <th>사유</th>
+                                <th>적용일시</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-medium">XRP</td>
+                                <td><span class="badge bg-[#ff3b30] text-white">지정</span></td>
+                                <td>시장 변동성 과다</td>
+                                <td>2025.01.18 09:00</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">DOGE</td>
+                                <td><span class="badge bg-[#ffb547] text-black">예정</span></td>
+                                <td>상장 폐지 검토</td>
+                                <td>2025.01.22 00:00</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">SOL</td>
+                                <td><span class="badge bg-[#3ddc97] text-black">해제</span></td>
+                                <td>변동성 완화</td>
+                                <td>2025.01.15 14:30</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">SAND</td>
+                                <td><span class="badge bg-[#ff3b30] text-white">지정</span></td>
+                                <td>프로젝트 리스크</td>
+                                <td>2025.01.19 11:00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="duo-grid">
+        <!-- 3. 상위 거래량 TOP 10 -->
+        <div class="mb-8">
+            <div class="section-title mb-3 flex items-center gap-2">
+                <span>📊</span> 상위 거래량 TOP 10
+            </div>
+            <div class="card p-1">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="w-12">순위</th>
+                                <th>종목</th>
+                                <th>현재가 (원)</th>
+                                <th>24h 변동%</th>
+                                <th>거래대금 (원)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td class="font-medium">BTC</td><td>142,850,000</td><td class="positive">+2.34%</td><td>3,245,800,000,000</td></tr>
+                            <tr><td>2</td><td class="font-medium">ETH</td><td>5,240,000</td><td class="negative">-1.12%</td><td>1,892,300,000,000</td></tr>
+                            <tr><td>3</td><td class="font-medium">XRP</td><td>3,245</td><td class="positive">+5.67%</td><td>987,450,000,000</td></tr>
+                            <tr><td>4</td><td class="font-medium">SOL</td><td>248,500</td><td class="positive">+3.21%</td><td>654,200,000,000</td></tr>
+                            <tr><td>5</td><td class="font-medium">DOGE</td><td>312</td><td class="negative">-0.85%</td><td>421,800,000,000</td></tr>
+                            <tr><td>6</td><td class="font-medium">ADA</td><td>1,245</td><td class="positive">+1.98%</td><td>312,500,000,000</td></tr>
+                            <tr><td>7</td><td class="font-medium">AVAX</td><td>52,800</td><td class="negative">-2.34%</td><td>287,600,000,000</td></tr>
+                            <tr><td>8</td><td class="font-medium">LINK</td><td>28,450</td><td class="positive">+4.12%</td><td>198,400,000,000</td></tr>
+                            <tr><td>9</td><td class="font-medium">DOT</td><td>8,920</td><td class="negative">-1.56%</td><td>154,200,000,000</td></tr>
+                            <tr><td>10</td><td class="font-medium">MATIC</td><td>785</td><td class="positive">+2.89%</td><td>132,800,000,000</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 상위 상승률 TOP 10 -->
+        <div class="mb-8">
+            <div class="section-title mb-3 flex items-center gap-2">
+                <span>🚀</span> 상위 상승률 TOP 10
+            </div>
+            <div class="card p-1">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="w-12">순위</th>
+                                <th>종목</th>
+                                <th>현재가 (원)</th>
+                                <th>24h 상승률</th>
+                                <th>거래대금 (원)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td class="font-medium">XRP</td><td>3,245</td><td class="positive">+18.45%</td><td>987,450,000,000</td></tr>
+                            <tr><td>2</td><td class="font-medium">NEAR</td><td>8,920</td><td class="positive">+14.22%</td><td>124,300,000,000</td></tr>
+                            <tr><td>3</td><td class="font-medium">APT</td><td>15,800</td><td class="positive">+11.67%</td><td>98,700,000,000</td></tr>
+                            <tr><td>4</td><td class="font-medium">SUI</td><td>5,240</td><td class="positive">+9.84%</td><td>87,200,000,000</td></tr>
+                            <tr><td>5</td><td class="font-medium">SEI</td><td>785</td><td class="positive">+8.91%</td><td>65,400,000,000</td></tr>
+                            <tr><td>6</td><td class="font-medium">INJ</td><td>42,500</td><td class="positive">+7.65%</td><td>54,800,000,000</td></tr>
+                            <tr><td>7</td><td class="font-medium">ARB</td><td>1,845</td><td class="positive">+6.32%</td><td>48,900,000,000</td></tr>
+                            <tr><td>8</td><td class="font-medium">OP</td><td>3,120</td><td class="positive">+5.78%</td><td>41,200,000,000</td></tr>
+                            <tr><td>9</td><td class="font-medium">TIA</td><td>6,450</td><td class="positive">+5.12%</td><td>37,800,000,000</td></tr>
+                            <tr><td>10</td><td class="font-medium">JUP</td><td>1,245</td><td class="positive">+4.89%</td><td>29,500,000,000</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- 5. 거래유의 리스트 -->
+        <div class="mb-8">
+            <div class="section-title mb-3 flex items-center gap-2">
+                <span>🚨</span> 거래유의(투자경고) 리스트
+            </div>
+            <div class="card p-5">
+                <div class="flex flex-wrap gap-2">
+                    <div class="coin-chip">XRP <span class="text-xs ml-1.5 text-[#8a94a3]">01.18</span></div>
+                    <div class="coin-chip">SAND <span class="text-xs ml-1.5 text-[#8a94a3]">01.19</span></div>
+                    <div class="coin-chip">MANA <span class="text-xs ml-1.5 text-[#8a94a3]">01.12</span></div>
+                    <div class="coin-chip">AXS <span class="text-xs ml-1.5 text-[#8a94a3]">01.15</span></div>
+                    <div class="coin-chip">GALA <span class="text-xs ml-1.5 text-[#8a94a3]">01.10</span></div>
+                    <div class="coin-chip">ENJ <span class="text-xs ml-1.5 text-[#8a94a3]">01.08</span></div>
+                    <div class="coin-chip">CHZ <span class="text-xs ml-1.5 text-[#8a94a3]">01.05</span></div>
+                    <div class="coin-chip">FLOW <span class="text-xs ml-1.5 text-[#8a94a3]">01.03</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-xs text-[#8a94a3] pt-4">
+            🐜 ANTINFO · 데이터 출처 업비트 공개 API · 투자권유 아님
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>nav 개편 목업 C — 통합</title>
+<style>
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff3b30;--accent2:#ffb547;--up:#3ddc97;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;}
+body{background:var(--bg);color:var(--txt);padding-bottom:40px;}
+.lbl{max-width:1240px;margin:26px auto 10px;padding:0 24px;font-size:13px;font-weight:900;color:var(--accent2);}
+.note{max-width:1240px;margin:0 auto 8px;padding:0 24px;font-size:12.5px;color:var(--dim);line-height:1.6;}
+.nav{border-bottom:1px solid var(--line);background:#0c0e13;padding:15px 0;}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:0 24px;max-width:1240px;margin:0 auto;}
+.brand{display:flex;align-items:center;gap:10px;}
+.blogo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#ff5628,#ffb547);display:flex;align-items:center;justify-content:center;font-weight:900;color:#0a0c10;}
+.bname{font-size:15px;font-weight:900;}.lede{font-size:10px;color:var(--dim);display:block;}
+.tabs{display:flex;gap:5px;}
+.tab{padding:8px 15px;border-radius:9px;font-size:14px;font-weight:700;color:var(--dim);text-decoration:none;}
+.tab.on{background:var(--accent);color:#0a0c10;}
+.right{display:flex;gap:8px;align-items:center;}
+.glogin{padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:#fff;color:#1f2937;font-weight:700;font-size:12px;}
+.btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;background:var(--accent);color:#0a0c10;text-decoration:none;}
+.main{max-width:1240px;margin:0 auto;padding:20px 24px;}
+.h1{font-size:22px;font-weight:900;}
+.s{font-size:13px;color:var(--dim);margin-top:5px;margin-bottom:16px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;}
+.ph{height:64px;border-radius:12px;background:repeating-linear-gradient(45deg,#13161c,#13161c 10px,#171b22 10px,#171b22 20px);border:1px solid var(--line);}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+/* 섹션 구분 */
+.secdiv{display:flex;align-items:center;gap:12px;margin:30px 0 16px;}
+.secdiv .line{flex:1;height:1px;background:var(--line);}
+.secdiv h2{font-size:20px;font-weight:900;white-space:nowrap;}
+.secdiv .tagb{font-size:11px;font-weight:800;color:var(--accent2);background:#231a0c;padding:3px 10px;border-radius:20px;}
+.evrow{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);}
+.evrow:last-child{border:none;}
+.evname{font-size:14px;font-weight:800;}
+.evmeta{font-size:12px;color:var(--dim);margin-top:3px;}
+.evstat{font-size:11px;font-weight:800;padding:3px 9px;border-radius:7px;}
+.live{background:rgba(61,220,151,.13);color:var(--up);}
+.soon{background:#231a0c;color:var(--accent2);}
+.done{background:#1c2330;color:var(--dim);}
+.anchor{position:sticky;top:0;background:#0c0e13;border-bottom:1px solid var(--line);padding:9px 24px;z-index:5;}
+.anchor a{font-size:12.5px;font-weight:700;color:var(--dim);text-decoration:none;margin-right:16px;}
+.anchor a.on{color:var(--accent2);}
+</style></head>
+<body>
+
+<div class="lbl">C안 — 한 페이지 통합 (에어드랍 + 이벤트모음을 한 페이지에)</div>
+<div class="note">탭·드롭다운 없음. nav엔 에어드랍만. 들어가면 위=에어드랍 미션, 아래=이벤트 모음 섹션을 스크롤로 다 봄.</div>
+
+<div class="nav"><div class="nav-inner">
+  <div class="brand"><div class="blogo">🐜</div><div><span class="bname">개미투자정보</span><span class="lede">개미투자자들이 필요한 모든 정보</span></div></div>
+  <div class="tabs">
+    <a class="tab" href="#">대시보드</a>
+    <a class="tab" href="#">마켓</a>
+    <a class="tab" href="#">매크로뉴스</a>
+    <a class="tab" href="#">주요자산차트</a>
+    <a class="tab" href="#">K-거래소 현황</a>
+    <a class="tab on" href="#">에어드랍</a>
+  </div>
+  <div class="right"><span class="glogin">Google 로그인</span><a class="btn" href="#">텔레그램</a></div>
+</div></div>
+
+<!-- 선택: 페이지 내 앵커(빠른 이동) -->
+<div class="anchor"><a class="on" href="#">🎯 에어드랍</a><a href="#">🎉 이벤트 모음</a></div>
+
+<div class="main">
+  <div class="h1">🎯 에어드랍 미션</div>
+  <div class="s">매일 체크인 · 미션 인증으로 응모권을 모으십시오.</div>
+
+  <div class="card"><div class="ph"></div></div>
+  <div class="grid">
+    <div class="card"><b>🔥 데일리 체크인</b><div class="ph" style="margin-top:12px;height:48px;"></div></div>
+    <div class="card"><b>⏰ 이번 주 마감</b><div class="ph" style="margin-top:12px;height:48px;"></div></div>
+  </div>
+  <div class="card"><b>🏹 진행중 미션</b><div class="ph" style="margin-top:12px;"></div></div>
+
+  <!-- 이벤트 모음 통합 섹션 -->
+  <div class="secdiv"><h2>🎉 이벤트 모음</h2><span class="tagb">진행/예정/종료</span><span class="line"></span></div>
+  <div class="card">
+    <div class="evrow"><div><div class="evname">DSCVR 한국 커뮤니티 친구초대</div><div class="evmeta">6.19 ~ 6.28 · 리워드 추첨</div></div><span class="evstat live">진행중</span></div>
+    <div class="evrow"><div><div class="evname">MegaETH × 불개미 AMA</div><div class="evmeta">예정 · 곧 공개</div></div><span class="evstat soon">예정</span></div>
+    <div class="evrow"><div><div class="evname">D3 친구초대 이벤트</div><div class="evmeta">종료 · 당첨자 발표 완료</div></div><span class="evstat done">종료</span></div>
+  </div>
+  <div class="note" style="padding:0;margin-top:14px;">✅ 한 페이지에 다 보임 · 탭 전환 불필요 · 모바일도 자연스러운 스크롤 · /events는 리다이렉트로 유지(SEO).</div>
+  <div class="note" style="padding:0;margin-top:6px;color:#ff8a8a;">⚠️ 단점: 페이지가 길어짐. 이벤트가 많아지면 에어드랍 본문이 아래로 밀림(앵커로 완화).</div>
+</div>
+
+</body></html>

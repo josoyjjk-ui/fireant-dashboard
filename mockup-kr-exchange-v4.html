@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>antinfo.io · 한국거래소 완전정복 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root {
+  --bg:#0a0c10; --card:#13161c; --border:#232936; --text:#e7edf3; --muted:#8a94a3;
+  --red:#ff3b30; --gold:#ffb547; --up:#ff5d6c; --down:#4d9bff; --green:#3ddc97;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Pretendard Variable',system-ui,sans-serif;line-height:1.5}
+.container{max-width:1240px;margin:0 auto;padding:0 20px}
+header{padding:24px 0 16px;border-bottom:1px solid var(--border)}
+h1{font-size:28px;font-weight:700}
+.banner{background:#1f242e;border:1px solid var(--red);border-radius:12px;padding:12px 20px;margin:20px 0;display:flex;align-items:center;gap:12px;font-size:14px}
+.banner .badge{background:var(--red);color:white;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab{padding:12px 24px;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:3px solid transparent}
+.tab.active{color:var(--text);border-bottom-color:var(--gold)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px}
+.grid{display:grid;gap:20px}
+@media(min-width:1024px){.grid-2{grid-template-columns:1fr 1fr}.grid-5{grid-template-columns:repeat(5,1fr)}}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:500;font-size:13px}
+.badge-ex{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:999px;font-size:11px;font-weight:700;color:white}
+.up{color:var(--up)}.down{color:var(--down)}.green{color:var(--green)}
+.mini-list{font-size:13px}
+.mini-list li{display:flex;justify-content:space-between;padding:4px 0}
+.highlight td:nth-child(4){background:rgba(61,220,151,.15);font-weight:600}
+.cd{padding:7px 0;border-radius:8px;background:#13161c}
+.cd .dt{height:7px;line-height:7px;margin-top:3px}
+.cd .dt i{display:inline-block;width:5px;height:5px;border-radius:50%;margin:0 1px}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>🏦 한국거래소 완전정복 대시보드</h1>
+  <p style="color:var(--muted);margin-top:4px">실시간 5대 거래소 모니터링 · antinfo.io</p>
+</header>
+
+<!-- 1. 긴급 알림 배너 -->
+<div class="banner">
+  <span class="badge">🚨 긴급</span>
+  <div style="flex:1">
+    <strong>[빗썸]</strong> BTC·ETH 입출금 일시 중단 (14:00~15:30) &nbsp;&nbsp;
+    <strong>[코인원]</strong> 시스템 점검 예정 (23:00~01:00)
+  </div>
+  <span style="color:var(--muted);font-size:12px">2건 · 3분 전</span>
+</div>
+
+<!-- 2. 통합 마켓 현황 -->
+<div class="grid grid-2" style="margin-bottom:32px">
+  <div class="card">
+    <h3 style="margin-bottom:16px">📈 통합 상승률 TOP 10</h3>
+    <table>
+      <thead><tr><th>순위</th><th>코인</th><th>현재가</th><th>상승률</th><th>주요거래소</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>ONDO</strong></td><td>1,248원</td><td class="up">+42.8%</td><td><span class="badge-ex" style="background:#0052ff">U</span></td></tr>
+        <tr><td>2</td><td><strong>TAIKO</strong></td><td>3,920원</td><td class="up">+31.4%</td><td><span class="badge-ex" style="background:#f7931a">B</span></td></tr>
+        <tr><td>3</td><td><strong>ARKM</strong></td><td>2,850원</td><td class="up">+27.9%</td><td><span class="badge-ex" style="background:#0052ff">U</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3 style="margin-bottom:16px">💹 통합 거래량 TOP 10</h3>
+    <table>
+      <thead><tr><th>순위</th><th>코인</th><th>현재가</th><th>24h 거래량</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>BTC</strong></td><td>98,450,000원</td><td>1.24조</td></tr>
+        <tr><td>2</td><td><strong>ETH</strong></td><td>3,920,000원</td><td>4820억</td></tr>
+        <tr><td>3</td><td><strong>SOL</strong></td><td>248,000원</td><td>3120억</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 3. 차익거래 기회 -->
+<div class="card" style="margin-bottom:32px">
+  <h3 style="margin-bottom:16px">⚡ 차익거래 기회 (가격 이격)</h3>
+  <table>
+    <thead><tr><th>코인</th><th>최저가</th><th>최고가</th><th>차액</th><th>이격률</th></tr></thead>
+    <tbody>
+      <tr class="highlight"><td><strong>PEPE</strong></td><td class="down">0.0182원 (코인원)</td><td class="up">0.0197원 (빗썸)</td><td>0.0015원</td><td style="color:#3ddc97">8.2%</td></tr>
+      <tr><td><strong>APT</strong></td><td class="down">9,420원 (업비트)</td><td class="up">9,780원 (고팍스)</td><td>360원</td><td style="color:#3ddc97">3.8%</td></tr>
+      <tr><td><strong>BLUR</strong></td><td class="down">312원 (코빗)</td><td class="up">329원 (업비트)</td><td>17원</td><td style="color:#3ddc97">5.4%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 4. 거래소별 대시보드 -->
+<div class="grid grid-5" style="margin-bottom:32px">
+  <div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="badge-ex" style="background:#0052ff">U</span><strong>업비트</strong></div>
+    <div class="mini-list"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">상승률 TOP3</div><li>ONDO <span class="up">+42.8%</span></li><li>TAIKO <span class="up">+29.1%</span></li><li>ARKM <span class="up">+27.9%</span></li></div>
+    <div class="mini-list" style="margin-top:12px"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">거래량 TOP3</div><li>BTC <span>8420억</span></li><li>ETH <span>3120억</span></li><li>SOL <span>1840억</span></li></div></div>
+  <div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="badge-ex" style="background:#f7931a">B</span><strong>빗썸</strong></div>
+    <div class="mini-list"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">상승률 TOP3</div><li>PEPE <span class="up">+31.4%</span></li><li>ONDO <span class="up">+28.7%</span></li><li>TAIKO <span class="up">+24.2%</span></li></div>
+    <div class="mini-list" style="margin-top:12px"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">거래량 TOP3</div><li>BTC <span>6210억</span></li><li>ETH <span>2890억</span></li><li>XRP <span>1240억</span></li></div></div>
+  <div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="badge-ex" style="background:#f7c948">C</span><strong>코인원</strong></div>
+    <div class="mini-list"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">상승률 TOP3</div><li>PEPE <span class="up">+19.8%</span></li><li>APT <span class="up">+14.3%</span></li><li>BLUR <span class="up">+11.9%</span></li></div>
+    <div class="mini-list" style="margin-top:12px"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">거래량 TOP3</div><li>BTC <span>1840억</span></li><li>ETH <span>920억</span></li><li>SOL <span>480억</span></li></div></div>
+  <div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="badge-ex" style="background:#00b2b2">K</span><strong>코빗</strong></div>
+    <div class="mini-list"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">상승률 TOP3</div><li>BLUR <span class="up">+15.2%</span></li><li>ONDO <span class="up">+12.4%</span></li><li>PEPE <span class="up">+9.8%</span></li></div>
+    <div class="mini-list" style="margin-top:12px"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">거래량 TOP3</div><li>BTC <span>920억</span></li><li>ETH <span>410억</span></li><li>APT <span>280억</span></li></div></div>
+  <div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="badge-ex" style="background:#6b46c1">G</span><strong>고팍스</strong></div>
+    <div class="mini-list"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">상승률 TOP3</div><li>APT <span class="up">+11.7%</span></li><li>ONDO <span class="up">+8.9%</span></li><li>BLUR <span class="up">+7.4%</span></li></div>
+    <div class="mini-list" style="margin-top:12px"><div style="color:var(--muted);font-size:12px;margin-bottom:4px">거래량 TOP3</div><li>BTC <span>310억</span></li><li>ETH <span>180억</span></li><li>SOL <span>120억</span></li></div></div>
+</div>
+
+<!-- 5. 주요 공지 타임라인 -->
+<div class="card">
+  <h3 style="margin-bottom:16px">📢 주요 공지 타임라인</h3>
+  <!-- 월간 달력 (이벤트·입출금/점검·유의종목 결정기한) -->
+  <div style="background:#1a1f28;border-radius:12px;padding:16px;margin-bottom:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <strong style="font-size:15px">📅 2026년 6월</strong>
+      <span style="font-size:12px;color:#8a94a3">
+        <span style="color:#ffb547">●</span> 이벤트
+        <span style="color:#4d9bff;margin-left:10px">●</span> 입출금·점검
+        <span style="color:#ff3b30;margin-left:10px">●</span> 유의종목 결정기한
+      </span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;font-size:13px">
+      <div style="color:#ff5d6c;font-weight:700;padding-bottom:4px">일</div>
+      <div style="color:#8a94a3;font-weight:700">월</div><div style="color:#8a94a3;font-weight:700">화</div>
+      <div style="color:#8a94a3;font-weight:700">수</div><div style="color:#8a94a3;font-weight:700">목</div>
+      <div style="color:#8a94a3;font-weight:700">금</div><div style="color:#4d9bff;font-weight:700">토</div>
+      <div></div>
+      <div class="cd">1<div class="dt"></div></div>
+      <div class="cd">2<div class="dt"></div></div>
+      <div class="cd">3<div class="dt"></div></div>
+      <div class="cd">4<div class="dt"></div></div>
+      <div class="cd">5<div class="dt"><i style="background:#ffb547"></i></div></div>
+      <div class="cd">6<div class="dt"></div></div>
+      <div class="cd">7<div class="dt"></div></div>
+      <div class="cd">8<div class="dt"></div></div>
+      <div class="cd">9<div class="dt"><i style="background:#4d9bff"></i></div></div>
+      <div class="cd">10<div class="dt"></div></div>
+      <div class="cd">11<div class="dt"></div></div>
+      <div class="cd">12<div class="dt"><i style="background:#ffb547"></i></div></div>
+      <div class="cd">13<div class="dt"></div></div>
+      <div class="cd">14<div class="dt"></div></div>
+      <div class="cd" style="outline:2px solid var(--gold);border-radius:8px">15<div class="dt"><i style="background:#ffb547"></i></div></div>
+      <div class="cd">16<div class="dt"></div></div>
+      <div class="cd">17<div class="dt"><i style="background:#4d9bff"></i></div></div>
+      <div class="cd">18<div class="dt"></div></div>
+      <div class="cd">19<div class="dt"><i style="background:#ff3b30"></i><i style="background:#ffb547"></i></div></div>
+      <div class="cd">20<div class="dt"></div></div>
+      <div class="cd">21<div class="dt"></div></div>
+      <div class="cd">22<div class="dt"><i style="background:#ffb547"></i></div></div>
+      <div class="cd">23<div class="dt"></div></div>
+      <div class="cd">24<div class="dt"><i style="background:#ff3b30"></i></div></div>
+      <div class="cd">25<div class="dt"><i style="background:#4d9bff"></i></div></div>
+      <div class="cd">26<div class="dt"></div></div>
+      <div class="cd">27<div class="dt"></div></div>
+      <div class="cd">28<div class="dt"></div></div>
+      <div class="cd">29<div class="dt"><i style="background:#ffb547"></i></div></div>
+      <div class="cd">30<div class="dt"><i style="background:#ff3b30"></i></div></div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab(0)">참여가능 이벤트</div>
+    <div class="tab" onclick="showTab(1)">입출금/점검</div>
+    <div class="tab" onclick="showTab(2)">유의종목</div>
+  </div>
+  <div id="tab0">
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:240px;background:#1a1f28;border-radius:12px;padding:14px">
+        <span style="background:#3ddc97;color:#0a0c10;padding:1px 8px;border-radius:999px;font-size:12px">D-3</span>
+        <div style="margin:8px 0"><strong>업비트 BTC 마켓 메이커 이벤트</strong></div>
+        <div style="font-size:13px;color:var(--muted)">~ 3월 15일 · <span class="badge-ex" style="background:#0052ff">U</span></div>
+      </div>
+      <div style="flex:1;min-width:240px;background:#1a1f28;border-radius:12px;padding:14px">
+        <span style="background:#ffb547;color:#0a0c10;padding:1px 8px;border-radius:999px;font-size:12px">진행중</span>
+        <div style="margin:8px 0"><strong>빗썸 신규 상장 이벤트</strong></div>
+        <div style="font-size:13px;color:var(--muted)">~ 3월 20일 · <span class="badge-ex" style="background:#f7931a">B</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="tab1" style="display:none">
+    <div style="font-size:14px">• [빗썸] BTC 입출금 중단 14:00~15:30<br>• [코인원] 전체 시스템 점검 23:00~01:00</div>
+  </div>
+  <div id="tab2" style="display:none">
+    <table>
+      <tr><td><strong>PEPE</strong></td><td><span class="badge-ex" style="background:#f7931a">B</span></td><td>3월 5일 지정</td><td><span style="color:#ffb547">D-2</span></td><td>거래량 급감</td></tr>
+      <tr><td><strong>BLUR</strong></td><td><span class="badge-ex" style="background:#0052ff">U</span></td><td>3월 8일 지정</td><td><span style="color:#ffb547">D-5</span></td><td>상장폐지 검토</td></tr>
+    </table>
+  </div>
+</div>
+</div>
+
+<script>
+function showTab(n){
+  document.querySelectorAll('[id^="tab"]').forEach(el=>el.style.display='none');
+  document.getElementById('tab'+n).style.display='block';
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===n));
+}
+</script>
+</body>
+</html>
