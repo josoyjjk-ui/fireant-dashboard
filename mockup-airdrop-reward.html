@@ -250,7 +250,10 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 }
 @media(max-width:920px){.row.r2,.row.split,.tasks-grid{grid-template-columns:1fr;}.flow-arr{display:none;}}
 .brand2{display:flex;align-items:center;gap:12px;min-width:0;}.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}.lede2{font-size:13px;color:var(--dim);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}@media(max-width:1100px){.lede2{display:none;}}
-</style></head>
+
+/* 전환 흔들림 완화: 콘텐츠 첫 페인트 settle(폰트 스왑·데이터 채움) 마스킹 */
+@keyframes antfMainIn{from{opacity:0}to{opacity:1}}.main{animation:antfMainIn .3s ease-out}
+@media(prefers-reduced-motion:reduce){.main{animation:none}}</style></head>
 <body>
 <div class="backdrop"></div>
 <aside class="drawer">

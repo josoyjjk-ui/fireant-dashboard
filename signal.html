@@ -98,7 +98,10 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 ::view-transition{background:#0a0c10!important;}
 ::view-transition-group(root),::view-transition-image-pair(root){background:#0a0c10!important;}
 ::view-transition-old(root),::view-transition-new(root){background:#0a0c10!important;mix-blend-mode:normal!important;}
-html{background:#0a0c10;}</style></head>
+html{background:#0a0c10;}
+/* 전환 흔들림 완화: 콘텐츠 첫 페인트 settle(폰트 스왑·데이터 채움) 마스킹 */
+@keyframes antfMainIn{from{opacity:0}to{opacity:1}}.main{animation:antfMainIn .3s ease-out}
+@media(prefers-reduced-motion:reduce){.main{animation:none}}</style></head>
 <body>
 <div class="backdrop"></div>
 <aside class="drawer">

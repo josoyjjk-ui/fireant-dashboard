@@ -8,6 +8,7 @@
 (function(){try{var ua=navigator.userAgent||"";var mob=/Android|iPhone|iPod|iPad|IEMobile|BlackBerry|Opera Mini|Mobile/i.test(ua);var w=Math.min(window.innerWidth||9999,(screen&&screen.width)||9999);if(mob&&w<=820&&location.search.indexOf("pc")<0){location.replace("/m");}}catch(e){}})();</script>
 <title>ANTINFO — 개미들이 필요한 모든 투자정보</title>
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
@@ -197,7 +198,14 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 ::view-transition{background:#0a0c10!important;}
 ::view-transition-group(root),::view-transition-image-pair(root){background:#0a0c10!important;}
 ::view-transition-old(root),::view-transition-new(root){background:#0a0c10!important;mix-blend-mode:normal!important;}
-html{background:#0a0c10;}</style></head>
+html{background:#0a0c10;}
+/* ── 전환 흔들림 방지: JS로 채워지는 컨테이너 자리 미리 예약(CLS 0 목표) ── */
+#nowGrid{min-height:86px}#sigGrid{min-height:426px}#topGainers,#topLosers{min-height:369px}#calEvent{min-height:300px}#calUnlock{min-height:340px}#derivGrid{min-height:85px}
+@media(max-width:920px){#nowGrid{min-height:150px}#derivGrid{min-height:170px}}
+@media(max-width:600px){#nowGrid{min-height:309px}#sigGrid{min-height:1000px}#topGainers,#topLosers{min-height:529px}#calEvent{min-height:380px}#calUnlock{min-height:420px}#derivGrid{min-height:237px}}
+/* 첫 페인트 settle(폰트 스왑·데이터 채움) 마스킹 */
+@keyframes antfMainIn{from{opacity:0}to{opacity:1}}.main{animation:antfMainIn .3s ease-out}
+@media(prefers-reduced-motion:reduce){.main{animation:none}}</style></head>
 <body>
   <div id="staleBanner" class="banner"></div>
   <div class="backdrop"></div>
