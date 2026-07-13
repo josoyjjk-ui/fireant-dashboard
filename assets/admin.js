@@ -718,6 +718,21 @@
       entries: e.entries,
     };
   }
+  function saveRaffleWinnerRows(rows, label) {
+    return withTimeout(
+      state.sb.from("raffle_winners").upsert(rows, { onConflict: "week_start,user_id" }),
+      label,
+    );
+  }
+  async function restoreRaffleWinnerRows(rows) {
+    const restores = await Promise.all((rows || []).filter((r) => r.id).map((r) => (
+      state.sb.from("raffle_winners")
+        .update({ week_start: r.week_start, user_id: r.user_id, telegram: r.telegram, prize: r.prize, entries: r.entries })
+        .eq("id", r.id)
+    )));
+    const failed = restores.find((r) => r && r.error);
+    if (failed) throw failed.error;
+  }
   // 응모권 가중 랜덤 추첨(복원 없음): 응모권이 많을수록 뽑힐 확률↑
   function weightedDrawN(pool, n) {
     const arr = pool.map((e) => ({ ...e }));
@@ -1606,12 +1621,15 @@
         withTimeout(state.sb.from("raffle_draws").select("winner_count,committed_at").eq("week_start", week).maybeSingle(), "확정 잠금 확인"),
         withTimeout(state.sb.from("raffle_winners").select("id").eq("week_start", week).limit(1), "기존 당첨자 확인"),
       ]);
+      if (drawRes && drawRes.error) throw drawRes.error;
+      if (winRes && winRes.error) throw winRes.error;
       const locked = drawRes && drawRes.data;
       const hasWinners = !!(winRes && winRes.data && winRes.data.length);
       const existingCount = locked && locked.winner_count != null ? locked.winner_count : (hasWinners ? "기존" : 0);
       const actionLabel = opts.publish ? "winners 페이지에 게시" : "당첨자로 확정 기록하고 /winners에 게시";
       const replaceExisting = opts.publish && (locked || hasWinners);
       let oldRows = [];
+      let clearedExistingRows = false;
 
       if (!replaceExisting && (locked || hasWinners)) {
         const when = locked && locked.committed_at ? new Date(locked.committed_at).toLocaleString("ko-KR") : "확정됨";
@@ -1627,19 +1645,29 @@
 
       if (replaceExisting) {
         const { data: existingRows, error: oldErr } = await withTimeout(
-          state.sb.from("raffle_winners").select("week_start,user_id,telegram,prize,entries").eq("week_start", week),
+          state.sb.from("raffle_winners").select("id,week_start,user_id,telegram,prize,entries").eq("week_start", week),
           "기존 당첨자 백업",
         );
         if (oldErr) throw oldErr;
         oldRows = existingRows || [];
         const { error: delErr } = await withTimeout(state.sb.from("raffle_winners").delete().eq("week_start", week), "기존 당첨자 삭제");
-        if (delErr) throw delErr;
+        if (delErr) {
+          const { error: clearErr } = await withTimeout(
+            state.sb.from("raffle_winners").update({ week_start: null }).eq("week_start", week),
+            "기존 당첨자 숨김 처리",
+          );
+          if (clearErr) throw clearErr;
+          clearedExistingRows = true;
+        }
       }
 
-      const { error } = await withTimeout(state.sb.from("raffle_winners").insert(rows), "당첨자 기록");
+      const { error } = await saveRaffleWinnerRows(rows, "당첨자 기록");
       if (error) {
         if (replaceExisting && oldRows.length) {
-          try { await withTimeout(state.sb.from("raffle_winners").insert(oldRows), "기존 당첨자 복구"); } catch (_) {}
+          try {
+            if (clearedExistingRows) await restoreRaffleWinnerRows(oldRows);
+            else await saveRaffleWinnerRows(oldRows, "기존 당첨자 복구");
+          } catch (_) {}
         }
         throw error;
       }

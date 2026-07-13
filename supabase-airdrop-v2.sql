@@ -47,6 +47,9 @@ CREATE INDEX IF NOT EXISTS raffle_winners_week_start_idx
 CREATE INDEX IF NOT EXISTS raffle_winners_user_id_idx
   ON public.raffle_winners (user_id);
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_raffle_week_user
+  ON public.raffle_winners (week_start, user_id);
+
 -- 4) raffle_winners RLS: public read, admin-only writes.
 ALTER TABLE public.raffle_winners ENABLE ROW LEVEL SECURITY;
 
@@ -96,6 +99,22 @@ BEGIN
       TO authenticated
       USING (public.is_admin())
       WITH CHECK (public.is_admin());
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'raffle_winners'
+      AND policyname = 'raffle_winners_admin_delete'
+  ) THEN
+    CREATE POLICY raffle_winners_admin_delete
+      ON public.raffle_winners
+      FOR DELETE
+      TO authenticated
+      USING (public.is_admin());
   END IF;
 END $$;
 
