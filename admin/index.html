@@ -281,6 +281,15 @@ html,body{overflow-x:hidden;}
 .btn-draw:disabled{opacity:.55;cursor:default;}
 .draw-result{margin-top:12px;padding:13px 15px;border-radius:12px;background:rgba(255,181,71,.06);border:1px solid #3a2f14;}
 .dr-head{font-size:13px;font-weight:900;color:var(--accent2);margin-bottom:9px;}
+.draw-result-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:12px;align-items:start;}
+.draw-side{background:rgba(0,0,0,.18);border:1px solid #3a2f14;border-radius:12px;padding:12px;}
+.draw-side .side-title{font-size:13px;font-weight:900;color:var(--txt);margin-bottom:7px;}
+.draw-side .side-copy{font-size:12px;color:#cdb98a;font-weight:700;line-height:1.5;margin-bottom:10px;}
+.draw-side .btn-ghost{width:100%;}
+.draw-side .side-list{display:flex;flex-direction:column;gap:6px;margin-top:11px;max-height:260px;overflow:auto;}
+.draw-side .side-win{display:grid;grid-template-columns:44px 1fr auto;gap:7px;align-items:center;padding:7px 8px;border-radius:9px;background:var(--bg);border:1px solid var(--line);font-size:11.5px;font-weight:800;}
+.draw-side .side-win .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.draw-side .side-win .pz{color:var(--accent2);white-space:nowrap;}
 .lot-row.win{background:rgba(255,181,71,.08);border-color:#4a3a18;}
 .lot-divlbl{font-size:12px;font-weight:800;color:var(--dim);margin:14px 0 8px;}
 .vstats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
@@ -291,6 +300,7 @@ html,body{overflow-x:hidden;}
 .vstat.live .vnum{color:#3ddc97;}
 .vdot{width:7px;height:7px;border-radius:50%;background:#3ddc97;display:inline-block;animation:pulse 1.8s ease-in-out infinite;}
 @media(max-width:600px){.vstats{grid-template-columns:1fr 1fr;}}
+@media(max-width:760px){.draw-result-grid{grid-template-columns:1fr;}.draw-side .side-list{max-height:none;}.draw-side .side-win{grid-template-columns:42px 1fr;}.draw-side .side-win .pz{grid-column:2;}}
 
 /* 모달 */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);z-index:80;display:none;align-items:center;justify-content:center;padding:18px;}
@@ -507,7 +517,7 @@ html{background:#0a0c10;}</style></head>
 <div class="toast" id="toast"></div>
 <script src="/assets/vendor/supabase.js"></script>
 <script src="/assets/auth.js?v=4"></script>
-<script src="/assets/admin.js?v=5"></script>
+<script src="/assets/admin.js?v=6"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js"></script>
 </body></html>

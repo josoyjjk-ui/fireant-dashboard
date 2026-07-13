@@ -121,6 +121,19 @@
     _subTask: null, _editSubId: null, _editTaskId: null, _clock: null,
   };
   const numfmt = (n) => String(Number(n) || 0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const csvCell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  function downloadCsv(filename, rows) {
+    const body = rows.map((r) => r.map(csvCell).join(",")).join("\n");
+    const blob = new Blob(["\ufeff" + body], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 
   // 주간 고정 리워드 추첨 경품 구성 (순서대로 배정)
   const RAFFLE_PRIZES = [
@@ -797,7 +810,7 @@
       : `<button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행 (1회)</button>`;
     let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span>${exclNote}</div>${drawBtnHtml}</div>`;
     if (state.lotResult && state.lotResult.length) {
-      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전(임시저장됨 · 새로고침해도 유지)</span></div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="resetBtn">❌ 취소(초기화)</button></div></div>`;
+      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전(임시저장됨 · 새로고침해도 유지)</span></div><div class="draw-result-grid"><div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="resetBtn">❌ 취소(초기화)</button></div></div><aside class="draw-side"><div class="side-title">당첨자 명단 · 등록정보 CSV</div><div class="side-copy">현재 1회 추첨 결과 기준으로 당첨자 프로필과 해당 주 승인 미션 정보를 함께 추출합니다.</div><button class="btn-ghost" type="button" id="drawCsvBtn">CSV 추출</button><div class="side-list">${state.lotResult.map((w) => `<div class="side-win"><span>${esc(w.tier.replace(/[^\d가-힣]/g, "") || w.tier)}</span><span class="nm">${esc(entrantName(w))}</span><span class="pz">${esc(w.prize)}</span></div>`).join("")}</div></aside></div></div>`;
     }
     html += `<div class="lot-divlbl">참여자 목록 (응모권순)</div><div>${entrants.slice(0, 30).map((e, i) => `<div class="lot-row"><span class="lot-title">${i + 1}. ${esc(entrantName(e))}</span><span class="dim-sm">${e.entries}장 <span style="opacity:.6">(체크인 ${e.checkins}·미션 ${e.approved})</span></span></div>`).join("")}${entrants.length > 30 ? `<div class="dim-sm" style="padding:8px 2px;">외 ${entrants.length - 30}명…</div>` : ""}</div>`;
     wrap.innerHTML = html;
@@ -805,6 +818,87 @@
     const b = $("drawBtn"); if (b) b.onclick = drawWinners;
     const c = $("confirmBtn"); if (c) c.onclick = () => recordWinners(state.lotResult);
     const rs = $("resetBtn"); if (rs) rs.onclick = resetDraw;
+    const csv = $("drawCsvBtn"); if (csv) csv.onclick = () => exportDrawWinnersCsv(state.lotResult, csv);
+  }
+
+  async function exportDrawWinnersCsv(result, btn) {
+    if (!result || !result.length) { toast("먼저 가중 추첨 1회를 실행해 주십시오.", "err"); return; }
+    const week = weekBounds(state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset);
+    const ids = [...new Set(result.map((w) => w.user_id).filter(Boolean))];
+    const prevText = btn ? btn.textContent : "";
+    if (btn) { btn.disabled = true; btn.textContent = "CSV 생성 중…"; }
+    try {
+      let profiles = [];
+      let subs = [];
+      if (ids.length) {
+        const [profileRes, subRes] = await Promise.all([
+          withTimeout(
+            state.sb.from("profiles")
+              .select("id,email,full_name,nickname,phone,telegram_handle,twitter_handle,youtube_handle,wallet_address")
+              .in("id", ids),
+            "당첨자 프로필 로드",
+            10000,
+          ),
+          withTimeout(
+            state.sb.from("airdrop_submissions")
+              .select("id,user_id,proof_url,proof_note,status,created_at, task:airdrop_tasks(title,verify_method)")
+              .in("user_id", ids)
+              .gte("created_at", week.startIso)
+              .lt("created_at", week.endIso)
+              .order("created_at", { ascending: true }),
+            "당첨자 미션 정보 로드",
+            10000,
+          ),
+        ]);
+        if (profileRes.error) throw profileRes.error;
+        if (subRes.error) throw subRes.error;
+        profiles = profileRes.data || [];
+        subs = subRes.data || [];
+      }
+      const profileById = new Map(profiles.map((p) => [p.id, p]));
+      const subsByUser = new Map();
+      subs.forEach((s) => {
+        if (!subsByUser.has(s.user_id)) subsByUser.set(s.user_id, []);
+        subsByUser.get(s.user_id).push(s);
+      });
+      const header = [
+        "rank", "tier", "prize", "entries", "checkins", "approved_missions",
+        "user_id", "nickname", "full_name", "email", "phone", "telegram_handle", "twitter_handle", "youtube_handle", "wallet_address",
+        "mission_count", "missions", "proof_urls", "proof_notes",
+      ];
+      const rows = [header];
+      result.forEach((w, i) => {
+        const p = profileById.get(w.user_id) || {};
+        const userSubs = (subsByUser.get(w.user_id) || []).filter((s) => s.status === "approved");
+        rows.push([
+          i + 1,
+          w.tier || "",
+          w.prize || "",
+          w.entries || 0,
+          w.checkins || 0,
+          w.approved || 0,
+          w.user_id || "",
+          p.nickname || w.nickname || "",
+          p.full_name || w.full_name || "",
+          p.email || w.email || "",
+          p.phone || "",
+          p.telegram_handle || "",
+          p.twitter_handle || "",
+          p.youtube_handle || "",
+          p.wallet_address || "",
+          userSubs.length,
+          userSubs.map((s) => joinTitle(s.task)).join(" / "),
+          userSubs.map((s) => s.proof_url || "").filter(Boolean).join(" / "),
+          userSubs.map((s) => s.proof_note || "").filter(Boolean).join(" / "),
+        ]);
+      });
+      downloadCsv(`antinfo-raffle-winners-${week.startDate}.csv`, rows);
+      toast("당첨자 등록정보 CSV를 생성했습니다.", "ok");
+    } catch (err) {
+      toast("CSV 생성 실패: " + errText(err), "err");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = prevText || "CSV 추출"; }
+    }
   }
   function renderReview() {
     const list = $("revList");
