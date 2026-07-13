@@ -113,7 +113,7 @@
     checkins: [], streak: 0, checkedInToday: false,
     leaderboard: [], winners: [], _winnersErr: null, _winnerNicks: {},
     events: [], _eventsErr: null, eventsLoaded: false,
-    lotEntrants: [], _lotErr: null, lotLoaded: false, lotResult: null, lotDrawing: false,
+    lotEntrants: [], _lotErr: null, lotLoaded: false, lotResult: null, lotResultMode: null, lotPublishedAt: null, lotDrawing: false,
     wallets: [],
     visitStats: null, _vsErr: null, _vsClock: null,
     eventWinners: [], _ewErr: null, _editEventWinnerId: null,
@@ -448,7 +448,13 @@
       // 미확정 추첨 미리보기 복원(새로고침에도 결과 유지). 현재 추첨 주차와 일치할 때만.
       if (!state.lotResult || !state.lotResult.length) {
         const draft = loadDraft(startDate);
-        if (draft) state.lotResult = draft;
+        if (draft) {
+          state.lotResult = draft;
+          state.lotResultMode = "draft";
+          state.lotPublishedAt = null;
+        } else {
+          await loadPublishedRaffleResult(startDate);
+        }
       }
     }
   }
@@ -718,6 +724,30 @@
       entries: e.entries,
     };
   }
+  function splitRafflePrizeLabel(label) {
+    const s = String(label || "").trim();
+    const m = s.match(/^(\S+\s*(?:\d+등|참여상))\s*(.*)$/);
+    return {
+      tier: m ? m[1].trim() : "🎁 참여상",
+      prize: m ? (m[2].trim() || "기프티콘") : (s || "기프티콘"),
+    };
+  }
+  function publishedWinnerToResult(w) {
+    const p = splitRafflePrizeLabel(w.prize);
+    const u = w.user || {};
+    return {
+      user_id: w.user_id,
+      email: u.email || "",
+      full_name: u.full_name || "",
+      nickname: w.telegram || u.nickname || u.full_name || "",
+      checkins: 0,
+      approved: 0,
+      entries: Math.max(0, Number(w.entries) || 0),
+      tier: p.tier,
+      prize: p.prize,
+      _published: true,
+    };
+  }
   function latestRafflePublishRows(rows) {
     const list = (rows || []).filter((w) => w && w.week_start);
     if (!list.length) return [];
@@ -727,6 +757,29 @@
     }, -Infinity);
     if (!Number.isFinite(latest)) return list;
     return list.filter((w) => Date.parse(w.created_at || "") === latest);
+  }
+  async function loadPublishedRaffleResult(week) {
+    if (!state.isAdmin || !week) return false;
+    try {
+      const { data, error } = await withTimeout(
+        state.sb.from("raffle_winners")
+          .select("week_start,user_id,telegram,prize,entries,created_at,user:profiles(full_name,email,nickname)")
+          .eq("week_start", week)
+          .order("created_at", { ascending: true })
+          .limit(120),
+        "게시 당첨자 로드",
+      );
+      if (error) throw error;
+      const rows = latestRafflePublishRows(data || []);
+      if (!rows.length) return false;
+      state.lotResult = rows.map(publishedWinnerToResult);
+      state.lotResultMode = "published";
+      state.lotPublishedAt = rows[0] && rows[0].created_at ? rows[0].created_at : null;
+      return true;
+    } catch (err) {
+      console.warn("[raffle] published result restore failed", err);
+      return false;
+    }
   }
   function saveRaffleWinnerRows(rows, label) {
     return withTimeout(
@@ -776,12 +829,18 @@
 
   function resetDraw() {
     if (!state.lotResult || !state.lotResult.length) return;
-    if (!confirm("현재 추첨 결과를 취소하고 초기화합니다.\n(아직 확정 기록 전이라 저장된 것은 없습니다) 진행하시겠습니까?")) return;
+    const published = state.lotResultMode === "published";
+    const msg = published
+      ? "게시된 현재 당첨자 표시를 이 화면에서만 비우고 새 추첨을 준비합니다.\n(/winners 게시 기록은 삭제되지 않습니다) 진행하시겠습니까?"
+      : "현재 추첨 결과를 취소하고 초기화합니다.\n(아직 확정 기록 전이라 저장된 것은 없습니다) 진행하시겠습니까?";
+    if (!confirm(msg)) return;
     try { console.warn("[raffle] draw reset by admin", { week: weekBounds(state.lotWeekOffset).startDate, at: new Date().toISOString() }); } catch (_) {}
     state.lotResult = null;
+    state.lotResultMode = null;
+    state.lotPublishedAt = null;
     clearDraft();
     renderLottery();
-    toast("추첨을 초기화했습니다. 다시 추첨할 수 있습니다.", "ok");
+    toast(published ? "현재 게시 결과 표시를 비웠습니다. 새 추첨을 실행할 수 있습니다." : "추첨을 초기화했습니다. 다시 추첨할 수 있습니다.", "ok");
   }
   function drawWinners() {
     // 1회 추첨 잠금: 이미 뽑은 상태면 재추첨 차단(취소 후 재시작만 허용)
@@ -799,6 +858,8 @@
     const n = Math.min(RAFFLE_PRIZES.length, pool.length);
     const picked = weightedDrawN(pool, n);
     state.lotResult = picked.map((e, i) => ({ ...e, tier: RAFFLE_PRIZES[i].tier, prize: RAFFLE_PRIZES[i].prize }));
+    state.lotResultMode = "draft";
+    state.lotPublishedAt = null;
     saveDraft(weekBounds(state.lotWeekOffset).startDate, state.lotResult); // 새로고침 대비 임시저장
     renderLottery();
     toast(`${picked.length}명 추첨 완료${excluded ? ` · 직전주 당첨자 ${excluded}명 제외됨` : ""}. 확인 후 기록하십시오.`, "ok");
@@ -823,7 +884,7 @@
       btn.onclick = () => {
         const v = parseInt(btn.getAttribute("data-lotwk"), 10);
         if (v === (state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset)) return;
-        state.lotWeekOffset = v; state.lotResult = null; state.lotLoaded = false;
+        state.lotWeekOffset = v; state.lotResult = null; state.lotResultMode = null; state.lotPublishedAt = null; state.lotLoaded = false;
         renderLottery();
         renderAudit();
         loadEntrants().then(() => { renderLottery(); renderAudit(); });
@@ -833,18 +894,23 @@
     const count = $("lotCount"); if (count) count.textContent = entrants.length ? `(${entrants.length}명)` : "";
     if (state._lotErr) { wrap.innerHTML = toggle + `<div class="err">응모자 집계 실패: ${esc(state._lotErr)}</div>`; bindToggle(); return; }
     if (!state.lotLoaded) { wrap.innerHTML = toggle + `<div class="loading">응모자 집계 중…</div>`; bindToggle(); return; }
-    if (!entrants.length) { wrap.innerHTML = toggle + `<div class="empty">${L.name} 응모권을 보유한 참여자가 없습니다.</div>`; bindToggle(); return; }
+    const drawn = state.lotResult && state.lotResult.length;
+    if (!entrants.length && !drawn) { wrap.innerHTML = toggle + `<div class="empty">${L.name} 응모권을 보유한 참여자가 없습니다.</div>`; bindToggle(); return; }
     const total = entrants.reduce((a, e) => a + e.entries, 0);
     const prizeLine = "🥇 1등 3만원 · 🥈 2등 1만원 · 🥉 3등 5천원 · 🎁 참여상 스타벅스 10명";
     const exclNote = state.prevWinnerCount ? `<br><span class="dim-sm">🚫 직전주 당첨자 ${state.prevWinnerCount}명은 추첨에서 자동 제외(연속 당첨 방지)</span>` : "";
-    const drawn = state.lotResult && state.lotResult.length;
     // 1회 추첨 잠금: 뽑기 전에만 추첨 버튼 노출. 뽑은 뒤엔 확정/취소만.
+    const published = state.lotResultMode === "published";
+    const publishedWhen = state.lotPublishedAt ? new Date(state.lotPublishedAt).toLocaleString("ko-KR") : "";
+    const resultNote = published
+      ? `· 게시됨${publishedWhen ? ` · ${esc(publishedWhen)}` : ""} · 확인용`
+      : "· 확정 전(임시저장됨 · 새로고침해도 유지)";
     const drawBtnHtml = drawn
-      ? `<span class="dim-sm" style="align-self:center;">✅ 추첨 완료 — 아래에서 확정하거나 취소하십시오</span>`
+      ? `<span class="dim-sm" style="align-self:center;">${published ? "✅ 현재 게시된 당첨자입니다 — 확인 후 필요하면 새 추첨 준비를 누르십시오" : "✅ 추첨 완료 — 아래에서 확정하거나 취소하십시오"}</span>`
       : `<button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행 (1회)</button>`;
     let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span>${exclNote}</div>${drawBtnHtml}</div>`;
     if (state.lotResult && state.lotResult.length) {
-      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">· 확정 전(임시저장됨 · 새로고침해도 유지)</span></div><div class="draw-result-grid"><div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;"><button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button><button class="btn-ghost" type="button" id="resetBtn">❌ 취소(초기화)</button></div></div><aside class="draw-side"><div class="side-title">당첨자 명단 · 등록정보 CSV</div><div class="side-copy">현재 1회 추첨 결과 기준으로 당첨자 프로필과 해당 주 승인 미션 정보를 함께 추출합니다. 게시 버튼은 /winners 지난주 당첨자 영역에 바로 반영합니다.</div><button class="btn-draw" type="button" id="publishWinnersBtn">winners 페이지 게시</button><button class="btn-ghost" type="button" id="drawCsvBtn">CSV 추출</button><div class="side-list">${state.lotResult.map((w) => `<div class="side-win"><span>${esc(w.tier.replace(/[^\d가-힣]/g, "") || w.tier)}</span><span class="nm">${esc(entrantName(w))}</span><span class="pz">${esc(w.prize)}</span></div>`).join("")}</div></aside></div></div>`;
+      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">${resultNote}</span></div><div class="draw-result-grid"><div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">${published ? "" : `<button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button>`}<button class="btn-ghost" type="button" id="resetBtn">${published ? "새 추첨 준비" : "❌ 취소(초기화)"}</button></div></div><aside class="draw-side"><div class="side-title">당첨자 명단 · 등록정보 CSV</div><div class="side-copy">${published ? "현재 /winners에 게시된 최신 당첨자 명단입니다. CSV는 이 게시 명단 기준으로 추출합니다." : "현재 1회 추첨 결과 기준으로 당첨자 프로필과 해당 주 승인 미션 정보를 함께 추출합니다. 게시 버튼은 /winners 지난주 당첨자 영역에 바로 반영합니다."}</div>${published ? "" : `<button class="btn-draw" type="button" id="publishWinnersBtn">winners 페이지 게시</button>`}<button class="btn-ghost" type="button" id="drawCsvBtn">CSV 추출</button><div class="side-list">${state.lotResult.map((w) => `<div class="side-win"><span>${esc(w.tier.replace(/[^\d가-힣]/g, "") || w.tier)}</span><span class="nm">${esc(entrantName(w))}</span><span class="pz">${esc(w.prize)}</span></div>`).join("")}</div></aside></div></div>`;
     }
     html += `<div class="lot-divlbl">참여자 목록 (응모권순)</div><div>${entrants.slice(0, 30).map((e, i) => `<div class="lot-row"><span class="lot-title">${i + 1}. ${esc(entrantName(e))}</span><span class="dim-sm">${e.entries}장 <span style="opacity:.6">(체크인 ${e.checkins}·미션 ${e.approved})</span></span></div>`).join("")}${entrants.length > 30 ? `<div class="dim-sm" style="padding:8px 2px;">외 ${entrants.length - 30}명…</div>` : ""}</div>`;
     wrap.innerHTML = html;
@@ -1697,7 +1763,9 @@
       }
 
       toast(replaceExisting ? `${rows.length}명의 당첨자로 /winners 게시 명단을 교체했습니다.` : `${rows.length}명의 당첨자를 확정하고 /winners에 게시했습니다.`, "ok");
-      state.lotResult = null;
+      state.lotResult = rows.map(publishedWinnerToResult);
+      state.lotResultMode = "published";
+      state.lotPublishedAt = publishAt;
       clearDraft(); // 확정됐으니 임시저장 미리보기 제거
       await loadWinners();
       renderWinners(); renderLottery();
