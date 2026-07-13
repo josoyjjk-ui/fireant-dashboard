@@ -117,6 +117,7 @@
     wallets: [],
     visitStats: null, _vsErr: null, _vsClock: null,
     eventWinners: [], _ewErr: null, _editEventWinnerId: null,
+    auditScan: null, auditVerdicts: {},
     _subTask: null, _editSubId: null, _editTaskId: null, _clock: null,
   };
   const numfmt = (n) => String(Number(n) || 0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -859,9 +860,119 @@
       return { entrant: e, rank: idx + 1, proofs, flags, missingImages, exactDupes, repeatedTasks, autoApproved };
     });
   }
+  function auditWeekKey() {
+    return weekBounds(state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset).startDate;
+  }
+  function auditProofKey(s) {
+    return [auditWeekKey(), s.user_id || "", s.id || proofPath(s.proof_url || "") || s.task_id || ""].join(":");
+  }
+  function auditVerdict(s) {
+    return state.auditVerdicts[auditProofKey(s)] || { verdict: "", reason: "" };
+  }
+  function auditVerdictStoreKey() {
+    return `antinfo_audit_verdicts_${auditWeekKey()}`;
+  }
+  function loadAuditVerdicts() {
+    try { state.auditVerdicts = JSON.parse(localStorage.getItem(auditVerdictStoreKey()) || "{}") || {}; }
+    catch (_) { state.auditVerdicts = {}; }
+  }
+  function saveAuditVerdicts() {
+    try { localStorage.setItem(auditVerdictStoreKey(), JSON.stringify(state.auditVerdicts || {})); } catch (_) {}
+  }
+  function setAuditVerdict(key, verdict, reason) {
+    state.auditVerdicts[key] = { verdict, reason: String(reason || "").trim(), at: new Date().toISOString() };
+    saveAuditVerdicts();
+    renderAudit();
+  }
+  function hamming(a, b) {
+    if (!a || !b || a.length !== b.length) return 999;
+    let n = 0;
+    for (let i = 0; i < a.length; i += 1) if (a[i] !== b[i]) n += 1;
+    return n;
+  }
+  function imageMetrics(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      let done = false;
+      const finish = (v) => { if (!done) { done = true; resolve(v); } };
+      const timer = setTimeout(() => finish({ ok: false, err: "로드 시간초과" }), 9000);
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        clearTimeout(timer);
+        try {
+          const c = document.createElement("canvas");
+          c.width = 16; c.height = 16;
+          const ctx = c.getContext("2d", { willReadFrequently: true });
+          ctx.drawImage(img, 0, 0, 16, 16);
+          const px = ctx.getImageData(0, 0, 16, 16).data;
+          const gray = [];
+          let sum = 0;
+          for (let i = 0; i < px.length; i += 4) {
+            const g = Math.round(px[i] * 0.299 + px[i + 1] * 0.587 + px[i + 2] * 0.114);
+            gray.push(g); sum += g;
+          }
+          const avg = sum / gray.length;
+          const hash = gray.map((g) => (g >= avg ? "1" : "0")).join("");
+          const variance = gray.reduce((a, g) => a + Math.pow(g - avg, 2), 0) / gray.length;
+          let edge = 0;
+          for (let y = 0; y < 16; y += 1) {
+            for (let x = 1; x < 16; x += 1) edge += Math.abs(gray[y * 16 + x] - gray[y * 16 + x - 1]);
+          }
+          finish({ ok: true, w: img.naturalWidth, h: img.naturalHeight, hash, brightness: Math.round(avg), contrast: Math.round(Math.sqrt(variance)), edge: Math.round(edge / 240) });
+        } catch (err) {
+          finish({ ok: false, err: errText(err) });
+        }
+      };
+      img.onerror = () => { clearTimeout(timer); finish({ ok: false, err: "이미지 로드 실패" }); };
+      img.src = url;
+    });
+  }
+  async function scanAuditImages(rows) {
+    const proofs = [];
+    rows.forEach((r) => r.proofs.forEach((s) => { if (s.signedUrl) proofs.push(s); }));
+    state.auditScan = { running: true, done: 0, total: proofs.length, byId: {}, dupes: [] };
+    renderAudit();
+    const hashRows = [];
+    const batch = 6;
+    for (let i = 0; i < proofs.length; i += batch) {
+      const part = proofs.slice(i, i + batch);
+      await Promise.all(part.map(async (s) => {
+        const key = auditProofKey(s);
+        const m = await imageMetrics(s.signedUrl);
+        const flags = [];
+        if (!m.ok) flags.push(`분석불가:${m.err || "오류"}`);
+        else {
+          if (m.w < 320 || m.h < 240) flags.push("저해상도");
+          if (m.contrast < 10) flags.push("단색/흐림");
+          if (m.brightness < 18 || m.brightness > 238) flags.push("노출이상");
+          hashRows.push({ key, hash: m.hash, user_id: s.user_id, task_id: s.task_id });
+        }
+        state.auditScan.byId[key] = { ...m, flags };
+        state.auditScan.done += 1;
+      }));
+      renderAudit();
+    }
+    const dupes = [];
+    for (let i = 0; i < hashRows.length; i += 1) {
+      for (let j = i + 1; j < hashRows.length; j += 1) {
+        const d = hamming(hashRows[i].hash, hashRows[j].hash);
+        if (d <= 10) {
+          dupes.push({ a: hashRows[i].key, b: hashRows[j].key, distance: d });
+          const label = d <= 4 ? "거의동일" : "유사이미지";
+          state.auditScan.byId[hashRows[i].key].flags.push(label);
+          state.auditScan.byId[hashRows[j].key].flags.push(label);
+        }
+      }
+    }
+    Object.values(state.auditScan.byId).forEach((r) => { r.flags = Array.from(new Set(r.flags || [])); });
+    state.auditScan.dupes = dupes;
+    state.auditScan.running = false;
+    renderAudit();
+  }
   function renderAudit() {
     const wrap = $("auditWrap");
     if (!wrap || !state.isAdmin) return;
+    loadAuditVerdicts();
     const count = $("auditCount");
     if (state._lotErr) { wrap.innerHTML = `<div class="err">응모자 집계 실패: ${esc(state._lotErr)}</div>`; return; }
     if (state._adminErr) { wrap.innerHTML = `<div class="err">제출 원본 로드 실패: ${esc(state._adminErr)}</div>`; return; }
@@ -874,24 +985,50 @@
     const flagged = rows.filter((r) => r.flags.some((f) => f.cls === "bad" || f.cls === "warn")).length;
     const proofCount = rows.reduce((a, r) => a + r.proofs.length, 0);
     const captureMissing = rows.reduce((a, r) => a + r.missingImages, 0);
+    const verdicts = Object.values(state.auditVerdicts || {});
+    const invalidCount = verdicts.filter((v) => v.verdict === "invalid").length;
+    const holdCount = verdicts.filter((v) => v.verdict === "hold").length;
+    const scan = state.auditScan;
+    const scanned = scan ? scan.done : 0;
+    const autoFlags = scan ? Object.values(scan.byId || {}).filter((r) => (r.flags || []).length).length : 0;
     const L = lotWeekLabel();
     const summary = `<div class="audit-summary">`
       + `<div class="audit-stat"><div class="l">대상 주차</div><div class="v">${esc(L.range)}</div></div>`
       + `<div class="audit-stat"><div class="l">상위 검증</div><div class="v">${rows.length}명</div></div>`
       + `<div class="audit-stat"><div class="l">총 응모권</div><div class="v">${numfmt(totalEntries)}장</div></div>`
-      + `<div class="audit-stat warn"><div class="l">이상징후</div><div class="v">${flagged}명</div></div>`
+      + `<div class="audit-stat warn"><div class="l">자동/수동 이슈</div><div class="v">${flagged + autoFlags + invalidCount}</div></div>`
       + `</div>`;
-    const tools = `<div class="audit-tools"><div class="dim-sm">승인된 제출 ${proofCount}건 기준입니다. 사진 내용 적합성은 썸네일을 열어 최종 판정하십시오.${captureMissing ? ` 캡쳐 누락 ${captureMissing}건이 있습니다.` : ""}</div><button class="btn-ghost" type="button" id="auditCsv">CSV 내보내기</button></div>`;
+    const scanText = scan
+      ? (scan.running ? `사진 스캔 중 ${scanned}/${scan.total}` : `사진 스캔 완료 ${scanned}/${scan.total} · 유사쌍 ${scan.dupes.length}건 · 자동플래그 ${autoFlags}건`)
+      : "사진 스캔 미실행";
+    const tools = `<div class="audit-tools"><div class="dim-sm">승인 제출 ${proofCount}건 · ${scanText} · 수동 부적격 ${invalidCount}건 · 보류 ${holdCount}건${captureMissing ? ` · 캡쳐 누락 ${captureMissing}건` : ""}</div><div class="audit-actions"><button class="btn-ghost" type="button" id="auditScan"${scan && scan.running ? " disabled" : ""}>사진 내용 스캔</button><button class="btn-ghost" type="button" id="auditCsv">검증 CSV</button></div></div>`;
     wrap.innerHTML = summary + tools + `<div class="audit-list">${rows.map((r) => auditRowHtml(r)).join("")}</div>`;
     const b = $("auditCsv"); if (b) b.onclick = () => exportAuditCsv(rows);
+    const s = $("auditScan"); if (s) s.onclick = () => scanAuditImages(rows);
+    wrap.querySelectorAll("[data-verdict]").forEach((btn) => {
+      btn.onclick = () => {
+        const key = btn.getAttribute("data-key");
+        const verdict = btn.getAttribute("data-verdict");
+        const prev = (state.auditVerdicts[key] && state.auditVerdicts[key].reason) || "";
+        const reason = verdict === "valid" ? "" : (prompt("판정 사유를 입력하십시오.", prev || (verdict === "invalid" ? "사진 내용 부적합" : "추가 확인 필요")) || prev);
+        setAuditVerdict(key, verdict, reason);
+      };
+    });
   }
   function auditRowHtml(r) {
     const e = r.entrant;
     const flags = r.flags.map((f) => `<span class="audit-flag ${f.cls}">${esc(f.txt)}</span>`).join("");
     const proofs = r.proofs.slice(0, 12).map((s) => {
       const title = joinTitle(s.task);
+      const key = auditProofKey(s);
+      const verdict = auditVerdict(s);
+      const scan = state.auditScan && state.auditScan.byId ? state.auditScan.byId[key] : null;
+      const scanFlags = scan && scan.flags && scan.flags.length ? `<div class="pflags">${scan.flags.map((f) => `<span class="audit-flag ${f.indexOf("동일") >= 0 || f.indexOf("유사") >= 0 ? "warn" : "bad"}">${esc(f)}</span>`).join("")}</div>` : "";
+      const vCls = verdict.verdict ? ` verdict-${verdict.verdict}` : "";
+      const vLabel = verdict.verdict === "valid" ? "적격" : verdict.verdict === "invalid" ? "부적격" : verdict.verdict === "hold" ? "보류" : "미판정";
+      const controls = `<div class="vbar${vCls}"><span>${esc(vLabel)}</span><button type="button" data-verdict="valid" data-key="${esc(key)}">적격</button><button type="button" data-verdict="invalid" data-key="${esc(key)}">부적격</button><button type="button" data-verdict="hold" data-key="${esc(key)}">보류</button></div>${verdict.reason ? `<div class="vreason">${esc(verdict.reason)}</div>` : ""}${scanFlags}`;
       if (s.proof_url && s.signedUrl) {
-        return `<div class="audit-proof"><a href="${safeURL(s.signedUrl)}" target="_blank" rel="noopener"><img src="${safeURL(s.signedUrl)}" alt="인증 이미지"><div class="pmeta">${esc(title)}</div></a></div>`;
+        return `<div class="audit-proof"><a href="${safeURL(s.signedUrl)}" target="_blank" rel="noopener"><img src="${safeURL(s.signedUrl)}" alt="인증 이미지"><div class="pmeta">${esc(title)}</div></a>${controls}</div>`;
       }
       if (s.proof_url) return `<div class="audit-proof auto">이미지 서명 URL 없음<br>${esc(title)}</div>`;
       return `<div class="audit-proof auto">${esc((s.task && VM[s.task.verify_method] && VM[s.task.verify_method].label) || "자동/무이미지")}<br>${esc(title)}</div>`;
@@ -900,22 +1037,24 @@
     return `<div class="audit-row"><div class="audit-head"><div class="audit-rank">${r.rank}</div><div class="audit-name"><div class="n">${esc(entrantName(e))}</div><div class="m">${esc(e.email || e.user_id || "")}</div></div><div class="audit-score"><b>${numfmt(e.entries)}</b>장 · 체크인 ${numfmt(e.checkins)} · 미션 ${numfmt(e.approved)}</div></div><div class="audit-flags">${flags}</div><div class="audit-proofs">${proofs || `<div class="audit-proof auto">표시할 승인 인증 없음</div>`}${more}</div></div>`;
   }
   function exportAuditCsv(rows) {
-    const header = ["rank", "name", "email", "user_id", "entries", "checkins", "approved", "approved_proofs", "flags"];
-    const lines = [header.join(",")].concat(rows.map((r) => {
+    const header = ["rank", "name", "email", "user_id", "entries", "checkins", "approved", "approved_proofs", "row_flags", "proof_id", "task", "proof_url", "scan_flags", "manual_verdict", "manual_reason"];
+    const lines = [header.join(",")];
+    rows.forEach((r) => {
       const e = r.entrant;
-      const vals = [
-        r.rank,
-        entrantName(e),
-        e.email || "",
-        e.user_id || "",
-        e.entries || 0,
-        e.checkins || 0,
-        e.approved || 0,
-        r.proofs.length,
-        r.flags.map((f) => f.txt).join(" / "),
-      ];
-      return vals.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",");
-    }));
+      const rowFlags = r.flags.map((f) => f.txt).join(" / ");
+      const proofList = r.proofs.length ? r.proofs : [null];
+      proofList.forEach((p) => {
+        const key = p ? auditProofKey(p) : "";
+        const scan = key && state.auditScan && state.auditScan.byId ? state.auditScan.byId[key] : null;
+        const verdict = p ? auditVerdict(p) : {};
+        const vals = [
+          r.rank, entrantName(e), e.email || "", e.user_id || "", e.entries || 0, e.checkins || 0, e.approved || 0, r.proofs.length, rowFlags,
+          p ? p.id : "", p ? joinTitle(p.task) : "", p ? (p.proof_url || "") : "", scan ? (scan.flags || []).join(" / ") : "",
+          verdict.verdict || "", verdict.reason || "",
+        ];
+        lines.push(vals.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","));
+      });
+    });
     const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

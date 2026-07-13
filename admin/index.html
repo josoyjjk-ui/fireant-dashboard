@@ -199,6 +199,8 @@ html,body{overflow-x:hidden;}
 .audit-stat .v{font-size:20px;font-weight:900;color:var(--txt);margin-top:3px;font-variant-numeric:tabular-nums;}
 .audit-stat.warn .v{color:var(--accent2);}
 .audit-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.audit-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.audit-actions .btn-ghost:disabled{opacity:.55;cursor:wait;}
 .audit-list{display:flex;flex-direction:column;gap:10px;}
 .audit-row{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;}
 .audit-head{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;margin-bottom:10px;}
@@ -218,8 +220,17 @@ html,body{overflow-x:hidden;}
 .audit-proof img{display:block;width:100%;aspect-ratio:1.2/1;object-fit:cover;background:#090b0f;}
 .audit-proof .pmeta{padding:7px 8px;font-size:10.5px;color:var(--dim);font-weight:800;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .audit-proof.auto{padding:10px;font-size:11px;color:var(--dim);font-weight:800;line-height:1.45;}
+.vbar{display:grid;grid-template-columns:1fr repeat(3,auto);gap:4px;align-items:center;padding:7px 7px 0;}
+.vbar span{font-size:10.5px;font-weight:900;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vbar button{border:1px solid #2a3140;background:#111620;color:#c4ccd6;border-radius:7px;padding:4px 5px;font-size:10px;font-weight:900;cursor:pointer;}
+.vbar.verdict-valid span{color:#3ddc97;}
+.vbar.verdict-invalid span{color:#ff8a98;}
+.vbar.verdict-hold span{color:var(--accent2);}
+.vreason{padding:5px 7px 0;color:#ffb0b8;font-size:10px;font-weight:800;line-height:1.35;}
+.pflags{display:flex;gap:4px;flex-wrap:wrap;padding:6px 7px 8px;}
+.pflags .audit-flag{font-size:9.5px;padding:3px 6px;}
 @media(max-width:900px){.audit-summary{grid-template-columns:repeat(2,1fr);}.audit-proofs{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:520px){.audit-head{grid-template-columns:36px 1fr;}.audit-score{grid-column:1/-1;text-align:left;}.audit-proofs{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.audit-head{grid-template-columns:36px 1fr;}.audit-score{grid-column:1/-1;text-align:left;}.audit-proofs{grid-template-columns:repeat(2,1fr);}.audit-actions{width:100%;}.audit-actions .btn-ghost{flex:1;min-width:120px;padding-left:10px;padding-right:10px;}.vbar{grid-template-columns:1fr 1fr 1fr;}.vbar span{grid-column:1/-1;}}
 
 /* 내 인증 현황 */
 .ms-streak{font-size:14px;color:var(--dim);font-weight:700;margin-bottom:12px;}
@@ -495,7 +506,7 @@ html{background:#0a0c10;}</style></head>
 <div class="toast" id="toast"></div>
 <script src="/assets/vendor/supabase.js"></script>
 <script src="/assets/auth.js?v=4"></script>
-<script src="/assets/admin.js?v=2"></script>
+<script src="/assets/admin.js?v=3"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js"></script>
 </body></html>
