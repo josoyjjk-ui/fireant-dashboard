@@ -193,6 +193,33 @@ html,body{overflow-x:hidden;}
 .winrow{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;background:var(--bg);border:1px solid var(--line);border-radius:11px;margin-bottom:7px;gap:10px;}
 .winrow .n{font-weight:800;font-size:13px;display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .winrow .c{font-size:12px;color:var(--accent2);font-weight:800;white-space:nowrap;}
+.audit-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px;}
+.audit-stat{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 12px;}
+.audit-stat .l{font-size:11px;color:var(--dim);font-weight:800;}
+.audit-stat .v{font-size:20px;font-weight:900;color:var(--txt);margin-top:3px;font-variant-numeric:tabular-nums;}
+.audit-stat.warn .v{color:var(--accent2);}
+.audit-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.audit-list{display:flex;flex-direction:column;gap:10px;}
+.audit-row{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;}
+.audit-head{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;margin-bottom:10px;}
+.audit-rank{width:36px;height:36px;border-radius:10px;background:#171b23;border:1px solid #2a3140;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--accent2);}
+.audit-name{min-width:0;}
+.audit-name .n{font-size:14px;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.audit-name .m{font-size:11.5px;color:var(--dim);font-weight:700;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.audit-score{text-align:right;font-size:12px;color:var(--dim);font-weight:800;white-space:nowrap;}
+.audit-score b{font-size:17px;color:var(--txt);}
+.audit-flags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.audit-flag{font-size:11px;font-weight:900;padding:4px 8px;border-radius:999px;background:#151a22;border:1px solid #2a3140;color:#aeb8c4;}
+.audit-flag.warn{background:#231a0c;border-color:#3a2f14;color:var(--accent2);}
+.audit-flag.bad{background:#2a1014;border-color:#4a1d25;color:#ff8a98;}
+.audit-proofs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
+.audit-proof{min-width:0;background:#0e1116;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+.audit-proof a{display:block;color:inherit;text-decoration:none;}
+.audit-proof img{display:block;width:100%;aspect-ratio:1.2/1;object-fit:cover;background:#090b0f;}
+.audit-proof .pmeta{padding:7px 8px;font-size:10.5px;color:var(--dim);font-weight:800;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.audit-proof.auto{padding:10px;font-size:11px;color:var(--dim);font-weight:800;line-height:1.45;}
+@media(max-width:900px){.audit-summary{grid-template-columns:repeat(2,1fr);}.audit-proofs{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:520px){.audit-head{grid-template-columns:36px 1fr;}.audit-score{grid-column:1/-1;text-align:left;}.audit-proofs{grid-template-columns:repeat(2,1fr);}}
 
 /* 내 인증 현황 */
 .ms-streak{font-size:14px;color:var(--dim);font-weight:700;margin-bottom:12px;}
@@ -382,7 +409,7 @@ html{background:#0a0c10;}</style></head>
       <div class="seclabel">관리자 패널 <span class="dim-sm">· 운영진 전용</span></div>
       <div class="card admin-open" id="adminCard">
         <div class="adm-toggle" id="admToggle">
-          <span class="tit">방문 통계 · 미션 등록 · 미션 관리 · 가중 추첨 · 제출 검토</span>
+          <span class="tit">방문 통계 · 미션 등록 · 미션 관리 · TOP 100 검증 · 가중 추첨 · 제출 검토</span>
           <span class="adm-chev">▼</span>
         </div>
         <div class="adm-wrap">
@@ -419,6 +446,11 @@ html{background:#0a0c10;}</style></head>
           <div style="margin-top:20px;">
             <div class="admin-h">진행중 미션 관리 <span id="mgmtCount" class="dim-sm"></span></div>
             <div id="manageWrap"><div class="loading">로드 중...</div></div>
+          </div>
+
+          <div style="margin-top:20px;">
+            <div class="admin-h">TOP 100 적격 검증 <span id="auditCount" class="dim-sm"></span></div>
+            <div id="auditWrap"><div class="loading">로드 중...</div></div>
           </div>
 
           <div style="margin-top:20px;">
@@ -463,7 +495,7 @@ html{background:#0a0c10;}</style></head>
 <div class="toast" id="toast"></div>
 <script src="/assets/vendor/supabase.js"></script>
 <script src="/assets/auth.js?v=4"></script>
-<script src="/assets/admin.js?v=1"></script>
+<script src="/assets/admin.js?v=2"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js"></script>
 </body></html>

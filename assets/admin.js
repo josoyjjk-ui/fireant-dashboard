@@ -109,7 +109,7 @@
     user: null, uid: null, profile: null, isAdmin: false,
     tasks: [], tasksLoaded: false, _tasksErr: null,
     mySubs: {}, mySubList: [],
-    allSubs: [], _adminErr: null,
+    allSubs: [], _adminErr: null, allSubsLoaded: false,
     checkins: [], streak: 0, checkedInToday: false,
     leaderboard: [], winners: [], _winnersErr: null, _winnerNicks: {},
     events: [], _eventsErr: null, eventsLoaded: false,
@@ -370,7 +370,7 @@
     }
   }
   async function loadAllSubs() {
-    state.allSubs = []; state._adminErr = null;
+    state.allSubs = []; state._adminErr = null; state.allSubsLoaded = false;
     if (!state.isAdmin) return;
     try {
       const { data, error } = await withTimeout(
@@ -391,6 +391,8 @@
       }));
     } catch (err) {
       state._adminErr = errText(err);
+    } finally {
+      state.allSubsLoaded = true;
     }
   }
   async function loadEntrants() {
@@ -775,7 +777,8 @@
         if (v === (state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset)) return;
         state.lotWeekOffset = v; state.lotResult = null; state.lotLoaded = false;
         renderLottery();
-        loadEntrants().then(renderLottery);
+        renderAudit();
+        loadEntrants().then(() => { renderLottery(); renderAudit(); });
       };
     });
     const entrants = state.lotEntrants || [];
@@ -816,6 +819,112 @@
       if (a) a.onclick = () => reviewSub(s, "approved");
       if (r) r.onclick = () => reviewSub(s, "rejected");
     });
+  }
+  function auditRows() {
+    const { startIso, endIso } = weekBounds(state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset);
+    const entrants = (state.lotEntrants || []).slice(0, 100);
+    const topIds = new Set(entrants.map((e) => e.user_id).filter(Boolean));
+    const subs = (state.allSubs || []).filter((s) => (
+      topIds.has(s.user_id)
+      && s.status === "approved"
+      && (!s.created_at || (s.created_at >= startIso && s.created_at < endIso))
+    ));
+    const byUser = new Map();
+    subs.forEach((s) => {
+      if (!byUser.has(s.user_id)) byUser.set(s.user_id, []);
+      byUser.get(s.user_id).push(s);
+    });
+    const globalProofs = new Map();
+    subs.forEach((s) => {
+      const p = proofPath(s.proof_url || "");
+      if (!p) return;
+      globalProofs.set(p, (globalProofs.get(p) || 0) + 1);
+    });
+    return entrants.map((e, idx) => {
+      const proofs = byUser.get(e.user_id) || [];
+      const taskCounts = {};
+      proofs.forEach((s) => { taskCounts[s.task_id || "unknown"] = (taskCounts[s.task_id || "unknown"] || 0) + 1; });
+      const captureProofs = proofs.filter((s) => (s.task && s.task.verify_method) === "capture");
+      const missingImages = captureProofs.filter((s) => !s.proof_url).length;
+      const exactDupes = proofs.filter((s) => s.proof_url && globalProofs.get(proofPath(s.proof_url)) > 1).length;
+      const repeatedTasks = Object.values(taskCounts).filter((n) => n > 1).length;
+      const autoApproved = proofs.filter((s) => !s.proof_url && (s.task && s.task.verify_method) !== "capture").length;
+      const flags = [];
+      if (!proofs.length && e.approved > 0) flags.push({ cls: "bad", txt: "인증 원본 없음" });
+      if (missingImages) flags.push({ cls: "bad", txt: `캡쳐 누락 ${missingImages}` });
+      if (exactDupes) flags.push({ cls: "warn", txt: `동일 파일 ${exactDupes}` });
+      if (repeatedTasks) flags.push({ cls: "warn", txt: `반복 미션 ${repeatedTasks}` });
+      if (autoApproved) flags.push({ cls: "warn", txt: `자동승인 ${autoApproved}` });
+      if (!flags.length) flags.push({ cls: "", txt: "원본 확인 필요" });
+      return { entrant: e, rank: idx + 1, proofs, flags, missingImages, exactDupes, repeatedTasks, autoApproved };
+    });
+  }
+  function renderAudit() {
+    const wrap = $("auditWrap");
+    if (!wrap || !state.isAdmin) return;
+    const count = $("auditCount");
+    if (state._lotErr) { wrap.innerHTML = `<div class="err">응모자 집계 실패: ${esc(state._lotErr)}</div>`; return; }
+    if (state._adminErr) { wrap.innerHTML = `<div class="err">제출 원본 로드 실패: ${esc(state._adminErr)}</div>`; return; }
+    if (!state.lotLoaded) { wrap.innerHTML = `<div class="loading">상위 100명 집계 중...</div>`; return; }
+    if (!state.allSubsLoaded) { wrap.innerHTML = `<div class="loading">인증 원본 로드 중...</div>`; return; }
+    const rows = auditRows();
+    if (count) count.textContent = rows.length ? `(${rows.length}명)` : "";
+    if (!rows.length) { wrap.innerHTML = `<div class="empty">검증할 상위 참여자가 없습니다.</div>`; return; }
+    const totalEntries = (state.lotEntrants || []).reduce((a, e) => a + e.entries, 0);
+    const flagged = rows.filter((r) => r.flags.some((f) => f.cls === "bad" || f.cls === "warn")).length;
+    const proofCount = rows.reduce((a, r) => a + r.proofs.length, 0);
+    const captureMissing = rows.reduce((a, r) => a + r.missingImages, 0);
+    const L = lotWeekLabel();
+    const summary = `<div class="audit-summary">`
+      + `<div class="audit-stat"><div class="l">대상 주차</div><div class="v">${esc(L.range)}</div></div>`
+      + `<div class="audit-stat"><div class="l">상위 검증</div><div class="v">${rows.length}명</div></div>`
+      + `<div class="audit-stat"><div class="l">총 응모권</div><div class="v">${numfmt(totalEntries)}장</div></div>`
+      + `<div class="audit-stat warn"><div class="l">이상징후</div><div class="v">${flagged}명</div></div>`
+      + `</div>`;
+    const tools = `<div class="audit-tools"><div class="dim-sm">승인된 제출 ${proofCount}건 기준입니다. 사진 내용 적합성은 썸네일을 열어 최종 판정하십시오.${captureMissing ? ` 캡쳐 누락 ${captureMissing}건이 있습니다.` : ""}</div><button class="btn-ghost" type="button" id="auditCsv">CSV 내보내기</button></div>`;
+    wrap.innerHTML = summary + tools + `<div class="audit-list">${rows.map((r) => auditRowHtml(r)).join("")}</div>`;
+    const b = $("auditCsv"); if (b) b.onclick = () => exportAuditCsv(rows);
+  }
+  function auditRowHtml(r) {
+    const e = r.entrant;
+    const flags = r.flags.map((f) => `<span class="audit-flag ${f.cls}">${esc(f.txt)}</span>`).join("");
+    const proofs = r.proofs.slice(0, 12).map((s) => {
+      const title = joinTitle(s.task);
+      if (s.proof_url && s.signedUrl) {
+        return `<div class="audit-proof"><a href="${safeURL(s.signedUrl)}" target="_blank" rel="noopener"><img src="${safeURL(s.signedUrl)}" alt="인증 이미지"><div class="pmeta">${esc(title)}</div></a></div>`;
+      }
+      if (s.proof_url) return `<div class="audit-proof auto">이미지 서명 URL 없음<br>${esc(title)}</div>`;
+      return `<div class="audit-proof auto">${esc((s.task && VM[s.task.verify_method] && VM[s.task.verify_method].label) || "자동/무이미지")}<br>${esc(title)}</div>`;
+    }).join("");
+    const more = r.proofs.length > 12 ? `<div class="audit-proof auto">외 ${r.proofs.length - 12}건<br>CSV 확인</div>` : "";
+    return `<div class="audit-row"><div class="audit-head"><div class="audit-rank">${r.rank}</div><div class="audit-name"><div class="n">${esc(entrantName(e))}</div><div class="m">${esc(e.email || e.user_id || "")}</div></div><div class="audit-score"><b>${numfmt(e.entries)}</b>장 · 체크인 ${numfmt(e.checkins)} · 미션 ${numfmt(e.approved)}</div></div><div class="audit-flags">${flags}</div><div class="audit-proofs">${proofs || `<div class="audit-proof auto">표시할 승인 인증 없음</div>`}${more}</div></div>`;
+  }
+  function exportAuditCsv(rows) {
+    const header = ["rank", "name", "email", "user_id", "entries", "checkins", "approved", "approved_proofs", "flags"];
+    const lines = [header.join(",")].concat(rows.map((r) => {
+      const e = r.entrant;
+      const vals = [
+        r.rank,
+        entrantName(e),
+        e.email || "",
+        e.user_id || "",
+        e.entries || 0,
+        e.checkins || 0,
+        e.approved || 0,
+        r.proofs.length,
+        r.flags.map((f) => f.txt).join(" / "),
+      ];
+      return vals.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",");
+    }));
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `antinfo-top100-audit-${weekBounds(state.lotWeekOffset === undefined ? -1 : state.lotWeekOffset).startDate}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   function renderManage() {
     const wrap = $("manageWrap");
@@ -880,6 +989,7 @@
     if (gate) gate.style.display = "none";
     renderVisitStats();
     renderManage();
+    renderAudit();
     renderLottery();
     renderReview();
     renderEventWinners();
