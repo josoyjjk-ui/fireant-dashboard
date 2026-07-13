@@ -884,6 +884,64 @@
     saveAuditVerdicts();
     renderAudit();
   }
+  function autoVerdictForProof(s) {
+    const key = auditProofKey(s);
+    const task = s.task || {};
+    const method = task.verify_method || "capture";
+    const scan = state.auditScan && state.auditScan.byId ? state.auditScan.byId[key] : null;
+    const flags = scan && scan.flags ? scan.flags : [];
+    if (method === "capture" && !s.proof_url) {
+      return { verdict: "invalid", reason: "캡쳐 제출 미션인데 인증 이미지가 없음" };
+    }
+    if (s.proof_url && !s.signedUrl) {
+      return { verdict: "hold", reason: "이미지 서명 URL을 만들 수 없어 원본 확인 불가" };
+    }
+    if (scan && !scan.ok) {
+      return { verdict: "invalid", reason: `이미지 로드/분석 실패: ${scan.err || "오류"}` };
+    }
+    if (flags.some((f) => f.indexOf("거의동일") >= 0)) {
+      return { verdict: "invalid", reason: "동일하거나 거의 동일한 인증 이미지를 반복 사용" };
+    }
+    if (flags.some((f) => f.indexOf("유사이미지") >= 0)) {
+      return { verdict: "hold", reason: "다른 제출과 유사한 이미지라 중복 인증 가능성 있음" };
+    }
+    if (flags.some((f) => f.indexOf("저해상도") >= 0 || f.indexOf("단색/흐림") >= 0 || f.indexOf("노출이상") >= 0)) {
+      return { verdict: "invalid", reason: `인증 이미지 품질 부적합: ${flags.join(" / ")}` };
+    }
+    if (method !== "capture" && !s.proof_url) {
+      return { verdict: "valid", reason: `${vmInfo(method).label} 미션으로 이미지 제출 대상 아님` };
+    }
+    if (scan && scan.ok) {
+      return { verdict: "valid", reason: "이미지 로드 및 기본 품질/중복 검사 통과" };
+    }
+    return { verdict: "hold", reason: "사진 내용 스캔 전이라 자동 판정 대기" };
+  }
+  function applyAutoAuditVerdicts(rows) {
+    let changed = 0;
+    rows.forEach((r) => {
+      r.proofs.forEach((s) => {
+        const key = auditProofKey(s);
+        const next = autoVerdictForProof(s);
+        const prev = state.auditVerdicts[key];
+        if (!prev || prev.verdict !== next.verdict || prev.reason !== next.reason) {
+          state.auditVerdicts[key] = { ...next, at: new Date().toISOString(), source: "auto" };
+          changed += 1;
+        }
+      });
+    });
+    if (changed) saveAuditVerdicts();
+    return changed;
+  }
+  function rowAutoVerdict(r) {
+    if (!r.proofs.length && r.entrant.approved > 0) {
+      return { verdict: "invalid", reason: "승인 미션 수는 있으나 확인 가능한 제출 원본이 없음" };
+    }
+    if (!r.proofs.length) return { verdict: "valid", reason: "사진 제출 미션 없음" };
+    const verdicts = r.proofs.map((s) => auditVerdict(s).verdict || "hold");
+    if (verdicts.includes("invalid")) return { verdict: "invalid", reason: "부적격 인증 이미지 포함" };
+    if (verdicts.includes("hold")) return { verdict: "hold", reason: "확인 불가 또는 중복 의심 인증 포함" };
+    return { verdict: "valid", reason: "상위 참여자 제출 이미지 자동 검사 통과" };
+  }
   function hamming(a, b) {
     if (!a || !b || a.length !== b.length) return 999;
     let n = 0;
@@ -967,6 +1025,8 @@
     Object.values(state.auditScan.byId).forEach((r) => { r.flags = Array.from(new Set(r.flags || [])); });
     state.auditScan.dupes = dupes;
     state.auditScan.running = false;
+    const changed = applyAutoAuditVerdicts(rows);
+    toast(`자동 판정 완료: ${changed}건 갱신`, "ok");
     renderAudit();
   }
   function renderAudit() {
@@ -985,9 +1045,10 @@
     const flagged = rows.filter((r) => r.flags.some((f) => f.cls === "bad" || f.cls === "warn")).length;
     const proofCount = rows.reduce((a, r) => a + r.proofs.length, 0);
     const captureMissing = rows.reduce((a, r) => a + r.missingImages, 0);
-    const verdicts = Object.values(state.auditVerdicts || {});
-    const invalidCount = verdicts.filter((v) => v.verdict === "invalid").length;
-    const holdCount = verdicts.filter((v) => v.verdict === "hold").length;
+    const participantVerdicts = rows.map(rowAutoVerdict);
+    const invalidCount = participantVerdicts.filter((v) => v.verdict === "invalid").length;
+    const holdCount = participantVerdicts.filter((v) => v.verdict === "hold").length;
+    const validCount = participantVerdicts.filter((v) => v.verdict === "valid").length;
     const scan = state.auditScan;
     const scanned = scan ? scan.done : 0;
     const autoFlags = scan ? Object.values(scan.byId || {}).filter((r) => (r.flags || []).length).length : 0;
@@ -995,28 +1056,21 @@
     const summary = `<div class="audit-summary">`
       + `<div class="audit-stat"><div class="l">대상 주차</div><div class="v">${esc(L.range)}</div></div>`
       + `<div class="audit-stat"><div class="l">상위 검증</div><div class="v">${rows.length}명</div></div>`
-      + `<div class="audit-stat"><div class="l">총 응모권</div><div class="v">${numfmt(totalEntries)}장</div></div>`
-      + `<div class="audit-stat warn"><div class="l">자동/수동 이슈</div><div class="v">${flagged + autoFlags + invalidCount}</div></div>`
+      + `<div class="audit-stat ok"><div class="l">자동 적격</div><div class="v">${validCount}명</div></div>`
+      + `<div class="audit-stat warn"><div class="l">부적격/보류</div><div class="v">${invalidCount + holdCount}명</div></div>`
       + `</div>`;
     const scanText = scan
       ? (scan.running ? `사진 스캔 중 ${scanned}/${scan.total}` : `사진 스캔 완료 ${scanned}/${scan.total} · 유사쌍 ${scan.dupes.length}건 · 자동플래그 ${autoFlags}건`)
       : "사진 스캔 미실행";
-    const tools = `<div class="audit-tools"><div class="dim-sm">승인 제출 ${proofCount}건 · ${scanText} · 수동 부적격 ${invalidCount}건 · 보류 ${holdCount}건${captureMissing ? ` · 캡쳐 누락 ${captureMissing}건` : ""}</div><div class="audit-actions"><button class="btn-ghost" type="button" id="auditScan"${scan && scan.running ? " disabled" : ""}>사진 내용 스캔</button><button class="btn-ghost" type="button" id="auditCsv">검증 CSV</button></div></div>`;
+    const tools = `<div class="audit-tools"><div class="dim-sm">총 응모권 ${numfmt(totalEntries)}장 · 승인 제출 ${proofCount}건 · ${scanText} · 자동 부적격 ${invalidCount}명 · 자동 보류 ${holdCount}명${captureMissing ? ` · 캡쳐 누락 ${captureMissing}건` : ""}</div><div class="audit-actions"><button class="btn-ghost" type="button" id="auditScan"${scan && scan.running ? " disabled" : ""}>자동 판정 실행</button><button class="btn-ghost" type="button" id="auditCsv">판정 CSV</button></div></div>`;
     wrap.innerHTML = summary + tools + `<div class="audit-list">${rows.map((r) => auditRowHtml(r)).join("")}</div>`;
     const b = $("auditCsv"); if (b) b.onclick = () => exportAuditCsv(rows);
     const s = $("auditScan"); if (s) s.onclick = () => scanAuditImages(rows);
-    wrap.querySelectorAll("[data-verdict]").forEach((btn) => {
-      btn.onclick = () => {
-        const key = btn.getAttribute("data-key");
-        const verdict = btn.getAttribute("data-verdict");
-        const prev = (state.auditVerdicts[key] && state.auditVerdicts[key].reason) || "";
-        const reason = verdict === "valid" ? "" : (prompt("판정 사유를 입력하십시오.", prev || (verdict === "invalid" ? "사진 내용 부적합" : "추가 확인 필요")) || prev);
-        setAuditVerdict(key, verdict, reason);
-      };
-    });
   }
   function auditRowHtml(r) {
     const e = r.entrant;
+    const rowVerdict = rowAutoVerdict(r);
+    const rowCls = rowVerdict.verdict === "valid" ? "ok" : rowVerdict.verdict === "invalid" ? "bad" : "warn";
     const flags = r.flags.map((f) => `<span class="audit-flag ${f.cls}">${esc(f.txt)}</span>`).join("");
     const proofs = r.proofs.slice(0, 12).map((s) => {
       const title = joinTitle(s.task);
@@ -1026,21 +1080,22 @@
       const scanFlags = scan && scan.flags && scan.flags.length ? `<div class="pflags">${scan.flags.map((f) => `<span class="audit-flag ${f.indexOf("동일") >= 0 || f.indexOf("유사") >= 0 ? "warn" : "bad"}">${esc(f)}</span>`).join("")}</div>` : "";
       const vCls = verdict.verdict ? ` verdict-${verdict.verdict}` : "";
       const vLabel = verdict.verdict === "valid" ? "적격" : verdict.verdict === "invalid" ? "부적격" : verdict.verdict === "hold" ? "보류" : "미판정";
-      const controls = `<div class="vbar${vCls}"><span>${esc(vLabel)}</span><button type="button" data-verdict="valid" data-key="${esc(key)}">적격</button><button type="button" data-verdict="invalid" data-key="${esc(key)}">부적격</button><button type="button" data-verdict="hold" data-key="${esc(key)}">보류</button></div>${verdict.reason ? `<div class="vreason">${esc(verdict.reason)}</div>` : ""}${scanFlags}`;
+      const controls = `<div class="vbar${vCls}"><span>자동 ${esc(vLabel)}</span></div>${verdict.reason ? `<div class="vreason">${esc(verdict.reason)}</div>` : ""}${scanFlags}`;
       if (s.proof_url && s.signedUrl) {
         return `<div class="audit-proof"><a href="${safeURL(s.signedUrl)}" target="_blank" rel="noopener"><img src="${safeURL(s.signedUrl)}" alt="인증 이미지"><div class="pmeta">${esc(title)}</div></a>${controls}</div>`;
       }
-      if (s.proof_url) return `<div class="audit-proof auto">이미지 서명 URL 없음<br>${esc(title)}</div>`;
-      return `<div class="audit-proof auto">${esc((s.task && VM[s.task.verify_method] && VM[s.task.verify_method].label) || "자동/무이미지")}<br>${esc(title)}</div>`;
+      if (s.proof_url) return `<div class="audit-proof auto">이미지 서명 URL 없음<br>${esc(title)}${controls}</div>`;
+      return `<div class="audit-proof auto">${esc((s.task && VM[s.task.verify_method] && VM[s.task.verify_method].label) || "자동/무이미지")}<br>${esc(title)}${controls}</div>`;
     }).join("");
     const more = r.proofs.length > 12 ? `<div class="audit-proof auto">외 ${r.proofs.length - 12}건<br>CSV 확인</div>` : "";
-    return `<div class="audit-row"><div class="audit-head"><div class="audit-rank">${r.rank}</div><div class="audit-name"><div class="n">${esc(entrantName(e))}</div><div class="m">${esc(e.email || e.user_id || "")}</div></div><div class="audit-score"><b>${numfmt(e.entries)}</b>장 · 체크인 ${numfmt(e.checkins)} · 미션 ${numfmt(e.approved)}</div></div><div class="audit-flags">${flags}</div><div class="audit-proofs">${proofs || `<div class="audit-proof auto">표시할 승인 인증 없음</div>`}${more}</div></div>`;
+    return `<div class="audit-row"><div class="audit-head"><div class="audit-rank">${r.rank}</div><div class="audit-name"><div class="n">${esc(entrantName(e))}</div><div class="m">${esc(e.email || e.user_id || "")}</div></div><div class="audit-score"><b>${numfmt(e.entries)}</b>장 · 체크인 ${numfmt(e.checkins)} · 미션 ${numfmt(e.approved)}</div></div><div class="audit-flags"><span class="audit-flag ${rowCls}">참여자 자동 ${rowVerdict.verdict === "valid" ? "적격" : rowVerdict.verdict === "invalid" ? "부적격" : "보류"}</span><span class="audit-flag ${rowCls}">${esc(rowVerdict.reason)}</span>${flags}</div><div class="audit-proofs">${proofs || `<div class="audit-proof auto">표시할 승인 인증 없음</div>`}${more}</div></div>`;
   }
   function exportAuditCsv(rows) {
-    const header = ["rank", "name", "email", "user_id", "entries", "checkins", "approved", "approved_proofs", "row_flags", "proof_id", "task", "proof_url", "scan_flags", "manual_verdict", "manual_reason"];
+    const header = ["rank", "name", "email", "user_id", "entries", "checkins", "approved", "participant_verdict", "participant_reason", "approved_proofs", "row_flags", "proof_id", "task", "proof_url", "scan_flags", "auto_verdict", "auto_reason"];
     const lines = [header.join(",")];
     rows.forEach((r) => {
       const e = r.entrant;
+      const rv = rowAutoVerdict(r);
       const rowFlags = r.flags.map((f) => f.txt).join(" / ");
       const proofList = r.proofs.length ? r.proofs : [null];
       proofList.forEach((p) => {
@@ -1048,7 +1103,7 @@
         const scan = key && state.auditScan && state.auditScan.byId ? state.auditScan.byId[key] : null;
         const verdict = p ? auditVerdict(p) : {};
         const vals = [
-          r.rank, entrantName(e), e.email || "", e.user_id || "", e.entries || 0, e.checkins || 0, e.approved || 0, r.proofs.length, rowFlags,
+          r.rank, entrantName(e), e.email || "", e.user_id || "", e.entries || 0, e.checkins || 0, e.approved || 0, rv.verdict, rv.reason, r.proofs.length, rowFlags,
           p ? p.id : "", p ? joinTitle(p.task) : "", p ? (p.proof_url || "") : "", scan ? (scan.flags || []).join(" / ") : "",
           verdict.verdict || "", verdict.reason || "",
         ];
