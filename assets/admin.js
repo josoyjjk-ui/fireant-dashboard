@@ -864,6 +864,7 @@
       });
       const header = [
         "rank", "tier", "prize", "entries", "checkins", "approved_missions",
+        "닉네임", "휴대전화번호", "이메일", "텔레아이디", "트위터아이디", "유튜브아이디", "이메일 주소",
         "user_id", "nickname", "full_name", "email", "phone", "telegram_handle", "twitter_handle", "youtube_handle", "wallet_address",
         "mission_count", "missions", "proof_urls", "proof_notes",
       ];
@@ -871,6 +872,12 @@
       result.forEach((w, i) => {
         const p = profileById.get(w.user_id) || {};
         const userSubs = (subsByUser.get(w.user_id) || []).filter((s) => s.status === "approved");
+        const nickname = p.nickname || w.nickname || "";
+        const phone = p.phone || w.phone || "";
+        const email = p.email || w.email || "";
+        const telegramId = p.telegram_handle || p.telegram || w.telegram_handle || w.telegram || "";
+        const twitterId = p.twitter_handle || p.twitter || w.twitter_handle || w.twitter || "";
+        const youtubeId = p.youtube_handle || p.youtube || w.youtube_handle || w.youtube || "";
         rows.push([
           i + 1,
           w.tier || "",
@@ -878,14 +885,21 @@
           w.entries || 0,
           w.checkins || 0,
           w.approved || 0,
+          nickname,
+          phone,
+          email,
+          telegramId,
+          twitterId,
+          youtubeId,
+          email,
           w.user_id || "",
-          p.nickname || w.nickname || "",
+          nickname,
           p.full_name || w.full_name || "",
-          p.email || w.email || "",
-          p.phone || "",
-          p.telegram_handle || "",
-          p.twitter_handle || "",
-          p.youtube_handle || "",
+          email,
+          phone,
+          telegramId,
+          twitterId,
+          youtubeId,
           p.wallet_address || "",
           userSubs.length,
           userSubs.map((s) => joinTitle(s.task)).join(" / "),
