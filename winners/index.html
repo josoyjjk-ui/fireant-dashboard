@@ -202,7 +202,7 @@ async function loadRaffle(){
     renderRaffle();
   }catch(e){el.innerHTML='<div class="err">주간 당첨자를 불러오지 못했습니다.</div>';}
 }
-function raffleName(w){ return w._nick || w.telegram || '익명'; }
+function raffleName(w){ return w.telegram || w._nick || '익명'; }
 // prize 문자열("🥇 1등 3만원권")에서 등수/보상 분리
 function splitPrize(p){
   const s=String(p||'').trim();

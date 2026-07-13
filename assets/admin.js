@@ -709,6 +709,15 @@
   function entrantName(e) {
     return (e && (e.nickname || e.full_name || (e.email ? e.email.split("@")[0] : e.user_id))) || "참여자";
   }
+  function raffleWinnerRow(e, week) {
+    return {
+      week_start: week,
+      user_id: e.user_id,
+      telegram: entrantName(e),
+      prize: `${e.tier} ${e.prize}`,
+      entries: e.entries,
+    };
+  }
   // 응모권 가중 랜덤 추첨(복원 없음): 응모권이 많을수록 뽑힐 확률↑
   function weightedDrawN(pool, n) {
     const arr = pool.map((e) => ({ ...e }));
@@ -1589,48 +1598,74 @@
     if (!result || !result.length) { toast("먼저 추첨을 실행해 주십시오.", "err"); return; }
     const L = lotWeekLabel();
     const week = weekBounds(state.lotWeekOffset).startDate;
-    // ── 재추첨/중복확정 차단: 이 주차가 이미 확정되었는지 이중 확인 ──
+    const rows = result.map((e) => raffleWinnerRow(e, week));
+    const btn = opts.publish ? $("publishWinnersBtn") : $("confirmBtn");
+    const prevText = btn ? btn.textContent : "";
     try {
       const [drawRes, winRes] = await Promise.all([
         withTimeout(state.sb.from("raffle_draws").select("winner_count,committed_at").eq("week_start", week).maybeSingle(), "확정 잠금 확인"),
         withTimeout(state.sb.from("raffle_winners").select("id").eq("week_start", week).limit(1), "기존 당첨자 확인"),
       ]);
       const locked = drawRes && drawRes.data;
-      const hasWinners = winRes && winRes.data && winRes.data.length;
-      if (locked || hasWinners) {
+      const hasWinners = !!(winRes && winRes.data && winRes.data.length);
+      const existingCount = locked && locked.winner_count != null ? locked.winner_count : (hasWinners ? "기존" : 0);
+      const actionLabel = opts.publish ? "winners 페이지에 게시" : "당첨자로 확정 기록하고 /winners에 게시";
+      const replaceExisting = opts.publish && (locked || hasWinners);
+      let oldRows = [];
+
+      if (!replaceExisting && (locked || hasWinners)) {
         const when = locked && locked.committed_at ? new Date(locked.committed_at).toLocaleString("ko-KR") : "확정됨";
-        const cnt = locked && locked.winner_count != null ? locked.winner_count : (hasWinners ? "기존" : "");
-        toast(`이미 확정된 주차입니다 (${cnt}명, ${when}). 재추첨·재기록은 차단됩니다. 정정이 필요하면 관리자에게 문의하십시오.`, "err");
+        toast(`이미 확정/게시된 주차입니다 (${existingCount}명, ${when}). /winners를 새 추첨 결과로 바꾸려면 'winners 페이지 게시'를 눌러 정정 게시하십시오.`, "err");
         return;
       }
-    } catch (e) { toast("확정 여부 확인 실패로 기록을 중단합니다: " + errText(e), "err"); return; }
 
-    const actionLabel = opts.publish ? "winners 페이지에 게시" : "당첨자로 확정 기록";
-    if (!confirm(`추첨 결과 ${result.length}명을 ${L.name}(${L.range}) ${actionLabel}합니다.\n\n⚠️ 확정 후에는 이 주차의 재추첨·재기록이 영구 차단됩니다. 진행하시겠습니까?`)) return;
-    const rows = result.map((e) => ({
-      week_start: week,
-      user_id: e.user_id,
-      telegram: e.full_name || (e.email ? e.email.split("@")[0] : null),
-      prize: `${e.tier} ${e.prize}`,
-      entries: e.entries,
-    }));
-    const btn = opts.publish ? $("publishWinnersBtn") : $("confirmBtn");
-    const prevText = btn ? btn.textContent : "";
-    if (btn) { btn.disabled = true; btn.textContent = opts.publish ? "게시 중…" : "기록 중…"; }
-    try {
+      const msg = replaceExisting
+        ? `이미 ${L.name}(${L.range}) 당첨자 ${existingCount}명이 /winners에 게시되어 있습니다.\n\n현재 추첨 결과 ${result.length}명으로 기존 게시 명단을 교체합니다. 진행하시겠습니까?`
+        : `추첨 결과 ${result.length}명을 ${L.name}(${L.range}) ${actionLabel}합니다.\n\n확정 후 /winners 지난주 당첨자 영역에 표시됩니다. 진행하시겠습니까?`;
+      if (!confirm(msg)) return;
+      if (btn) { btn.disabled = true; btn.textContent = opts.publish ? "게시 중…" : "기록 중…"; }
+
+      if (replaceExisting) {
+        const { data: existingRows, error: oldErr } = await withTimeout(
+          state.sb.from("raffle_winners").select("week_start,user_id,telegram,prize,entries").eq("week_start", week),
+          "기존 당첨자 백업",
+        );
+        if (oldErr) throw oldErr;
+        oldRows = existingRows || [];
+        const { error: delErr } = await withTimeout(state.sb.from("raffle_winners").delete().eq("week_start", week), "기존 당첨자 삭제");
+        if (delErr) throw delErr;
+      }
+
       const { error } = await withTimeout(state.sb.from("raffle_winners").insert(rows), "당첨자 기록");
-      if (error) throw error;
-      // 확정 잠금 마킹(감사) — 실패해도 winners는 이미 저장됨. uq 제약이 이중저장 방어.
-      try {
-        await withTimeout(state.sb.from("raffle_draws").insert({ week_start: week, drawn_by: state.uid, winner_count: rows.length }), "확정 잠금 기록");
-      } catch (_) {}
-      toast(opts.publish ? `${rows.length}명의 당첨자를 /winners에 게시했습니다.` : `${rows.length}명의 당첨자를 확정 기록했습니다. 이 주차는 이제 잠깁니다.`, "ok");
+      if (error) {
+        if (replaceExisting && oldRows.length) {
+          try { await withTimeout(state.sb.from("raffle_winners").insert(oldRows), "기존 당첨자 복구"); } catch (_) {}
+        }
+        throw error;
+      }
+
+      if (replaceExisting && locked) {
+        try {
+          await withTimeout(
+            state.sb.from("raffle_draws").update({ drawn_by: state.uid, winner_count: rows.length, committed_at: new Date().toISOString() }).eq("week_start", week),
+            "확정 잠금 갱신",
+          );
+        } catch (_) {}
+      } else {
+        try {
+          await withTimeout(state.sb.from("raffle_draws").insert({ week_start: week, drawn_by: state.uid, winner_count: rows.length }), "확정 잠금 기록");
+        } catch (_) {}
+      }
+
+      toast(replaceExisting ? `${rows.length}명의 당첨자로 /winners 게시 명단을 교체했습니다.` : `${rows.length}명의 당첨자를 확정하고 /winners에 게시했습니다.`, "ok");
       state.lotResult = null;
       clearDraft(); // 확정됐으니 임시저장 미리보기 제거
       await loadWinners();
       renderWinners(); renderLottery();
     } catch (err) {
-      toast("당첨자 기록 실패: " + errText(err), "err");
+      const msg = errText(err);
+      const hint = /permission|policy|rls|denied|delete/i.test(msg) ? " 관리자 삭제/게시 권한을 확인해 주십시오." : "";
+      toast("당첨자 게시 실패: " + msg + hint, "err");
       if (btn) { btn.disabled = false; btn.textContent = prevText || (opts.publish ? "winners 페이지 게시" : "✅ 당첨자 확정 기록"); }
     }
   }
