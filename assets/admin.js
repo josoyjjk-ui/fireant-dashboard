@@ -1164,6 +1164,13 @@
       toast("삭제 실패: " + errText(err), "err");
     }
   }
+  function renderAdminSection(name, fn) {
+    try {
+      fn();
+    } catch (err) {
+      console.warn(`[admin] ${name} render failed`, err);
+    }
+  }
   function renderAdmin() {
     const wrap = $("adminWrap");
     const gate = $("adminGate");
@@ -1181,12 +1188,12 @@
     }
     wrap.style.display = "";
     if (gate) gate.style.display = "none";
-    renderVisitStats();
-    renderManage();
-    renderAudit();
-    renderLottery();
-    renderReview();
-    renderEventWinners();
+    renderAdminSection("visit stats", renderVisitStats);
+    renderAdminSection("mission manage", renderManage);
+    renderAdminSection("lottery", renderLottery);
+    renderAdminSection("top 100 audit", renderAudit);
+    renderAdminSection("review", renderReview);
+    renderAdminSection("event winners", renderEventWinners);
   }
   const normHandle = (v) => (v || "").trim().replace(/^@+/, "");
   function renderProfile() {
