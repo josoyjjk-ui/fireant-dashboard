@@ -152,6 +152,25 @@ const esc = s => String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&
 const timeout = (p,ms=8000)=>Promise.race([Promise.resolve(p),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),ms))]);
 const norm = s => String(s==null?'':s).toLowerCase().replace(/^@/,'').trim();
 const MEDALS=['🥇','🥈','🥉'];
+function fmtDate(d){return d.toISOString().slice(0,10);}
+function dateAdd(dateStr,days){const d=new Date(`${dateStr}T00:00:00Z`);d.setUTCDate(d.getUTCDate()+days);return fmtDate(d);}
+function weekBounds(offsetWeeks){
+  const off=offsetWeeks||0;
+  const nowKst=new Date(Date.now()+9*3600*1000);
+  const day=nowKst.getUTCDay()||7;
+  const start=new Date(nowKst);
+  start.setUTCHours(0,0,0,0);
+  start.setUTCDate(start.getUTCDate()-day+1+off*7);
+  return {startDate:fmtDate(start)};
+}
+function lastWeekStart(){return dateAdd(weekBounds().startDate,-7);}
+function latestRafflePublishRows(rows){
+  const list=(rows||[]).filter(w=>w&&w.week_start);
+  if(!list.length)return [];
+  const latest=list.reduce((max,w)=>{const t=Date.parse(w.created_at||'');return Number.isFinite(t)&&t>max?t:max;},-Infinity);
+  if(!Number.isFinite(latest))return list;
+  return list.filter(w=>Date.parse(w.created_at||'')===latest);
+}
 
 let lbData=[], raffleData=[], eventData=[];
 
@@ -187,9 +206,10 @@ async function loadRaffle(){
   try{
     const {data,error}=await timeout(sb.from('raffle_winners')
       .select('week_start,user_id,telegram,prize,entries,created_at')
-      .order('week_start',{ascending:false}).order('created_at',{ascending:true}).limit(120));
+      .eq('week_start',lastWeekStart())
+      .order('created_at',{ascending:true}).limit(120));
     if(error)throw error;
-    raffleData=data||[];
+    raffleData=latestRafflePublishRows(data||[]);
     // 닉네임 보강 (public_nicknames RPC)
     const ids=[...new Set(raffleData.map(w=>w.user_id).filter(Boolean))];
     if(ids.length){

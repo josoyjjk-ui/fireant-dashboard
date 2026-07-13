@@ -368,7 +368,7 @@
         "당첨자 로드",
       );
       if (error) { state._winnersErr = error.message || "오류"; return; }
-      state.winners = data || [];
+      state.winners = latestRafflePublishRows(data || []);
       const ids = [...new Set(state.winners.map((w) => w.user_id).filter(Boolean))];
       if (ids.length) {
         try {
@@ -717,6 +717,16 @@
       prize: `${e.tier} ${e.prize}`,
       entries: e.entries,
     };
+  }
+  function latestRafflePublishRows(rows) {
+    const list = (rows || []).filter((w) => w && w.week_start);
+    if (!list.length) return [];
+    const latest = list.reduce((max, w) => {
+      const t = Date.parse(w.created_at || "");
+      return Number.isFinite(t) && t > max ? t : max;
+    }, -Infinity);
+    if (!Number.isFinite(latest)) return list;
+    return list.filter((w) => Date.parse(w.created_at || "") === latest);
   }
   function saveRaffleWinnerRows(rows, label) {
     return withTimeout(
@@ -1613,7 +1623,8 @@
     if (!result || !result.length) { toast("먼저 추첨을 실행해 주십시오.", "err"); return; }
     const L = lotWeekLabel();
     const week = weekBounds(state.lotWeekOffset).startDate;
-    const rows = result.map((e) => raffleWinnerRow(e, week));
+    const publishAt = new Date().toISOString();
+    const rows = result.map((e) => ({ ...raffleWinnerRow(e, week), created_at: publishAt }));
     const btn = opts.publish ? $("publishWinnersBtn") : $("confirmBtn");
     const prevText = btn ? btn.textContent : "";
     try {
