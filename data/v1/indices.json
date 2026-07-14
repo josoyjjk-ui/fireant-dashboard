@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-07-15T06:23:22+09:00",
-  "run_id": "1784064227",
-  "status": "ok",
+  "generated_at": "2026-07-15T06:26:47+09:00",
+  "run_id": "1784064479",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -99,7 +99,8 @@
       "change": -0.3499999999999943,
       "change_pct": -0.34557661927329614,
       "currency": "USD",
-      "market_time": 1784063611
+      "market_time": 1784063611,
+      "stale": true
     },
     {
       "name": "VIX 변동성",
@@ -111,7 +112,8 @@
       "change": -0.6600000000000001,
       "change_pct": -3.846153846153847,
       "currency": "USD",
-      "market_time": 1784060101
+      "market_time": 1784060101,
+      "stale": true
     },
     {
       "name": "금",
@@ -162,5 +164,8 @@
       "market_time": "2026-07-14T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "달러인덱스(DXY)(DX-Y.NYB): Remote end closed connection without response",
+    "VIX 변동성(^VIX): Remote end closed connection without response"
+  ]
 }
