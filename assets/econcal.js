@@ -1,5 +1,6 @@
 (function(){
   var DATA_URL='data/v1/econ_calendar.json';
+  var OVERRIDE_URL='data/v1/econ_calendar_overrides.json';
   var MIN_Y=2026,MIN_M=6,MAX_Y=2026,MAX_M=8;
   var TYPE_META={
     macro:{icon:'📊',color:'var(--accent2)',label:'매크로'},
@@ -43,16 +44,55 @@
     return t>=MIN_Y*12+MIN_M-1&&t<=MAX_Y*12+MAX_M-1;
   }
 
+  function mergeItems(base,overrides){
+    var merged=[],seen={};
+    function add(it){
+      if(!it||!it.date||!it.title)return;
+      var key=[it.date,it.time||'',it.type||'',it.title].join('|');
+      if(seen[key])return;
+      seen[key]=1;
+      merged.push(it);
+    }
+    (base||[]).forEach(add);
+    (overrides||[]).forEach(add);
+    merged.sort(function(a,b){
+      return a.date<b.date?-1:a.date>b.date?1:(a.time||'')<(b.time||'')?-1:1;
+    });
+    return merged;
+  }
+
+  function fetchJSON(url,required){
+    return fetch(url+'?t='+Date.now(),{cache:'no-store'})
+      .then(function(r){
+        if(!r.ok){
+          if(required)throw new Error(url+' '+r.status);
+          return null;
+        }
+        return r.json();
+      });
+  }
+
   function fetchCal(){
-    fetch(DATA_URL+'?t='+Date.now(),{cache:'no-store'})
-    .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
-    .then(function(d){
-      items=d.items||[];
+    Promise.all([fetchJSON(DATA_URL,true),fetchJSON(OVERRIDE_URL,false)])
+    .then(function(res){
+      var d=res[0]||{};
+      var overrides=res[1]||{};
+      items=mergeItems(d.items||[],overrides.items||[]);
       if(d.range)dataRange=d.range;
       var rp=d.range&&d.range.start?d.range.start.split('-'):null;
       if(rp){MIN_Y=+rp[0];MIN_M=+rp[1];}
       var re=d.range&&d.range.end?d.range.end.split('-'):null;
       if(re){MAX_Y=+re[0];MAX_M=+re[1];}
+      if(overrides.range&&overrides.range.start&&overrides.range.start<dataRange.start){
+        dataRange.start=overrides.range.start;
+        rp=overrides.range.start.split('-');
+        MIN_Y=+rp[0];MIN_M=+rp[1];
+      }
+      if(overrides.range&&overrides.range.end&&overrides.range.end>dataRange.end){
+        dataRange.end=overrides.range.end;
+        re=overrides.range.end.split('-');
+        MAX_Y=+re[0];MAX_M=+re[1];
+      }
       var now=new Date();
       var cy=now.getFullYear(),cm=now.getMonth()+1;
       if(inRange(cy,cm)){curYear=cy;curMonth=cm;}
