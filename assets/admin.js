@@ -122,6 +122,9 @@
   };
   const numfmt = (n) => String(Number(n) || 0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const csvCell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const csvJson = (v) => {
+    try { return JSON.stringify(v ?? null); } catch (_) { return ""; }
+  };
   function downloadCsv(filename, rows) {
     const body = rows.map((r) => r.map(csvCell).join(",")).join("\n");
     const blob = new Blob(["\ufeff" + body], { type: "text/csv;charset=utf-8" });
@@ -910,7 +913,7 @@
       : `<button class="btn-draw" type="button" id="drawBtn">🎲 가중 추첨 실행 (1회)</button>`;
     let html = toggle + `<div class="draw-bar"><div class="txt">${L.name}(${L.range}) 총 응모권 <b>${total}장</b> · 참여자 <b>${entrants.length}명</b><br><span class="dim-sm">${prizeLine}</span>${exclNote}</div>${drawBtnHtml}</div>`;
     if (state.lotResult && state.lotResult.length) {
-      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">${resultNote}</span></div><div class="draw-result-grid"><div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">${published ? "" : `<button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button>`}<button class="btn-ghost" type="button" id="resetBtn">${published ? "새 추첨 준비" : "❌ 취소(초기화)"}</button></div></div><aside class="draw-side"><div class="side-title">당첨자 명단 · 등록정보 CSV</div><div class="side-copy">${published ? "현재 /winners에 게시된 최신 당첨자 명단입니다. CSV는 이 게시 명단 기준으로 추출합니다." : "현재 1회 추첨 결과 기준으로 당첨자 프로필과 해당 주 승인 미션 정보를 함께 추출합니다. 게시 버튼은 /winners 지난주 당첨자 영역에 바로 반영합니다."}</div>${published ? "" : `<button class="btn-draw" type="button" id="publishWinnersBtn">winners 페이지 게시</button>`}<button class="btn-ghost" type="button" id="drawCsvBtn">CSV 추출</button><div class="side-list">${state.lotResult.map((w) => `<div class="side-win"><span>${esc(w.tier.replace(/[^\d가-힣]/g, "") || w.tier)}</span><span class="nm">${esc(entrantName(w))}</span><span class="pz">${esc(w.prize)}</span></div>`).join("")}</div></aside></div></div>`;
+      html += `<div class="draw-result"><div class="dr-head">🎉 추첨 결과 (${state.lotResult.length}명) <span class="dim-sm">${resultNote}</span></div><div class="draw-result-grid"><div>${state.lotResult.map((w) => `<div class="lot-row win"><span class="lot-title">${esc(w.tier)} · ${esc(entrantName(w))}</span><span class="dim-sm">${esc(w.prize)} · ${w.entries}장</span></div>`).join("")}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">${published ? "" : `<button class="btn-draw" type="button" id="confirmBtn">✅ 당첨자 확정 기록</button>`}<button class="btn-ghost" type="button" id="resetBtn">${published ? "새 추첨 준비" : "❌ 취소(초기화)"}</button></div></div><aside class="draw-side"><div class="side-title">당첨자 명단 · 등록정보 CSV</div><div class="side-copy">${published ? "현재 /winners에 게시된 최신 당첨자 명단 기준으로 프로필, 지갑, 체크인, 미션 제출, 게시 원본 정보를 추출합니다." : "현재 1회 추첨 결과 기준으로 프로필, 지갑, 체크인, 미션 제출, 게시 원본 정보를 추출합니다. 게시 버튼은 /winners 지난주 당첨자 영역에 바로 반영합니다."}</div>${published ? "" : `<button class="btn-draw" type="button" id="publishWinnersBtn">winners 페이지 게시</button>`}<button class="btn-ghost" type="button" id="drawCsvBtn">CSV 추출</button><div class="side-list">${state.lotResult.map((w) => `<div class="side-win"><span>${esc(w.tier.replace(/[^\d가-힣]/g, "") || w.tier)}</span><span class="nm">${esc(entrantName(w))}</span><span class="pz">${esc(w.prize)}</span></div>`).join("")}</div></aside></div></div>`;
     }
     html += `<div class="lot-divlbl">참여자 목록 (응모권순)</div><div>${entrants.slice(0, 30).map((e, i) => `<div class="lot-row"><span class="lot-title">${i + 1}. ${esc(entrantName(e))}</span><span class="dim-sm">${e.entries}장 <span style="opacity:.6">(체크인 ${e.checkins}·미션 ${e.approved})</span></span></div>`).join("")}${entrants.length > 30 ? `<div class="dim-sm" style="padding:8px 2px;">외 ${entrants.length - 30}명…</div>` : ""}</div>`;
     wrap.innerHTML = html;
@@ -931,30 +934,59 @@
     try {
       let profiles = [];
       let subs = [];
+      let checkins = [];
+      let wallets = [];
+      let winnerRows = [];
+      const warnings = [];
+      const optionalCsvQuery = async (label, query) => {
+        try {
+          const res = await withTimeout(query, label, 12000);
+          if (res.error) throw res.error;
+          return res.data || [];
+        } catch (err) {
+          warnings.push(`${label}: ${errText(err)}`);
+          console.warn(`[raffle csv] ${label} failed`, err);
+          return [];
+        }
+      };
       if (ids.length) {
-        const [profileRes, subRes] = await Promise.all([
-          withTimeout(
-            state.sb.from("profiles")
-              .select("id,email,full_name,nickname,phone,telegram_handle,twitter_handle,youtube_handle,wallet_address")
-              .in("id", ids),
+        [profiles, subs, checkins, wallets, winnerRows] = await Promise.all([
+          optionalCsvQuery(
             "당첨자 프로필 로드",
-            10000,
+            state.sb.from("profiles")
+              .select("*")
+              .in("id", ids),
           ),
-          withTimeout(
+          optionalCsvQuery(
+            "당첨자 전체 미션 제출 로드",
             state.sb.from("airdrop_submissions")
-              .select("id,user_id,proof_url,proof_note,status,created_at, task:airdrop_tasks(title,verify_method)")
+              .select("*, task:airdrop_tasks(*)")
               .in("user_id", ids)
-              .gte("created_at", week.startIso)
-              .lt("created_at", week.endIso)
               .order("created_at", { ascending: true }),
-            "당첨자 미션 정보 로드",
-            10000,
+          ),
+          optionalCsvQuery(
+            "당첨자 전체 체크인 로드",
+            state.sb.from("daily_checkins")
+              .select("*")
+              .in("user_id", ids)
+              .order("checkin_date", { ascending: true }),
+          ),
+          optionalCsvQuery(
+            "당첨자 등록 지갑 로드",
+            state.sb.from("airdrop_wallets")
+              .select("*")
+              .in("user_id", ids)
+              .order("created_at", { ascending: true }),
+          ),
+          optionalCsvQuery(
+            "당첨자 게시 기록 로드",
+            state.sb.from("raffle_winners")
+              .select("*")
+              .eq("week_start", week.startDate)
+              .in("user_id", ids)
+              .order("created_at", { ascending: true }),
           ),
         ]);
-        if (profileRes.error) throw profileRes.error;
-        if (subRes.error) throw subRes.error;
-        profiles = profileRes.data || [];
-        subs = subRes.data || [];
       }
       const profileById = new Map(profiles.map((p) => [p.id, p]));
       const subsByUser = new Map();
@@ -962,24 +994,68 @@
         if (!subsByUser.has(s.user_id)) subsByUser.set(s.user_id, []);
         subsByUser.get(s.user_id).push(s);
       });
+      const checkinsByUser = new Map();
+      checkins.forEach((c) => {
+        if (!checkinsByUser.has(c.user_id)) checkinsByUser.set(c.user_id, []);
+        checkinsByUser.get(c.user_id).push(c);
+      });
+      const walletsByUser = new Map();
+      wallets.forEach((w) => {
+        if (!walletsByUser.has(w.user_id)) walletsByUser.set(w.user_id, []);
+        walletsByUser.get(w.user_id).push(w);
+      });
+      const winnersByUser = new Map();
+      winnerRows.forEach((w) => {
+        if (!winnersByUser.has(w.user_id)) winnersByUser.set(w.user_id, []);
+        winnersByUser.get(w.user_id).push(w);
+      });
       const header = [
-        "rank", "tier", "prize", "entries", "checkins", "approved_missions",
-        "닉네임", "휴대전화번호", "이메일", "텔레아이디", "트위터아이디", "유튜브아이디", "이메일 주소",
-        "user_id", "nickname", "full_name", "email", "phone", "telegram_handle", "twitter_handle", "youtube_handle", "wallet_address",
-        "mission_count", "missions", "proof_urls", "proof_notes",
+        "rank", "week_start", "week_end", "tier", "prize", "entries", "checkins", "approved_missions",
+        "닉네임", "휴대전화번호", "이메일", "텔레아이디", "트위터아이디", "유튜브아이디", "지갑주소",
+        "user_id", "profile_id", "nickname", "full_name", "email", "phone", "telegram_handle", "twitter_handle", "youtube_handle", "wallet_address",
+        "wallet_count", "wallet_addresses",
+        "week_checkin_count", "week_checkin_dates", "all_checkin_count", "all_checkin_dates",
+        "week_submission_count", "week_approved_count", "all_submission_count", "all_approved_count",
+        "week_missions", "week_submission_statuses", "week_proof_urls", "week_proof_notes", "week_proof_signed_urls",
+        "all_missions", "all_submission_statuses", "all_proof_urls", "all_proof_notes",
+        "raffle_winner_records",
+        "profile_json", "wallets_json", "week_checkins_json", "all_checkins_json", "week_submissions_json", "all_submissions_json", "raffle_winners_json",
       ];
       const rows = [header];
-      result.forEach((w, i) => {
+      for (const [i, w] of result.entries()) {
         const p = profileById.get(w.user_id) || {};
-        const userSubs = (subsByUser.get(w.user_id) || []).filter((s) => s.status === "approved");
+        const userSubs = subsByUser.get(w.user_id) || [];
+        const weekSubs = userSubs.filter((s) => !s.created_at || (s.created_at >= week.startIso && s.created_at < week.endIso));
+        const weekApprovedSubs = weekSubs.filter((s) => s.status === "approved");
+        const allApprovedSubs = userSubs.filter((s) => s.status === "approved");
+        const userCheckins = checkinsByUser.get(w.user_id) || [];
+        const weekCheckins = userCheckins.filter((c) => c.checkin_date >= week.startDate && c.checkin_date < week.endDate);
+        const userWallets = walletsByUser.get(w.user_id) || [];
+        const userWinnerRows = winnersByUser.get(w.user_id) || [];
         const nickname = p.nickname || w.nickname || "";
         const phone = p.phone || w.phone || "";
         const email = p.email || w.email || "";
         const telegramId = p.telegram_handle || p.telegram || w.telegram_handle || w.telegram || "";
         const twitterId = p.twitter_handle || p.twitter || w.twitter_handle || w.twitter || "";
         const youtubeId = p.youtube_handle || p.youtube || w.youtube_handle || w.youtube || "";
+        const walletAddresses = [
+          p.wallet_address,
+          ...userWallets.map((row) => row.address || row.wallet_address || ""),
+        ].filter(Boolean);
+        const signedProofUrls = [];
+        for (const s of weekSubs) {
+          if (!s.proof_url) continue;
+          try {
+            const { data: sig } = await state.sb.storage.from(PROOF_BUCKET).createSignedUrl(proofPath(s.proof_url), 3600);
+            signedProofUrls.push((sig && sig.signedUrl) || "");
+          } catch (_) {
+            signedProofUrls.push("");
+          }
+        }
         rows.push([
           i + 1,
+          week.startDate,
+          dateAdd(week.endDate, -1),
           w.tier || "",
           w.prize || "",
           w.entries || 0,
@@ -991,8 +1067,9 @@
           telegramId,
           twitterId,
           youtubeId,
-          email,
+          walletAddresses.join(" / "),
           w.user_id || "",
+          p.id || "",
           nickname,
           p.full_name || w.full_name || "",
           email,
@@ -1001,14 +1078,37 @@
           twitterId,
           youtubeId,
           p.wallet_address || "",
+          userWallets.length,
+          userWallets.map((row) => row.address || row.wallet_address || "").filter(Boolean).join(" / "),
+          weekCheckins.length,
+          weekCheckins.map((c) => c.checkin_date || "").filter(Boolean).join(" / "),
+          userCheckins.length,
+          userCheckins.map((c) => c.checkin_date || "").filter(Boolean).join(" / "),
+          weekSubs.length,
+          weekApprovedSubs.length,
           userSubs.length,
+          allApprovedSubs.length,
+          weekSubs.map((s) => joinTitle(s.task)).join(" / "),
+          weekSubs.map((s) => `${joinTitle(s.task)}:${s.status || ""}`).join(" / "),
+          weekSubs.map((s) => s.proof_url || "").filter(Boolean).join(" / "),
+          weekSubs.map((s) => s.proof_note || "").filter(Boolean).join(" / "),
+          signedProofUrls.filter(Boolean).join(" / "),
           userSubs.map((s) => joinTitle(s.task)).join(" / "),
+          userSubs.map((s) => `${joinTitle(s.task)}:${s.status || ""}`).join(" / "),
           userSubs.map((s) => s.proof_url || "").filter(Boolean).join(" / "),
           userSubs.map((s) => s.proof_note || "").filter(Boolean).join(" / "),
+          userWinnerRows.length,
+          csvJson(p),
+          csvJson(userWallets),
+          csvJson(weekCheckins),
+          csvJson(userCheckins),
+          csvJson(weekSubs),
+          csvJson(userSubs),
+          csvJson(userWinnerRows),
         ]);
-      });
+      }
       downloadCsv(`antinfo-raffle-winners-${week.startDate}.csv`, rows);
-      toast("당첨자 등록정보 CSV를 생성했습니다.", "ok");
+      toast(warnings.length ? `CSV 생성 완료 · 일부 추가정보 누락 ${warnings.length}건` : "수집 가능한 당첨자 정보를 CSV로 생성했습니다.", warnings.length ? "err" : "ok");
     } catch (err) {
       toast("CSV 생성 실패: " + errText(err), "err");
     } finally {
