@@ -122,6 +122,6 @@ const saved=localStorage.getItem('fa-theme');
 if(saved){html.setAttribute('data-theme',saved);btn.textContent=saved==='light'?'☀️':'🌙';}
 btn.addEventListener('click',()=>{const c=html.getAttribute('data-theme')||'dark';const n=c==='dark'?'light':'dark';html.setAttribute('data-theme',n);btn.textContent=n==='light'?'☀️':'🌙';localStorage.setItem('fa-theme',n);});
 </script>
-<script defer src="/assets/visit.js"></script>
+<script defer src="/assets/visit.js?v=2"></script>
 </body>
 </html>

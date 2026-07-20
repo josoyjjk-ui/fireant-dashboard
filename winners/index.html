@@ -289,7 +289,7 @@ async function loadEvents(){
     let webRows=[];
     if(sb){
       try{
-        const {data,error}=await timeout(sb.from('event_winners').select('event,tier,prize,telegram,twitter,note,created_at').order('created_at',{ascending:false}),6000);
+        const {data,error}=await timeout(sb.from('event_winners').select('event,tier,prize,telegram,twitter,note,created_at').order('created_at',{ascending:false}).limit(300),6000);
         if(!error && data) webRows=data;
       }catch(_){}
     }
@@ -343,5 +343,5 @@ function filterAll(){
 /* ── init ── */
 loadLB(); loadRaffle(); loadEvents();
 </script>
-<script defer src="/assets/visit.js"></script>
+<script defer src="/assets/visit.js?v=2"></script>
 </body></html>
