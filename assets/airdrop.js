@@ -14,6 +14,36 @@
     const m = String(u).indexOf(`/${PROOF_BUCKET}/`);
     return m >= 0 ? String(u).slice(m + PROOF_BUCKET.length + 2).split("?")[0] : String(u);
   };
+  // 업로드 전 스크린샷을 긴 변 기준 축소·재인코딩해 용량을 낮춘다.
+  // 인증샷은 볼 때마다 egress로 잡히므로, 원본(1~4MB)을 ~200-400KB로 줄이면
+  // 이후 모든 검수 열람의 egress가 그만큼 줄어든다. 실패하거나 되레 커지면 원본 유지(null 반환).
+  function downscaleImage(file, maxEdge, quality) {
+    return new Promise((resolve) => {
+      try {
+        if (!file || !file.type || !file.type.startsWith("image/") || file.type === "image/gif") { resolve(null); return; }
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const longEdge = Math.max(img.naturalWidth, img.naturalHeight) || 1;
+            const scale = Math.min(1, maxEdge / longEdge);
+            const w = Math.max(1, Math.round(img.naturalWidth * scale));
+            const h = Math.max(1, Math.round(img.naturalHeight * scale));
+            const c = document.createElement("canvas");
+            c.width = w; c.height = h;
+            const ctx = c.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            c.toBlob((blob) => {
+              URL.revokeObjectURL(url);
+              resolve(blob && blob.size > 0 && blob.size < file.size ? blob : null);
+            }, "image/jpeg", quality);
+          } catch (_) { URL.revokeObjectURL(url); resolve(null); }
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+        img.src = url;
+      } catch (_) { resolve(null); }
+    });
+  }
   const cssEscape = (s) => {
     const v = String(s ?? "");
     if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(v);
@@ -770,10 +800,15 @@
     try {
       let proof_url = null;
       if (file) {
-        const ext = ((file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg").slice(0, 4);
+        // egress 절감: 업로드 전 축소·재인코딩(긴 변 1920px, JPEG q0.85). 실패 시 원본 유지.
+        const small = await downscaleImage(file, 1920, 0.85);
+        const body = small || file;
+        const contentType = small ? "image/jpeg" : file.type;
+        const ext = small ? "jpg" : ((file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg").slice(0, 4);
         const path = `${state.uid}/${t.id}_${Date.now()}.${ext}`;
         const up = await withTimeout(
-          state.sb.storage.from(PROOF_BUCKET).upload(path, file, { contentType: file.type, upsert: false }),
+          // cacheControl 1년: 동일 서명URL 재열람 시 브라우저/CDN 캐시 히트로 재다운로드(egress) 방지
+          state.sb.storage.from(PROOF_BUCKET).upload(path, body, { contentType, cacheControl: "31536000", upsert: false }),
           "증빙 업로드",
         );
         if (up.error) throw up.error;

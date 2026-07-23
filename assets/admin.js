@@ -14,6 +14,31 @@
     const m = String(u).indexOf(`/${PROOF_BUCKET}/`);
     return m >= 0 ? String(u).slice(m + PROOF_BUCKET.length + 2).split("?")[0] : String(u);
   };
+  // 감사 스캔 메트릭 영속 캐시: 스토리지 경로(이미지 내용 불변) 기준으로 해시/밝기 등을
+  // localStorage에 저장해, 재스캔 시 원본을 다시 다운로드하지 않도록 한다(egress 절감).
+  const AUDIT_METRICS_KEY = "antinfo_audit_metrics_v1";
+  let _auditMetricsCache = null;
+  function auditMetricsLoad() {
+    if (_auditMetricsCache) return _auditMetricsCache;
+    try { _auditMetricsCache = JSON.parse(localStorage.getItem(AUDIT_METRICS_KEY) || "{}") || {}; }
+    catch (_) { _auditMetricsCache = {}; }
+    return _auditMetricsCache;
+  }
+  function auditMetricsGet(pathKey) {
+    if (!pathKey) return null;
+    const m = auditMetricsLoad()[pathKey];
+    return (m && m.ok) ? m : null;
+  }
+  function auditMetricsSet(pathKey, m) {
+    if (!pathKey || !m || !m.ok) return;
+    const cache = auditMetricsLoad();
+    cache[pathKey] = m;
+    try { localStorage.setItem(AUDIT_METRICS_KEY, JSON.stringify(cache)); }
+    catch (_) { /* 용량 초과 시 캐시 리셋 후 1회 재시도 */
+      try { const fresh = {}; fresh[pathKey] = m; localStorage.setItem(AUDIT_METRICS_KEY, JSON.stringify(fresh)); _auditMetricsCache = fresh; }
+      catch (__) {}
+    }
+  }
   const cssEscape = (s) => {
     const v = String(s ?? "");
     if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(v);
@@ -402,7 +427,7 @@
       await Promise.all((state.allSubs || []).map(async (s) => {
         if (!s.proof_url) return;
         try {
-          const { data: sig } = await state.sb.storage.from(PROOF_BUCKET).createSignedUrl(proofPath(s.proof_url), 3600);
+          const { data: sig } = await state.sb.storage.from(PROOF_BUCKET).createSignedUrl(proofPath(s.proof_url), 21600);
           if (sig && sig.signedUrl) s.signedUrl = sig.signedUrl;
         } catch (_) {}
       }));
@@ -709,7 +734,7 @@
   }
   function revRow(s) {
     const thumb = (s.proof_url && s.signedUrl)
-      ? `<a class="rev-thumb-a" href="${safeURL(s.signedUrl)}" target="_blank" rel="noopener"><img class="rev-thumb" src="${safeURL(s.signedUrl)}" alt="인증 이미지"></a>`
+      ? `<a class="rev-thumb-a" href="${safeURL(s.signedUrl)}" target="_blank" rel="noopener"><img class="rev-thumb" loading="lazy" decoding="async" src="${safeURL(s.signedUrl)}" alt="인증 이미지"></a>`
       : s.proof_url
         ? `<div class="rev-thumb" style="display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--dim);text-align:center;">이미지<br>로드중</div>`
         : `<div class="rev-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px;">${(s.task && s.task.verify_method) === "telegram" ? "✈️" : "🔗"}</div>`;
@@ -1046,7 +1071,7 @@
         for (const s of weekSubs) {
           if (!s.proof_url) continue;
           try {
-            const { data: sig } = await state.sb.storage.from(PROOF_BUCKET).createSignedUrl(proofPath(s.proof_url), 3600);
+            const { data: sig } = await state.sb.storage.from(PROOF_BUCKET).createSignedUrl(proofPath(s.proof_url), 21600);
             signedProofUrls.push((sig && sig.signedUrl) || "");
           } catch (_) {
             signedProofUrls.push("");
@@ -1305,7 +1330,13 @@
       const part = proofs.slice(i, i + batch);
       await Promise.all(part.map(async (s) => {
         const key = auditProofKey(s);
-        const m = await imageMetrics(s.signedUrl);
+        const pathKey = proofPath(s.proof_url || "");
+        // 캐시에 있으면 원본 재다운로드 없이 재사용(egress 절감), 없을 때만 다운로드해 분석
+        let m = auditMetricsGet(pathKey);
+        if (!m) {
+          m = await imageMetrics(s.signedUrl);
+          if (m && m.ok) auditMetricsSet(pathKey, m);
+        }
         const flags = [];
         if (!m.ok) flags.push(`분석불가:${m.err || "오류"}`);
         else {
