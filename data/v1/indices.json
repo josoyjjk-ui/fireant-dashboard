@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-07-24T21:34:10+09:00",
-  "run_id": "1784896458",
-  "status": "ok",
+  "generated_at": "2026-07-24T21:36:39+09:00",
+  "run_id": "1784896607",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -39,67 +39,68 @@
       "change": -512.989999999998,
       "change_pct": -0.9822757993161809,
       "currency": "USD",
-      "market_time": 1784839152
+      "market_time": 1784839152,
+      "stale": true
     },
     {
       "name": "미 3개월물(T-Bill)",
       "symbol": "^IRX",
       "group": "미국채 금리",
       "unit": "%",
-      "price": 3.8,
+      "price": 3.788,
       "prev_close": 3.8,
-      "change": 0.0,
-      "change_pct": 0.0,
+      "change": -0.01200000000000001,
+      "change_pct": -0.31578947368421084,
       "currency": "USD",
-      "market_time": 1784833195
+      "market_time": 1784895703
     },
     {
       "name": "미 5년물",
       "symbol": "^FVX",
       "group": "미국채 금리",
       "unit": "%",
-      "price": 4.461,
+      "price": 4.436,
       "prev_close": 4.461,
-      "change": 0.0,
-      "change_pct": 0.0,
+      "change": -0.025000000000000355,
+      "change_pct": -0.5604124635731977,
       "currency": "USD",
-      "market_time": 1784833195
+      "market_time": 1784895703
     },
     {
       "name": "미 10년물",
       "symbol": "^TNX",
       "group": "미국채 금리",
       "unit": "%",
-      "price": 4.703,
+      "price": 4.683,
       "prev_close": 4.703,
-      "change": 0.0,
-      "change_pct": 0.0,
+      "change": -0.020000000000000462,
+      "change_pct": -0.4252604720391338,
       "currency": "USD",
-      "market_time": 1784833195
+      "market_time": 1784895703
     },
     {
       "name": "미 30년물",
       "symbol": "^TYX",
       "group": "미국채 금리",
       "unit": "%",
-      "price": 5.171,
+      "price": 5.161,
       "prev_close": 5.171,
-      "change": 0.0,
-      "change_pct": 0.0,
+      "change": -0.010000000000000675,
+      "change_pct": -0.1933861922258881,
       "currency": "USD",
-      "market_time": 1784833195
+      "market_time": 1784895703
     },
     {
       "name": "달러인덱스(DXY)",
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 101.439,
+      "price": 101.447,
       "prev_close": 101.43,
-      "change": 0.00899999999998613,
-      "change_pct": 0.0088731144631629,
+      "change": 0.016999999999995907,
+      "change_pct": 0.016760327319329495,
       "currency": "USD",
-      "market_time": 1784895857
+      "market_time": 1784896007
     },
     {
       "name": "VIX 변동성",
@@ -111,31 +112,32 @@
       "change": -0.129999999999999,
       "change_pct": -0.6951871657753959,
       "currency": "USD",
-      "market_time": 1784895376
+      "market_time": 1784895376,
+      "stale": true
     },
     {
       "name": "금",
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 4059.9,
+      "price": 4060.7,
       "prev_close": 4046.6,
-      "change": 13.300000000000182,
-      "change_pct": 0.3286709830475012,
+      "change": 14.099999999999909,
+      "change_pct": 0.34844066623832126,
       "currency": "USD",
-      "market_time": 1784895851
+      "market_time": 1784896006
     },
     {
       "name": "WTI 유가",
       "symbol": "CL=F",
       "group": "원자재",
       "unit": "",
-      "price": 89.57,
+      "price": 89.69,
       "prev_close": 92.19,
-      "change": -2.6200000000000045,
-      "change_pct": -2.841956828289407,
+      "change": -2.5,
+      "change_pct": -2.7117908666883612,
       "currency": "USD",
-      "market_time": 1784895859
+      "market_time": 1784896003
     },
     {
       "name": "코스피",
@@ -162,5 +164,8 @@
       "market_time": "2026-07-24T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "다우존스(^DJI): HTTP Error 404: Not Found",
+    "VIX 변동성(^VIX): HTTP Error 404: Not Found"
+  ]
 }
