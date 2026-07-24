@@ -346,7 +346,8 @@ async function loadHome(){
     renderMovers();
   }catch(e){if($("btcChg"))$("btcChg").textContent="재시도…";}
 }
-function row(c){return `<div class="m2"><img class="lg" src="${safe(c.image)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span class="sy">${esc((c.symbol||"").toUpperCase())}</span><span class="pct ${ud(c.chg)}">${c.chg>=0?"+":""}${c.chg.toFixed(1)}%</span></div>`;}
+function cgURL(c){const id=c&&c.id?String(c.id):"";return id?"https://www.coingecko.com/en/coins/"+encodeURIComponent(id):"https://www.coingecko.com/en/search?query="+encodeURIComponent((c&&(c.symbol||c.name))||"");}
+function row(c){return `<a class="m2" href="${esc(cgURL(c))}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;cursor:pointer" title="코인게코에서 ${esc(c.name||c.symbol||"")} 보기"><img class="lg" src="${safe(c.image)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span class="sy">${esc((c.symbol||"").toUpperCase())}</span><span class="pct ${ud(c.chg)}">${c.chg>=0?"+":""}${c.chg.toFixed(1)}%</span></a>`;}
 function renderMovers(){
   if(!MN)return;
   const g=(MN.gainers||[]).slice(0,10).map((c,i)=>({...c,rk:i+1}));
