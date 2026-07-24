@@ -111,7 +111,7 @@ details.setup[open]>summary::before{content:"▾ ";}
           <div><label>게스트 이름</label><input id="guestName" value="게스트"></div>
         </div>
         <div class="row" style="margin-top:8px;">
-          <div><label>무음 감지(ms)</label><input id="silenceMs" type="number" value="850" min="300" max="3000" step="50"></div>
+          <div><label>무음 감지(ms)</label><input id="silenceMs" type="number" value="550" min="250" max="3000" step="50"></div>
           <div><label>임계값(RMS)</label><input id="rmsThr" type="number" value="0.018" min="0.003" max="0.2" step="0.002"></div>
         </div>
         <div id="capErr" class="hint warn"></div>
@@ -151,6 +151,9 @@ details.setup[open]>summary::before{content:"▾ ";}
         <label style="margin-top:10px;">Grok 모델 <span class="hint" style="display:inline;">(번역·리캡)</span></label>
         <input id="grokModel" class="mono" placeholder="grok-4.5" value="grok-4.5">
         <div class="hint">추천 <b>grok-4.5</b> (빠르고 똑똑, 비추론). 라이브 지연이 크면 <b>grok-4.3</b>(더 가벼움)로 교체.</div>
+        <label>라이브(위젯) 번역 모델 <span class="hint" style="display:inline;">(비우면 위 모델 사용)</span></label>
+        <input id="liveModel" class="mono" placeholder="grok-4.3 (더 빠름, 권장)">
+        <div class="hint">위젯·라이브 자막 번역에만 쓰는 가벼운 모델. 리캡은 위 모델을 씁니다. 첫 자막을 더 빠르게 하려면 <b>grok-4.3</b> 권장.</div>
         <label>Grok (xAI) API Key <span class="hint" style="display:inline;">— 받아쓰기 + 번역 (이 키 하나)</span></label>
         <input id="grokKey" type="password" placeholder="xai-...">
         <div class="row" style="margin-top:10px;"><button id="saveKeys" class="btn ok sm">저장</button><button id="clearKeys" class="btn ghost sm">삭제</button></div>
@@ -161,7 +164,13 @@ details.setup[open]>summary::before{content:"▾ ";}
     <!-- ══ 우측: 자막 / 리캡 / 히스토리 ══ -->
     <div>
       <div class="card">
-        <h2><span class="t">💬 라이브 자막</span><button id="clearRoll" class="btn ghost sm">비우기</button></h2>
+        <h2><span class="t">💬 라이브 자막</span>
+          <span style="display:flex;gap:6px;align-items:center;flex:0 0 auto;">
+            <input type="color" id="wBg" title="위젯 배경색" value="#000000" style="width:26px;height:26px;padding:2px;border:1px solid var(--line);border-radius:6px;cursor:pointer;">
+            <input type="color" id="wFg" title="위젯 글자색" value="#ffe14d" style="width:26px;height:26px;padding:2px;border:1px solid var(--line);border-radius:6px;cursor:pointer;">
+            <button id="wToggle" class="btn ghost sm">🪟 위젯</button>
+            <button id="clearRoll" class="btn ghost sm">비우기</button>
+          </span></h2>
         <div id="subRoll"><div class="hint">마이크/시스템 오디오를 시작하면 자막이 여기에 표시됩니다.</div></div>
       </div>
 
@@ -216,13 +225,13 @@ details.setup[open]>summary::before{content:"▾ ";}
   const GROK_STT_URL = "https://api.x.ai/v1/stt";
   const GROK_DEFAULT_MODEL = "grok-4.5";
   const STT_SR = 16000;         // Grok STT로 보낼 WAV 샘플레이트(모노)
-  const MAX_CHUNK_MS = 12000;   // 무음 없이 이어지는 장시간 발화 강제 컷(자막 지연 방지)
+  const MAX_CHUNK_MS = 8000;    // 무음 없이 이어지는 장시간 발화 강제 컷(자막 지연 방지)
 
   const state = {
     utt: 0,
     lines: [],                        // {speaker, speakerLabel, srcText, dstText, srcLang, dstLang, ts}
     pipelines: {},                    // host/guest/mixed → pipeline obj
-    pipelineTail: Promise.resolve(),  // STT/번역 직렬화 체인
+    tails: {},                        // 화자별 STT/번역 직렬화 체인(호스트·게스트 병렬 처리)
     glossary: LS.getJSON("translate.glossary", []),
   };
 
@@ -248,6 +257,62 @@ details.setup[open]>summary::before{content:"▾ ";}
     }
     const j = await res.json();
     return (j.choices?.[0]?.message?.content || "").trim();
+  }
+
+  function currentModel() { return ($("grokModel").value || "").trim() || GROK_DEFAULT_MODEL; }
+  function liveModel() { const el = $("liveModel"); const v = el ? (el.value || "").trim() : ""; return v || currentModel(); }
+
+  /* ─────────── Grok 채팅 스트리밍(라이브 번역 — 토큰이 오는 대로 흘려보냄) ─────────── */
+  async function grokChatStream(messages, opts, onDelta) {
+    const key = getKey();
+    if (!key) throw new Error("Grok(xAI) API 키가 필요합니다. ⚙️ 설정에서 입력하세요.");
+    const body = {
+      model: (opts && opts.model) || currentModel(),
+      temperature: (opts && opts.temperature != null) ? opts.temperature : 0.2,
+      messages, stream: true,
+    };
+    if (opts && opts.maxTokens) body.max_tokens = opts.maxTokens;
+    const res = await fetch(GROK_URL, {
+      method: "POST",
+      headers: { Authorization: "Bearer " + key, "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok || !res.body) {
+      const e = new Error("Grok HTTP " + res.status + " " + (await res.text().catch(() => "")).slice(0, 160));
+      if ([400, 401, 403, 404].includes(res.status)) e.noRetry = true;
+      throw e;
+    }
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "", full = "";
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let nl;
+      while ((nl = buf.indexOf("\n")) >= 0) {
+        const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+        if (!line.startsWith("data:")) continue;
+        const data = line.slice(5).trim();
+        if (data === "[DONE]") { buf = ""; break; }
+        try {
+          const j = JSON.parse(data);
+          const d = (j.choices && j.choices[0] && j.choices[0].delta && j.choices[0].delta.content) || "";
+          if (d) { full += d; if (onDelta) onDelta(d, full); }
+        } catch {}
+      }
+    }
+    return full.trim();
+  }
+
+  /* ─────────── 연결 워밍(첫 요청 DNS+TLS 핸드셰이크 선(先)수립) ─────────── */
+  let _warmed = false;
+  function warmConnection() {
+    if (_warmed) return;
+    const key = getKey();
+    if (!key) return;
+    _warmed = true;
+    try { fetch("https://api.x.ai/v1/models", { headers: { Authorization: "Bearer " + key } }).catch(() => {}); } catch {}
   }
 
   /* ─────────── 오디오 캡처 + 무음 청킹 ─────────── */
@@ -312,6 +377,7 @@ details.setup[open]>summary::before{content:"▾ ";}
 
   async function startHost() {
     try {
+      warmConnection();
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       state.pipelines.host = createPipeline(stream, $("mixedMode").checked ? "unknown" : "host");
       $("capHostState").textContent = "🎤 연결됨";
@@ -321,6 +387,7 @@ details.setup[open]>summary::before{content:"▾ ";}
   }
   async function startGuest() {
     try {
+      warmConnection();
       const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
       const atracks = stream.getAudioTracks();
       if (!atracks.length) { $("capErr").textContent = "시스템 오디오 트랙이 없습니다. 화면 공유 시 '오디오 공유'를 체크하세요."; stream.getTracks().forEach((t) => t.stop()); return; }
@@ -339,7 +406,10 @@ details.setup[open]>summary::before{content:"▾ ";}
   function enqueueChunk(blob, speaker) {
     state.utt++; $("statUtt").textContent = state.utt;
     updateQueueStat(+1);
-    state.pipelineTail = state.pipelineTail.then(() => processChunk(blob, speaker)).catch((e) => console.warn("[pipe]", e)).finally(() => updateQueueStat(-1));
+    // 화자별 체인: 호스트/게스트가 서로를 막지 않고 동시에 처리(앞사람 밀림 제거)
+    const key = speaker || "unknown";
+    const prev = state.tails[key] || Promise.resolve();
+    state.tails[key] = prev.then(() => processChunk(blob, speaker)).catch((e) => console.warn("[pipe]", e)).finally(() => updateQueueStat(-1));
   }
 
   async function withRetry(fn, tries) {
@@ -362,14 +432,22 @@ details.setup[open]>summary::before{content:"▾ ";}
     text = (text || "").trim();
     if (!text || text.length < 2) return;
     const srcLang = hasHangul(text) ? "ko" : "en";
-    let dst = "", dstLang = "";
+    const target = $("targetLang").value;
+    const tgt = target === "auto" ? (srcLang === "ko" ? "English" : "Korean") : target;
+    // 원문 즉시 표시 → 번역은 토큰이 오는 대로 채워 넣음(스트리밍)
+    const h = pushLine({ speaker, srcText: text, dstText: "", srcLang, dstLang: tgt });
+    const toWidget = tgt === "Korean" && srcLang !== "ko";   // 시스템(영어) → 한글일 때만 위젯에
+    const wl = toWidget ? Widget.newLine() : null;
     try {
-      const r = await withRetry(() => translate(text, srcLang), 3);
-      dst = r.text; dstLang = r.lang;
+      await withRetry(() => translateStream(text, srcLang, (d, full) => {
+        h.setDst(full);
+        if (wl) wl.setText(full);
+      }), 2);
     } catch (e) {
-      dst = "[번역 실패] " + (e.message || e);
+      h.setDst("[번역 실패] " + (e.message || e), true);
+      if (wl) wl.setText("[번역 실패]");
     }
-    pushLine({ speaker, srcText: text, dstText: dst, srcLang, dstLang });
+    if (wl) wl.finalize();
   }
 
   // STT: Grok /v1/stt (webm/opus 녹음을 16k 모노 WAV로 변환해 전송 — Grok이 webm 미지원이라 우회)
@@ -432,21 +510,24 @@ details.setup[open]>summary::before{content:"▾ ";}
     return j.text || "";
   }
 
-  // 번역: Grok chat completions (용어집 + 최근 맥락 + 톤 힌트 주입)
-  async function translate(text, srcLang) {
+  // 번역(스트리밍·다이어트 프롬프트): 토큰이 오는 대로 onDelta로 흘려보내 첫 글자 지연 최소화
+  async function translateStream(text, srcLang, onDelta) {
     const target = $("targetLang").value;
     const tgt = target === "auto" ? (srcLang === "ko" ? "English" : "Korean") : target;
-    const hint = $("modeHint").value || "";
-    const gloss = state.glossary.filter((g) => g.term).map((g) => `- "${g.term}" → "${g.fixedTranslation}"`).join("\n");
-    const ctx = state.lines.slice(-4).map((l) => `${l.speakerLabel || l.speaker}: ${l.srcText}`).join("\n");
+    const hint = ($("modeHint").value || "").trim();
+    const gloss = state.glossary.filter((g) => g.term).map((g) => `"${g.term}"→"${g.fixedTranslation}"`).join(", ");
+    // 프롬프트 다이어트: 최근 맥락(ctx) 제거, 한 줄로 압축 → TTFT(첫 토큰) 단축
     const sys = [
-      `You are a professional live interpreter for a crypto AMA. Translate the user's utterance into ${tgt}.`,
-      `Output ONLY the translation, no notes, no quotes, no source text.`,
-      hint ? `Style/mode hint: ${hint}.` : "",
-      gloss ? `Fixed glossary — always translate these terms exactly as given:\n${gloss}` : "",
-      ctx ? `Recent conversation for context (do not translate this, use it to disambiguate):\n${ctx}` : "",
-    ].filter(Boolean).join("\n\n");
-    const out = await grokChat([{ role: "system", content: sys }, { role: "user", content: text }], 0.2);
+      `You are a live interpreter for a crypto AMA. Translate the user's line into ${tgt}.`,
+      `Output ONLY the ${tgt} translation — no notes, no quotes, no source text.`,
+      hint ? `Tone: ${hint}.` : "",
+      gloss ? `Fixed terms: ${gloss}.` : "",
+    ].filter(Boolean).join(" ");
+    const out = await grokChatStream(
+      [{ role: "system", content: sys }, { role: "user", content: text }],
+      { temperature: 0, maxTokens: 400, model: liveModel() },
+      onDelta
+    );
     return { text: out, lang: tgt };
   }
 
@@ -465,7 +546,19 @@ details.setup[open]>summary::before{content:"▾ ";}
       ts: Date.now(),
     };
     state.lines.push(line);
-    renderLine(line, o.err);
+    const el = renderLine(line, o.err);
+    return {
+      line, el,
+      // 스트리밍 토큰으로 번역칸을 실시간 갱신
+      setDst(txt, isErr) {
+        line.dstText = txt;
+        let d = el.querySelector(".sub-dst");
+        if (!d) { d = document.createElement("div"); d.className = "sub-dst"; el.appendChild(d); }
+        d.textContent = txt;
+        d.style.color = isErr ? "var(--up)" : "";
+        const roll = $("subRoll"); roll.scrollTop = roll.scrollHeight;
+      },
+    };
   }
   function renderLine(line, isErr) {
     const roll = $("subRoll");
@@ -478,6 +571,7 @@ details.setup[open]>summary::before{content:"▾ ";}
       ${line.dstText ? `<div class="sub-dst" ${isErr ? 'style="color:var(--up)"' : ""}>${esc(line.dstText)}</div>` : ""}`;
     roll.appendChild(div);
     roll.scrollTop = roll.scrollHeight;
+    return div;
   }
 
   /* ─────────── 리캡 ─────────── */
@@ -611,6 +705,102 @@ details.setup[open]>summary::before{content:"▾ ";}
     $("engineTag").textContent = "번역: Grok · " + m;
   }
 
+  /* ─────────── 한글 자막 위젯 (PiP 우선 · 오버레이 폴백 · 2줄 fade) ─────────── */
+  const Widget = (function () {
+    let win = null;      // Document Picture-in-Picture 창(없으면 null)
+    let host = null;     // 오버레이 컨테이너(폴백 시)
+    let stack = null;    // 자막 줄이 쌓이는 컨테이너
+    let overlay = false; // 오버레이 모드 여부
+    let items = [];      // 현재 살아있는 줄 엘리먼트(최대 2)
+    const cfg = { bg: LS.get("translate.wbg", "#000000"), fg: LS.get("translate.wfg", "#ffe14d") };
+
+    function pipStyle() {
+      return `:root{--wbg:${cfg.bg};--wfg:${cfg.fg};}
+html,body{margin:0;height:100%;background:var(--wbg);overflow:hidden;font-family:'Pretendard Variable','Apple SD Gothic Neo',sans-serif;}
+#wstack{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:20px 24px;box-sizing:border-box;}
+.wline{color:var(--wfg);font-size:36px;font-weight:800;line-height:1.28;letter-spacing:-.5px;text-shadow:0 2px 10px rgba(0,0,0,.65);opacity:1;transform:translateY(0);transition:opacity .4s ease,transform .4s ease;word-break:keep-all;}
+.wline.fade{opacity:0;transform:translateY(-14px);}`;
+    }
+
+    function setBtn(on) {
+      const b = $("wToggle"); if (!b) return;
+      b.textContent = on ? "🪟 위젯 끄기" : "🪟 위젯";
+      b.classList.toggle("ok", on);
+    }
+
+    function buildOverlay() {
+      const st = document.createElement("style");
+      st.id = "wOverlayStyle";
+      st.textContent = `#wOverlay{--wbg:${cfg.bg};--wfg:${cfg.fg};position:fixed;left:50%;bottom:24px;transform:translateX(-50%);width:min(780px,92vw);z-index:99999;background:var(--wbg);border-radius:16px;box-shadow:0 12px 44px rgba(0,0,0,.55);overflow:hidden;}
+#wOverlay #wstack{position:relative;min-height:130px;display:flex;flex-direction:column;justify-content:flex-end;gap:9px;padding:20px 24px;box-sizing:border-box;}
+#wOverlay .wline{color:var(--wfg);font-size:31px;font-weight:800;line-height:1.28;letter-spacing:-.5px;text-shadow:0 2px 10px rgba(0,0,0,.5);opacity:1;transform:translateY(0);transition:opacity .4s ease,transform .4s ease;word-break:keep-all;}
+#wOverlay .wline.fade{opacity:0;transform:translateY(-14px);}
+#wOverlay .wx{position:absolute;top:7px;right:9px;background:rgba(0,0,0,.4);color:#fff;border:none;border-radius:7px;padding:2px 9px;cursor:pointer;font-size:14px;font-weight:800;z-index:2;}`;
+      document.head.appendChild(st);
+      const h = document.createElement("div"); h.id = "wOverlay";
+      const x = document.createElement("button"); x.className = "wx"; x.textContent = "✕"; x.onclick = close;
+      const s = document.createElement("div"); s.id = "wstack";
+      h.appendChild(x); h.appendChild(s);
+      document.body.appendChild(h);
+      return { host: h, stack: s };
+    }
+
+    async function openPiP() {
+      const w = await window.documentPictureInPicture.requestWindow({ width: 540, height: 210 });
+      const st = w.document.createElement("style"); st.textContent = pipStyle();
+      w.document.head.appendChild(st);
+      const s = w.document.createElement("div"); s.id = "wstack";
+      w.document.body.appendChild(s);
+      w.addEventListener("pagehide", () => { win = null; stack = null; items = []; setBtn(false); });
+      return { win: w, stack: s };
+    }
+
+    async function open() {
+      if (stack) return;
+      items = [];
+      if (window.documentPictureInPicture) {
+        try { const r = await openPiP(); win = r.win; stack = r.stack; overlay = false; setBtn(true); return; }
+        catch (e) { /* PiP 실패 → 오버레이 폴백 */ }
+      }
+      const r = buildOverlay(); host = r.host; stack = r.stack; overlay = true; setBtn(true);
+    }
+
+    function close() {
+      if (win) { try { win.close(); } catch {} }
+      if (host && host.parentNode) host.remove();
+      const os = document.getElementById("wOverlayStyle"); if (os) os.remove();
+      win = null; host = null; stack = null; items = []; overlay = false;
+      setBtn(false);
+    }
+
+    function toggle() { if (stack) close(); else open(); }
+
+    function newLine() {
+      if (!stack) return { setText() {}, finalize() {} };
+      const doc = win ? win.document : document;
+      const el = doc.createElement("div");
+      el.className = "wline"; el.textContent = "…";
+      stack.appendChild(el);
+      items.push(el);
+      // 3줄째가 들어오면 가장 오래된 줄을 fade-out 후 제거 → 항상 2줄 유지
+      while (items.length > 2) {
+        const old = items.shift();
+        old.classList.add("fade");
+        setTimeout(() => { if (old.parentNode) old.remove(); }, 430);
+      }
+      return { setText(t) { el.textContent = t; }, finalize() {} };
+    }
+
+    function setColors(bg, fg) {
+      cfg.bg = bg; cfg.fg = fg;
+      LS.set("translate.wbg", bg); LS.set("translate.wfg", fg);
+      if (win) { const r = win.document.documentElement; r.style.setProperty("--wbg", bg); r.style.setProperty("--wfg", fg); }
+      if (overlay && host) { host.style.setProperty("--wbg", bg); host.style.setProperty("--wfg", fg); }
+    }
+
+    return { toggle, newLine, setColors, getBg: () => cfg.bg, getFg: () => cfg.fg };
+  })();
+
   /* ─────────── 컨트롤 배선 ─────────── */
   function wireControls() {
     $("capHost").onclick = () => { if (state.pipelines.host && state.pipelines.host.active) { stopPipeline(state.pipelines.host); state.pipelines.host = null; $("capHostState").textContent = "미연결"; $("capHost").textContent = "🎤 마이크 시작"; refreshCapPill(); } else startHost(); };
@@ -624,6 +814,10 @@ details.setup[open]>summary::before{content:"▾ ";}
       $("grokKey").value = "";
     };
     $("grokModel").oninput = () => { LS.set("translate.grokModel", ($("grokModel").value || "").trim()); updateEngineTag(); };
+    $("wToggle").onclick = () => Widget.toggle();
+    $("wBg").value = Widget.getBg(); $("wFg").value = Widget.getFg();
+    $("wBg").oninput = () => Widget.setColors($("wBg").value, $("wFg").value);
+    $("wFg").oninput = () => Widget.setColors($("wBg").value, $("wFg").value);
     $("addTerm").onclick = () => { state.glossary.push({ term: "", fixedTranslation: "" }); saveGlossary(); renderGlossary(); };
     $("clearRoll").onclick = () => { state.lines = []; state.utt = 0; $("statUtt").textContent = "0"; $("subRoll").innerHTML = `<div class="hint">비워졌습니다.</div>`; };
     $("dlLog").onclick = () => download("ama-log-" + Date.now() + ".txt", logText(), "text/plain;charset=utf-8");
@@ -640,6 +834,7 @@ details.setup[open]>summary::before{content:"▾ ";}
     $("grokKey").value = getKey();
     // 설정 프리필 + 지속
     const gm = LS.get("translate.grokModel", null); if (gm) $("grokModel").value = gm;
+    bindPersist("liveModel", "translate.liveModel");
     bindPersist("targetLang", "translate.targetLang", "change");
     bindPersist("modeHint", "translate.modeHint");
     bindPersist("hostName", "translate.hostName");
