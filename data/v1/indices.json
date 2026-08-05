@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-08-06T04:59:43+09:00",
-  "run_id": "1785959991",
-  "status": "ok",
+  "generated_at": "2026-08-06T05:02:27+09:00",
+  "run_id": "1785960181",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -10,12 +10,12 @@
       "symbol": "^GSPC",
       "group": "주가지수",
       "unit": "",
-      "price": 7725.23,
+      "price": 7723.42,
       "prev_close": 7600.5,
-      "change": 124.72999999999956,
-      "change_pct": 1.641076244983877,
+      "change": 122.92000000000007,
+      "change_pct": 1.61726202223538,
       "currency": "USD",
-      "market_time": 1785959984
+      "market_time": 1785960157
     },
     {
       "name": "나스닥",
@@ -27,19 +27,20 @@
       "change": 458.03600000000006,
       "change_pct": 1.7675301672075605,
       "currency": "USD",
-      "market_time": 1785959984
+      "market_time": 1785959984,
+      "stale": true
     },
     {
       "name": "다우존스",
       "symbol": "^DJI",
       "group": "주가지수",
       "unit": "",
-      "price": 54347.43,
+      "price": 54348.94,
       "prev_close": 53178.41,
-      "change": 1169.0199999999968,
-      "change_pct": 2.1982981439272002,
+      "change": 1170.5299999999988,
+      "change_pct": 2.201137642137098,
       "currency": "USD",
-      "market_time": 1785959986
+      "market_time": 1785960175
     },
     {
       "name": "미 3개월물(T-Bill)",
@@ -94,48 +95,48 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 99.716,
+      "price": 99.71,
       "prev_close": 99.89,
-      "change": -0.1740000000000066,
-      "change_pct": -0.17419161077185563,
+      "change": -0.18000000000000682,
+      "change_pct": -0.18019821803985067,
       "currency": "USD",
-      "market_time": 1785959389
+      "market_time": 1785959570
     },
     {
       "name": "VIX 변동성",
       "symbol": "^VIX",
       "group": "매크로",
       "unit": "",
-      "price": 15.49,
+      "price": 15.48,
       "prev_close": 16.5,
-      "change": -1.0099999999999998,
-      "change_pct": -6.121212121212119,
+      "change": -1.0199999999999996,
+      "change_pct": -6.181818181818179,
       "currency": "USD",
-      "market_time": 1785959086
+      "market_time": 1785959266
     },
     {
       "name": "금",
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 4309.0,
+      "price": 4308.9,
       "prev_close": 4095.4,
-      "change": 213.5999999999999,
-      "change_pct": 5.215607755042241,
+      "change": 213.49999999999955,
+      "change_pct": 5.2131659911119685,
       "currency": "USD",
-      "market_time": 1785959390
+      "market_time": 1785959572
     },
     {
       "name": "WTI 유가",
       "symbol": "CL=F",
       "group": "원자재",
       "unit": "",
-      "price": 75.12,
+      "price": 75.04,
       "prev_close": 75.77,
-      "change": -0.6499999999999915,
-      "change_pct": -0.8578593110729729,
+      "change": -0.7299999999999898,
+      "change_pct": -0.9634419955127224,
       "currency": "USD",
-      "market_time": 1785959385
+      "market_time": 1785959577
     },
     {
       "name": "코스피",
@@ -162,5 +163,7 @@
       "market_time": "2026-08-05T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "나스닥(^IXIC): Remote end closed connection without response"
+  ]
 }
