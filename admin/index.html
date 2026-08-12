@@ -406,8 +406,8 @@ html{background:#0a0c10;}</style></head>
   <a href="/charts"><span class="ic">🕯️</span>주요자산차트</a>
   <a href="/kr-exchange/"><span class="ic">🏦</span>K-거래소 현황</a>
   <div class="ddiv"></div>
-  <a class="sub" href="/airdrop"><span class="ic">🎉</span>이벤트·당첨</a>
-  <a class="sub" href="/airdrop">에어드랍</a><a class="sub on" href="/admin">관리자</a>
+  <a class="sub" href="/airdrop"><span class="ic">🪂</span>에어드랍 이벤트</a>
+  <a class="sub" href="/winners/"><span class="ic">🏆</span>결과·당첨자 확인</a><a class="sub on" href="/admin">관리자</a>
   <a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>
 </aside>
   <div class="nav">
@@ -431,7 +431,7 @@ html{background:#0a0c10;}</style></head>
       <div class="seclabel">관리자 패널 <span class="dim-sm">· 운영진 전용</span></div>
       <div class="card admin-open" id="adminCard">
         <div class="adm-toggle" id="admToggle">
-          <span class="tit">방문 통계 · 미션 등록 · 미션 관리 · TOP 100 검증 · 가중 추첨 · 제출 검토</span>
+          <span class="tit">방문 통계</span>
           <span class="adm-chev">▼</span>
         </div>
         <div class="adm-wrap">
@@ -439,51 +439,8 @@ html{background:#0a0c10;}</style></head>
             <div class="admin-h">방문 통계 <span class="dim-sm">· 운영진 전용</span></div>
             <div class="vstats" id="visitStats"><div class="loading">로드 중...</div></div>
           </div>
-
-          <div style="margin-top:20px;">
-            <div class="admin-h">미션 등록</div>
-            <form id="taskForm" class="admin-form">
-              <div class="af-row">
-                <div class="field"><label>제목 *</label><input type="text" id="f_title" placeholder="예) X 팔로우 + 리트윗"></div>
-                <div class="field"><label>인증 방식</label><select id="f_verify"><option value="capture">캡쳐 제출</option><option value="onchain">온체인 자동확인</option><option value="telegram">텔레그램 자동확인</option></select></div>
-              </div>
-              <div class="field"><label>설명</label><input type="text" id="f_desc" placeholder="한 줄 설명"></div>
-              <div class="field"><label>참여 단계 (줄바꿈 가능)</label><textarea id="f_steps" placeholder="1. X 계정 팔로우&#10;2. 지정 트윗 리트윗&#10;3. 완료 화면 스크린샷 첨부"></textarea></div>
-              <div class="af-row">
-                <div class="field"><label>작업 링크</label><input type="text" id="f_link" placeholder="https://..."></div>
-                <div class="field"><label>리워드 표기</label><input type="text" id="f_reward" placeholder="응모권 +5장"></div>
-              </div>
-              <div class="af-row">
-                <div class="field"><label>카테고리 (선택)</label><input type="text" id="f_cat" placeholder="예) 소셜 / 테스트넷"></div>
-                <div class="field"><label>sort_order</label><input type="number" id="f_sort" value="0"></div>
-              </div>
-              <div class="field"><label>종료 일시 (선택)</label><input type="datetime-local" id="f_ends"></div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-                <button class="btn-sub" type="submit" id="taskSubmit">미션 등록</button>
-                <button class="btn-ghost" type="button" id="taskCancel" style="display:none;">수정 취소</button>
-              </div>
-            </form>
-          </div>
-
-          <div style="margin-top:20px;">
-            <div class="admin-h">진행중 미션 관리 <span id="mgmtCount" class="dim-sm"></span></div>
-            <div id="manageWrap"><div class="loading">로드 중...</div></div>
-          </div>
-
-          <div style="margin-top:20px;">
-            <div class="admin-h">가중 추첨 <span id="lotCount" class="dim-sm"></span></div>
-            <div id="lotteryWrap"><div class="loading">로드 중...</div></div>
-          </div>
-
-          <div style="margin-top:20px;">
-            <div class="admin-h">TOP 100 자동 적격 판정 <span id="auditCount" class="dim-sm"></span></div>
-            <div id="auditWrap"><div class="loading">로드 중...</div></div>
-          </div>
-
-          <div style="margin-top:20px;">
-            <div class="admin-h">제출 검토 <span id="revCount" class="dim-sm"></span></div>
-            <div id="revList"><div class="loading">로드 중...</div></div>
-          </div>
+          <!-- 미션 등록·미션 관리·가중 추첨·TOP 100 검증·제출 검토는 2026-08 미션 인증/주간 추첨 폐지로 제거했습니다.
+               과거 데이터(airdrop_tasks/airdrop_submissions/raffle_winners)는 삭제하지 않고 보존합니다. -->
         </div>
       </div>
 
@@ -517,7 +474,7 @@ html{background:#0a0c10;}</style></head>
 <div class="toast" id="toast"></div>
 <script src="/assets/vendor/supabase.js"></script>
 <script src="/assets/auth.js?v=4"></script>
-<script src="/assets/admin.js?v=13"></script>
+<script src="/assets/admin.js?v=14"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js?v=2"></script>
 </body></html>

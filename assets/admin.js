@@ -1528,11 +1528,8 @@
     }
     wrap.style.display = "";
     if (gate) gate.style.display = "none";
+    // 미션 관리·가중 추첨·TOP100 판정·제출 검토는 미션 인증/주간 추첨 폐지(2026-08)로 제거했습니다.
     renderAdminSection("visit stats", renderVisitStats);
-    renderAdminSection("mission manage", renderManage);
-    renderAdminSection("lottery", renderLottery);
-    renderAdminSection("top 100 audit", renderAudit);
-    renderAdminSection("review", renderReview);
     renderAdminSection("event winners", renderEventWinners);
   }
   const normHandle = (v) => (v || "").trim().replace(/^@+/, "");
@@ -1589,13 +1586,7 @@
     }
   }
   function renderAll() {
-    renderProfile();
-    renderCheckin();
-    renderTickets();
-    renderTasks();
-    renderLeaderboard();
-    renderAirdropEvents();
-    renderWinners();
+    // 관리자 페이지에 남은 것은 방문 통계 + 이벤트 당첨자 관리뿐입니다.
     renderAdmin();
   }
 
@@ -2079,10 +2070,8 @@
       await loadAuth();
       if (my !== bootToken) return;
       renderAll();
-      await Promise.allSettled([loadTasks(), loadWinners(), loadLeaderboard()]);
-      if (my !== bootToken) return;
-      renderAll();
-      await Promise.allSettled([loadMySubs(), loadCheckins(), loadAllSubs(), loadEntrants(), loadWallets(), loadVisitStats(), loadEventWinners()]);
+      // 미션/체크인/응모권 관련 로더는 폐지 섹션 전용이라 더 이상 호출하지 않습니다(불필요 쿼리·egress 제거).
+      await Promise.allSettled([loadWallets(), loadVisitStats(), loadEventWinners()]);
       if (my !== bootToken) return;
       renderAll();
       // 관리자: 실시간 방문 통계 30초마다 갱신
@@ -2109,64 +2098,31 @@
         }, 1800);
       }
     } catch (err) {
-      console.warn("[airdrop] boot failed", err);
+      console.warn("[admin] boot failed", err);
       if (my !== bootToken) return;
-      state._tasksErr = state._tasksErr || errText(err);
-      state.tasksLoaded = true;
       renderAll();
     }
   }
 
   function init() {
-    if ($("profileHead")) {
-      const toggleProfile = () => {
-        const open = $("profileCard").classList.toggle("expanded");
-        $("profileHead").setAttribute("aria-expanded", open ? "true" : "false");
-      };
-      $("profileHead").onclick = toggleProfile;
-      $("profileHead").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleProfile(); } });
-    }
-    if ($("subForm")) $("subForm").onsubmit = submitProof;
-    if ($("subClose")) $("subClose").onclick = closeSubModal;
-    if ($("subModal")) $("subModal").addEventListener("click", (e) => { if (e.target === $("subModal")) closeSubModal(); });
-    if ($("subFile")) $("subFile").onchange = () => {
-      const f = $("subFile").files[0]; const p = $("subPreview");
-      if (!f) { p.innerHTML = ""; return; }
-      if (!f.type.startsWith("image/")) { p.innerHTML = `<div class="err" style="margin-top:8px;">이미지 파일만 가능합니다.</div>`; return; }
-      p.innerHTML = `<img src="${URL.createObjectURL(f)}" alt="" style="max-height:140px;border-radius:10px;border:1px solid var(--line);margin-top:8px;display:block;">`;
-    };
-    if ($("taskForm")) $("taskForm").onsubmit = submitTask;
-    if ($("taskCancel")) $("taskCancel").onclick = cancelEdit;
     if ($("ewForm")) $("ewForm").onsubmit = submitEventWinner;
     if ($("ewCancel")) $("ewCancel").onclick = resetEventWinnerEdit;
     if ($("admToggle")) $("admToggle").onclick = () => $("adminCard").classList.toggle("admin-open");
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("subModal") && $("subModal").classList.contains("on")) closeSubModal(); });
     state.sb.auth.onAuthStateChange((event, session) => {
-      // 이벤트가 주는 세션을 직접 반영(getSession 경합에 의존하지 않음) → 로그인 즉시 인증 뷰로.
+      // 이벤트가 주는 세션을 직접 반영(getSession 경합에 의존하지 않음) → 로그인 즉시 관리자 뷰로.
       if (session && session.user) { state.user = session.user; state.uid = session.user.id; }
       else if (event === "SIGNED_OUT") { state.user = null; state.uid = null; }
-      // ⚠️ 콜백 안에서 boot()(→getSession/쿼리)를 직접 await 경로에 태우면 navigator.locks 데드락
-      // → 이후 모든 getSession 타임아웃 → "네비=로그인, 체크인=재로그인" 어긋남. setTimeout으로 락 해제 후 실행.
+      // ⚠️ 콜백 안에서 boot()(→getSession/쿼리)를 직접 await 경로에 태우면 navigator.locks 데드락. setTimeout으로 락 해제 후 실행.
       setTimeout(boot, 0);
     });
-    tickCountdown();
-    clearInterval(state._clock);
-    state._clock = setInterval(tickCountdown, 1000);
     boot();
   }
 
   let tries = 0;
   renderAll();
-  tickCountdown();
-  loadAirdropEvents();
   (function waitForSb() {
     if (window.__sb) { state.sb = window.__sb; init(); return; }
-    if (tries++ > 40) {
-      state._tasksErr = "인증 모듈을 불러오지 못했습니다. 새로고침해 주십시오.";
-      state.tasksLoaded = true;
-      renderAll();
-      return;
-    }
+    if (tries++ > 40) { renderAll(); return; }
     setTimeout(waitForSb, 150);
   })();
 })();

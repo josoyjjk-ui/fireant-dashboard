@@ -1,26 +1,18 @@
--- 주간 응모권 랭킹 (공개 RPC)
--- 데일리 체크인 폐지(2026-08-12)로 streak_leaderboard 의 기준(출석 스트릭)이 사라져 이를 대체합니다.
--- tickets = 이번 주(KST 월~일) 승인된 미션 인증 건수 * 5
--- 노출 항목은 streak_leaderboard 와 동일 수준(닉네임 + 집계값)이며 연락처·이메일은 반환하지 않습니다.
-CREATE OR REPLACE FUNCTION public.ticket_leaderboard(p_limit integer DEFAULT 10)
-RETURNS TABLE(user_id uuid, nickname text, missions integer, tickets integer)
-LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO 'public'
-AS $function$
-  WITH wk AS (
-    SELECT date_trunc('week', (now() AT TIME ZONE 'Asia/Seoul'))::date AS s
-  ),
-  agg AS (
-    SELECT s.user_id AS uid, count(*)::int AS m
-    FROM airdrop_submissions s, wk
-    WHERE s.status = 'approved'
-      AND s.created_at >= (wk.s::timestamp AT TIME ZONE 'Asia/Seoul')
-      AND s.created_at <  ((wk.s + 7)::timestamp AT TIME ZONE 'Asia/Seoul')
-    GROUP BY s.user_id
-  )
-  SELECT agg.uid, p.nickname, agg.m, (agg.m * 5)::int
-  FROM agg LEFT JOIN profiles p ON p.id = agg.uid
-  ORDER BY agg.m DESC, agg.uid
-  LIMIT GREATEST(1, p_limit);
-$function$;
-
-GRANT EXECUTE ON FUNCTION public.ticket_leaderboard(integer) TO anon, authenticated;
+-- [폐기됨 2026-08-12] 주간 응모권 랭킹 공개 RPC
+--
+-- 미션 인증 / 주간 응모권 추첨을 폐지하면서 이 함수는 DROP 했습니다.
+-- 폐기 사유
+--   1) 호출부(/winners 리더보드 탭)가 제거되어 더 이상 쓰이지 않습니다.
+--   2) p_limit 상한이 없어 큰 값을 넣으면 해당 주 인증자 전원의 user_id·닉네임·집계값이 통째로 반환됐습니다.
+--
+-- 실제 적용된 마이그레이션: retire_mission_verification_and_weekly_raffle
+--   update airdrop_tasks set status = 'ended' where status = 'active';
+--   drop function if exists public.ticket_leaderboard(integer);
+--
+-- 미션 인증 INSERT 차단 방식
+--   airdrop_submissions 의 subs_insert_own 정책이 'active' 상태 미션을 요구합니다.
+--   따라서 진행중 미션을 모두 ended 로 내리는 것만으로 신규 인증이 DB 레벨에서 막힙니다.
+--   기존 제출 기록(airdrop_submissions 6,207건)과 주간 당첨 기록(raffle_winners 97건)은 보존했습니다.
+--
+-- 되돌리려면 git 이력에서 이 파일의 이전 버전(CREATE OR REPLACE FUNCTION ...)을 복원한 뒤
+-- 필요한 미션의 status 를 'active' 로 되돌리십시오.

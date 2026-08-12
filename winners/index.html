@@ -1,7 +1,7 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🏆 결과 · 리더보드 · 당첨자 | 개미투자정보</title>
+<title>🏆 이벤트 결과 · 당첨자 확인 | 개미투자정보</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
-<meta name="description" content="ANTINFO 이벤트 결과·리더보드·당첨자 확인을 한 페이지에서. 이벤트별 당첨 명단, 주간 추첨 결과, 응모권 랭킹을 탭으로 전환해 확인하십시오.">
+<meta name="description" content="ANTINFO 이벤트 결과·당첨자 확인을 한 페이지에서. 이벤트별 당첨 명단과 지난 캠페인 기록을 탭으로 전환해 확인하십시오.">
 <link rel="canonical" href="https://antinfo.io/winners/">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;}
@@ -104,6 +104,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .lb-row.top3{background:linear-gradient(135deg,#241b14,#13161c);border-color:#33271c;}
 .lb-row.hit{border-color:var(--accent2);box-shadow:0 0 0 1px rgba(255,181,71,.25);}
 .ck-h{font-size:15px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.endedtag{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:20px;background:#1a1f28;color:var(--dim);}
 
 /* ── 당첨자 ── */
 .wrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px;border-bottom:1px solid var(--line);font-size:13px;}
@@ -151,8 +152,8 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   <a href="/charts"><span class="ic">🕯️</span>주요자산차트</a>
   <a href="/kr-exchange/"><span class="ic">🏦</span>K-거래소 현황</a>
   <div class="ddiv"></div>
-  <a class="sub" href="/airdrop"><span class="ic">🪂</span>에어드랍 미션</a>
-  <a class="sub on" href="/winners/"><span class="ic">🏆</span>결과·리더보드·당첨자</a>
+  <a class="sub" href="/airdrop"><span class="ic">🪂</span>에어드랍 이벤트</a>
+  <a class="sub on" href="/winners/"><span class="ic">🏆</span>결과·당첨자 확인</a>
   <a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>
 </aside>
 <div class="nav">
@@ -169,18 +170,18 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   <span id="authSlot" data-mobile="0" style="display:inline-flex;align-items:center;gap:8px;margin-right:8px;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button></span><script>(function(){try{var h=localStorage.getItem("antinfo_navauth");if(!h)return;if(h.indexOf("logoutBtn")>-1){var tok=false;for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf("sb-")===0&&k.indexOf("-auth-token")>-1){tok=true;break;}}if(!tok){localStorage.removeItem("antinfo_navauth");return;}}var s=document.getElementById("authSlot");if(s)s.innerHTML=h;}catch(e){}})();</script><a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
 </div>
 <div class="main">
-  <div class="head"><h1>🏆 결과 · 리더보드 · 당첨자</h1>
-    <div class="sub">이벤트 결과 · 리더보드 · 당첨자 확인을 <b style="color:var(--accent2)">한 페이지</b>에서 확인하십시오. 아래 탭으로 전환됩니다.</div></div>
+  <div class="head"><h1>🏆 이벤트 결과 · 당첨자</h1>
+    <div class="sub">이벤트 결과와 당첨자 확인을 <b style="color:var(--accent2)">한 페이지</b>에서 확인하십시오. 아래 탭으로 전환됩니다.</div></div>
 
   <div class="searchbar">
     <input id="globalSearch" placeholder="🔍 내 핸들·닉네임 검색 — 3개 탭 전체에서 한 번에 찾습니다" oninput="filterAll()">
-    <div class="searchhint">💡 검색하면 이벤트 결과 · 리더보드 · 당첨자 명단에서 일치하는 항목만 자동으로 펼쳐집니다.</div>
+    <div class="searchhint">💡 검색하면 이벤트 결과 · 당첨자 명단 · 지난 기록에서 일치하는 항목만 자동으로 펼쳐집니다.</div>
   </div>
 
   <div class="tabbar" id="tabbar">
     <button class="on" data-pane="p1" type="button">🏅 이벤트 결과</button>
-    <button data-pane="p2" type="button">🔥 리더보드</button>
     <button data-pane="p3" type="button">🎁 당첨자 확인</button>
+    <button data-pane="p2" type="button">📦 지난 기록</button>
   </div>
 
   <!-- ── 탭1: 이벤트 결과 ── -->
@@ -205,29 +206,23 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
     <div class="evgrid" id="timelineBody"><div class="loading">불러오는 중…</div></div>
   </div>
 
-  <!-- ── 탭2: 리더보드 ── -->
+  <!-- ── 탭2: 지난 기록(종료된 프로그램 아카이브) ── -->
   <div class="pane" id="p2">
-    <div class="row r2">
-      <div class="card">
-        <div class="ck-h">🎟️ 이번 주 응모권 랭킹 <span class="dim-sm">· 미션 인증 기준 · TOP 10</span></div>
-        <div id="ticketLbBody"><div class="loading">불러오는 중…</div></div>
-      </div>
-      <div class="card">
-        <div class="ck-h" id="inviteHead">🔥 친구초대 랭킹 <span class="dim-sm">· 불러오는 중</span></div>
-        <div id="inviteLbBody"><div class="loading">불러오는 중…</div></div>
-      </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="ck-h" id="raffle">🎲 주간 추첨 당첨자 <span class="dim-sm" id="raffleSub"></span><span class="endedtag">종료된 프로그램</span></div>
+      <div id="raffleBody"><div class="loading">불러오는 중…</div></div>
     </div>
-    <div class="notebox">📌 응모권 랭킹은 <b>이번 주(월~일 KST)</b> 승인된 미션 인증 건수 × 5장 기준입니다. 매주 일요일 자정에 마감·초기화됩니다.</div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="ck-h" id="inviteHead">🔥 친구초대 랭킹 <span class="dim-sm">· 불러오는 중</span></div>
+      <div id="inviteLbBody"><div class="loading">불러오는 중…</div></div>
+    </div>
+    <div class="notebox">📌 주간 응모권 추첨과 친구초대 캠페인은 <b>모두 종료</b>되었습니다. 지난 당첨 기록은 조회용으로 계속 보존합니다.</div>
   </div>
 
   <!-- ── 탭3: 당첨자 확인 ── -->
   <div class="pane" id="p3">
-    <div class="card" style="margin-top:16px;">
-      <div class="ck-h" id="raffle">🎁 최근 주간 추첨 당첨자 <span class="dim-sm" id="raffleSub"></span></div>
-      <div id="raffleBody"><div class="loading">불러오는 중…</div></div>
-    </div>
-
-    <div class="seclabel" id="events">🏅 이벤트 당첨자 <span class="dim-sm" id="eventsSub">· 이벤트별 명단</span></div>
+    <div class="seclabel" id="events" style="margin-top:16px;">🏅 이벤트 당첨자 <span class="dim-sm" id="eventsSub">· 이벤트별 명단</span></div>
     <div class="evgrid" id="eventsBody"><div class="loading">불러오는 중…</div></div>
     <div class="notebox">📌 당첨자는 <b>확정 명단만</b> 게시합니다. 응모풀 재추첨·재현은 하지 않습니다. 연락처는 비공개입니다.</div>
   </div>
@@ -256,8 +251,11 @@ function latestRafflePublishRows(rows){
   return list.filter(w=>Date.parse(w.created_at||'')===latest);
 }
 
-let raffleData=[], eventData=[], ticketLb=[], inviteLb=[], inviteMeta=null, evTimeline=[], evFilter='all';
+let raffleData=[], eventData=[], inviteLb=[], inviteMeta=null, evTimeline=[], evFilter='all';
 let curQuery='';
+// 당첨자 검색은 텔레그램·트위터 핸들을 모두 대상으로 한다(텔레그램만 보면 X 핸들 보유자가 안 잡힘).
+const winnerHandles = w => [w.telegram, w.twitter].filter(Boolean).map(norm);
+const winnerHit = (w,q) => !!q && winnerHandles(w).some(h=>h.includes(q));
 
 /* ══════════ 탭 전환 ══════════ */
 function showPane(id,scroll){
@@ -341,7 +339,7 @@ function renderResults(filter){
   let html='';
   names.forEach(name=>{
     const list=by[name];
-    const hits=filter?list.filter(w=>norm(w.telegram||w.twitter||'').includes(filter)).length:0;
+    const hits=filter?list.filter(w=>winnerHit(w,filter)).length:0;
     if(filter&&!hits)return;
     const tiers={};
     list.forEach(w=>{ const t=w.tier||'🎁 균등보상'; tiers[t]=(tiers[t]||0)+1; });
@@ -383,33 +381,6 @@ function renderStats(){
   document.getElementById('stWinners').textContent=eventData.length.toLocaleString();
 }
 
-/* ══════════ 탭2: 응모권 랭킹 ══════════ */
-async function loadTicketLb(){
-  const el=document.getElementById('ticketLbBody');
-  if(!sb){el.innerHTML='<div class="err">데이터 연결 실패</div>';return;}
-  try{
-    const {data,error}=await timeout(sb.rpc('ticket_leaderboard',{p_limit:10}));
-    if(error)throw error;
-    ticketLb=(data||[]).map(r=>({name:r.nickname||'익명',missions:r.missions||0,tickets:r.tickets||0}));
-    renderTicketLb(curQuery);
-  }catch(e){el.innerHTML='<div class="err">응모권 랭킹을 불러오지 못했습니다.</div>';}
-}
-function renderTicketLb(filter){
-  const el=document.getElementById('ticketLbBody');
-  if(!ticketLb.length){el.innerHTML='<div class="empty">이번 주 미션 인증 기록이 아직 없습니다.</div>';return;}
-  let html='',shown=0;
-  ticketLb.forEach((r,i)=>{
-    const hit=filter&&norm(r.name).includes(filter);
-    if(filter&&!hit)return;
-    shown++;
-    const rank=i<3?MEDALS[i]:(i+1);
-    const cls='lb-row'+(i===0?' top1':i===1?' top2':i===2?' top3':'')+(hit?' hit':'');
-    html+=`<div class="${cls}"><div class="lb-rank">${rank}</div><div class="lb-name">${esc(r.name)}님</div><div class="lb-days"><b>${r.tickets}</b>장 <span class="dim-sm">· ${r.missions}건</span></div></div>`;
-  });
-  el.innerHTML=html||'<div class="empty">응모권 랭킹에서 일치하는 닉네임이 없습니다.</div>';
-  if(filter&&!shown)el.innerHTML='<div class="empty">응모권 랭킹에서 일치하는 닉네임이 없습니다.</div>';
-}
-
 /* ══════════ 탭2: 친구초대 랭킹 (leaderboard.json) ══════════ */
 async function loadInviteLb(){
   const el=document.getElementById('inviteLbBody');
@@ -441,7 +412,7 @@ function renderInviteLb(filter){
   }).join('') + `<div class="dim-sm" style="margin-top:9px;">📦 종료된 캠페인 기록입니다. 전체 순위는 <a href="/leaderboard/">리더보드 페이지</a>에서 확인하십시오.</div>`;
 }
 
-/* ══════════ 탭3: 주간 추첨 당첨자 ══════════ */
+/* ══════════ 탭2: 주간 추첨 당첨자(종료된 프로그램 · 기록 보존) ══════════ */
 async function loadRaffle(){
   const el=document.getElementById('raffleBody');
   if(!sb){el.innerHTML='<div class="err">데이터 연결 실패</div>';return;}
@@ -554,7 +525,8 @@ function renderEventWinners(filter){
       const members=tiers[t];
       const chips=members.map(w=>{
         const h=w.telegram||w.twitter||'';
-        const hit = filter && norm(h).includes(filter);
+        // 텔레그램·트위터 둘 다 대조 — 표시는 대표 핸들 하나지만 검색은 양쪽 모두 잡아야 한다.
+        const hit = winnerHit(w,filter);
         if(hit)hitCount++;
         return {h,hit};
       });
@@ -572,35 +544,40 @@ function renderEventWinners(filter){
 }
 
 /* ══════════ 통합 검색 ══════════ */
+// 탭 순서가 바뀌어도 어긋나지 않도록 인덱스가 아닌 pane id 로 집계한다.
+// p1(이벤트 결과)은 "일치 이벤트 수", p3(당첨자)·p2(지난 기록)는 "일치 인원 수" 기준이다.
 function countHits(q){
-  if(!q)return [0,0,0];
-  const h1=Object.values(groupWinnersByEvent()).filter(l=>l.some(w=>norm(w.telegram||w.twitter||'').includes(q))).length;
-  const h2=ticketLb.filter(r=>norm(r.name).includes(q)).length
-          +inviteLb.filter(r=>norm(r.username).includes(q)||norm(r.first_name).includes(q)).length;
-  const h3=raffleData.filter(w=>norm(raffleName(w)).includes(q)).length
-          +eventData.filter(w=>norm(w.telegram||w.twitter||'').includes(q)).length;
-  return [h1,h2,h3];
+  if(!q)return {p1:0,p2:0,p3:0};
+  return {
+    p1: Object.values(groupWinnersByEvent()).filter(l=>l.some(w=>winnerHit(w,q))).length,
+    p2: raffleData.filter(w=>norm(raffleName(w)).includes(q)).length
+       +inviteLb.filter(r=>norm(r.username).includes(q)||norm(r.first_name).includes(q)).length,
+    p3: eventData.filter(w=>winnerHit(w,q)).length,
+  };
 }
 function filterAll(){
   curQuery=norm(document.getElementById('globalSearch').value);
   renderResults(curQuery);
-  renderTicketLb(curQuery);
   renderInviteLb(curQuery);
   renderRaffle(curQuery);
   renderEventWinners(curQuery);
   const hits=countHits(curQuery);
-  document.querySelectorAll('#tabbar button').forEach((b,i)=>{
+  document.querySelectorAll('#tabbar button').forEach(b=>{
     const old=b.querySelector('.hits'); if(old)old.remove();
-    if(curQuery&&hits[i]>0){const s=document.createElement('span');s.className='hits';s.textContent=hits[i];b.appendChild(s);}
+    const n=hits[b.dataset.pane]||0;
+    if(curQuery&&n>0){const s=document.createElement('span');s.className='hits';s.textContent=n;b.appendChild(s);}
   });
 }
 
 /* ══════════ init ══════════ */
 (function(){
   const h=(location.hash||'').replace('#','');
-  if(['p1','p2','p3'].includes(h)) showPane(h,false);
+  // 과거 공지에 뿌린 옛 앵커(#raffle/#lb/#events)도 새 탭으로 연결한다.
+  const LEGACY={raffle:'p2',lb:'p2',events:'p3',winners:'p3',results:'p1'};
+  const pane=['p1','p2','p3'].includes(h)?h:LEGACY[h];
+  if(pane) showPane(pane,false);
 })();
-loadEventsJson(); loadEventWinners(); loadTicketLb(); loadInviteLb(); loadRaffle();
+loadEventsJson(); loadEventWinners(); loadInviteLb(); loadRaffle();
 </script>
 <script defer src="/assets/visit.js?v=2"></script>
 </body></html>
