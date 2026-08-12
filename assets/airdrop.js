@@ -198,8 +198,8 @@
     const html = idleCard + sections.map(([key, label]) => {
       if (!groups[key].length) return "";
       if (key === "ended") {
-        // 종료된 이벤트는 기본 접힘 — 진행중이 없을 때만 펼쳐서 지난 이벤트라도 보이게 한다.
-        return `<details class="ended-fold"${idle ? " open" : ""}><summary class="event-group ended-summary">✅ 종료된 이벤트 ${groups[key].length}개 보기</summary>${groups[key].map((e) => eventCard(e, key)).join("")}</details>`;
+        // 종료된 이벤트는 항상 접힌 상태로 둔다 — 진행중이 없을 때도 펼치지 않는다(위 안내 카드가 대신 설명).
+        return `<details class="ended-fold"><summary class="event-group ended-summary">✅ 종료된 이벤트 ${groups[key].length}개 보기</summary>${groups[key].map((e) => eventCard(e, key)).join("")}</details>`;
       }
       return `<div class="event-group">${label}</div>${groups[key].map((e) => eventCard(e, key)).join("")}`;
     }).join("");

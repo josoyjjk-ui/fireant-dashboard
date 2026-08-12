@@ -81,6 +81,8 @@ html,body{overflow-x:hidden;}
 .ended-fold{display:contents;}
 /* Chrome 131+ 는 details 내부를 ::details-content 박스로 감싼다 → 이걸 풀어야 카드가 부모 그리드(2열)에 그대로 참여한다. */
 .ended-fold::details-content{display:contents;}
+/* display:contents 를 씌우면 닫힘 상태의 content-visibility 가 먹지 않아 카드가 그대로 보인다 → 닫혔을 때는 카드를 직접 감춘다. */
+.ended-fold:not([open])>.ev{display:none;}
 .ended-fold>summary.ended-summary{display:block;grid-column:1/-1;cursor:pointer;list-style:none;padding:8px 11px;margin:6px 0 2px;border:1px dashed #2a3140;border-radius:9px;background:#11151c;color:var(--dim);font-weight:900;font-size:12px;user-select:none;}
 .ended-fold>summary.ended-summary::-webkit-details-marker{display:none;}
 .ended-fold>summary.ended-summary::before{content:"▸ ";}
@@ -211,7 +213,7 @@ html{background:#0a0c10;}
     <!-- 상단 결과 바로가기 → /winners 결과·당첨자 허브 -->
     <a class="results-cta" href="/winners">
       <div class="rc-l"><div class="t">🏆 이벤트 결과 · 당첨자 확인</div>
-        <div class="s">이벤트별 당첨 명단과 지난 기록을 한 곳에서 — 탭으로 전환</div></div>
+        <div class="s">이벤트 타임라인과 이벤트별 당첨 명단을 한 곳에서 — 탭으로 전환</div></div>
       <span class="rc-btn">결과 보러가기 →</span>
     </a>
 
@@ -239,7 +241,7 @@ html{background:#0a0c10;}
 
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=4"></script>
-<script src="assets/airdrop.js?v=37"></script>
+<script src="assets/airdrop.js?v=38"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
 <script defer src="/assets/visit.js?v=2"></script>
 </body></html>
