@@ -1,9 +1,11 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>🏆 결과 · 리더보드 · 당첨자 | 개미투자정보</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+<meta name="description" content="ANTINFO 이벤트 결과·리더보드·당첨자 확인을 한 페이지에서. 이벤트별 당첨 명단, 주간 추첨 결과, 응모권 랭킹을 탭으로 전환해 확인하십시오.">
+<link rel="canonical" href="https://antinfo.io/winners/">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;}
-:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;--gold:#ffce5c;}
+:root{--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--accent:#ff3b30;--accent2:#ffb547;--live:#3aa0ff;--gold:#ffce5c;--green:#3ddc97;}
 body{background:var(--bg);color:var(--txt);padding-bottom:40px;}
 a{color:var(--accent2);text-decoration:none;}a:hover{text-decoration:underline;}
 /* ── 대시보드 공통 상단 네비 (완전 동일) ── */
@@ -31,28 +33,82 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .tabs{display:none !important;}
   .nav>.btn{display:none;}
 }
-.main{max-width:1000px;margin:0 auto;padding:20px;}
-.head h1{font-size:24px;font-weight:900;}.head .sub{color:var(--dim);font-size:13px;margin-top:5px;}
+.main{max-width:1100px;margin:0 auto;padding:20px;}
+.head h1{font-size:24px;font-weight:900;}.head .sub{color:var(--dim);font-size:13px;margin-top:5px;line-height:1.5;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;}
-.seclabel{font-size:16px;font-weight:900;margin:22px 0 11px;display:flex;align-items:center;gap:8px;}
+.seclabel{font-size:16px;font-weight:900;margin:22px 0 11px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .dim-sm{font-size:12px;color:var(--dim);font-weight:700;}
 .row{display:grid;gap:14px;margin-top:14px;}
 .r2{grid-template-columns:1fr 1fr;}
-.tabbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:16px;}
-.tabbar a{display:flex;align-items:center;justify-content:center;min-height:40px;padding:9px 12px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--txt);font-size:13px;font-weight:800;text-align:center;text-decoration:none;line-height:1.2;}
-.tabbar a.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
-.tabbar a:hover{text-decoration:none;border-color:var(--accent2);}
-.searchbar{display:flex;gap:8px;margin-top:12px;}
-.searchbar input{flex:1;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 15px;color:var(--txt);font-size:14px;outline:none;}
+.loading{color:var(--dim);font-size:13px;padding:6px 2px;}
+.empty{color:var(--dim);font-size:13px;padding:6px 2px;}
+.err{color:#ff6b6b;font-size:13px;padding:6px 2px;}
+
+/* ── 검색 ── */
+.searchbar{margin-top:16px;}
+.searchbar input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--txt);font-size:14px;outline:none;font-weight:600;}
 .searchbar input:focus{border-color:var(--accent);}
-.lb-row{display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;padding:9px 11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;margin-bottom:6px;}
-.lb-rank{font-weight:900;color:var(--dim);text-align:center;}.lb-name{font-weight:800;font-size:13.5px;}.lb-days{color:var(--accent2);font-weight:800;font-size:12.5px;}
+.searchhint{font-size:11.5px;color:var(--dim);font-weight:700;margin-top:7px;line-height:1.5;}
+
+/* ── 탭 ── */
+.tabbar{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px;border-bottom:1px solid var(--line);}
+.tabbar button{padding:12px 18px;border:none;border-bottom:3px solid transparent;background:transparent;color:var(--dim);font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;transition:color .15s,border-color .15s;white-space:nowrap;}
+.tabbar button.on{color:var(--accent2);border-bottom-color:var(--accent2);}
+.tabbar button:hover{color:var(--txt);}
+.tabbar .hits{font-size:11px;font-weight:800;color:var(--accent2);background:rgba(255,181,71,.12);border-radius:20px;padding:2px 8px;margin-left:6px;}
+.pane{display:none;}
+.pane.on{display:block;}
+
+/* ── 요약 통계 ── */
+.statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+.stat .l{font-size:11px;font-weight:800;color:var(--dim);}
+.stat .v{font-size:22px;font-weight:900;margin-top:4px;letter-spacing:-.5px;}
+.stat.hl .v{color:var(--accent2);}
+.stat.live .v{color:var(--green);}
+
+/* ── 이벤트 결과 카드 ── */
+.evgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.evres{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;}
+.evres .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+.evres .ti{font-size:15.5px;font-weight:900;line-height:1.35;}
+.stbadge{font-size:11px;font-weight:800;padding:5px 11px;border-radius:20px;white-space:nowrap;}
+.st-done{color:var(--dim);background:#1a1f28;}
+.st-live{color:var(--green);background:rgba(61,220,151,.12);}
+.st-soon{color:#7ab8ff;background:rgba(58,160,255,.14);}
+.evres .meta{display:flex;gap:5px 14px;flex-wrap:wrap;font-size:12.5px;}
+.evres .meta .d{color:var(--dim);font-weight:700;}
+.evres .meta .r{color:var(--accent2);font-weight:800;}
+.tierline{display:flex;gap:6px;flex-wrap:wrap;}
+.tpill{font-size:11.5px;font-weight:800;padding:5px 10px;border-radius:9px;background:var(--bg);border:1px solid var(--line);color:#cdd6e0;}
+.evres .act{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:2px;}
+.mini{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--txt);font-weight:800;font-size:12.5px;text-decoration:none;display:inline-block;cursor:pointer;font-family:inherit;}
+.mini:hover{text-decoration:none;border-color:var(--accent2);}
+.mini.pri{background:linear-gradient(95deg,#ff5628,#ff8a1e);color:#fff;border-color:transparent;}
+.tags{display:flex;gap:6px;flex-wrap:wrap;}
+.tg{font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;}
+.tg-type{background:rgba(255,122,60,.16);color:#ff8a4d;}
+.tg-proj{background:rgba(54,210,140,.15);color:var(--green);}
+.subnav{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0 12px;}
+.subchip{padding:8px 14px;border-radius:20px;background:var(--card);border:1px solid var(--line);font-size:12.5px;font-weight:800;color:var(--dim);cursor:pointer;user-select:none;}
+.subchip.on{border-color:var(--accent2);color:var(--accent2);background:rgba(255,181,71,.08);}
+
+/* ── 리더보드 ── */
+.lb-row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--line);border-radius:11px;margin-bottom:6px;}
+.lb-rank{font-weight:900;color:var(--dim);text-align:center;font-size:13.5px;}
+.lb-name{font-weight:800;font-size:13.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-days{color:var(--accent2);font-weight:800;font-size:12.5px;white-space:nowrap;}
+.lb-days b{font-size:15px;}
 .lb-row.top1{background:linear-gradient(135deg,#2a2210,#14100a);border-color:#3a2f14;}
-.ck-h{font-size:15px;font-weight:800;margin-bottom:11px;}
+.lb-row.top2{background:linear-gradient(135deg,#1f2128,#13161c);border-color:#2b3038;}
+.lb-row.top3{background:linear-gradient(135deg,#241b14,#13161c);border-color:#33271c;}
+.lb-row.hit{border-color:var(--accent2);box-shadow:0 0 0 1px rgba(255,181,71,.25);}
+.ck-h{font-size:15px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+
+/* ── 당첨자 ── */
 .wrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px;border-bottom:1px solid var(--line);font-size:13px;}
 .wrow:last-child{border:none;}.wtier{font-weight:800;}.whandle{color:var(--dim);font-weight:700;}
-/* 1·2·3등 강조 행 (참여상보다 크게) */
-.wrow.big{padding:13px 12px;font-size:15.5px;background:var(--bg);border:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:11px;margin-bottom:8px;}
+.wrow.big{padding:13px 12px;font-size:15.5px;background:var(--bg);border:1px solid var(--line);border-radius:11px;margin-bottom:8px;}
 .wrow.big:last-child{margin-bottom:0;}
 .wrow.big .wtier{font-size:15.5px;}
 .wrow.big .whandle{color:var(--txt);}
@@ -62,7 +118,6 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .fold{font-size:12px;color:var(--accent2);font-weight:800;cursor:pointer;margin-top:8px;display:inline-block;}
 .wkblock{margin-bottom:14px;}.wkblock:last-child{margin-bottom:0;}
 .wkhead{font-size:13px;font-weight:900;margin-bottom:8px;color:var(--txt);}
-.evgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .evgrp{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
 .evgrp>summary{cursor:pointer;list-style:none;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .evgrp>summary::-webkit-details-marker{display:none;}
@@ -73,15 +128,15 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .chips{display:flex;flex-wrap:wrap;gap:5px;}
 .chip{font-size:11.5px;font-weight:700;padding:4px 8px;border-radius:7px;background:var(--bg);border:1px solid var(--line);}
 .chip.hit{background:#231a0c;border-color:var(--accent2);color:var(--accent2);}
-.loading{color:var(--dim);font-size:13px;padding:6px 2px;}
-.empty{color:var(--dim);font-size:13px;padding:6px 2px;}
-.err{color:#ff6b6b;font-size:13px;padding:6px 2px;}
+.notebox{font-size:12px;color:#cdb98a;font-weight:700;line-height:1.6;background:rgba(255,181,71,.06);border:1px solid #3a2f14;border-radius:12px;padding:11px 14px;margin-top:16px;}
+@media(max-width:900px){.r2,.evgrid{grid-template-columns:1fr;}}
 @media(max-width:720px){
   .main{padding:16px 14px;}
   .head h1{font-size:21px;}
-  .tabbar{grid-template-columns:repeat(2,minmax(0,1fr));}
-  .tabbar a{min-height:38px;padding:8px 9px;font-size:12px;}
-  .r2,.evgrid{grid-template-columns:1fr;}
+  .statrow{grid-template-columns:1fr 1fr;}
+  .tabbar{flex-wrap:nowrap;overflow-x:auto;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tabbar button{padding:12px 12px;font-size:14px;}
   .row{gap:10px;margin-top:12px;}
   .card{padding:14px;}
 }
@@ -96,8 +151,8 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   <a href="/charts"><span class="ic">🕯️</span>주요자산차트</a>
   <a href="/kr-exchange/"><span class="ic">🏦</span>K-거래소 현황</a>
   <div class="ddiv"></div>
-  <a class="sub on" href="/airdrop"><span class="ic">🎉</span>이벤트·당첨</a>
-  <a class="sub" href="/airdrop">에어드랍</a>
+  <a class="sub" href="/airdrop"><span class="ic">🪂</span>에어드랍 미션</a>
+  <a class="sub on" href="/winners/"><span class="ic">🏆</span>결과·리더보드·당첨자</a>
   <a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>
 </aside>
 <div class="nav">
@@ -114,31 +169,70 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   <span id="authSlot" data-mobile="0" style="display:inline-flex;align-items:center;gap:8px;margin-right:8px;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button></span><script>(function(){try{var h=localStorage.getItem("antinfo_navauth");if(!h)return;if(h.indexOf("logoutBtn")>-1){var tok=false;for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf("sb-")===0&&k.indexOf("-auth-token")>-1){tok=true;break;}}if(!tok){localStorage.removeItem("antinfo_navauth");return;}}var s=document.getElementById("authSlot");if(s)s.innerHTML=h;}catch(e){}})();</script><a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
 </div>
 <div class="main">
-  <div class="head"><h1>🏆 결과 · 리더보드 · 당첨자</h1><div class="sub">출석 리더보드, 주간 추첨 당첨자, 이벤트 당첨자 명단을 한 곳에서 확인하세요.</div></div>
+  <div class="head"><h1>🏆 결과 · 리더보드 · 당첨자</h1>
+    <div class="sub">이벤트 결과 · 리더보드 · 당첨자 확인을 <b style="color:var(--accent2)">한 페이지</b>에서 확인하십시오. 아래 탭으로 전환됩니다.</div></div>
 
-  <div class="tabbar">
-    <a class="on" href="#globalSearch">🔎 전체검색</a><a href="#lb">🔥 출석 스트릭 리더보드</a>
-    <a href="#raffle">🎁 지난주 당첨자</a><a href="#events">🏅 이벤트 당첨자</a>
+  <div class="searchbar">
+    <input id="globalSearch" placeholder="🔍 내 핸들·닉네임 검색 — 3개 탭 전체에서 한 번에 찾습니다" oninput="filterAll()">
+    <div class="searchhint">💡 검색하면 이벤트 결과 · 리더보드 · 당첨자 명단에서 일치하는 항목만 자동으로 펼쳐집니다.</div>
   </div>
-  <div class="searchbar"><input id="globalSearch" placeholder="🔍 전체 검색 — 내 핸들/닉네임 (리더보드·지난주 당첨자·이벤트 통합)" oninput="filterAll()"></div>
 
-  <!-- 전체검색 아래 핵심 결과 2열 배치 -->
-  <div class="row r2">
-    <div class="card">
-      <div class="ck-h" id="lb">🔥 출석 스트릭 리더보드 <span class="dim-sm">· TOP 5</span></div>
-      <div id="lbBody"><div class="loading">불러오는 중…</div></div>
+  <div class="tabbar" id="tabbar">
+    <button class="on" data-pane="p1" type="button">🏅 이벤트 결과</button>
+    <button data-pane="p2" type="button">🔥 리더보드</button>
+    <button data-pane="p3" type="button">🎁 당첨자 확인</button>
+  </div>
+
+  <!-- ── 탭1: 이벤트 결과 ── -->
+  <div class="pane on" id="p1">
+    <div class="statrow" id="statRow">
+      <div class="stat"><div class="l">전체 이벤트</div><div class="v" id="stTotal">—</div></div>
+      <div class="stat live"><div class="l">진행중</div><div class="v" id="stLive">—</div></div>
+      <div class="stat"><div class="l">결과 발표</div><div class="v" id="stAnnounced">—</div></div>
+      <div class="stat hl"><div class="l">누적 당첨자</div><div class="v" id="stWinners">—</div></div>
     </div>
-    <div class="card">
-      <div class="ck-h" id="raffle">🎁 지난주 당첨자 <span class="dim-sm" id="raffleSub"></span></div>
+
+    <div class="seclabel">📣 결과 발표된 이벤트 <span class="dim-sm">· 당첨 인원 확정분</span></div>
+    <div class="evgrid" id="resultsBody"><div class="loading">불러오는 중…</div></div>
+
+    <div class="seclabel" style="margin-top:26px;">🗓️ 이벤트 타임라인</div>
+    <div class="subnav" id="evFilter">
+      <span class="subchip on" data-f="all">전체</span>
+      <span class="subchip" data-f="active">🟢 진행중</span>
+      <span class="subchip" data-f="soon">🔵 예정</span>
+      <span class="subchip" data-f="ended">⚫ 종료</span>
+    </div>
+    <div class="evgrid" id="timelineBody"><div class="loading">불러오는 중…</div></div>
+  </div>
+
+  <!-- ── 탭2: 리더보드 ── -->
+  <div class="pane" id="p2">
+    <div class="row r2">
+      <div class="card">
+        <div class="ck-h">🎟️ 이번 주 응모권 랭킹 <span class="dim-sm">· 미션 인증 기준 · TOP 10</span></div>
+        <div id="ticketLbBody"><div class="loading">불러오는 중…</div></div>
+      </div>
+      <div class="card">
+        <div class="ck-h" id="inviteHead">🔥 친구초대 랭킹 <span class="dim-sm">· 불러오는 중</span></div>
+        <div id="inviteLbBody"><div class="loading">불러오는 중…</div></div>
+      </div>
+    </div>
+    <div class="notebox">📌 응모권 랭킹은 <b>이번 주(월~일 KST)</b> 승인된 미션 인증 건수 × 5장 기준입니다. 매주 일요일 자정에 마감·초기화됩니다.</div>
+  </div>
+
+  <!-- ── 탭3: 당첨자 확인 ── -->
+  <div class="pane" id="p3">
+    <div class="card" style="margin-top:16px;">
+      <div class="ck-h" id="raffle">🎁 최근 주간 추첨 당첨자 <span class="dim-sm" id="raffleSub"></span></div>
       <div id="raffleBody"><div class="loading">불러오는 중…</div></div>
     </div>
+
+    <div class="seclabel" id="events">🏅 이벤트 당첨자 <span class="dim-sm" id="eventsSub">· 이벤트별 명단</span></div>
+    <div class="evgrid" id="eventsBody"><div class="loading">불러오는 중…</div></div>
+    <div class="notebox">📌 당첨자는 <b>확정 명단만</b> 게시합니다. 응모풀 재추첨·재현은 하지 않습니다. 연락처는 비공개입니다.</div>
   </div>
 
-  <!-- 이벤트 당첨자 (2단 그리드) -->
-  <div class="seclabel" id="events">🏅 이벤트 당첨자 <span class="dim-sm">· 이벤트별 명단</span></div>
-  <div class="evgrid" id="eventsBody"><div class="loading">불러오는 중…</div></div>
-
-  <div class="dim-sm" style="text-align:center;margin-top:24px;">🐜 ANTINFO · 당첨자는 확정 명단만 게시 · 연락처는 비공개</div>
+  <div class="dim-sm" style="text-align:center;margin-top:26px;">🐜 ANTINFO · 당첨자는 확정 명단만 게시 · 연락처는 비공개</div>
 </div>
 
 <script src="/assets/vendor/supabase.js"></script>
@@ -152,18 +246,8 @@ const esc = s => String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&
 const timeout = (p,ms=8000)=>Promise.race([Promise.resolve(p),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),ms))]);
 const norm = s => String(s==null?'':s).toLowerCase().replace(/^@/,'').trim();
 const MEDALS=['🥇','🥈','🥉'];
+const tierOrder = t => { const s=String(t||''); if(s.includes('🥇'))return 0; if(s.includes('🥈'))return 1; if(s.includes('🥉'))return 2; if(s.includes('🎁'))return 3; return 4; };
 function fmtDate(d){return d.toISOString().slice(0,10);}
-function dateAdd(dateStr,days){const d=new Date(`${dateStr}T00:00:00Z`);d.setUTCDate(d.getUTCDate()+days);return fmtDate(d);}
-function weekBounds(offsetWeeks){
-  const off=offsetWeeks||0;
-  const nowKst=new Date(Date.now()+9*3600*1000);
-  const day=nowKst.getUTCDay()||7;
-  const start=new Date(nowKst);
-  start.setUTCHours(0,0,0,0);
-  start.setUTCDate(start.getUTCDate()-day+1+off*7);
-  return {startDate:fmtDate(start)};
-}
-function lastWeekStart(){return dateAdd(weekBounds().startDate,-7);}
 function latestRafflePublishRows(rows){
   const list=(rows||[]).filter(w=>w&&w.week_start);
   if(!list.length)return [];
@@ -172,45 +256,204 @@ function latestRafflePublishRows(rows){
   return list.filter(w=>Date.parse(w.created_at||'')===latest);
 }
 
-let lbData=[], raffleData=[], eventData=[];
+let raffleData=[], eventData=[], ticketLb=[], inviteLb=[], inviteMeta=null, evTimeline=[], evFilter='all';
+let curQuery='';
 
-/* ── 출석 스트릭 리더보드 ── */
-async function loadLB(){
-  const el=document.getElementById('lbBody');
+/* ══════════ 탭 전환 ══════════ */
+function showPane(id,scroll){
+  document.querySelectorAll('#tabbar button').forEach(b=>b.classList.toggle('on', b.dataset.pane===id));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on', p.id===id));
+  try{history.replaceState(null,'','#'+id);}catch(_){}
+  if(scroll!==false) window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('tabbar').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return; showPane(b.dataset.pane);
+});
+
+/* ══════════ 탭1: 이벤트 결과 ══════════ */
+const EVENT_WD=['일','월','화','수','목','금','토'];
+function evFmt(s){const d=new Date(s);if(isNaN(d))return String(s||'');return `${d.getMonth()+1}/${d.getDate()} (${EVENT_WD[d.getDay()]})`;}
+function evRange(ev){
+  if(ev.startDate&&ev.endDate)return `${evFmt(ev.startDate)} ~ ${evFmt(ev.endDate)}`;
+  if(ev.endDate)return `~ ${evFmt(ev.endDate)}`;
+  if(ev.startDate)return `${evFmt(ev.startDate)} ~`;
+  return '';
+}
+function evClass(ev){
+  const now=Date.now();
+  const s=ev.startDate?new Date(ev.startDate).getTime():null;
+  const e=ev.endDate?new Date(ev.endDate).getTime():null;
+  if(s&&now<s)return 'soon';
+  if(e&&now>e)return 'ended';
+  return 'active';
+}
+const ST_LABEL={active:['🟢 진행중','st-live'],soon:['🔵 예정','st-soon'],ended:['⚫ 종료','st-done']};
+
+async function loadEventsJson(){
+  try{
+    const r=await timeout(fetch('/events.json?t='+Date.now(),{cache:'no-store'}));
+    if(!r.ok)throw new Error('events.json '+r.status);
+    const j=await r.json();
+    evTimeline=Array.isArray(j)?j:[];
+  }catch(_){ evTimeline=[]; }
+  renderTimeline(); renderStats();
+}
+function renderTimeline(){
+  const el=document.getElementById('timelineBody');
+  if(!evTimeline.length){el.innerHTML='<div class="empty">이벤트 목록을 불러오지 못했습니다.</div>';return;}
+  const order={active:0,soon:1,ended:2};
+  const list=evTimeline
+    .map(ev=>({ev,k:evClass(ev)}))
+    .filter(x=>evFilter==='all'||x.k===evFilter)
+    .sort((a,b)=>(order[a.k]-order[b.k])||String(b.ev.startDate||'').localeCompare(String(a.ev.startDate||'')));
+  if(!list.length){el.innerHTML='<div class="empty">해당 상태의 이벤트가 없습니다.</div>';return;}
+  el.innerHTML=list.map(({ev,k})=>{
+    const [lab,cls]=ST_LABEL[k];
+    const tags=(Array.isArray(ev.tags)?ev.tags:[]).map((t,i)=>`<span class="tg ${i===0?'tg-type':'tg-proj'}">${esc(t)}</span>`).join('');
+    const range=evRange(ev);
+    const link=ev.link?`<a class="mini" href="${esc(ev.link)}" target="_blank" rel="noopener">공지 원문 ↗</a>`:'';
+    return `<div class="evres">
+      <div class="top"><div class="ti">${esc(ev.title)}</div><span class="stbadge ${cls}">${lab}</span></div>
+      ${tags?`<div class="tags">${tags}</div>`:''}
+      <div class="meta">${range?`<span class="d">🗓️ ${esc(range)}</span>`:''}${ev.rewards?`<span class="r">🎁 ${esc(ev.rewards)}</span>`:''}</div>
+      <div class="act">${link}<button class="mini" type="button" data-jump="1">당첨자 탭 →</button></div>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-jump]').forEach(b=>{ b.onclick=()=>jumpWinners(''); });
+}
+document.getElementById('evFilter').addEventListener('click',e=>{
+  const c=e.target.closest('.subchip'); if(!c)return;
+  evFilter=c.dataset.f;
+  document.querySelectorAll('#evFilter .subchip').forEach(x=>x.classList.toggle('on',x===c));
+  renderTimeline();
+});
+
+function groupWinnersByEvent(){
+  const by={};
+  eventData.forEach(w=>{ const k=w.event||'(미지정)'; (by[k]=by[k]||[]).push(w); });
+  return by;
+}
+function renderResults(filter){
+  const el=document.getElementById('resultsBody');
+  const by=groupWinnersByEvent();
+  const names=Object.keys(by);
+  if(!names.length){el.innerHTML='<div class="empty">아직 결과가 발표된 이벤트가 없습니다.</div>';return;}
+  let html='';
+  names.forEach(name=>{
+    const list=by[name];
+    const hits=filter?list.filter(w=>norm(w.telegram||w.twitter||'').includes(filter)).length:0;
+    if(filter&&!hits)return;
+    const tiers={};
+    list.forEach(w=>{ const t=w.tier||'🎁 균등보상'; tiers[t]=(tiers[t]||0)+1; });
+    const pills=Object.keys(tiers).sort((a,b)=>tierOrder(a)-tierOrder(b)||a.localeCompare(b))
+      .map(t=>`<span class="tpill">${esc(t)} ${tiers[t]}명</span>`).join('');
+    const dates=list.map(w=>w.date).filter(Boolean).sort();
+    const when=dates.length?`🗓️ ${esc(dates[0])}${dates[dates.length-1]!==dates[0]?' ~ '+esc(dates[dates.length-1]):''}`:'';
+    const hitBadge=filter?` <span style="color:var(--accent2)">· 🎉 ${hits}건 일치</span>`:'';
+    html+=`<div class="evres">
+      <div class="top"><div class="ti">${esc(name)}</div><span class="stbadge st-done">⚫ 발표 완료</span></div>
+      <div class="meta"><span class="r">🏅 당첨 ${list.length}명${hitBadge}</span>${when?`<span class="d">${when}</span>`:''}</div>
+      <div class="tierline">${pills}</div>
+      <div class="act"><button class="mini pri" type="button" data-ev="${esc(name)}">당첨자 명단 →</button></div>
+    </div>`;
+  });
+  el.innerHTML=html||'<div class="empty">검색어와 일치하는 결과 발표 이벤트가 없습니다.</div>';
+  el.querySelectorAll('[data-ev]').forEach(b=>{ b.onclick=()=>jumpWinners(b.getAttribute('data-ev')); });
+}
+// 이벤트 결과 카드 → 당첨자 탭으로 이동하고 해당 이벤트 그룹만 펼칩니다.
+function jumpWinners(eventName){
+  showPane('p3');
+  if(!eventName)return;
+  setTimeout(()=>{
+    document.querySelectorAll('#eventsBody details.evgrp').forEach(d=>{
+      const t=d.querySelector('.et');
+      const open = t && t.textContent.replace(/^🏅\s*/,'').trim()===String(eventName).trim();
+      d.open=open;
+      if(open) try{d.scrollIntoView({behavior:'smooth',block:'center'});}catch(_){}
+    });
+  },60);
+}
+function renderStats(){
+  const total=evTimeline.length;
+  const live=evTimeline.filter(e=>evClass(e)==='active').length;
+  const by=groupWinnersByEvent();
+  document.getElementById('stTotal').textContent=total||'—';
+  document.getElementById('stLive').textContent=live;
+  document.getElementById('stAnnounced').textContent=Object.keys(by).length;
+  document.getElementById('stWinners').textContent=eventData.length.toLocaleString();
+}
+
+/* ══════════ 탭2: 응모권 랭킹 ══════════ */
+async function loadTicketLb(){
+  const el=document.getElementById('ticketLbBody');
   if(!sb){el.innerHTML='<div class="err">데이터 연결 실패</div>';return;}
   try{
-    const {data,error}=await timeout(sb.rpc('streak_leaderboard',{p_limit:5}));
+    const {data,error}=await timeout(sb.rpc('ticket_leaderboard',{p_limit:10}));
     if(error)throw error;
-    lbData=(data||[]).map(r=>({name:r.nickname||'익명',streak:r.streak||0}));
-    renderLB();
-  }catch(e){el.innerHTML='<div class="err">리더보드를 불러오지 못했습니다.</div>';}
+    ticketLb=(data||[]).map(r=>({name:r.nickname||'익명',missions:r.missions||0,tickets:r.tickets||0}));
+    renderTicketLb(curQuery);
+  }catch(e){el.innerHTML='<div class="err">응모권 랭킹을 불러오지 못했습니다.</div>';}
 }
-function renderLB(filter=''){
-  const el=document.getElementById('lbBody');
-  if(!lbData.length){el.innerHTML='<div class="empty">아직 출석 데이터가 없습니다.</div>';return;}
+function renderTicketLb(filter){
+  const el=document.getElementById('ticketLbBody');
+  if(!ticketLb.length){el.innerHTML='<div class="empty">이번 주 미션 인증 기록이 아직 없습니다.</div>';return;}
   let html='',shown=0;
-  lbData.forEach((r,i)=>{
-    if(filter && !norm(r.name).includes(filter))return;
+  ticketLb.forEach((r,i)=>{
+    const hit=filter&&norm(r.name).includes(filter);
+    if(filter&&!hit)return;
     shown++;
     const rank=i<3?MEDALS[i]:(i+1);
-    html+=`<div class="lb-row${i===0?' top1':''}"><div class="lb-rank">${rank}</div><div class="lb-name">${esc(r.name)}님</div><div class="lb-days"><b>${r.streak}</b>일 연속</div></div>`;
+    const cls='lb-row'+(i===0?' top1':i===1?' top2':i===2?' top3':'')+(hit?' hit':'');
+    html+=`<div class="${cls}"><div class="lb-rank">${rank}</div><div class="lb-name">${esc(r.name)}님</div><div class="lb-days"><b>${r.tickets}</b>장 <span class="dim-sm">· ${r.missions}건</span></div></div>`;
   });
-  el.innerHTML=html || '<div class="empty">검색 결과가 없습니다.</div>';
-  if(filter && !shown) el.innerHTML='<div class="empty">리더보드에서 일치하는 핸들이 없습니다.</div>';
+  el.innerHTML=html||'<div class="empty">응모권 랭킹에서 일치하는 닉네임이 없습니다.</div>';
+  if(filter&&!shown)el.innerHTML='<div class="empty">응모권 랭킹에서 일치하는 닉네임이 없습니다.</div>';
 }
 
-/* ── 주간 추첨 당첨자 (raffle_winners, 최근 여러 주차) ── */
+/* ══════════ 탭2: 친구초대 랭킹 (leaderboard.json) ══════════ */
+async function loadInviteLb(){
+  const el=document.getElementById('inviteLbBody');
+  try{
+    const r=await timeout(fetch('/leaderboard.json?t='+Date.now(),{cache:'no-store'}));
+    if(!r.ok)throw new Error('leaderboard.json '+r.status);
+    const j=await r.json();
+    inviteMeta={name:j.event_name||'친구초대 이벤트',updated:j.updated_at||'',participants:j.total_participants||0};
+    inviteLb=Array.isArray(j.leaderboard)?j.leaderboard:[];
+    const h=document.getElementById('inviteHead');
+    if(h)h.innerHTML=`🔥 ${esc(inviteMeta.name)} <span class="dim-sm">· ${esc(inviteMeta.updated)} 기준 · 참여 ${Number(inviteMeta.participants).toLocaleString()}명</span>`;
+    renderInviteLb(curQuery);
+  }catch(e){
+    el.innerHTML='<div class="empty">친구초대 랭킹 데이터가 없습니다.</div>';
+    const h=document.getElementById('inviteHead'); if(h)h.innerHTML='🔥 친구초대 랭킹 <span class="dim-sm">· 데이터 없음</span>';
+  }
+}
+function renderInviteLb(filter){
+  const el=document.getElementById('inviteLbBody');
+  if(!inviteLb.length){el.innerHTML='<div class="empty">친구초대 랭킹 데이터가 없습니다.</div>';return;}
+  const src=filter?inviteLb.filter(r=>norm(r.username).includes(filter)||norm(r.first_name).includes(filter)):inviteLb.slice(0,10);
+  if(!src.length){el.innerHTML='<div class="empty">친구초대 랭킹에서 일치하는 핸들이 없습니다.</div>';return;}
+  el.innerHTML=src.slice(0,50).map(r=>{
+    const i=(r.rank||0)-1;
+    const hit=!!filter;
+    const cls='lb-row'+(i===0?' top1':i===1?' top2':i===2?' top3':'')+(hit?' hit':'');
+    const rank=i<3?MEDALS[i]:(r.rank||'-');
+    return `<div class="${cls}"><div class="lb-rank">${rank}</div><div class="lb-name">@${esc(r.username||'')}</div><div class="lb-days"><b>${Number(r.points||0).toLocaleString()}</b>P <span class="dim-sm">· 초대 ${Number(r.invite_count||0)}명</span></div></div>`;
+  }).join('') + `<div class="dim-sm" style="margin-top:9px;">📦 종료된 캠페인 기록입니다. 전체 순위는 <a href="/leaderboard/">리더보드 페이지</a>에서 확인하십시오.</div>`;
+}
+
+/* ══════════ 탭3: 주간 추첨 당첨자 ══════════ */
 async function loadRaffle(){
   const el=document.getElementById('raffleBody');
   if(!sb){el.innerHTML='<div class="err">데이터 연결 실패</div>';return;}
   try{
+    // 직전 주만 보면 그 주에 추첨을 안 돌린 경우 계속 빈 화면이 된다 → 가장 최근 '발표된' 주차를 찾아 보여준다.
     const {data,error}=await timeout(sb.from('raffle_winners')
       .select('week_start,user_id,telegram,prize,entries,created_at')
-      .eq('week_start',lastWeekStart())
-      .order('created_at',{ascending:true}).limit(120));
+      .order('week_start',{ascending:false}).order('created_at',{ascending:true}).limit(200));
     if(error)throw error;
-    raffleData=latestRafflePublishRows(data||[]);
-    // 닉네임 보강 (public_nicknames RPC)
+    const rows=data||[];
+    const newest=rows.length?rows.reduce((mx,w)=>(w.week_start>mx?w.week_start:mx),rows[0].week_start):null;
+    raffleData=latestRafflePublishRows(rows.filter(w=>w.week_start===newest));
     const ids=[...new Set(raffleData.map(w=>w.user_id).filter(Boolean))];
     if(ids.length){
       try{
@@ -219,7 +462,7 @@ async function loadRaffle(){
         raffleData.forEach(w=>{w._nick=map[w.user_id]||'';});
       }catch(_){}
     }
-    renderRaffle();
+    renderRaffle(curQuery);
   }catch(e){el.innerHTML='<div class="err">주간 당첨자를 불러오지 못했습니다.</div>';}
 }
 function raffleName(w){ return w.telegram || w._nick || '익명'; }
@@ -230,28 +473,24 @@ function splitPrize(p){
   if(m) return {tier:m[1].trim(), reward:(m[2].trim()||'기프티콘')};
   return {tier:'🎁 참여상', reward:s||'기프티콘'};
 }
-function renderRaffle(filter=''){
+function renderRaffle(filter){
   const el=document.getElementById('raffleBody');
   const sub=document.getElementById('raffleSub');
-  if(!raffleData.length){el.innerHTML='<div class="empty">주간 당첨자 기록이 아직 없습니다.</div>';if(sub)sub.textContent='';return;}
-  // 주차별 그룹
+  if(!raffleData.length){el.innerHTML='<div class="empty">주간 추첨 당첨자 기록이 아직 없습니다.</div>';if(sub)sub.textContent='';return;}
   const groups={};
   raffleData.forEach(w=>{ (groups[w.week_start]=groups[w.week_start]||[]).push(w); });
   const weeks=Object.keys(groups).sort().reverse();
   if(sub) sub.textContent=`· ${weeks[0].slice(5).replace('-','/')} 주차 · ${groups[weeks[0]].length}명`;
   let html='';
-  // 최근 주차만 렌더(이전 주차 폴드는 '전체 당첨자 펼치기'와 기능이 겹쳐 제거)
   {
     const wk=weeks[0];
-    // 등수는 prize 문자열에서 파싱(같은 주차 created_at 동일 → 인덱스 불가)
     const list=groups[wk].slice().sort((a,b)=>tierOrder(a.prize)-tierOrder(b.prize));
-    const label = `${wk.slice(5).replace('-','/')} 주차 · ${list.length}명`;
+    const label=`${wk.slice(5).replace('-','/')} 주차 · ${list.length}명`;
     const rowHtml=(w,big)=>{
       const nm=raffleName(w);
       const {tier,reward}=splitPrize(w.prize);
       return `<div class="wrow${big?' big':''}"><span class="wtier">${esc(tier)} <span class="whandle">${esc(nm)}</span></span><span class="prize">${esc(reward)}</span></div>`;
     };
-    // 🥇🥈🥉만 크게 노출, 참여상은 '전체 당첨자 펼치기'로 숨김
     let medal='', rest='';
     list.forEach((w)=>{
       const nm=raffleName(w);
@@ -267,8 +506,7 @@ function renderRaffle(filter=''){
   el.innerHTML=html || '<div class="empty">일치하는 주간 당첨자가 없습니다.</div>';
 }
 
-/* ── 이벤트 당첨자 (winners.json + event_winners) ── */
-const tierOrder = t => { const s=String(t||''); if(s.includes('🥇'))return 0; if(s.includes('🥈'))return 1; if(s.includes('🥉'))return 2; if(s.includes('🎁'))return 3; return 4; };
+/* ══════════ 탭3: 이벤트 당첨자 ══════════ */
 function winnerKey(w){ return `${String(w.event||'').trim().toLowerCase()}::${String(w.telegram||'').trim().replace(/^@/,'').toLowerCase()}`; }
 function mergeEventWinners(baseRows, webRows){
   const map=new Map();
@@ -279,10 +517,10 @@ function mergeEventWinners(baseRows, webRows){
   });
   return Array.from(map.values());
 }
-async function loadEvents(){
+async function loadEventWinners(){
   const el=document.getElementById('eventsBody');
   try{
-    const res=await timeout(fetch('../winners.json?t='+Date.now()));
+    const res=await timeout(fetch('/winners.json?t='+Date.now()));
     if(!res.ok)throw new Error('winners.json '+res.status);
     const json=await res.json();
     const baseRows=Array.isArray(json)?json:[];
@@ -294,20 +532,20 @@ async function loadEvents(){
       }catch(_){}
     }
     eventData=mergeEventWinners(baseRows,webRows);
-    renderEvents();
+    renderEventWinners(curQuery); renderResults(curQuery); renderStats();
   }catch(e){el.innerHTML='<div class="err">이벤트 당첨자를 불러오지 못했습니다.</div>';}
 }
-function renderEvents(filter=''){
+function renderEventWinners(filter){
   const el=document.getElementById('eventsBody');
-  const byEvent={};
-  eventData.forEach(w=>{ (byEvent[w.event]=byEvent[w.event]||[]).push(w); });
+  const sub=document.getElementById('eventsSub');
+  const byEvent=groupWinnersByEvent();
   const events=Object.keys(byEvent);
+  if(sub) sub.textContent=`· 이벤트별 명단 · 총 ${eventData.length.toLocaleString()}명`;
   if(!events.length){el.innerHTML='<div class="empty">등록된 이벤트 당첨자가 없습니다.</div>';return;}
   let html='';
-  events.forEach((ev,ei)=>{
+  events.forEach((ev)=>{
     const list=byEvent[ev];
     const total=list.length;
-    // tier 그룹
     const tiers={};
     list.forEach(w=>{ const t=w.tier||''; (tiers[t]=tiers[t]||[]).push(w); });
     const tierKeys=Object.keys(tiers).sort((a,b)=>tierOrder(a)-tierOrder(b) || a.localeCompare(b));
@@ -321,12 +559,11 @@ function renderEvents(filter=''){
         return {h,hit};
       });
       const anyHit = chips.some(c=>c.hit);
-      // 검색 중이면 일치 항목이 있는 tier만, 아니면 전부
       if(filter && !anyHit) return;
       if(t) body+=`<div class="tierhead">${esc(t)} <span class="dim-sm">(${members.length}명)</span></div>`;
       body+=`<div class="chips">${chips.filter(c=>!filter||c.hit).map(c=>`<span class="chip${c.hit?' hit':''}">${esc(c.h)}</span>`).join('')}</div>`;
     });
-    if(filter && !hitCount) return; // 검색 중 일치 없는 이벤트 숨김
+    if(filter && !hitCount) return;
     const open = !!(filter && hitCount);
     const hitBadge = filter && hitCount ? ` · <span style="color:var(--accent2)">🎉 ${hitCount}건 일치</span>` : '';
     html+=`<details class="evgrp"${open?' open':''}><summary><span class="et">🏅 ${esc(ev)}</span><span class="esum">${total}명${hitBadge} ▾</span></summary><div class="ebody">${body||'<div class="empty">일치 없음</div>'}</div></details>`;
@@ -334,14 +571,36 @@ function renderEvents(filter=''){
   el.innerHTML=html || '<div class="empty">일치하는 이벤트 당첨자가 없습니다.</div>';
 }
 
-/* ── 검색 ── */
+/* ══════════ 통합 검색 ══════════ */
+function countHits(q){
+  if(!q)return [0,0,0];
+  const h1=Object.values(groupWinnersByEvent()).filter(l=>l.some(w=>norm(w.telegram||w.twitter||'').includes(q))).length;
+  const h2=ticketLb.filter(r=>norm(r.name).includes(q)).length
+          +inviteLb.filter(r=>norm(r.username).includes(q)||norm(r.first_name).includes(q)).length;
+  const h3=raffleData.filter(w=>norm(raffleName(w)).includes(q)).length
+          +eventData.filter(w=>norm(w.telegram||w.twitter||'').includes(q)).length;
+  return [h1,h2,h3];
+}
 function filterAll(){
-  const q=norm(document.getElementById('globalSearch').value);
-  renderLB(q); renderRaffle(q); renderEvents(q);
+  curQuery=norm(document.getElementById('globalSearch').value);
+  renderResults(curQuery);
+  renderTicketLb(curQuery);
+  renderInviteLb(curQuery);
+  renderRaffle(curQuery);
+  renderEventWinners(curQuery);
+  const hits=countHits(curQuery);
+  document.querySelectorAll('#tabbar button').forEach((b,i)=>{
+    const old=b.querySelector('.hits'); if(old)old.remove();
+    if(curQuery&&hits[i]>0){const s=document.createElement('span');s.className='hits';s.textContent=hits[i];b.appendChild(s);}
+  });
 }
 
-/* ── init ── */
-loadLB(); loadRaffle(); loadEvents();
+/* ══════════ init ══════════ */
+(function(){
+  const h=(location.hash||'').replace('#','');
+  if(['p1','p2','p3'].includes(h)) showPane(h,false);
+})();
+loadEventsJson(); loadEventWinners(); loadTicketLb(); loadInviteLb(); loadRaffle();
 </script>
 <script defer src="/assets/visit.js?v=2"></script>
 </body></html>

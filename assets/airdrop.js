@@ -97,21 +97,14 @@
     }
     return true;
   }
-  // 체크인 게이트: 지갑을 제외한 모든 참여정보가 채워져야 한다.
-  function requireProfile() {
-    if (!state.uid) return false;
+  // 참여정보 미입력 항목(지갑 제외) — 당첨 시 연락·지급에 필요합니다. 인증을 막지는 않고 안내만 합니다.
+  function missingProfileFields() {
     const p = state.profile || {};
     const need = [
       ["nickname", "닉네임"], ["phone", "휴대전화번호"], ["email", "이메일"],
       ["telegram_handle", "텔레그램 아이디"], ["twitter_handle", "트위터(X) 아이디"], ["youtube_handle", "유튜브 닉네임"],
     ];
-    const missing = need.filter(([k]) => !(p[k] && String(p[k]).trim())).map((x) => x[1]);
-    if (missing.length) {
-      toast("체크인하려면 참여정보를 모두 입력해 주세요 (지갑 제외): " + missing.join(", "), "err");
-      flashProfile();
-      return false;
-    }
-    return true;
+    return need.filter(([k]) => !(p[k] && String(p[k]).trim())).map((x) => x[1]);
   }
 
   const STATUS = {
@@ -125,8 +118,6 @@
     telegram: { label: "텔레그램 자동확인", cls: "vm-tg" },
     capture: { label: "캡쳐 제출", cls: "vm-cap" },
   };
-  const DAY_LABELS = ["월", "화", "수", "목", "금", "토", "일"];
-  const MEDALS = ["🥇", "🥈", "🥉"];
   const st = (k) => STATUS[k] || { txt: esc(k || "대기중"), cls: "st-pending" };
   const joinTitle = (j) => (j && (j.title || (Array.isArray(j) && j[0] && j[0].title))) || "미션";
   const joinEmail = (j) => {
@@ -139,21 +130,11 @@
     user: null, uid: null, profile: null, isAdmin: false,
     tasks: [], tasksLoaded: false, _tasksErr: null,
     mySubs: {}, mySubList: [],
-    checkins: [], streak: 0, checkedInToday: false,
-    leaderboard: [], winners: [], _winnersErr: null, _winnerNicks: {},
     events: [], _eventsErr: null, eventsLoaded: false,
     wallets: [],
     _subTask: null, _editSubId: null, _editTaskId: null, _clock: null,
   };
   const numfmt = (n) => String(Number(n) || 0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-  // 주간 고정 리워드 추첨 경품 구성 (순서대로 배정)
-  const RAFFLE_PRIZES = [
-    { tier: "🥇 1등", prize: "3만원권" },
-    { tier: "🥈 2등", prize: "1만원권" },
-    { tier: "🥉 3등", prize: "5천원권" },
-    ...Array.from({ length: 10 }, () => ({ tier: "🎁 참여상", prize: "스타벅스 커피" })),
-  ];
 
   function kstDate(offsetDays = 0) {
     const d = new Date(Date.now() + 9 * 3600 * 1000);
@@ -189,35 +170,15 @@
       endMs: end.getTime() - 9 * 3600 * 1000,
     };
   }
-  function lastWeekStart() {
-    return dateAdd(weekBounds().startDate, -7);
-  }
-  function computeStreak(dates) {
-    const set = new Set(dates || []);
-    let base = kstToday();
-    if (!set.has(base)) base = dateAdd(base, -1);
-    let streak = 0;
-    while (set.has(base)) {
-      streak += 1;
-      base = dateAdd(base, -1);
-    }
-    return streak;
-  }
-  function thisWeekCheckins() {
-    const { startDate, endDate } = weekBounds();
-    return state.checkins.filter((d) => d >= startDate && d < endDate).length;
-  }
   function thisWeekApprovedSubs() {
     const { startIso, endIso } = weekBounds();
     return state.mySubList.filter((s) => s.status === "approved" && (!s.created_at || (s.created_at >= startIso && s.created_at < endIso))).length;
   }
+  // 응모권 = 이번 주 승인된 미션 인증 건수 × 5 (데일리 체크인 폐지)
+  const TICKETS_PER_MISSION = 5;
   function ticketStats() {
-    const checkins = thisWeekCheckins();
-    const checkinMul = state.streak >= 7 ? 2 : 1;
-    const checkinEntries = checkins * checkinMul;
     const approved = thisWeekApprovedSubs();
-    const missionEntries = approved * 5;
-    return { checkins, checkinMul, checkinEntries, approved, missionEntries, total: checkinEntries + missionEntries };
+    return { approved, total: approved * TICKETS_PER_MISSION };
   }
 
   let toastTimer;
@@ -254,7 +215,7 @@
       } catch (_) {}
     }
     if (!state.uid) return false;
-    // 늦게 복원된 세션: 프로필이 비어 있으면 채워서 requireProfile/requireNickname 오탐 방지.
+    // 늦게 복원된 세션: 프로필이 비어 있으면 채워서 requireNickname·참여정보 안내 오탐 방지.
     if (!state.profile) { try { await loadProfile(); } catch (_) {} }
     return true;
   }
@@ -347,108 +308,35 @@
       state.mySubList = data;
     } catch (_) {}
   }
-  async function loadCheckins() {
-    state.checkins = []; state.streak = 0; state.checkedInToday = false;
-    if (!state.uid) return;
-    try {
-      const { data, error } = await withTimeout(
-        state.sb.from("daily_checkins")
-          .select("checkin_date").eq("user_id", state.uid).order("checkin_date", { ascending: false }),
-        "체크인 로드",
-      );
-      if (error || !data) return;
-      state.checkins = data.map((r) => r.checkin_date);
-      state.checkedInToday = state.checkins.includes(kstToday());
-      state.streak = computeStreak(state.checkins);
-    } catch (_) {}
-  }
-  async function loadLeaderboard() {
-    state.leaderboard = [];
-    try {
-      const { data, error } = await withTimeout(
-        state.sb.rpc("streak_leaderboard", { p_limit: 10 }),
-        "리더보드 로드",
-      );
-      if (error || !data) return;
-      state.leaderboard = data.map((r) => ({ uid: r.user_id, streak: r.streak, name: r.nickname || "익명" }));
-    } catch (_) {}
-  }
-  async function loadWinners() {
-    state.winners = []; state._winnersErr = null; state._winnerNicks = {};
-    try {
-      const { data, error } = await withTimeout(
-        state.sb.from("raffle_winners")
-          .select("id,week_start,user_id,telegram,prize,entries,created_at, user:profiles(full_name,email)")
-          .eq("week_start", lastWeekStart()).order("created_at", { ascending: true }),
-        "당첨자 로드",
-      );
-      if (error) { state._winnersErr = error.message || "오류"; return; }
-      state.winners = data || [];
-      const ids = [...new Set(state.winners.map((w) => w.user_id).filter(Boolean))];
-      if (ids.length) {
-        try {
-          const { data: nicks } = await withTimeout(
-            state.sb.rpc("public_nicknames", { p_ids: ids }),
-            "당첨자 닉네임 로드",
-          );
-          (nicks || []).forEach((n) => { state._winnerNicks[n.id] = n.nickname; });
-        } catch (_) {}
-      }
-    } catch (err) {
-      state._winnersErr = errText(err);
-    }
-  }
-  function renderCheckin() {
-    const wrap = $("checkinBody");
-    if (!wrap) return;
-    const todayIdx = (kstDate().getUTCDay() + 6) % 7;
-    const { startDate } = weekBounds();
-    const set = new Set(state.checkins);
-    let boxes = "";
-    for (let i = 0; i < 7; i++) {
-      const date = dateAdd(startDate, i);
-      const done = set.has(date);
-      const cls = "sq" + (done ? " done" : "") + (i === todayIdx && !done ? " today" : "");
-      boxes += `<div class="${cls}"><span class="d">${DAY_LABELS[i]}</span><span class="v">${done ? "✓" : (i === todayIdx ? "·" : i + 1)}</span></div>`;
-    }
-    if (!state.uid) {
-      // 세션은 살아있는데 첫 렌더 때 복원이 늦은 경우: 클릭 없이도 자동으로 복원 시도 → 로그인 UI로 전환.
-      if (!state._ckAuto) {
-        state._ckAuto = true;
-        for (const delay of [400, 1500, 3500]) {
-          setTimeout(async () => {
-            if (state.uid) return;
-            if (await ensureSession()) { await loadCheckins(); renderCheckin(); renderTickets(); renderLeaderboard(); }
-          }, delay);
-        }
-      }
-      wrap.innerHTML = `<div class="streak-strip">${boxes}</div><div class="ck-row"><div class="ck-meta">로그인하고 매일 체크인하면 응모권을 받을 수 있습니다.<br>체크인 1회마다 응모권 <b>+1장</b>입니다.</div><button class="btn-sub" id="ckLogin" type="button">로그인하고 체크인</button></div><div class="note">🎁 7일 연속 달성 시 이번 주 체크인 응모권이 <b style="color:var(--accent2)">2배</b> 적립됩니다.</div>`;
-      const b = $("ckLogin"); if (b) b.onclick = async () => {
-        b.disabled = true; const _o = b.textContent; b.textContent = "확인 중…";
-        if (await ensureSession()) { await loadCheckins(); renderCheckin(); renderTickets(); doCheckin(); }
-        else { b.disabled = false; b.textContent = _o; doLogin(); }
-      };
-      return;
-    }
-    const done = state.checkedInToday;
-    wrap.innerHTML = `<div class="streak-strip">${boxes}</div><div class="ck-row"><div class="ck-meta"><b>${state.streak}</b>일 연속 출석 중입니다.${done ? "<br>오늘 체크인은 완료했습니다." : `<br>오늘 체크인하면 <b>${state.streak + 1}일</b> 연속 출석입니다.`}<br>체크인 1회마다 응모권 <b>+1장</b>입니다.</div>${done ? `<button class="btn-sub" disabled>오늘 체크인 완료 ✓</button>` : `<button class="btn-sub" id="ckBtn" type="button">오늘 체크인 ✅ (+1)</button>`}</div><div class="note">🎁 7일 연속 달성 시 이번 주 체크인 응모권이 <b style="color:var(--accent2)">2배</b> 적립됩니다.</div>`;
-    const b = $("ckBtn"); if (b) b.onclick = doCheckin;
-  }
   function renderTickets() {
     const total = $("ticketTotal");
     const foot = $("ticketFoot");
     const bd = $("ticketBreakdown");
     if (!total || !foot || !bd) return;
+    const chips = (approved, tickets) => `<span class="eq-chip"><span class="lab">미션 인증</span><span class="val">${approved}건</span><span class="mul">× ${TICKETS_PER_MISSION}장</span></span><span class="eq-op">=</span><span class="eq-chip sum"><span class="lab">총 응모권</span><span class="val">${tickets}장</span><span class="mul">가중 추첨</span></span>`;
     if (!state.uid) {
+      // 세션은 살아있는데 첫 렌더 때 복원이 늦은 경우: 클릭 없이도 자동으로 복원 시도 → 로그인 뷰 해제.
+      if (!state._ckAuto) {
+        state._ckAuto = true;
+        for (const delay of [400, 1500, 3500]) {
+          setTimeout(async () => {
+            if (state.uid) return;
+            if (await ensureSession()) { await loadMySubs(); renderTickets(); renderTasks(); renderProfile(); }
+          }, delay);
+        }
+      }
       total.textContent = "0";
       foot.textContent = "🎟️ 로그인하면 이번 주 응모권을 계산합니다.";
-      bd.innerHTML = `<span class="eq-chip"><span class="lab">체크인</span><span class="val">0</span><span class="mul">×1장</span></span><span class="eq-op">+</span><span class="eq-chip"><span class="lab">미션 인증</span><span class="val">0건</span><span class="mul">×5장</span></span><span class="eq-op">=</span><span class="eq-chip sum"><span class="lab">총 응모권</span><span class="val">0장</span></span>`;
+      bd.innerHTML = chips(0, 0);
       return;
     }
     const x = ticketStats();
     total.textContent = x.total;
-    foot.textContent = `🎟️ 추첨 가중치 ${x.total}장 · 7일 스트릭 ${state.streak >= 7 ? "달성" : "미달성"}입니다.`;
-    bd.innerHTML = `<span class="eq-chip"><span class="lab">체크인</span><span class="val">${x.checkins}</span><span class="mul">×${x.checkinMul}장</span></span><span class="eq-op">+</span><span class="eq-chip"><span class="lab">미션 인증</span><span class="val">${x.approved}건</span><span class="mul">×5장</span></span><span class="eq-op">=</span><span class="eq-chip sum"><span class="lab">총 응모권</span><span class="val">${x.total}장</span></span>`;
+    const missing = missingProfileFields();
+    foot.innerHTML = missing.length
+      ? `⚠️ 참여정보 미입력: <b style="color:var(--accent2)">${esc(missing.join(", "))}</b> — 당첨되어도 지급이 어려우니 아래 <b>내 참여 정보</b>를 채워 주십시오.`
+      : `🎟️ 추첨 가중치 ${x.total}장입니다. 미션당 하루 1회 인증할 수 있습니다.`;
+    bd.innerHTML = chips(x.approved, x.total);
   }
   function vmInfo(method) { return VM[method] || VM.capture; }
   function taskCard(t) {
@@ -484,17 +372,6 @@
       if (es) es.onclick = () => { const sub = state.mySubs[t.id]; if (sub) openSubModal(t, sub); };
     });
   }
-  function renderLeaderboard() {
-    const wrap = $("lbWrap");
-    if (!wrap) return;
-    if (!state.leaderboard.length) { wrap.innerHTML = `<div class="empty">아직 리더보드에 표시할 출석 데이터가 없습니다.</div>`; return; }
-    wrap.innerHTML = state.leaderboard.map((l, i) => {
-      const rank = i < 3 ? MEDALS[i] : i + 1;
-      const cls = "lb-row" + (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "");
-      return `<div class="${cls}"><div class="lb-rank">${rank}</div><div class="lb-name"><span class="h">${esc(l.name)}님</span></div><div class="lb-days"><b>${l.streak}</b>일 연속</div></div>`;
-    }).join("");
-  }
-
   const EVENT_WD = ["일", "월", "화", "수", "목", "금", "토"];
   function classifyEvent(ev, now) {
     const start = ev.startDate ? new Date(ev.startDate).getTime() : null;
@@ -589,20 +466,6 @@
     }).join("");
     wrap.innerHTML = html || `<div class="empty">현재 표시할 이벤트가 없습니다.</div>`;
   }
-  function renderWinners() {
-    const title = $("winnersTitle");
-    const wrap = $("winnersWrap");
-    if (!wrap) return;
-    if (title) title.textContent = `🏆 지난주 당첨자${state.winners.length ? ` (${state.winners.length}명)` : ""}`;
-    if (state._winnersErr) { wrap.innerHTML = `<div class="empty">아직 당첨자 테이블이 준비되지 않았거나 당첨자가 없습니다.</div>`; return; }
-    if (!state.winners.length) { wrap.innerHTML = `<div class="empty">지난주 당첨자 기록이 아직 없습니다.</div>`; return; }
-    wrap.innerHTML = state.winners.map((w, i) => {
-      const u = w.user || {};
-      const nick = (state._winnerNicks && state._winnerNicks[w.user_id]) || "";
-      const name = nick || w.telegram || u.full_name || (u.email ? u.email.split("@")[0] : "당첨자");
-      return `<div class="winrow"><span class="n">${i < 3 ? MEDALS[i] : ""} ${esc(name)}님</span><span class="c">${esc(w.prize || "기프티콘")} · ${Number(w.entries || 0)}장</span></div>`;
-    }).join("");
-  }
   const normHandle = (v) => (v || "").trim().replace(/^@+/, "");
   function renderProfile() {
     const wrap = $("profileBody");
@@ -619,7 +482,7 @@
       : `<div class="dim-sm" style="margin-bottom:6px;">등록된 지갑이 없습니다. 온체인 미션 인증에 필요합니다.</div>`;
     const addBtn = wallets.length < 5 ? `<button class="btn-ghost" id="pfAddWallet" type="button" style="margin-top:2px;">＋ 지갑 추가</button>` : `<div class="dim-sm" style="margin-top:2px;">최대 5개까지 등록할 수 있습니다.</div>`;
     const RQ = '<span style="color:var(--accent);font-weight:900;">*</span>';
-    wrap.innerHTML = `<div class="dim-sm" style="margin-bottom:12px;line-height:1.55;padding:10px 12px;background:rgba(255,181,71,.08);border:1px solid #3a2f14;border-radius:10px;">📌 지갑을 제외한 모든 항목을 입력해야 <b style="color:var(--accent2)">데일리 체크인</b>이 가능합니다. ${RQ} 표시는 필수입니다.</div>`
+    wrap.innerHTML = `<div class="dim-sm" style="margin-bottom:12px;line-height:1.55;padding:10px 12px;background:rgba(255,181,71,.08);border:1px solid #3a2f14;border-radius:10px;">📌 지갑을 제외한 모든 항목은 <b style="color:var(--accent2)">당첨 시 연락·보상 지급</b>에 사용됩니다. 비어 있으면 당첨되어도 지급이 어렵습니다. ${RQ} 표시는 필수입니다.</div>`
       + `<div class="af-row3"><div class="field"><label>닉네임 ${RQ} <span class="dim-sm">· 리더보드·당첨 표시</span></label><input type="text" id="pf_nick" maxlength="20" placeholder="표시될 닉네임" value="${esc(p.nickname || "")}"></div><div class="field"><label>휴대전화번호 ${RQ} <span class="dim-sm">· 보상 지급용</span></label><input type="tel" id="pf_phone" inputmode="numeric" placeholder="010-0000-0000" value="${esc(p.phone || "")}"></div><div class="field"><label>이메일 ${RQ} <span class="dim-sm">· 구글 로그인</span></label><input type="email" id="pf_email" value="${esc(p.email || "")}" readonly title="구글 로그인 이메일(수정 불가)"></div></div>`
       + `<div class="af-row3"><div class="field"><label>텔레그램 아이디 ${RQ}</label><input type="text" id="pf_tg" placeholder="@username" value="${esc(p.telegram_handle || "")}"></div><div class="field"><label>X(트위터) 아이디 ${RQ}</label><input type="text" id="pf_tw" placeholder="@username" value="${esc(p.twitter_handle || "")}"></div><div class="field"><label>유튜브 닉네임 ${RQ}</label><input type="text" id="pf_yt" placeholder="채널명 또는 @핸들" value="${esc(p.youtube_handle || "")}"></div></div>`
       + `<div class="field" style="margin-top:4px;margin-bottom:6px;"><label>에어드랍 지갑 주소 <span class="dim-sm">· 선택 · ${wallets.length}/5 · 온체인 인증용</span></label><div id="walletList">${walletRows}</div>${addBtn}</div>`
@@ -658,12 +521,9 @@
   }
   function renderAll() {
     renderProfile();
-    renderCheckin();
     renderTickets();
     renderTasks();
-    renderLeaderboard();
     renderAirdropEvents();
-    renderWinners();
   }
 
   function tickCountdown() {
@@ -678,30 +538,6 @@
     if ($("cdM")) $("cdM").textContent = String(m).padStart(2, "0");
     if ($("cdS")) $("cdS").textContent = String(s).padStart(2, "0");
     if ($("countdownLabel")) $("countdownLabel").textContent = `⏰ 이번 주 마감까지 (D-${d})`;
-  }
-
-  async function doCheckin() {
-    if (!state.uid && !(await ensureSession())) { toast("로그인이 필요합니다.", "err"); doLogin(); return; }
-    if (!requireProfile()) return;
-    const btn = $("ckBtn");
-    if (btn) { btn.disabled = true; btn.textContent = "처리 중…"; }
-    try {
-      const { error } = await withTimeout(
-        state.sb.from("daily_checkins").insert({ user_id: state.uid, checkin_date: kstToday() }),
-        "체크인 저장",
-      );
-      if (error) {
-        if (error.code === "23505" || /duplicate|unique/i.test(error.message || "")) toast("이미 오늘 체크인했습니다.", "ok");
-        else throw error;
-      } else {
-        toast("오늘 체크인 완료 · 응모권 +1장입니다.", "ok");
-      }
-      await loadCheckins();
-      renderCheckin(); renderTickets(); renderLeaderboard();
-    } catch (err) {
-      toast("체크인 실패: " + errText(err), "err");
-      if (btn) { btn.disabled = false; btn.textContent = "오늘 체크인 ✅ (+1)"; }
-    }
   }
 
   async function loadWallets() {
@@ -881,10 +717,10 @@
       await loadAuth();
       if (my !== bootToken) return;
       renderAll();
-      await Promise.allSettled([loadTasks(), loadWinners(), loadLeaderboard()]);
+      await loadTasks();
       if (my !== bootToken) return;
       renderAll();
-      await Promise.allSettled([loadMySubs(), loadCheckins(), loadWallets()]);
+      await Promise.allSettled([loadMySubs(), loadWallets()]);
       if (my !== bootToken) return;
       renderAll();
       // self-heal: 첫 부팅 때 세션이 늦게 복원돼(INITIAL_SESSION 누락/지연) uid가 비면,
