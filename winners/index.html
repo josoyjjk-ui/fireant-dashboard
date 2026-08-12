@@ -1,7 +1,7 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🏆 이벤트 결과 · 당첨자 확인 | 개미투자정보</title>
+<title>🎁 당첨자 확인 · 이벤트 결과 | 개미투자정보</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
-<meta name="description" content="ANTINFO 이벤트 결과·당첨자 확인을 한 페이지에서. 이벤트 타임라인과 이벤트별 당첨 명단을 탭으로 전환해 확인하십시오.">
+<meta name="description" content="ANTINFO 당첨자 확인. 핸들 검색으로 당첨 여부를 바로 확인하고, 이벤트 결과 타임라인도 함께 확인하십시오.">
 <link rel="canonical" href="https://antinfo.io/winners/">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;}
@@ -50,14 +50,15 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .searchbar input:focus{border-color:var(--accent);}
 .searchhint{font-size:11.5px;color:var(--dim);font-weight:700;margin-top:7px;line-height:1.5;}
 
-/* ── 탭 ── */
-.tabbar{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px;border-bottom:1px solid var(--line);}
-.tabbar button{padding:12px 18px;border:none;border-bottom:3px solid transparent;background:transparent;color:var(--dim);font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;transition:color .15s,border-color .15s;white-space:nowrap;}
-.tabbar button.on{color:var(--accent2);border-bottom-color:var(--accent2);}
-.tabbar button:hover{color:var(--txt);}
-.tabbar .hits{font-size:11px;font-weight:800;color:var(--accent2);background:rgba(255,181,71,.12);border-radius:20px;padding:2px 8px;margin-left:6px;}
-.pane{display:none;}
-.pane.on{display:block;}
+/* ── 이벤트 결과 접이식 ── */
+.resfold{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+.resfold>summary{cursor:pointer;list-style:none;padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.resfold>summary::-webkit-details-marker{display:none;}
+.resfold .rt{font-size:15px;font-weight:900;}
+.resfold .rs{font-size:12px;font-weight:800;color:var(--dim);white-space:nowrap;}
+.resfold .rbody{padding:0 18px 18px;}
+.resfold .statrow{margin-top:4px;}
+.resfold:not([open]) .rbody{display:none;}
 
 /* ── 요약 통계 ── */
 .statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;}
@@ -94,6 +95,8 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .subchip.on{border-color:var(--accent2);color:var(--accent2);background:rgba(255,181,71,.08);}
 
 /* ── 당첨자 ── */
+/* 당첨자 명단이 페이지의 주 콘텐츠라 1열 전폭으로 둔다(칩 줄바꿈 가독성). */
+#eventsBody{grid-template-columns:1fr;}
 .evgrp{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
 .evgrp>summary{cursor:pointer;list-style:none;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .evgrp>summary::-webkit-details-marker{display:none;}
@@ -110,9 +113,8 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   .main{padding:16px 14px;}
   .head h1{font-size:21px;}
   .statrow{grid-template-columns:1fr 1fr;}
-  .tabbar{flex-wrap:nowrap;overflow-x:auto;}
-  .tabbar::-webkit-scrollbar{display:none;}
-  .tabbar button{padding:12px 12px;font-size:14px;}
+  .resfold>summary{padding:14px;}
+  .resfold .rbody{padding:0 14px 14px;}
   .row{gap:10px;margin-top:12px;}
   .card{padding:14px;}
 }
@@ -145,44 +147,41 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
   <span id="authSlot" data-mobile="0" style="display:inline-flex;align-items:center;gap:8px;margin-right:8px;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button></span><script>(function(){try{var h=localStorage.getItem("antinfo_navauth");if(!h)return;if(h.indexOf("logoutBtn")>-1){var tok=false;for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf("sb-")===0&&k.indexOf("-auth-token")>-1){tok=true;break;}}if(!tok){localStorage.removeItem("antinfo_navauth");return;}}var s=document.getElementById("authSlot");if(s)s.innerHTML=h;}catch(e){}})();</script><a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a>
 </div>
 <div class="main">
-  <div class="head"><h1>🏆 이벤트 결과 · 당첨자</h1>
-    <div class="sub">이벤트 결과와 당첨자 확인을 <b style="color:var(--accent2)">한 페이지</b>에서 확인하십시오. 아래 탭으로 전환됩니다.</div></div>
+  <div class="head"><h1>🎁 당첨자 확인</h1>
+    <div class="sub">아래 검색창에 <b style="color:var(--accent2)">내 핸들</b>을 입력하면 당첨 여부를 바로 확인하실 수 있습니다.</div></div>
 
   <div class="searchbar">
     <input id="globalSearch" placeholder="🔍 내 핸들·닉네임 검색 — 당첨자 명단에서 한 번에 찾습니다" oninput="filterAll()">
     <div class="searchhint">💡 검색하면 당첨자 명단에서 일치하는 항목만 자동으로 펼쳐집니다.</div>
   </div>
 
-  <div class="tabbar" id="tabbar">
-    <button class="on" data-pane="p1" type="button">🏅 이벤트 결과</button>
-    <button data-pane="p3" type="button">🎁 당첨자 확인</button>
-  </div>
-
-  <!-- ── 탭1: 이벤트 결과 ── -->
-  <div class="pane on" id="p1">
-    <div class="statrow" id="statRow">
-      <div class="stat"><div class="l">전체 이벤트</div><div class="v" id="stTotal">—</div></div>
-      <div class="stat live"><div class="l">진행중</div><div class="v" id="stLive">—</div></div>
-      <div class="stat"><div class="l">결과 발표</div><div class="v" id="stAnnounced">—</div></div>
-      <div class="stat hl"><div class="l">누적 당첨자</div><div class="v" id="stWinners">—</div></div>
-    </div>
-
-    <div class="seclabel">🗓️ 이벤트 타임라인</div>
-    <div class="subnav" id="evFilter">
-      <span class="subchip on" data-f="all">전체</span>
-      <span class="subchip" data-f="active">🟢 진행중</span>
-      <span class="subchip" data-f="soon">🔵 예정</span>
-      <span class="subchip" data-f="ended">⚫ 종료</span>
-    </div>
-    <div class="evgrid" id="timelineBody"><div class="loading">불러오는 중…</div></div>
-  </div>
-
-  <!-- ── 탭2: 당첨자 확인 ── -->
-  <div class="pane" id="p3">
-    <div class="seclabel" id="events" style="margin-top:16px;">🏅 이벤트 당첨자 <span class="dim-sm" id="eventsSub">· 이벤트별 명단</span></div>
+  <!-- ── 당첨자 확인 (항상 최상단 노출) ── -->
+  <div id="p3">
+    <div class="seclabel" id="events" style="margin-top:18px;">🏅 이벤트 당첨자 <span class="dim-sm" id="eventsSub">· 이벤트별 명단</span></div>
     <div class="evgrid" id="eventsBody"><div class="loading">불러오는 중…</div></div>
     <div class="notebox">📌 당첨자는 <b>확정 명단만</b> 게시합니다. 응모풀 재추첨·재현은 하지 않습니다. 연락처는 비공개입니다.</div>
   </div>
+
+  <!-- ── 이벤트 결과 (항상 접힘) ── -->
+  <details class="resfold" id="p1">
+    <summary><span class="rt">🏅 이벤트 결과 · 타임라인</span><span class="rs">전체 이벤트 현황 보기 ▾</span></summary>
+    <div class="rbody">
+      <div class="statrow" id="statRow">
+        <div class="stat"><div class="l">전체 이벤트</div><div class="v" id="stTotal">—</div></div>
+        <div class="stat live"><div class="l">진행중</div><div class="v" id="stLive">—</div></div>
+        <div class="stat"><div class="l">결과 발표</div><div class="v" id="stAnnounced">—</div></div>
+        <div class="stat hl"><div class="l">누적 당첨자</div><div class="v" id="stWinners">—</div></div>
+      </div>
+
+      <div class="subnav" id="evFilter">
+        <span class="subchip on" data-f="all">전체</span>
+        <span class="subchip" data-f="active">🟢 진행중</span>
+        <span class="subchip" data-f="soon">🔵 예정</span>
+        <span class="subchip" data-f="ended">⚫ 종료</span>
+      </div>
+      <div class="evgrid" id="timelineBody"><div class="loading">불러오는 중…</div></div>
+    </div>
+  </details>
 
   <div class="dim-sm" style="text-align:center;margin-top:26px;">🐜 ANTINFO · 당첨자는 확정 명단만 게시 · 연락처는 비공개</div>
 </div>
@@ -205,18 +204,7 @@ let curQuery='';
 const winnerHandles = w => [w.telegram, w.twitter].filter(Boolean).map(norm);
 const winnerHit = (w,q) => !!q && winnerHandles(w).some(h=>h.includes(q));
 
-/* ══════════ 탭 전환 ══════════ */
-function showPane(id,scroll){
-  document.querySelectorAll('#tabbar button').forEach(b=>b.classList.toggle('on', b.dataset.pane===id));
-  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on', p.id===id));
-  try{history.replaceState(null,'','#'+id);}catch(_){}
-  if(scroll!==false) window.scrollTo({top:0,behavior:'smooth'});
-}
-document.getElementById('tabbar').addEventListener('click',e=>{
-  const b=e.target.closest('button'); if(!b)return; showPane(b.dataset.pane);
-});
-
-/* ══════════ 탭1: 이벤트 결과 ══════════ */
+/* ══════════ 이벤트 결과(접이식) ══════════ */
 const EVENT_WD=['일','월','화','수','목','금','토'];
 function evFmt(s){const d=new Date(s);if(isNaN(d))return String(s||'');return `${d.getMonth()+1}/${d.getDate()} (${EVENT_WD[d.getDay()]})`;}
 function evRange(ev){
@@ -262,7 +250,7 @@ function renderTimeline(){
       <div class="top"><div class="ti">${esc(ev.title)}</div><span class="stbadge ${cls}">${lab}</span></div>
       ${tags?`<div class="tags">${tags}</div>`:''}
       <div class="meta">${range?`<span class="d">🗓️ ${esc(range)}</span>`:''}${ev.rewards?`<span class="r">🎁 ${esc(ev.rewards)}</span>`:''}</div>
-      <div class="act">${link}<button class="mini" type="button" data-jump="1">당첨자 탭 →</button></div>
+      <div class="act">${link}<button class="mini" type="button" data-jump="1">당첨자 명단 →</button></div>
     </div>`;
   }).join('');
   el.querySelectorAll('[data-jump]').forEach(b=>{ b.onclick=()=>jumpWinners(''); });
@@ -279,18 +267,16 @@ function groupWinnersByEvent(){
   eventData.forEach(w=>{ const k=w.event||'(미지정)'; (by[k]=by[k]||[]).push(w); });
   return by;
 }
-// 이벤트 결과 카드 → 당첨자 탭으로 이동하고 해당 이벤트 그룹만 펼칩니다.
+// 이벤트 결과 카드 → 당첨자 명단으로 스크롤하고 해당 이벤트 그룹만 펼칩니다.
 function jumpWinners(eventName){
-  showPane('p3');
-  if(!eventName)return;
-  setTimeout(()=>{
-    document.querySelectorAll('#eventsBody details.evgrp').forEach(d=>{
-      const t=d.querySelector('.et');
-      const open = t && t.textContent.replace(/^🏅\s*/,'').trim()===String(eventName).trim();
-      d.open=open;
-      if(open) try{d.scrollIntoView({behavior:'smooth',block:'center'});}catch(_){}
-    });
-  },60);
+  const body=document.getElementById('eventsBody');
+  if(!eventName){ try{document.getElementById('events').scrollIntoView({behavior:'smooth',block:'start'});}catch(_){} return; }
+  document.querySelectorAll('#eventsBody details.evgrp').forEach(d=>{
+    const t=d.querySelector('.et');
+    const open = t && t.textContent.replace(/^🏅\s*/,'').trim()===String(eventName).trim();
+    d.open=open;
+    if(open) try{d.scrollIntoView({behavior:'smooth',block:'center'});}catch(_){}
+  });
 }
 function renderStats(){
   const total=evTimeline.length;
@@ -339,7 +325,7 @@ function renderEventWinners(filter){
   if(sub) sub.textContent=`· 이벤트별 명단 · 총 ${eventData.length.toLocaleString()}명`;
   if(!events.length){el.innerHTML='<div class="empty">등록된 이벤트 당첨자가 없습니다.</div>';return;}
   let html='';
-  events.forEach((ev)=>{
+  events.forEach((ev,idx)=>{
     const list=byEvent[ev];
     const total=list.length;
     const tiers={};
@@ -361,7 +347,8 @@ function renderEventWinners(filter){
       body+=`<div class="chips">${chips.filter(c=>!filter||c.hit).map(c=>`<span class="chip${c.hit?' hit':''}">${esc(c.h)}</span>`).join('')}</div>`;
     });
     if(filter && !hitCount) return;
-    const open = !!(filter && hitCount);
+    // 검색 중이면 일치한 그룹을, 평시엔 최신(첫) 이벤트를 펼쳐 명단이 바로 보이게 한다.
+    const open = filter ? !!hitCount : idx===0;
     const hitBadge = filter && hitCount ? ` · <span style="color:var(--accent2)">🎉 ${hitCount}건 일치</span>` : '';
     html+=`<details class="evgrp"${open?' open':''}><summary><span class="et">🏅 ${esc(ev)}</span><span class="esum">${total}명${hitBadge} ▾</span></summary><div class="ebody">${body||'<div class="empty">일치 없음</div>'}</div></details>`;
   });
@@ -369,30 +356,21 @@ function renderEventWinners(filter){
 }
 
 /* ══════════ 통합 검색 ══════════ */
-// 탭 순서가 바뀌어도 어긋나지 않도록 인덱스가 아닌 pane id 로 집계한다.
-// 검색 대상은 당첨자 명단(p3)뿐이다 — p1은 이벤트 타임라인이라 핸들 검색과 무관하다.
-function countHits(q){
-  if(!q)return {p3:0};
-  return { p3: eventData.filter(w=>winnerHit(w,q)).length };
-}
+// 검색 대상은 당첨자 명단뿐이다 — 이벤트 타임라인은 핸들 검색과 무관하다.
 function filterAll(){
   curQuery=norm(document.getElementById('globalSearch').value);
   renderEventWinners(curQuery);
-  const hits=countHits(curQuery);
-  document.querySelectorAll('#tabbar button').forEach(b=>{
-    const old=b.querySelector('.hits'); if(old)old.remove();
-    const n=hits[b.dataset.pane]||0;
-    if(curQuery&&n>0){const s=document.createElement('span');s.className='hits';s.textContent=n;b.appendChild(s);}
-  });
 }
 
 /* ══════════ init ══════════ */
 (function(){
   const h=(location.hash||'').replace('#','');
-  // 과거 공지에 뿌린 옛 앵커(#raffle/#lb/#events)와 폐지된 '지난 기록'(#p2)도 남은 탭으로 연결한다.
-  const LEGACY={raffle:'p3',lb:'p3',events:'p3',winners:'p3',results:'p1',p2:'p3'};
-  const pane=['p1','p3'].includes(h)?h:LEGACY[h];
-  if(pane) showPane(pane,false);
+  // 과거 공지에 뿌린 옛 앵커(#raffle/#lb/#events)와 폐지된 탭 앵커(#p2/#p3)는 당첨자 명단으로 보낸다.
+  // #p1/#results 로 들어온 경우에만 이벤트 결과 접이식을 펼친다.
+  if(h==='p1'||h==='results'){
+    const d=document.getElementById('p1');
+    if(d){ d.open=true; try{d.scrollIntoView({behavior:'auto',block:'start'});}catch(_){} }
+  }
 })();
 loadEventsJson(); loadEventWinners();
 </script>
