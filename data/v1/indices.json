@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-08-20T13:27:42+09:00",
-  "run_id": "1787200069",
-  "status": "ok",
+  "generated_at": "2026-08-20T13:30:09+09:00",
+  "run_id": "1787200230",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -94,12 +94,12 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 98.806,
+      "price": 98.809,
       "prev_close": 98.83,
-      "change": -0.02400000000000091,
-      "change_pct": -0.02428412425377002,
+      "change": -0.021000000000000796,
+      "change_pct": -0.021248608722048767,
       "currency": "USD",
-      "market_time": 1787199465
+      "market_time": 1787199614
     },
     {
       "name": "VIX 변동성",
@@ -118,12 +118,12 @@
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 4553.9,
+      "price": 4553.5,
       "prev_close": 4489.4,
-      "change": 64.5,
-      "change_pct": 1.43671760146122,
+      "change": 64.10000000000036,
+      "change_pct": 1.427807724863019,
       "currency": "USD",
-      "market_time": 1787199453
+      "market_time": 1787199614
     },
     {
       "name": "WTI 유가",
@@ -135,32 +135,35 @@
       "change": -1.2800000000000011,
       "change_pct": -1.4913200512641283,
       "currency": "USD",
-      "market_time": 1787199456
+      "market_time": 1787199456,
+      "stale": true
     },
     {
       "name": "코스피",
       "symbol": "KOSPI",
       "group": "한국증시",
       "unit": "",
-      "price": 6877.87,
+      "price": 6881.71,
       "prev_close": 6471.17,
-      "change": 406.7,
-      "change_pct": 6.28,
+      "change": 410.54,
+      "change_pct": 6.34,
       "currency": "KRW",
-      "market_time": "2026-08-20T13:27:00+09:00"
+      "market_time": "2026-08-20T13:30:00+09:00"
     },
     {
       "name": "코스닥",
       "symbol": "KOSDAQ",
       "group": "한국증시",
       "unit": "",
-      "price": 841.68,
-      "prev_close": 824.4599999999999,
-      "change": 17.22,
-      "change_pct": 2.09,
+      "price": 841.77,
+      "prev_close": 824.46,
+      "change": 17.31,
+      "change_pct": 2.1,
       "currency": "KRW",
-      "market_time": "2026-08-20T13:27:00+09:00"
+      "market_time": "2026-08-20T13:29:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "WTI 유가(CL=F): [Errno 54] Connection reset by peer"
+  ]
 }
