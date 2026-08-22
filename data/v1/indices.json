@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-08-22T20:17:52+09:00",
-  "run_id": "1787397480",
-  "status": "ok",
+  "generated_at": "2026-08-22T20:20:15+09:00",
+  "run_id": "1787397640",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -94,12 +94,12 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 98.8,
+      "price": 98.839,
       "prev_close": 98.9,
-      "change": -0.10000000000000853,
-      "change_pct": -0.10111223458039284,
+      "change": -0.06100000000000705,
+      "change_pct": -0.06167846309404151,
       "currency": "USD",
-      "market_time": 1787284740
+      "market_time": 1787345999
     },
     {
       "name": "VIX 변동성",
@@ -111,7 +111,8 @@
       "change": -0.8800000000000008,
       "change_pct": -5.496564647095569,
       "currency": "USD",
-      "market_time": 1787343300
+      "market_time": 1787343300,
+      "stale": true
     },
     {
       "name": "금",
@@ -162,5 +163,7 @@
       "market_time": "2026-08-21T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "VIX 변동성(^VIX): The read operation timed out"
+  ]
 }
