@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-08-23T17:16:34+09:00",
-  "run_id": "1787473002",
-  "status": "ok",
+  "generated_at": "2026-08-23T17:18:58+09:00",
+  "run_id": "1787473145",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -135,7 +135,8 @@
       "change": 0.0,
       "change_pct": 0.0,
       "currency": "USD",
-      "market_time": 1787345999
+      "market_time": 1787345999,
+      "stale": true
     },
     {
       "name": "코스피",
@@ -162,5 +163,7 @@
       "market_time": "2026-08-21T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "WTI 유가(CL=F): no price"
+  ]
 }
