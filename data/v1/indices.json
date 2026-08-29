@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-08-29T12:16:55+09:00",
-  "run_id": "1787973464",
-  "status": "ok",
+  "generated_at": "2026-08-29T12:22:11+09:00",
+  "run_id": "1787973802",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -94,12 +94,12 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 99.7,
+      "price": 99.677,
       "prev_close": 99.16,
-      "change": 0.5400000000000063,
-      "change_pct": 0.5445744251714464,
+      "change": 0.5170000000000101,
+      "change_pct": 0.5213795885437779,
       "currency": "USD",
-      "market_time": 1787889540
+      "market_time": 1787950799
     },
     {
       "name": "VIX 변동성",
@@ -111,7 +111,7 @@
       "change": -0.08000000000000007,
       "change_pct": -0.5513439007580984,
       "currency": "USD",
-      "market_time": 1787948100
+      "market_time": 1787948101
     },
     {
       "name": "금",
@@ -123,7 +123,8 @@
       "change": -105.59999999999945,
       "change_pct": -2.2908215285159437,
       "currency": "USD",
-      "market_time": 1787950797
+      "market_time": 1787950797,
+      "stale": true
     },
     {
       "name": "WTI 유가",
@@ -162,5 +163,7 @@
       "market_time": "2026-08-28T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "금(GC=F): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
