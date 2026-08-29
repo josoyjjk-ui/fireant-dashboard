@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-08-29T12:06:08+09:00",
-  "run_id": "1787972783",
-  "status": "ok",
+  "generated_at": "2026-08-29T12:09:56+09:00",
+  "run_id": "1787973042",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -87,7 +87,8 @@
       "change": 0.015000000000000568,
       "change_pct": 0.288961664419198,
       "currency": "USD",
-      "market_time": 1787943594
+      "market_time": 1787943594,
+      "stale": true
     },
     {
       "name": "달러인덱스(DXY)",
@@ -111,7 +112,7 @@
       "change": -0.08000000000000007,
       "change_pct": -0.5513439007580984,
       "currency": "USD",
-      "market_time": 1787948101
+      "market_time": 1787948100
     },
     {
       "name": "금",
@@ -162,5 +163,7 @@
       "market_time": "2026-08-28T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "미 30년물(^TYX): Remote end closed connection without response"
+  ]
 }
