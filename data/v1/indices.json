@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-08-29T11:56:52+09:00",
-  "run_id": "1787972249",
-  "status": "ok",
+  "generated_at": "2026-08-29T12:01:45+09:00",
+  "run_id": "1787972580",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -51,7 +51,8 @@
       "change": 0.052000000000000046,
       "change_pct": 1.4138118542686255,
       "currency": "USD",
-      "market_time": 1787943594
+      "market_time": 1787943594,
+      "stale": true
     },
     {
       "name": "미 5년물",
@@ -162,5 +163,7 @@
       "market_time": "2026-08-28T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "미 3개월물(T-Bill)(^IRX): The read operation timed out"
+  ]
 }
