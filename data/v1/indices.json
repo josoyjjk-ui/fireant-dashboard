@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-08-29T22:46:28+09:00",
-  "run_id": "1788011196",
-  "status": "ok",
+  "generated_at": "2026-08-29T22:51:23+09:00",
+  "run_id": "1788011639",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -15,7 +15,8 @@
       "change": 36.0600000000004,
       "change_pct": 0.46979428586318384,
       "currency": "USD",
-      "market_time": 1787949420
+      "market_time": 1787949420,
+      "stale": true
     },
     {
       "name": "나스닥",
@@ -87,7 +88,8 @@
       "change": 0.015000000000000568,
       "change_pct": 0.288961664419198,
       "currency": "USD",
-      "market_time": 1787943594
+      "market_time": 1787943594,
+      "stale": true
     },
     {
       "name": "달러인덱스(DXY)",
@@ -162,5 +164,8 @@
       "market_time": "2026-08-28T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "S&P 500(^GSPC): <urlopen error _ssl.c:1063: The handshake operation timed ou",
+    "미 30년물(^TYX): <urlopen error [Errno 8] nodename nor servname provided, or "
+  ]
 }
