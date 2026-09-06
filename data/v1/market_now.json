@@ -1,49 +1,36 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-09-06T21:19:48+09:00",
-  "run_id": "1788697188",
-  "status": "ok",
-  "failures": [],
+  "generated_at": "2026-09-06T21:22:11+09:00",
+  "run_id": "1788697331",
+  "status": "partial",
+  "failures": [
+    "coingecko/markets p2: HTTP Error 429: Too Many Requests",
+    "coingecko/global: HTTP Error 429: Too Many Requests"
+  ],
   "btc": {
     "id": "bitcoin",
     "name": "Bitcoin",
     "symbol": "btc",
     "image": "https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400",
-    "price": 79962.0,
-    "chg": 0.3741
+    "price": 79963.0,
+    "chg": 0.379
   },
   "eth": {
     "id": "ethereum",
     "name": "Ethereum",
     "symbol": "eth",
     "image": "https://coin-images.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
-    "price": 2503.49,
-    "chg": 1.96853
+    "price": 2503.1,
+    "chg": 1.96026
   },
   "gainers": [
-    {
-      "id": "hakimi",
-      "name": "哈基米 (Hajimi)",
-      "symbol": "哈基米",
-      "image": "https://coin-images.coingecko.com/coins/images/69928/large/zcslpjiz4jgzaot9e2f7ltpvgge9.?1760046765",
-      "price": 0.06934,
-      "chg": 287.78095
-    },
-    {
-      "id": "stonk-3",
-      "name": "STONK",
-      "symbol": "stonk",
-      "image": "https://coin-images.coingecko.com/coins/images/102175239/large/tscmgapqpfx5j4hu8gbs3aj85s7a.?1785895603",
-      "price": 0.116413,
-      "chg": 284.77283
-    },
     {
       "id": "arbitrum",
       "name": "Arbitrum",
       "symbol": "arb",
       "image": "https://coin-images.coingecko.com/coins/images/16547/large/arb.jpg?1721358242",
-      "price": 0.195095,
-      "chg": 47.0452
+      "price": 0.195216,
+      "chg": 47.04572
     },
     {
       "id": "raydium",
@@ -51,55 +38,71 @@
       "symbol": "ray",
       "image": "https://coin-images.coingecko.com/coins/images/13928/large/PSigc4ie_400x400.jpg?1696513668",
       "price": 1.15,
-      "chg": 37.86462
-    },
-    {
-      "id": "sushi",
-      "name": "Sushi",
-      "symbol": "sushi",
-      "image": "https://coin-images.coingecko.com/coins/images/12271/large/512x512_Logo_no_chop.png?1696512101",
-      "price": 0.251582,
-      "chg": 24.23715
+      "chg": 37.42704
     },
     {
       "id": "jupiter-exchange-solana",
       "name": "Jupiter",
       "symbol": "jup",
       "image": "https://coin-images.coingecko.com/coins/images/34188/large/jup.png?1704266489",
-      "price": 0.275217,
-      "chg": 22.39411
-    },
-    {
-      "id": "zignaly",
-      "name": "ZIGChain",
-      "symbol": "zig",
-      "image": "https://coin-images.coingecko.com/coins/images/14796/large/ZIG_COIN_%281%29.png?1779272472",
-      "price": 0.050982,
-      "chg": 20.16378
+      "price": 0.275312,
+      "chg": 22.52118
     },
     {
       "id": "zama",
       "name": "Zama",
       "symbol": "zama",
       "image": "https://coin-images.coingecko.com/coins/images/70921/large/zama.png?1764591992",
-      "price": 0.060896,
-      "chg": 18.75813
+      "price": 0.060447,
+      "chg": 17.98477
     },
     {
-      "id": "coti",
-      "name": "COTI",
-      "symbol": "coti",
-      "image": "https://coin-images.coingecko.com/coins/images/2962/large/Coti.png?1696503705",
-      "price": 0.01770739,
-      "chg": 18.70818
+      "id": "unifai-network",
+      "name": "UnifAI Network",
+      "symbol": "uai",
+      "image": "https://coin-images.coingecko.com/coins/images/70521/large/uai.png?1762323485",
+      "price": 0.544538,
+      "chg": 15.94022
     },
     {
-      "id": "bulla-3",
-      "name": "BULLA",
-      "symbol": "bulla",
-      "image": "https://coin-images.coingecko.com/coins/images/66398/large/hasb.png?1749288195",
-      "price": 0.072973,
-      "chg": 18.28541
+      "id": "zcash",
+      "name": "Zcash",
+      "symbol": "zec",
+      "image": "https://coin-images.coingecko.com/coins/images/486/large/Brandmark-Yellow_%281%29.png?1785810558",
+      "price": 1173.35,
+      "chg": 15.8422
+    },
+    {
+      "id": "uniswap",
+      "name": "Uniswap",
+      "symbol": "uni",
+      "image": "https://coin-images.coingecko.com/coins/images/12504/large/uniswap-logo.png?1720676669",
+      "price": 7.07,
+      "chg": 12.80369
+    },
+    {
+      "id": "the-graph",
+      "name": "The Graph",
+      "symbol": "grt",
+      "image": "https://coin-images.coingecko.com/coins/images/13397/large/Graph_Token.png?1696513159",
+      "price": 0.01972429,
+      "chg": 12.55258
+    },
+    {
+      "id": "meteora",
+      "name": "Meteora",
+      "symbol": "met",
+      "image": "https://coin-images.coingecko.com/coins/images/69110/large/meteora.png?1757517561",
+      "price": 0.211649,
+      "chg": 11.56694
+    },
+    {
+      "id": "fartcoin",
+      "name": "Fartcoin",
+      "symbol": "fartcoin",
+      "image": "https://coin-images.coingecko.com/coins/images/50891/large/fart.jpg?1729503972",
+      "price": 0.184032,
+      "chg": 11.222
     }
   ],
   "losers": [
@@ -108,80 +111,80 @@
       "name": "Akedo",
       "symbol": "ake",
       "image": "https://coin-images.coingecko.com/coins/images/68410/large/akedo.png?1755678461",
-      "price": 0.01391884,
-      "chg": -27.61299
-    },
-    {
-      "id": "niu-lai",
-      "name": "牛来 (Niu Lai)",
-      "symbol": "牛来",
-      "image": "https://coin-images.coingecko.com/coins/images/102175567/large/niulai.webp?1786873800",
-      "price": 0.097631,
-      "chg": -18.94921
+      "price": 0.01396229,
+      "chg": -24.52674
     },
     {
       "id": "marscoin-4",
       "name": "MarsCoin",
       "symbol": "marscoin",
       "image": "https://coin-images.coingecko.com/coins/images/102175246/large/1000299474.png?1785934648",
-      "price": 0.195144,
-      "chg": -17.88765
-    },
-    {
-      "id": "troll-2",
-      "name": "TROLL",
-      "symbol": "troll",
-      "image": "https://coin-images.coingecko.com/coins/images/55282/large/Untitled_design.png?1777015928",
-      "price": 0.056448,
-      "chg": -14.75452
-    },
-    {
-      "id": "unitas",
-      "name": "Unitas",
-      "symbol": "up",
-      "image": "https://coin-images.coingecko.com/coins/images/71531/large/Logo_Mark_200.png?1772722048",
-      "price": 0.444212,
-      "chg": -12.67163
+      "price": 0.195696,
+      "chg": -18.32559
     },
     {
       "id": "artificial-inu-3",
       "name": "Artificial Inu",
       "symbol": "ai",
       "image": "https://coin-images.coingecko.com/coins/images/102176647/large/5ou9sb7h478ezv28urbjpzf1fl3e.?1788401429",
-      "price": 0.209262,
-      "chg": -11.69691
+      "price": 0.208112,
+      "chg": -11.40499
     },
     {
       "id": "derive",
       "name": "Derive",
       "symbol": "drv",
       "image": "https://coin-images.coingecko.com/coins/images/52889/large/Token_Logo.png?1734601695",
-      "price": 0.166613,
-      "chg": -11.46724
-    },
-    {
-      "id": "four",
-      "name": "Four",
-      "symbol": "form",
-      "image": "https://coin-images.coingecko.com/coins/images/54912/large/four.jpg?1742461445",
-      "price": 0.268874,
-      "chg": -10.14961
+      "price": 0.166601,
+      "chg": -10.92118
     },
     {
       "id": "seeker",
       "name": "Seeker",
       "symbol": "skr",
       "image": "https://coin-images.coingecko.com/coins/images/70974/large/seeker-logo.jpg?1764922774",
-      "price": 0.02116854,
-      "chg": -7.47647
+      "price": 0.02110173,
+      "chg": -7.96115
     },
     {
-      "id": "lobster-2",
-      "name": "龙虾 (Lobster)",
-      "symbol": "龙虾",
-      "image": "https://coin-images.coingecko.com/coins/images/102172215/large/bvnt2zqtx33e6at5pm5marta4070.?1772252895",
-      "price": 0.080824,
-      "chg": -7.18996
+      "id": "cash-cat",
+      "name": "Cash Cat",
+      "symbol": "cashcat",
+      "image": "https://coin-images.coingecko.com/coins/images/102174280/large/cashcat-logo.jpg?1782922765",
+      "price": 0.234117,
+      "chg": -7.24528
+    },
+    {
+      "id": "useless-3",
+      "name": "Useless Coin",
+      "symbol": "useless",
+      "image": "https://coin-images.coingecko.com/coins/images/55684/large/coingeckoupdate.png?1755203747",
+      "price": 0.221369,
+      "chg": -6.5966
+    },
+    {
+      "id": "trust-wallet-token",
+      "name": "Trust Wallet",
+      "symbol": "twt",
+      "image": "https://coin-images.coingecko.com/coins/images/11085/large/Trust.png?1696511026",
+      "price": 0.610459,
+      "chg": -5.87717
+    },
+    {
+      "id": "pump-fun",
+      "name": "Pump.fun",
+      "symbol": "pump",
+      "image": "https://coin-images.coingecko.com/coins/images/67164/large/pump.jpg?1751949376",
+      "price": 0.00401518,
+      "chg": -3.69457
+    },
+    {
+      "id": "bianrensheng",
+      "name": "币安人生 (BinanceLife)",
+      "symbol": "币安人生",
+      "image": "https://coin-images.coingecko.com/coins/images/69848/large/%E5%B8%81%E5%AE%89%E4%BA%BA%E7%94%9F.png?1759839225",
+      "price": 0.519726,
+      "chg": -3.53997
     }
   ],
   "markets": [
@@ -191,12 +194,12 @@
       "name": "Bitcoin",
       "symbol": "btc",
       "image": "https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400",
-      "price": 79962.0,
-      "chg24h": 0.3741,
+      "price": 79963.0,
+      "chg24h": 0.379,
       "chg7d": 2.3,
-      "mcap": 1605616169667.0,
-      "fdv": 1605626404503.0,
-      "athChg": -36.57821
+      "mcap": 1605718109291.0,
+      "fdv": 1605728344777.0,
+      "athChg": -36.5777
     },
     {
       "rank": 2,
@@ -204,12 +207,12 @@
       "name": "Ethereum",
       "symbol": "eth",
       "image": "https://coin-images.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
-      "price": 2503.49,
-      "chg24h": 1.96853,
+      "price": 2503.1,
+      "chg24h": 1.96026,
       "chg7d": 1.7,
-      "mcap": 305456055967.0,
-      "fdv": 305456055967.0,
-      "athChg": -49.38404
+      "mcap": 305447743573.0,
+      "fdv": 305447743573.0,
+      "athChg": -49.39194
     },
     {
       "rank": 3,
@@ -217,12 +220,12 @@
       "name": "Tether",
       "symbol": "usdt",
       "image": "https://coin-images.coingecko.com/coins/images/325/large/Tether.png?1696501661",
-      "price": 0.999998,
-      "chg24h": -0.00924,
+      "price": 1.0,
+      "chg24h": -0.01115,
       "chg7d": 0.0,
-      "mcap": 183389133468.0,
-      "fdv": 188855982409.0,
-      "athChg": -24.41983
+      "mcap": 183392342626.0,
+      "fdv": 188859287232.0,
+      "athChg": -24.41966
     },
     {
       "rank": 4,
@@ -230,12 +233,12 @@
       "name": "BNB",
       "symbol": "bnb",
       "image": "https://coin-images.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501970",
-      "price": 758.14,
-      "chg24h": 0.6693,
+      "price": 757.67,
+      "chg24h": 0.5507,
       "chg7d": 9.5,
-      "mcap": 100948917097.0,
-      "fdv": 100948914625.0,
-      "athChg": -44.6613
+      "mcap": 100895655989.0,
+      "fdv": 100895653519.0,
+      "athChg": -44.69492
     },
     {
       "rank": 5,
@@ -244,11 +247,11 @@
       "symbol": "xrp",
       "image": "https://coin-images.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1696501442",
       "price": 1.42,
-      "chg24h": 1.22906,
+      "chg24h": 1.18055,
       "chg7d": 2.2,
-      "mcap": 89263002591.0,
-      "fdv": 142243808675.0,
-      "athChg": -60.99654
+      "mcap": 89195787096.0,
+      "fdv": 142136698365.0,
+      "athChg": -61.01466
     },
     {
       "rank": 6,
@@ -256,12 +259,12 @@
       "name": "USDC",
       "symbol": "usdc",
       "image": "https://coin-images.coingecko.com/coins/images/6319/large/USDC.png?1769615602",
-      "price": 0.999948,
-      "chg24h": -0.00528,
+      "price": 0.999945,
+      "chg24h": -0.00784,
       "chg7d": 0.0,
-      "mcap": 74538393605.0,
-      "fdv": 74554512917.0,
-      "athChg": -4.17041
+      "mcap": 74539370291.0,
+      "fdv": 74555489815.0,
+      "athChg": -4.17066
     },
     {
       "rank": 7,
@@ -269,12 +272,12 @@
       "name": "Solana",
       "symbol": "sol",
       "image": "https://coin-images.coingecko.com/coins/images/4128/large/solana.png?1718769756",
-      "price": 106.68,
-      "chg24h": 4.20343,
+      "price": 106.64,
+      "chg24h": 4.13756,
       "chg7d": 1.2,
-      "mcap": 62445470367.0,
-      "fdv": 67576387535.0,
-      "athChg": -63.62957
+      "mcap": 62436033088.0,
+      "fdv": 67566174828.0,
+      "athChg": -63.64303
     },
     {
       "rank": 8,
@@ -282,12 +285,12 @@
       "name": "TRON",
       "symbol": "trx",
       "image": "https://coin-images.coingecko.com/coins/images/1094/large/photo_2026-04-13_09-59-16.png?1776048311",
-      "price": 0.334998,
-      "chg24h": 0.60795,
+      "price": 0.335082,
+      "chg24h": 0.6261,
       "chg7d": -1.6,
-      "mcap": 31799266209.0,
-      "fdv": 31799828340.0,
-      "athChg": -22.32629
+      "mcap": 31804729126.0,
+      "fdv": 31805291353.0,
+      "athChg": -22.30674
     },
     {
       "rank": 9,
@@ -308,12 +311,12 @@
       "name": "Zcash",
       "symbol": "zec",
       "image": "https://coin-images.coingecko.com/coins/images/486/large/Brandmark-Yellow_%281%29.png?1785810558",
-      "price": 1174.34,
-      "chg24h": 15.88582,
+      "price": 1173.35,
+      "chg24h": 15.8422,
       "chg7d": 40.8,
-      "mcap": 19868764355.0,
-      "fdv": 19870102216.0,
-      "athChg": -63.2092
+      "mcap": 19846142708.0,
+      "fdv": 19847479045.0,
+      "athChg": -63.24003
     },
     {
       "rank": 10,
@@ -321,12 +324,12 @@
       "name": "Hyperliquid",
       "symbol": "hype",
       "image": "https://coin-images.coingecko.com/coins/images/50882/large/hyperliquid.jpg?1729431300",
-      "price": 88.84,
-      "chg24h": 4.77186,
+      "price": 88.89,
+      "chg24h": 4.74054,
       "chg7d": 6.0,
-      "mcap": 19763398300.0,
-      "fdv": 84875154318.0,
-      "athChg": -0.00414
+      "mcap": 19782143439.0,
+      "fdv": 84955656497.0,
+      "athChg": -0.04058
     },
     {
       "rank": 11,
@@ -334,12 +337,12 @@
       "name": "Dogecoin",
       "symbol": "doge",
       "image": "https://coin-images.coingecko.com/coins/images/5/large/dogecoin.png?1696501409",
-      "price": 0.090054,
-      "chg24h": 4.45575,
+      "price": 0.090023,
+      "chg24h": 4.46776,
       "chg7d": 6.1,
-      "mcap": 14028225453.0,
-      "fdv": 14028258767.0,
-      "athChg": -87.6905
+      "mcap": 14025858356.0,
+      "fdv": 14025891665.0,
+      "athChg": -87.69475
     },
     {
       "rank": 12,
@@ -347,12 +350,12 @@
       "name": "Rain",
       "symbol": "rain",
       "image": "https://coin-images.coingecko.com/coins/images/69134/large/Rain_logo_1_.png?1762952191",
-      "price": 0.01703903,
-      "chg24h": 3.86035,
+      "price": 0.01702812,
+      "chg24h": 3.77241,
       "chg7d": -2.8,
-      "mcap": 12082473948.0,
-      "fdv": 19462749726.0,
-      "athChg": -12.45888
+      "mcap": 12079599921.0,
+      "fdv": 19458120171.0,
+      "athChg": -12.51492
     },
     {
       "rank": 13,
@@ -360,12 +363,12 @@
       "name": "Monero",
       "symbol": "xmr",
       "image": "https://coin-images.coingecko.com/coins/images/69/large/monero_logo.png?1696501460",
-      "price": 536.95,
-      "chg24h": 0.14474,
+      "price": 536.75,
+      "chg24h": -0.12132,
       "chg7d": 12.3,
-      "mcap": 10095995223.0,
-      "fdv": 10096008755.0,
-      "athChg": -32.69115
+      "mcap": 10091168708.0,
+      "fdv": 10091182233.0,
+      "athChg": -32.71558
     },
     {
       "rank": 14,
@@ -373,12 +376,12 @@
       "name": "USDS",
       "symbol": "usds",
       "image": "https://coin-images.coingecko.com/coins/images/39926/large/usds.webp?1726666683",
-      "price": 0.999869,
-      "chg24h": 0.01269,
+      "price": 0.999775,
+      "chg24h": 0.00589,
       "chg7d": 0.0,
-      "mcap": 9821397794.0,
-      "fdv": 9820632291.0,
-      "athChg": -5.43389
+      "mcap": 9820636220.0,
+      "fdv": 9819870776.0,
+      "athChg": -5.44277
     },
     {
       "rank": 15,
@@ -387,11 +390,11 @@
       "symbol": "link",
       "image": "https://coin-images.coingecko.com/coins/images/877/large/Chainlink_Logo_500.png?1760023405",
       "price": 12.31,
-      "chg24h": 4.84151,
+      "chg24h": 4.87347,
       "chg7d": 7.8,
-      "mcap": 9207506467.0,
-      "fdv": 12307855676.0,
-      "athChg": -76.64112
+      "mcap": 9209545223.0,
+      "fdv": 12310580921.0,
+      "athChg": -76.63771
     },
     {
       "rank": 16,
@@ -399,12 +402,12 @@
       "name": "WhiteBIT Coin",
       "symbol": "wbt",
       "image": "https://coin-images.coingecko.com/coins/images/27045/large/wbt_token.png?1696526096",
-      "price": 73.74,
-      "chg24h": 0.7993,
+      "price": 73.72,
+      "chg24h": 0.76751,
       "chg7d": 2.2,
-      "mcap": 8698513702.0,
-      "fdv": 21651595163.0,
-      "athChg": -1.63308
+      "mcap": 8696039723.0,
+      "fdv": 21645437147.0,
+      "athChg": -1.66265
     },
     {
       "rank": 17,
@@ -413,11 +416,11 @@
       "symbol": "leo",
       "image": "https://coin-images.coingecko.com/coins/images/8418/large/leo-token.png?1696508607",
       "price": 9.34,
-      "chg24h": 0.84989,
+      "chg24h": 0.85082,
       "chg7d": -3.8,
-      "mcap": 8590648031.0,
-      "fdv": 9201254071.0,
-      "athChg": -12.00534
+      "mcap": 8590592207.0,
+      "fdv": 9201194280.0,
+      "athChg": -12.00543
     },
     {
       "rank": 18,
@@ -425,12 +428,12 @@
       "name": "Cardano",
       "symbol": "ada",
       "image": "https://coin-images.coingecko.com/coins/images/975/large/cardano.png?1696502090",
-      "price": 0.221326,
-      "chg24h": 3.5853,
+      "price": 0.221343,
+      "chg24h": 3.63855,
       "chg7d": 9.4,
-      "mcap": 8299727780.0,
-      "fdv": 9958522602.0,
-      "athChg": -92.83019
+      "mcap": 8301035301.0,
+      "fdv": 9960091445.0,
+      "athChg": -92.82962
     },
     {
       "rank": 19,
@@ -438,12 +441,12 @@
       "name": "Stellar",
       "symbol": "xlm",
       "image": "https://coin-images.coingecko.com/coins/images/100/large/fmpFRHHQ_400x400.jpg?1735231350",
-      "price": 0.18689,
-      "chg24h": 2.05505,
+      "price": 0.186793,
+      "chg24h": 1.99705,
       "chg7d": 4.2,
-      "mcap": 6505893352.0,
-      "fdv": 9347328776.0,
-      "athChg": -78.65487
+      "mcap": 6500657352.0,
+      "fdv": 9339805964.0,
+      "athChg": -78.66591
     },
     {
       "rank": 20,
@@ -451,12 +454,12 @@
       "name": "Bitcoin Cash",
       "symbol": "bch",
       "image": "https://coin-images.coingecko.com/coins/images/780/large/bitcoin-cash-circle.png?1696501932",
-      "price": 260.4,
-      "chg24h": 3.73769,
+      "price": 260.38,
+      "chg24h": 3.68681,
       "chg7d": 6.1,
-      "mcap": 5229718224.0,
-      "fdv": 5229723106.0,
-      "athChg": -93.12161
+      "mcap": 5229567905.0,
+      "fdv": 5229572787.0,
+      "athChg": -93.12236
     },
     {
       "rank": 21,
@@ -464,12 +467,12 @@
       "name": "Dai",
       "symbol": "dai",
       "image": "https://coin-images.coingecko.com/coins/images/9956/large/Badge_Dai.png?1696509996",
-      "price": 0.999972,
-      "chg24h": 0.0042,
+      "price": 0.999974,
+      "chg24h": 0.02137,
       "chg7d": 0.0,
-      "mcap": 4605916811.0,
-      "fdv": 4610163511.0,
-      "athChg": -17.96315
+      "mcap": 4606021451.0,
+      "fdv": 4610268248.0,
+      "athChg": -17.96299
     },
     {
       "rank": 22,
@@ -477,12 +480,12 @@
       "name": "Uniswap",
       "symbol": "uni",
       "image": "https://coin-images.coingecko.com/coins/images/12504/large/uniswap-logo.png?1720676669",
-      "price": 7.09,
-      "chg24h": 13.17354,
+      "price": 7.07,
+      "chg24h": 12.80369,
       "chg7d": 42.7,
-      "mcap": 4413825826.0,
-      "fdv": 6306577099.0,
-      "athChg": -84.22274
+      "mcap": 4408800822.0,
+      "fdv": 6299397255.0,
+      "athChg": -84.25533
     },
     {
       "rank": 23,
@@ -490,12 +493,12 @@
       "name": "Canton",
       "symbol": "cc",
       "image": "https://coin-images.coingecko.com/coins/images/70468/large/Canton-Ticker_%281%29.png?1762826299",
-      "price": 0.110627,
-      "chg24h": 1.97836,
+      "price": 0.110644,
+      "chg24h": 1.6542,
       "chg7d": -6.8,
-      "mcap": 4373771704.0,
-      "fdv": 4373771704.0,
-      "athChg": -43.02051
+      "mcap": 4375125813.0,
+      "fdv": 4375125813.0,
+      "athChg": -43.0113
     },
     {
       "rank": 24,
@@ -503,12 +506,12 @@
       "name": "Ethena USDe",
       "symbol": "usde",
       "image": "https://coin-images.coingecko.com/coins/images/33613/large/usde.png?1733810059",
-      "price": 0.999885,
-      "chg24h": -0.00473,
+      "price": 0.999886,
+      "chg24h": -0.00325,
       "chg7d": 0.0,
-      "mcap": 4351106046.0,
-      "fdv": 4370303534.0,
-      "athChg": -3.30159
+      "mcap": 4351183095.0,
+      "fdv": 4370380923.0,
+      "athChg": -3.30142
     },
     {
       "rank": 25,
@@ -516,12 +519,12 @@
       "name": "USD1",
       "symbol": "usd1",
       "image": "https://coin-images.coingecko.com/coins/images/54977/large/USD1_1000x1000_transparent.png?1749297002",
-      "price": 0.999649,
-      "chg24h": -0.00241,
+      "price": 0.99967,
+      "chg24h": -0.00454,
       "chg7d": 0.0,
-      "mcap": 4246476015.0,
-      "fdv": 4246476015.0,
-      "athChg": -4.60745
+      "mcap": 4246583994.0,
+      "fdv": 4246583994.0,
+      "athChg": -4.60551
     },
     {
       "rank": 26,
@@ -529,12 +532,12 @@
       "name": "Litecoin",
       "symbol": "ltc",
       "image": "https://coin-images.coingecko.com/coins/images/2/large/litecoin.png?1696501400",
-      "price": 54.63,
-      "chg24h": 2.58887,
+      "price": 54.61,
+      "chg24h": 2.57299,
       "chg7d": 10.8,
-      "mcap": 4240121539.0,
-      "fdv": 4240119148.0,
-      "athChg": -86.68408
+      "mcap": 4236164917.0,
+      "fdv": 4236162528.0,
+      "athChg": -86.68864
     },
     {
       "rank": 27,
@@ -543,11 +546,11 @@
       "symbol": "gram",
       "image": "https://coin-images.coingecko.com/coins/images/17980/large/Gram_Circular_Badge.png?1781524778",
       "price": 1.42,
-      "chg24h": -0.15256,
+      "chg24h": -0.10721,
       "chg7d": 4.4,
-      "mcap": 3962561564.0,
-      "fdv": 7469670289.0,
-      "athChg": -82.74157
+      "mcap": 3963959151.0,
+      "fdv": 7472304826.0,
+      "athChg": -82.73804
     },
     {
       "rank": 28,
@@ -555,12 +558,12 @@
       "name": "Hedera",
       "symbol": "hbar",
       "image": "https://coin-images.coingecko.com/coins/images/3688/large/hbar.png?1696504364",
-      "price": 0.081513,
-      "chg24h": 1.38394,
+      "price": 0.081471,
+      "chg24h": 1.43675,
       "chg7d": 8.5,
-      "mcap": 3572784048.0,
-      "fdv": 4075583976.0,
-      "athChg": -85.68007
+      "mcap": 3571100397.0,
+      "fdv": 4073663385.0,
+      "athChg": -85.68743
     },
     {
       "rank": 29,
@@ -569,10 +572,10 @@
       "symbol": "avax",
       "image": "https://coin-images.coingecko.com/coins/images/12559/large/Avalanche_Circle_RedWhite_Trans.png?1696512369",
       "price": 7.7,
-      "chg24h": 2.72794,
+      "chg24h": 2.65373,
       "chg7d": 4.2,
-      "mcap": 3324895082.0,
-      "fdv": 3568765561.0,
+      "mcap": 3325371938.0,
+      "fdv": 3569277392.0,
       "athChg": -94.68707
     },
     {
@@ -581,12 +584,12 @@
       "name": "Sui",
       "symbol": "sui",
       "image": "https://coin-images.coingecko.com/coins/images/26375/large/sui-ocean-square.png?1727791290",
-      "price": 0.806512,
-      "chg24h": 2.47298,
+      "price": 0.80585,
+      "chg24h": 2.32816,
       "chg7d": 8.6,
-      "mcap": 3305231514.0,
-      "fdv": 8068354799.0,
-      "athChg": -84.91533
+      "mcap": 3301845896.0,
+      "fdv": 8060090213.0,
+      "athChg": -84.92771
     },
     {
       "rank": 31,
@@ -595,11 +598,11 @@
       "symbol": "usdg",
       "image": "https://coin-images.coingecko.com/coins/images/51281/large/GDN_USDG_Token_200x200.png?1730484111",
       "price": 1.0,
-      "chg24h": -0.01005,
+      "chg24h": -0.01162,
       "chg7d": 0.0,
-      "mcap": 3262607766.0,
-      "fdv": 3262607766.0,
-      "athChg": -39.55914
+      "mcap": 3262718606.0,
+      "fdv": 3262718606.0,
+      "athChg": -39.55897
     },
     {
       "rank": 32,
@@ -608,11 +611,11 @@
       "symbol": "shib",
       "image": "https://coin-images.coingecko.com/coins/images/11939/large/shiba.png?1696511800",
       "price": 5.47e-06,
-      "chg24h": 1.29885,
+      "chg24h": 1.23312,
       "chg7d": 6.8,
-      "mcap": 3224175014.0,
-      "fdv": 3225580403.0,
-      "athChg": -93.64912
+      "mcap": 3223182087.0,
+      "fdv": 3224587044.0,
+      "athChg": -93.65128
     },
     {
       "rank": 33,
@@ -621,11 +624,11 @@
       "symbol": "near",
       "image": "https://coin-images.coingecko.com/coins/images/10365/large/near.jpg?1696510367",
       "price": 2.37,
-      "chg24h": 5.04158,
+      "chg24h": 6.0918,
       "chg7d": 27.0,
-      "mcap": 3098062160.0,
-      "fdv": 3098062209.0,
-      "athChg": -88.40487
+      "mcap": 3092775290.0,
+      "fdv": 3092775340.0,
+      "athChg": -88.41162
     },
     {
       "rank": 34,
@@ -633,12 +636,12 @@
       "name": "PayPal USD",
       "symbol": "pyusd",
       "image": "https://coin-images.coingecko.com/coins/images/31212/large/PYUSD_Token_Logo_2x.png?1765987788",
-      "price": 1.0,
-      "chg24h": 0.00096,
+      "price": 0.999965,
+      "chg24h": -0.00212,
       "chg7d": 0.0,
-      "mcap": 2935761056.0,
-      "fdv": 2935761056.0,
-      "athChg": -2.03124
+      "mcap": 2935696123.0,
+      "fdv": 2935696123.0,
+      "athChg": -2.03504
     },
     {
       "rank": 35,
@@ -659,12 +662,12 @@
       "name": "Cronos",
       "symbol": "cro",
       "image": "https://coin-images.coingecko.com/coins/images/7310/large/cro_token_logo.png?1696507599",
-      "price": 0.057155,
-      "chg24h": 1.9125,
+      "price": 0.057191,
+      "chg24h": 1.98363,
       "chg7d": 0.0,
-      "mcap": 2775390948.0,
-      "fdv": 5655365956.0,
-      "athChg": -93.58921
+      "mcap": 2775494103.0,
+      "fdv": 5655576154.0,
+      "athChg": -93.58516
     },
     {
       "rank": 37,
@@ -672,12 +675,12 @@
       "name": "Tether Gold",
       "symbol": "xaut",
       "image": "https://coin-images.coingecko.com/coins/images/10481/large/logo.png?1774627372",
-      "price": 4422.22,
-      "chg24h": -0.08992,
+      "price": 4422.48,
+      "chg24h": -0.09073,
       "chg7d": -0.7,
-      "mcap": 2710045933.0,
-      "fdv": 3129818979.0,
-      "athChg": -19.66349
+      "mcap": 2710100054.0,
+      "fdv": 3129881483.0,
+      "athChg": -19.65875
     },
     {
       "rank": 38,
@@ -698,12 +701,12 @@
       "name": "MemeCore",
       "symbol": "m",
       "image": "https://coin-images.coingecko.com/coins/images/53247/large/square-bg-transparent.png?1752637478",
-      "price": 1.14,
-      "chg24h": 1.5318,
+      "price": 1.13,
+      "chg24h": 1.3995,
       "chg7d": 4.5,
-      "mcap": 2578575423.0,
-      "fdv": 6147444161.0,
-      "athChg": -79.86989
+      "mcap": 2575945022.0,
+      "fdv": 6141173164.0,
+      "athChg": -79.89077
     },
     {
       "rank": 40,
@@ -711,12 +714,12 @@
       "name": "Ripple USD",
       "symbol": "rlusd",
       "image": "https://coin-images.coingecko.com/coins/images/39651/large/RLUSD_200x200_%281%29.png?1727376633",
-      "price": 0.99995,
-      "chg24h": -0.00063,
+      "price": 0.99998,
+      "chg24h": -0.0011,
       "chg7d": 0.0,
-      "mcap": 2407073613.0,
-      "fdv": 2407073613.0,
-      "athChg": -6.79218
+      "mcap": 2407109756.0,
+      "fdv": 2407109756.0,
+      "athChg": -6.78936
     },
     {
       "rank": 41,
@@ -724,12 +727,12 @@
       "name": "OKB",
       "symbol": "okb",
       "image": "https://coin-images.coingecko.com/coins/images/4463/large/WeChat_Image_20220118095654.png?1696505053",
-      "price": 113.91,
-      "chg24h": 1.24769,
+      "price": 113.94,
+      "chg24h": 1.31593,
       "chg7d": -0.3,
-      "mcap": 2392546655.0,
-      "fdv": 2392546655.0,
-      "athChg": -50.19961
+      "mcap": 2392850956.0,
+      "fdv": 2392850956.0,
+      "athChg": -50.1861
     },
     {
       "rank": 42,
@@ -737,12 +740,12 @@
       "name": "Bittensor",
       "symbol": "tao",
       "image": "https://coin-images.coingecko.com/coins/images/28452/large/ARUsPeNQ_400x400.jpeg?1696527447",
-      "price": 246.46,
-      "chg24h": 2.93948,
+      "price": 246.15,
+      "chg24h": 2.90484,
       "chg7d": 1.5,
-      "mcap": 2361020890.0,
-      "fdv": 5166083375.0,
-      "athChg": -67.46837
+      "mcap": 2361968422.0,
+      "fdv": 5168156641.0,
+      "athChg": -67.50918
     },
     {
       "rank": 43,
@@ -750,12 +753,12 @@
       "name": "Ondo US Dollar Yield",
       "symbol": "usdy",
       "image": "https://coin-images.coingecko.com/coins/images/31700/large/usdy_%281%29.png?1696530524",
-      "price": 1.14,
-      "chg24h": 0.01017,
+      "price": 1.15,
+      "chg24h": -0.47298,
       "chg7d": -0.2,
-      "mcap": 2191282356.0,
-      "fdv": 2191282356.0,
-      "athChg": -9.67899
+      "mcap": 2189421879.0,
+      "fdv": 2189421879.0,
+      "athChg": -9.33495
     },
     {
       "rank": 44,
@@ -763,12 +766,12 @@
       "name": "Aster",
       "symbol": "aster",
       "image": "https://coin-images.coingecko.com/coins/images/69040/large/_ASTER.png?1757326782",
-      "price": 0.787675,
-      "chg24h": -1.56368,
+      "price": 0.787254,
+      "chg24h": -2.80833,
       "chg7d": 12.7,
-      "mcap": 2126580450.0,
-      "fdv": 6146555029.0,
-      "athChg": -67.29923
+      "mcap": 2125910942.0,
+      "fdv": 6144619919.0,
+      "athChg": -67.31671
     },
     {
       "rank": 45,
@@ -776,12 +779,12 @@
       "name": "Aave",
       "symbol": "aave",
       "image": "https://coin-images.coingecko.com/coins/images/12645/large/aave-token-round.png?1720472354",
-      "price": 135.64,
-      "chg24h": 4.29483,
+      "price": 135.73,
+      "chg24h": 4.42975,
       "chg7d": 8.2,
-      "mcap": 2091844947.0,
-      "fdv": 2169503186.0,
-      "athChg": -79.50073
+      "mcap": 2094059527.0,
+      "fdv": 2171799980.0,
+      "athChg": -79.48753
     },
     {
       "rank": 46,
@@ -789,12 +792,12 @@
       "name": "Mantle",
       "symbol": "mnt",
       "image": "https://coin-images.coingecko.com/coins/images/30980/large/MNT_Token_Logo.png?1765516974",
-      "price": 0.604959,
-      "chg24h": 5.06465,
+      "price": 0.605526,
+      "chg24h": 5.013,
       "chg7d": 14.2,
-      "mcap": 1997545792.0,
-      "fdv": 3762041979.0,
-      "athChg": -78.81096
+      "mcap": 1999519865.0,
+      "fdv": 3765759813.0,
+      "athChg": -78.7911
     },
     {
       "rank": 47,
@@ -802,12 +805,12 @@
       "name": "PAX Gold",
       "symbol": "paxg",
       "image": "https://coin-images.coingecko.com/coins/images/9519/large/asset-paxg.png?1785284785",
-      "price": 4429.49,
-      "chg24h": -0.08187,
+      "price": 4429.39,
+      "chg24h": -0.09026,
       "chg7d": -0.7,
-      "mcap": 1915815030.0,
-      "fdv": 1915815030.0,
-      "athChg": -21.17064
+      "mcap": 1915747028.0,
+      "fdv": 1915747028.0,
+      "athChg": -21.17253
     },
     {
       "rank": 48,
@@ -815,12 +818,12 @@
       "name": "Ondo",
       "symbol": "ondo",
       "image": "https://coin-images.coingecko.com/coins/images/26580/large/ONDO.png?1696525656",
-      "price": 0.380759,
-      "chg24h": 2.8429,
+      "price": 0.380875,
+      "chg24h": 2.83916,
       "chg7d": 6.9,
-      "mcap": 1853093815.0,
-      "fdv": 3805643833.0,
-      "athChg": -82.20881
+      "mcap": 1854990963.0,
+      "fdv": 3809539950.0,
+      "athChg": -82.20341
     },
     {
       "rank": 49,
@@ -828,12 +831,12 @@
       "name": "World Liberty Financial",
       "symbol": "wlfi",
       "image": "https://coin-images.coingecko.com/coins/images/50767/large/wlfi.png?1756438915",
-      "price": 0.057006,
-      "chg24h": 0.99404,
+      "price": 0.056953,
+      "chg24h": 0.82566,
       "chg7d": -0.9,
-      "mcap": 1808829330.0,
-      "fdv": 5692246285.0,
-      "athChg": -82.79496
+      "mcap": 1809394796.0,
+      "fdv": 5694025763.0,
+      "athChg": -82.81111
     },
     {
       "rank": 50,
@@ -842,11 +845,11 @@
       "symbol": "morpho",
       "image": "https://coin-images.coingecko.com/coins/images/29837/large/Morpho-token-icon.png?1726771230",
       "price": 2.58,
-      "chg24h": 2.31453,
+      "chg24h": 2.42395,
       "chg7d": 5.3,
-      "mcap": 1777956760.0,
-      "fdv": 2581763315.0,
-      "athChg": -38.09369
+      "mcap": 1780377426.0,
+      "fdv": 2585278354.0,
+      "athChg": -38.01892
     },
     {
       "rank": 51,
@@ -854,12 +857,12 @@
       "name": "Ethena",
       "symbol": "ena",
       "image": "https://coin-images.coingecko.com/coins/images/36530/large/ethena.png?1711701436",
-      "price": 0.173159,
-      "chg24h": 6.05882,
+      "price": 0.173343,
+      "chg24h": 6.21037,
       "chg7d": 10.4,
-      "mcap": 1748693823.0,
-      "fdv": 2598275916.0,
-      "athChg": -88.59068
+      "mcap": 1750130324.0,
+      "fdv": 2600410325.0,
+      "athChg": -88.5786
     },
     {
       "rank": 52,
@@ -867,12 +870,12 @@
       "name": "Sky",
       "symbol": "sky",
       "image": "https://coin-images.coingecko.com/coins/images/39925/large/sky.jpg?1724827980",
-      "price": 0.071915,
-      "chg24h": 7.17079,
+      "price": 0.071929,
+      "chg24h": 7.24295,
       "chg7d": 2.7,
-      "mcap": 1684839783.0,
-      "fdv": 1687668738.0,
-      "athChg": -28.46783
+      "mcap": 1684912870.0,
+      "fdv": 1687741948.0,
+      "athChg": -28.45366
     },
     {
       "rank": 53,
@@ -880,12 +883,12 @@
       "name": "Polkadot",
       "symbol": "dot",
       "image": "https://coin-images.coingecko.com/coins/images/12171/large/polkadot.jpg?1766533446",
-      "price": 0.986376,
-      "chg24h": 8.59923,
+      "price": 0.986307,
+      "chg24h": 8.51367,
       "chg7d": 15.9,
-      "mcap": 1678754823.0,
-      "fdv": 1678764937.0,
-      "athChg": -98.2059
+      "mcap": 1677936739.0,
+      "fdv": 1677946849.0,
+      "athChg": -98.20603
     },
     {
       "rank": 54,
@@ -893,38 +896,38 @@
       "name": "Pump.fun",
       "symbol": "pump",
       "image": "https://coin-images.coingecko.com/coins/images/67164/large/pump.jpg?1751949376",
-      "price": 0.00401064,
-      "chg24h": -3.91254,
+      "price": 0.00401518,
+      "chg24h": -3.69457,
       "chg7d": -17.6,
-      "mcap": 1583785294.0,
-      "fdv": 3347138001.0,
-      "athChg": -54.52317
+      "mcap": 1586546543.0,
+      "fdv": 3352973567.0,
+      "athChg": -54.47164
     },
     {
       "rank": 55,
+      "id": "worldcoin-wld",
+      "name": "Worldcoin",
+      "symbol": "wld",
+      "image": "https://coin-images.coingecko.com/coins/images/31069/large/worldcoin.jpeg?1696529903",
+      "price": 0.421625,
+      "chg24h": 4.90827,
+      "chg7d": 12.0,
+      "mcap": 1533331032.0,
+      "fdv": 4216876351.0,
+      "athChg": -96.40883
+    },
+    {
+      "rank": 56,
       "id": "pepe",
       "name": "Pepe",
       "symbol": "pepe",
       "image": "https://coin-images.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1696528776",
       "price": 3.64e-06,
-      "chg24h": 3.23721,
+      "chg24h": 3.11145,
       "chg7d": -0.3,
-      "mcap": 1532113197.0,
-      "fdv": 1532113197.0,
-      "athChg": -87.00582
-    },
-    {
-      "rank": 56,
-      "id": "worldcoin-wld",
-      "name": "Worldcoin",
-      "symbol": "wld",
-      "image": "https://coin-images.coingecko.com/coins/images/31069/large/worldcoin.jpeg?1696529903",
-      "price": 0.421496,
-      "chg24h": 4.85036,
-      "chg7d": 12.0,
-      "mcap": 1531378052.0,
-      "fdv": 4211505380.0,
-      "athChg": -96.40993
+      "mcap": 1530413399.0,
+      "fdv": 1530413399.0,
+      "athChg": -87.02639
     },
     {
       "rank": 57,
@@ -933,11 +936,11 @@
       "symbol": "htx",
       "image": "https://coin-images.coingecko.com/coins/images/35491/large/Frame_1321318576.png?1708908626",
       "price": 1.69e-06,
-      "chg24h": 1.50995,
+      "chg24h": 1.44468,
       "chg7d": 0.0,
-      "mcap": 1514966904.0,
-      "fdv": 1514966904.0,
-      "athChg": -55.04111
+      "mcap": 1514309531.0,
+      "fdv": 1514309531.0,
+      "athChg": -55.06485
     },
     {
       "rank": 58,
@@ -946,11 +949,11 @@
       "symbol": "icp",
       "image": "https://coin-images.coingecko.com/coins/images/14495/large/Internet_Computer_logo.png?1696514180",
       "price": 2.67,
-      "chg24h": 1.81312,
+      "chg24h": 1.79891,
       "chg7d": 9.9,
-      "mcap": 1485015711.0,
-      "fdv": 1485015711.0,
-      "athChg": -99.61887
+      "mcap": 1485511863.0,
+      "fdv": 1485511863.0,
+      "athChg": -99.61883
     },
     {
       "rank": 59,
@@ -958,12 +961,12 @@
       "name": "USDD",
       "symbol": "usdd",
       "image": "https://coin-images.coingecko.com/coins/images/25380/large/UUSD.jpg?1696524513",
-      "price": 0.998356,
-      "chg24h": -0.1167,
+      "price": 0.998056,
+      "chg24h": -0.13145,
       "chg7d": -0.1,
-      "mcap": 1467243736.0,
-      "fdv": 1466915998.0,
-      "athChg": -19.63053
+      "mcap": 1467266689.0,
+      "fdv": 1466938946.0,
+      "athChg": -19.65469
     },
     {
       "rank": 60,
@@ -972,11 +975,11 @@
       "symbol": "bgb",
       "image": "https://coin-images.coingecko.com/coins/images/11610/large/Bitget_logo.png?1736925727",
       "price": 2.01,
-      "chg24h": -0.21334,
+      "chg24h": -0.25485,
       "chg7d": 4.2,
-      "mcap": 1406259144.0,
-      "fdv": 1830007708.0,
-      "athChg": -76.22684
+      "mcap": 1406276664.0,
+      "fdv": 1830030506.0,
+      "athChg": -76.227
     },
     {
       "rank": 61,
@@ -984,12 +987,12 @@
       "name": "USDGO",
       "symbol": "usdgo",
       "image": "https://coin-images.coingecko.com/coins/images/102172077/large/USDGO_%287%29.png?1771437018",
-      "price": 0.999911,
-      "chg24h": -0.00745,
+      "price": 0.999877,
+      "chg24h": -0.01485,
       "chg7d": 0.0,
-      "mcap": 1355343149.0,
-      "fdv": 1355343149.0,
-      "athChg": -0.24922
+      "mcap": 1355288479.0,
+      "fdv": 1355288479.0,
+      "athChg": -0.25262
     },
     {
       "rank": 62,
@@ -997,12 +1000,12 @@
       "name": "Falcon USD",
       "symbol": "usdf",
       "image": "https://coin-images.coingecko.com/coins/images/54558/large/ff_200_X_200.png?1740741076",
-      "price": 0.997502,
-      "chg24h": 0.09309,
+      "price": 0.995819,
+      "chg24h": -0.05981,
       "chg7d": 0.0,
-      "mcap": 1339993983.0,
-      "fdv": 1339993983.0,
-      "athChg": -7.17302
+      "mcap": 1339926849.0,
+      "fdv": 1339926849.0,
+      "athChg": -7.32967
     },
     {
       "rank": 63,
@@ -1010,12 +1013,12 @@
       "name": "BFUSD",
       "symbol": "bfusd",
       "image": "https://coin-images.coingecko.com/coins/images/68227/large/bfusd.png?1755132827",
-      "price": 0.999995,
-      "chg24h": -0.00384,
+      "price": 0.999997,
+      "chg24h": -0.00576,
       "chg7d": 0.0,
-      "mcap": 1319972102.0,
-      "fdv": 1319972102.0,
-      "athChg": -0.68817
+      "mcap": 1319996560.0,
+      "fdv": 1319996560.0,
+      "athChg": -0.68794
     },
     {
       "rank": 64,
@@ -1023,12 +1026,12 @@
       "name": "Arbitrum",
       "symbol": "arb",
       "image": "https://coin-images.coingecko.com/coins/images/16547/large/arb.jpg?1721358242",
-      "price": 0.195095,
-      "chg24h": 47.0452,
+      "price": 0.195216,
+      "chg24h": 47.04572,
       "chg7d": 121.1,
-      "mcap": 1302712990.0,
-      "fdv": 1950731024.0,
-      "athChg": -91.838
+      "mcap": 1303251417.0,
+      "fdv": 1951537285.0,
+      "athChg": -91.83295
     },
     {
       "rank": 65,
@@ -1036,12 +1039,12 @@
       "name": "United Stables",
       "symbol": "u",
       "image": "https://coin-images.coingecko.com/coins/images/71157/large/united-stables-logo.jpg?1766061640",
-      "price": 0.999248,
-      "chg24h": -0.01902,
+      "price": 0.99928,
+      "chg24h": -0.01292,
       "chg7d": 0.0,
-      "mcap": 1276517998.0,
-      "fdv": 1276517998.0,
-      "athChg": -0.84655
+      "mcap": 1276585357.0,
+      "fdv": 1276585357.0,
+      "athChg": -0.84337
     },
     {
       "rank": 66,
@@ -1062,12 +1065,12 @@
       "name": "Ethereum Classic",
       "symbol": "etc",
       "image": "https://coin-images.coingecko.com/coins/images/453/large/ethereum-classic-logo.png?1696501717",
-      "price": 7.76,
-      "chg24h": 1.16156,
+      "price": 7.75,
+      "chg24h": 1.09037,
       "chg7d": 4.4,
-      "mcap": 1225917741.0,
-      "fdv": 1225920990.0,
-      "athChg": -95.35806
+      "mcap": 1225257407.0,
+      "fdv": 1225260655.0,
+      "athChg": -95.36177
     },
     {
       "rank": 68,
@@ -1075,12 +1078,12 @@
       "name": "Bitway",
       "symbol": "btw",
       "image": "https://coin-images.coingecko.com/coins/images/71205/large/BTW_Token_200x200.png?1786291907",
-      "price": 0.449991,
-      "chg24h": 2.8345,
+      "price": 0.450373,
+      "chg24h": 3.13376,
       "chg7d": 12.3,
-      "mcap": 1220289195.0,
-      "fdv": 4506001047.0,
-      "athChg": -39.62109
+      "mcap": 1220142376.0,
+      "fdv": 4505458908.0,
+      "athChg": -39.56992
     },
     {
       "rank": 69,
@@ -1088,12 +1091,12 @@
       "name": "Lighter",
       "symbol": "lit",
       "image": "https://coin-images.coingecko.com/coins/images/71121/large/lighter.png?1765888098",
-      "price": 4.62,
-      "chg24h": -0.59169,
+      "price": 4.63,
+      "chg24h": -0.84754,
       "chg7d": 32.7,
-      "mcap": 1156149374.0,
-      "fdv": 4624597497.0,
-      "athChg": -41.16289
+      "mcap": 1156707309.0,
+      "fdv": 4626829237.0,
+      "athChg": -41.13996
     },
     {
       "rank": 70,
@@ -1101,12 +1104,12 @@
       "name": "Pi Network",
       "symbol": "pi",
       "image": "https://coin-images.coingecko.com/coins/images/54342/large/pi_network.jpg?1739347576",
-      "price": 0.095433,
-      "chg24h": 0.30169,
+      "price": 0.095453,
+      "chg24h": 0.28778,
       "chg7d": 4.9,
-      "mcap": 1063342864.0,
-      "fdv": 1635912099.0,
-      "athChg": -96.80572
+      "mcap": 1063512727.0,
+      "fdv": 1636173427.0,
+      "athChg": -96.80504
     },
     {
       "rank": 71,
@@ -1114,12 +1117,12 @@
       "name": "POL (ex-MATIC)",
       "symbol": "pol",
       "image": "https://coin-images.coingecko.com/coins/images/32440/large/pol.png?1759114181",
-      "price": 0.097374,
-      "chg24h": 2.50756,
+      "price": 0.097395,
+      "chg24h": 2.56302,
       "chg7d": -6.2,
-      "mcap": 1042583821.0,
-      "fdv": 1042583821.0,
-      "athChg": -92.43734
+      "mcap": 1043001167.0,
+      "fdv": 1043001167.0,
+      "athChg": -92.43568
     },
     {
       "rank": 72,
@@ -1128,11 +1131,11 @@
       "symbol": "gt",
       "image": "https://coin-images.coingecko.com/coins/images/8183/large/200X200.png?1735246724",
       "price": 9.21,
-      "chg24h": 2.06963,
+      "chg24h": 2.07343,
       "chg7d": 14.6,
-      "mcap": 982115418.0,
-      "fdv": 1094967564.0,
-      "athChg": -63.70895
+      "mcap": 981532375.0,
+      "fdv": 1094317525.0,
+      "athChg": -63.73127
     },
     {
       "rank": 73,
@@ -1141,11 +1144,11 @@
       "symbol": "kcs",
       "image": "https://coin-images.coingecko.com/coins/images/1047/large/sa9z79.png?1696502152",
       "price": 7.14,
-      "chg24h": 0.74305,
+      "chg24h": 0.74069,
       "chg7d": 2.7,
-      "mcap": 979299134.0,
-      "fdv": 1014999582.0,
-      "athChg": -75.22832
+      "mcap": 979503090.0,
+      "fdv": 1015210973.0,
+      "athChg": -75.22969
     },
     {
       "rank": 74,
@@ -1167,11 +1170,11 @@
       "symbol": "qnt",
       "image": "https://coin-images.coingecko.com/coins/images/3370/large/5ZOu7brX_400x400.jpg?1696504070",
       "price": 65.9,
-      "chg24h": 3.38153,
+      "chg24h": 3.37885,
       "chg7d": 6.6,
-      "mcap": 958195011.0,
-      "fdv": 962695840.0,
-      "athChg": -84.58223
+      "mcap": 958509522.0,
+      "fdv": 963011829.0,
+      "athChg": -84.58164
     },
     {
       "rank": 76,
@@ -1179,12 +1182,12 @@
       "name": "JUST",
       "symbol": "jst",
       "image": "https://coin-images.coingecko.com/coins/images/11095/large/JUST.jpg?1696511035",
-      "price": 0.112333,
-      "chg24h": 3.85469,
+      "price": 0.112354,
+      "chg24h": 3.88128,
       "chg7d": 17.0,
-      "mcap": 919795925.0,
-      "fdv": 919795925.0,
-      "athChg": -41.8729
+      "mcap": 920101143.0,
+      "fdv": 920101143.0,
+      "athChg": -41.86201
     },
     {
       "rank": 77,
@@ -1192,12 +1195,12 @@
       "name": "Jupiter",
       "symbol": "jup",
       "image": "https://coin-images.coingecko.com/coins/images/34188/large/jup.png?1704266489",
-      "price": 0.275217,
-      "chg24h": 22.39411,
+      "price": 0.275312,
+      "chg24h": 22.52118,
       "chg7d": 26.9,
-      "mcap": 913639589.0,
-      "fdv": 1888312608.0,
-      "athChg": -86.23925
+      "mcap": 914937819.0,
+      "fdv": 1890995792.0,
+      "athChg": -86.23447
     },
     {
       "rank": 78,
@@ -1219,11 +1222,11 @@
       "symbol": "dash",
       "image": "https://coin-images.coingecko.com/coins/images/19/large/dash-logo.png?1696501423",
       "price": 67.63,
-      "chg24h": -0.06562,
+      "chg24h": -0.19821,
       "chg7d": 64.5,
-      "mcap": 867655088.0,
-      "fdv": 867659035.0,
-      "athChg": -95.47185
+      "mcap": 867334831.0,
+      "fdv": 867338776.0,
+      "athChg": -95.47188
     },
     {
       "rank": 80,
@@ -1231,12 +1234,12 @@
       "name": "Algorand",
       "symbol": "algo",
       "image": "https://coin-images.coingecko.com/coins/images/4380/large/download.png?1696504978",
-      "price": 0.09525,
-      "chg24h": -0.75672,
+      "price": 0.095149,
+      "chg24h": -0.89325,
       "chg7d": 9.7,
-      "mcap": 860656219.0,
-      "fdv": 860668847.0,
-      "athChg": -97.32532
+      "mcap": 860024759.0,
+      "fdv": 860037378.0,
+      "athChg": -97.32815
     },
     {
       "rank": 81,
@@ -1245,11 +1248,11 @@
       "symbol": "atom",
       "image": "https://coin-images.coingecko.com/coins/images/1481/large/cosmos_hub.png?1696502525",
       "price": 1.6,
-      "chg24h": 3.68388,
+      "chg24h": 3.47648,
       "chg7d": 7.8,
-      "mcap": 844991598.0,
-      "fdv": 845011250.0,
-      "athChg": -96.35773
+      "mcap": 845132962.0,
+      "fdv": 845152617.0,
+      "athChg": -96.35753
     },
     {
       "rank": 82,
@@ -1257,12 +1260,12 @@
       "name": "Kaspa",
       "symbol": "kas",
       "image": "https://coin-images.coingecko.com/coins/images/25751/large/kaspa-icon-exchanges.png?1696524837",
-      "price": 0.03042299,
-      "chg24h": 1.01051,
+      "price": 0.03043572,
+      "chg24h": 1.20261,
       "chg7d": 9.2,
-      "mcap": 841110285.0,
-      "fdv": 841147608.0,
-      "athChg": -85.33203
+      "mcap": 842686800.0,
+      "fdv": 842724192.0,
+      "athChg": -85.32589
     },
     {
       "rank": 83,
@@ -1270,12 +1273,12 @@
       "name": "NEXO",
       "symbol": "nexo",
       "image": "https://coin-images.coingecko.com/coins/images/3695/large/CG-nexo-token-200x200_2x.png?1730414360",
-      "price": 0.831947,
-      "chg24h": -0.32862,
+      "price": 0.831657,
+      "chg24h": -0.33799,
       "chg7d": -3.1,
-      "mcap": 830817699.0,
-      "fdv": 830817699.0,
-      "athChg": -79.54885
+      "mcap": 831331846.0,
+      "fdv": 831331846.0,
+      "athChg": -79.55598
     },
     {
       "rank": 84,
@@ -1283,12 +1286,12 @@
       "name": "Venice Token",
       "symbol": "vvv",
       "image": "https://coin-images.coingecko.com/coins/images/54023/large/VVV_Token_Transparent.png?1741856877",
-      "price": 17.06,
-      "chg24h": -3.3976,
+      "price": 17.07,
+      "chg24h": -3.51405,
       "chg7d": 2.4,
-      "mcap": 814358676.0,
-      "fdv": 1379859144.0,
-      "athChg": -24.47457
+      "mcap": 815247317.0,
+      "fdv": 1381364867.0,
+      "athChg": -24.43185
     },
     {
       "rank": 85,
@@ -1310,11 +1313,11 @@
       "symbol": "render",
       "image": "https://coin-images.coingecko.com/coins/images/11636/large/rndr.png?1696511529",
       "price": 1.52,
-      "chg24h": 3.16413,
+      "chg24h": 3.19133,
       "chg7d": 4.3,
-      "mcap": 788445598.0,
-      "fdv": 810878557.0,
-      "athChg": -88.76851
+      "mcap": 788179407.0,
+      "fdv": 810604793.0,
+      "athChg": -88.77237
     },
     {
       "rank": 87,
@@ -1335,12 +1338,12 @@
       "name": "​​Stable",
       "symbol": "stable",
       "image": "https://coin-images.coingecko.com/coins/images/69242/large/stable-logotype-framed-square-light.png?1762753913",
-      "price": 0.02818639,
-      "chg24h": -2.82499,
+      "price": 0.02817554,
+      "chg24h": -2.73542,
       "chg7d": 5.6,
-      "mcap": 735108781.0,
-      "fdv": 2819292558.0,
-      "athChg": -34.81025
+      "mcap": 735045981.0,
+      "fdv": 2819051708.0,
+      "athChg": -34.83534
     },
     {
       "rank": 89,
@@ -1362,11 +1365,11 @@
       "symbol": "cake",
       "image": "https://coin-images.coingecko.com/coins/images/12632/large/pancakeswap-cake-logo_%281%29.png?1696512440",
       "price": 2.21,
-      "chg24h": 2.22116,
+      "chg24h": 2.00607,
       "chg7d": 26.5,
-      "mcap": 710521522.0,
-      "fdv": 736385569.0,
-      "athChg": -94.96187
+      "mcap": 710249622.0,
+      "fdv": 736103772.0,
+      "athChg": -94.96378
     },
     {
       "rank": 91,
@@ -1374,12 +1377,12 @@
       "name": "GHO",
       "symbol": "gho",
       "image": "https://coin-images.coingecko.com/coins/images/30663/large/gho-token-logo.png?1720517092",
-      "price": 0.999044,
-      "chg24h": -0.01368,
+      "price": 0.999046,
+      "chg24h": -0.0156,
       "chg7d": 0.0,
-      "mcap": 698317664.0,
-      "fdv": 698317664.0,
-      "athChg": -2.99064
+      "mcap": 698333017.0,
+      "fdv": 698333017.0,
+      "athChg": -2.99042
     },
     {
       "rank": 92,
@@ -1387,12 +1390,12 @@
       "name": "Filecoin",
       "symbol": "fil",
       "image": "https://coin-images.coingecko.com/coins/images/12817/large/filecoin.png?1696512609",
-      "price": 0.797229,
-      "chg24h": 2.6978,
+      "price": 0.797355,
+      "chg24h": 2.61665,
       "chg7d": 16.7,
-      "mcap": 659099725.0,
-      "fdv": 1559923808.0,
-      "athChg": -99.66338
+      "mcap": 659389441.0,
+      "fdv": 1560609494.0,
+      "athChg": -99.66333
     },
     {
       "rank": 93,
@@ -1400,12 +1403,12 @@
       "name": "Pons",
       "symbol": "pons",
       "image": "https://coin-images.coingecko.com/coins/images/102174571/large/jhitvkisdq8fhxvimdkpcw7y3dx5.?1784093932",
-      "price": 0.914428,
-      "chg24h": 2.57676,
+      "price": 0.912419,
+      "chg24h": 2.05338,
       "chg7d": 193.5,
-      "mcap": 651667213.0,
-      "fdv": 643248617.0,
-      "athChg": -5.82937
+      "mcap": 650068674.0,
+      "fdv": 641670729.0,
+      "athChg": -6.03627
     },
     {
       "rank": 94,
@@ -1413,12 +1416,12 @@
       "name": "Beldex",
       "symbol": "bdx",
       "image": "https://coin-images.coingecko.com/coins/images/5111/large/Beldex.png?1696505631",
-      "price": 0.0788,
-      "chg24h": -1.35289,
+      "price": 0.078787,
+      "chg24h": -1.29357,
       "chg7d": -1.0,
-      "mcap": 620215633.0,
-      "fdv": 783252753.0,
-      "athChg": -82.51949
+      "mcap": 620140806.0,
+      "fdv": 783158255.0,
+      "athChg": -82.52218
     },
     {
       "rank": 95,
@@ -1427,11 +1430,11 @@
       "symbol": "trump",
       "image": "https://coin-images.coingecko.com/coins/images/53746/large/trump.png?1737171561",
       "price": 2.36,
-      "chg24h": -0.71658,
+      "chg24h": -0.59109,
       "chg7d": -6.8,
-      "mcap": 617224394.0,
-      "fdv": 2356888926.0,
-      "athChg": -96.78989
+      "mcap": 617319103.0,
+      "fdv": 2357250575.0,
+      "athChg": -96.78885
     },
     {
       "rank": 96,
@@ -1439,12 +1442,12 @@
       "name": "VeChain",
       "symbol": "vet",
       "image": "https://coin-images.coingecko.com/coins/images/1167/large/VET.png?1742383283",
-      "price": 0.00702294,
-      "chg24h": 2.17377,
+      "price": 0.00702174,
+      "chg24h": 2.23487,
       "chg7d": -0.2,
-      "mcap": 603996881.0,
-      "fdv": 603996881.0,
-      "athChg": -97.50066
+      "mcap": 603909854.0,
+      "fdv": 603909854.0,
+      "athChg": -97.50108
     },
     {
       "rank": 97,
@@ -1452,12 +1455,12 @@
       "name": "Curve DAO",
       "symbol": "crv",
       "image": "https://coin-images.coingecko.com/coins/images/12124/large/Curve.png?1696511967",
-      "price": 0.375737,
-      "chg24h": 3.26278,
+      "price": 0.375898,
+      "chg24h": 3.05419,
       "chg7d": 25.1,
-      "mcap": 583698602.0,
-      "fdv": 907108499.0,
-      "athChg": -97.55572
+      "mcap": 584467732.0,
+      "fdv": 908303780.0,
+      "athChg": -97.55467
     },
     {
       "rank": 98,
@@ -1465,12 +1468,12 @@
       "name": "Flare",
       "symbol": "flr",
       "image": "https://coin-images.coingecko.com/coins/images/28624/large/FLR-icon200x200.png?1696527609",
-      "price": 0.00667686,
-      "chg24h": -0.19377,
+      "price": 0.00667948,
+      "chg24h": -0.08845,
       "chg7d": 4.7,
-      "mcap": 579682142.0,
-      "fdv": 711060317.0,
-      "athChg": -95.55092
+      "mcap": 579896444.0,
+      "fdv": 711323189.0,
+      "athChg": -95.54918
     },
     {
       "rank": 99,
@@ -1478,12 +1481,12 @@
       "name": "Ether.fi",
       "symbol": "ethfi",
       "image": "https://coin-images.coingecko.com/coins/images/35958/large/etherfi.jpeg?1710254562",
-      "price": 0.591465,
-      "chg24h": 5.97874,
+      "price": 0.59101,
+      "chg24h": 6.04129,
       "chg7d": 8.2,
-      "mcap": 570953207.0,
-      "fdv": 570953207.0,
-      "athChg": -93.06518
+      "mcap": 570485584.0,
+      "fdv": 570485584.0,
+      "athChg": -93.07051
     },
     {
       "rank": 100,
@@ -1491,12 +1494,12 @@
       "name": "XDC Network",
       "symbol": "xdc",
       "image": "https://coin-images.coingecko.com/coins/images/2912/large/xdc-icon.png?1696503661",
-      "price": 0.02808102,
-      "chg24h": 1.25137,
+      "price": 0.02807501,
+      "chg24h": 1.23579,
       "chg7d": 0.2,
-      "mcap": 559928953.0,
-      "fdv": 1068552306.0,
-      "athChg": -85.43169
+      "mcap": 560060884.0,
+      "fdv": 1068804080.0,
+      "athChg": -85.43481
     },
     {
       "rank": 101,
@@ -1504,12 +1507,12 @@
       "name": "Pudgy Penguins",
       "symbol": "pengu",
       "image": "https://coin-images.coingecko.com/coins/images/52622/large/PUDGY_PENGUINS_PENGU_PFP.png?1733809110",
-      "price": 0.00887091,
-      "chg24h": 3.01311,
+      "price": 0.00888227,
+      "chg24h": 3.13518,
       "chg7d": -2.9,
-      "mcap": 557478382.0,
-      "fdv": 680417707.0,
-      "athChg": -87.03968
+      "mcap": 558391624.0,
+      "fdv": 681532343.0,
+      "athChg": -87.02308
     },
     {
       "rank": 102,
@@ -1517,12 +1520,12 @@
       "name": "Usual USD",
       "symbol": "usd0",
       "image": "https://coin-images.coingecko.com/coins/images/38272/large/USD0LOGO.png?1716962811",
-      "price": 0.998863,
-      "chg24h": 0.01645,
+      "price": 0.998865,
+      "chg24h": 0.01458,
       "chg7d": -0.1,
-      "mcap": 548424821.0,
-      "fdv": 548419824.0,
-      "athChg": -24.65391
+      "mcap": 548435183.0,
+      "fdv": 548430186.0,
+      "athChg": -24.6538
     },
     {
       "rank": 103,
@@ -1530,12 +1533,12 @@
       "name": "Aerodrome Finance",
       "symbol": "aero",
       "image": "https://coin-images.coingecko.com/coins/images/31745/large/token.png?1696530564",
-      "price": 0.55532,
-      "chg24h": 6.87798,
+      "price": 0.555217,
+      "chg24h": 6.74506,
       "chg7d": 14.3,
-      "mcap": 548172459.0,
-      "fdv": 1096421750.0,
-      "athChg": -76.03213
+      "mcap": 547868092.0,
+      "fdv": 1095812972.0,
+      "athChg": -76.03658
     },
     {
       "rank": 104,
@@ -1543,12 +1546,12 @@
       "name": "SPX6900",
       "symbol": "spx",
       "image": "https://coin-images.coingecko.com/coins/images/31401/large/centeredcoin_%281%29.png?1737048493",
-      "price": 0.572059,
-      "chg24h": -2.82078,
+      "price": 0.574108,
+      "chg24h": -2.43349,
       "chg7d": 4.5,
-      "mcap": 532508074.0,
-      "fdv": 532508074.0,
-      "athChg": -74.80651
+      "mcap": 534206805.0,
+      "fdv": 534206805.0,
+      "athChg": -74.71625
     },
     {
       "rank": 105,
@@ -1556,12 +1559,12 @@
       "name": "Aptos",
       "symbol": "apt",
       "image": "https://coin-images.coingecko.com/coins/images/26455/large/Aptos-Network-Profile-Picture_%281%29.png?1788259511",
-      "price": 0.619821,
-      "chg24h": 2.89595,
+      "price": 0.618772,
+      "chg24h": 2.9121,
       "chg7d": 14.6,
-      "mcap": 532083136.0,
-      "fdv": 748842543.0,
-      "athChg": -96.88855
+      "mcap": 531036928.0,
+      "fdv": 747370132.0,
+      "athChg": -96.89382
     },
     {
       "rank": 106,
@@ -1570,11 +1573,11 @@
       "symbol": "ylds",
       "image": "https://coin-images.coingecko.com/coins/images/66486/large/YLDS.png?1772560579",
       "price": 1.0,
-      "chg24h": 0.0004,
+      "chg24h": 0.00179,
       "chg7d": 0.0,
-      "mcap": 523568624.0,
-      "fdv": 523568624.0,
-      "athChg": -0.13328
+      "mcap": 523561579.0,
+      "fdv": 523561579.0,
+      "athChg": -0.13345
     },
     {
       "rank": 107,
@@ -1582,12 +1585,12 @@
       "name": "币安人生 (BinanceLife)",
       "symbol": "币安人生",
       "image": "https://coin-images.coingecko.com/coins/images/69848/large/%E5%B8%81%E5%AE%89%E4%BA%BA%E7%94%9F.png?1759839225",
-      "price": 0.51901,
-      "chg24h": -3.40138,
+      "price": 0.519726,
+      "chg24h": -3.53997,
       "chg7d": 4.0,
-      "mcap": 518528798.0,
-      "fdv": 518528798.0,
-      "athChg": -41.95837
+      "mcap": 520354427.0,
+      "fdv": 520354427.0,
+      "athChg": -41.87825
     },
     {
       "rank": 108,
@@ -1595,12 +1598,12 @@
       "name": "Injective",
       "symbol": "inj",
       "image": "https://coin-images.coingecko.com/coins/images/12882/large/Other_200x200.png?1738782212",
-      "price": 5.11,
-      "chg24h": 3.58261,
+      "price": 5.1,
+      "chg24h": 3.28228,
       "chg7d": -1.2,
-      "mcap": 511254716.0,
-      "fdv": 511254716.0,
-      "athChg": -90.28314
+      "mcap": 509818716.0,
+      "fdv": 509818716.0,
+      "athChg": -90.3075
     },
     {
       "rank": 109,
@@ -1608,12 +1611,12 @@
       "name": "Stacks",
       "symbol": "stx",
       "image": "https://coin-images.coingecko.com/coins/images/2069/large/Stacks_Logo_png.png?1709979332",
-      "price": 0.269206,
-      "chg24h": 3.51933,
+      "price": 0.268817,
+      "chg24h": 3.70819,
       "chg7d": 10.7,
-      "mcap": 501118296.0,
-      "fdv": 501118296.0,
-      "athChg": -93.03354
+      "mcap": 500845570.0,
+      "fdv": 500845570.0,
+      "athChg": -93.04362
     },
     {
       "rank": 110,
@@ -1621,12 +1624,12 @@
       "name": "TrueUSD",
       "symbol": "tusd",
       "image": "https://coin-images.coingecko.com/coins/images/3449/large/tusd.png?1696504140",
-      "price": 0.999473,
-      "chg24h": -0.01303,
+      "price": 0.999514,
+      "chg24h": -0.01515,
       "chg7d": 0.2,
-      "mcap": 494247424.0,
-      "fdv": 494247424.0,
-      "athChg": -38.24742
+      "mcap": 494254012.0,
+      "fdv": 494254012.0,
+      "athChg": -38.24492
     },
     {
       "rank": 111,
@@ -1634,12 +1637,12 @@
       "name": "USDtb",
       "symbol": "usdtb",
       "image": "https://coin-images.coingecko.com/coins/images/52804/large/76357aa8-4ef7-446c-bad3-a3f944eeec7a.jpeg?1758277468",
-      "price": 0.999932,
-      "chg24h": -0.00687,
+      "price": 0.999935,
+      "chg24h": -0.0088,
       "chg7d": 0.0,
-      "mcap": 482471209.0,
-      "fdv": 482471209.0,
-      "athChg": -5.4004
+      "mcap": 482480148.0,
+      "fdv": 482480148.0,
+      "athChg": -5.40019
     },
     {
       "rank": 112,
@@ -1647,12 +1650,12 @@
       "name": "Provenance Blockchain",
       "symbol": "hash",
       "image": "https://coin-images.coingecko.com/coins/images/66154/large/Hastra_Icon.png?1748497203",
-      "price": 0.00811011,
-      "chg24h": 0.14382,
+      "price": 0.00811058,
+      "chg24h": 0.15617,
       "chg7d": 4.3,
-      "mcap": 466908331.0,
-      "fdv": 770147837.0,
-      "athChg": -86.51617
+      "mcap": 467046511.0,
+      "fdv": 770375759.0,
+      "athChg": -86.5154
     },
     {
       "rank": 113,
@@ -1661,11 +1664,11 @@
       "symbol": "eurc",
       "image": "https://coin-images.coingecko.com/coins/images/26045/large/EURC.png?1769615705",
       "price": 1.16,
-      "chg24h": -0.01276,
+      "chg24h": -0.01342,
       "chg7d": 0.3,
-      "mcap": 466079149.0,
-      "fdv": 466079149.0,
-      "athChg": -14.13818
+      "mcap": 466059890.0,
+      "fdv": 466059890.0,
+      "athChg": -14.13672
     },
     {
       "rank": 114,
@@ -1673,12 +1676,12 @@
       "name": "Virtuals Protocol",
       "symbol": "virtual",
       "image": "https://coin-images.coingecko.com/coins/images/34057/large/LOGOMARK.png?1708356054",
-      "price": 0.702968,
-      "chg24h": 1.58807,
+      "price": 0.703429,
+      "chg24h": 1.7012,
       "chg7d": -0.2,
-      "mcap": 462093877.0,
-      "fdv": 701858770.0,
-      "athChg": -86.12108
+      "mcap": 463206488.0,
+      "fdv": 703548677.0,
+      "athChg": -86.11198
     },
     {
       "rank": 115,
@@ -1686,12 +1689,12 @@
       "name": "A7A5",
       "symbol": "a7a5",
       "image": "https://coin-images.coingecko.com/coins/images/66657/large/A7A5_200.png?1750163839",
-      "price": 0.01152204,
-      "chg24h": -0.60468,
+      "price": 0.01152207,
+      "chg24h": -0.60659,
       "chg7d": -0.2,
-      "mcap": 452022891.0,
-      "fdv": 452022891.0,
-      "athChg": -94.98245
+      "mcap": 452031266.0,
+      "fdv": 452031266.0,
+      "athChg": -94.98244
     },
     {
       "rank": 116,
@@ -1699,12 +1702,12 @@
       "name": "Pyth Network",
       "symbol": "pyth",
       "image": "https://coin-images.coingecko.com/coins/images/31924/large/pyth.png?1701245725",
-      "price": 0.055844,
-      "chg24h": 2.95668,
+      "price": 0.055867,
+      "chg24h": 2.73558,
       "chg7d": 17.4,
-      "mcap": 440109531.0,
-      "fdv": 558872000.0,
-      "athChg": -95.33222
+      "mcap": 439592136.0,
+      "fdv": 558214987.0,
+      "athChg": -95.33026
     },
     {
       "rank": 117,
@@ -1712,12 +1715,12 @@
       "name": "Artificial Superintelligence Alliance",
       "symbol": "fet",
       "image": "https://coin-images.coingecko.com/coins/images/5681/large/ASI.png?1719827289",
-      "price": 0.171736,
-      "chg24h": 2.61013,
+      "price": 0.171435,
+      "chg24h": 2.47742,
       "chg7d": 10.9,
-      "mcap": 397022815.0,
-      "fdv": 466194893.0,
-      "athChg": -95.02813
+      "mcap": 396290202.0,
+      "fdv": 465334640.0,
+      "athChg": -95.03684
     },
     {
       "rank": 118,
@@ -1726,11 +1729,11 @@
       "symbol": "zro",
       "image": "https://coin-images.coingecko.com/coins/images/28206/large/ftxG9_TJ_400x400.jpeg?1696527208",
       "price": 1.11,
-      "chg24h": 5.67202,
+      "chg24h": 5.92676,
       "chg7d": 1.6,
-      "mcap": 391832480.0,
-      "fdv": 1109022647.0,
-      "athChg": -85.18788
+      "mcap": 391396967.0,
+      "fdv": 1107789994.0,
+      "athChg": -85.17267
     },
     {
       "rank": 119,
@@ -1738,12 +1741,12 @@
       "name": "Midnight",
       "symbol": "night",
       "image": "https://coin-images.coingecko.com/coins/images/71015/large/midnight.png?1765193080",
-      "price": 0.02333534,
-      "chg24h": 6.68407,
+      "price": 0.0233,
+      "chg24h": 6.85552,
       "chg7d": 22.3,
-      "mcap": 387586371.0,
-      "fdv": 560116167.0,
-      "athChg": -80.31255
+      "mcap": 387081868.0,
+      "fdv": 559387091.0,
+      "athChg": -80.34237
     },
     {
       "rank": 120,
@@ -1751,11 +1754,11 @@
       "name": "Celestia",
       "symbol": "tia",
       "image": "https://coin-images.coingecko.com/coins/images/31967/large/tia.jpg?1696530772",
-      "price": 0.399834,
-      "chg24h": 9.74262,
+      "price": 0.399835,
+      "chg24h": 9.90685,
       "chg7d": 18.3,
-      "mcap": 386123761.0,
-      "fdv": 470761141.0,
+      "mcap": 385698911.0,
+      "fdv": 470243165.0,
       "athChg": -98.08244
     },
     {
@@ -1764,12 +1767,12 @@
       "name": "Falcon Finance",
       "symbol": "ff",
       "image": "https://coin-images.coingecko.com/coins/images/69121/large/ff.png?1757573403",
-      "price": 0.11828,
-      "chg24h": 1.51467,
+      "price": 0.118275,
+      "chg24h": 1.41905,
       "chg7d": 29.7,
-      "mcap": 371275463.0,
-      "fdv": 1182405933.0,
-      "athChg": -84.65519
+      "mcap": 371444047.0,
+      "fdv": 1182942824.0,
+      "athChg": -84.65581
     },
     {
       "rank": 122,
@@ -1778,11 +1781,11 @@
       "symbol": "pendle",
       "image": "https://coin-images.coingecko.com/coins/images/15069/large/Pendle_Logo_Normal-03.png?1696514728",
       "price": 2.11,
-      "chg24h": 8.58661,
+      "chg24h": 8.81835,
       "chg7d": 23.1,
-      "mcap": 363284048.0,
-      "fdv": 593495682.0,
-      "athChg": -71.91237
+      "mcap": 363397721.0,
+      "fdv": 593681389.0,
+      "athChg": -71.89556
     },
     {
       "rank": 123,
@@ -1791,11 +1794,11 @@
       "symbol": "kau",
       "image": "https://coin-images.coingecko.com/coins/images/29788/large/kau-currency-ticker.png?1696528718",
       "price": 144.08,
-      "chg24h": 0.00085,
+      "chg24h": -0.00107,
       "chg7d": 2.4,
-      "mcap": 343811897.0,
-      "fdv": 574601106.0,
-      "athChg": -30.38683
+      "mcap": 343818268.0,
+      "fdv": 574611753.0,
+      "athChg": -30.38667
     },
     {
       "rank": 124,
@@ -1803,12 +1806,12 @@
       "name": "Lido DAO",
       "symbol": "ldo",
       "image": "https://coin-images.coingecko.com/coins/images/13573/large/Lido_DAO.png?1696513326",
-      "price": 0.408435,
-      "chg24h": 6.84748,
+      "price": 0.410834,
+      "chg24h": 7.55597,
       "chg7d": 11.9,
-      "mcap": 340739735.0,
-      "fdv": 408486717.0,
-      "athChg": -94.4072
+      "mcap": 342508081.0,
+      "fdv": 410606651.0,
+      "athChg": -94.37435
     },
     {
       "rank": 125,
@@ -1817,11 +1820,11 @@
       "symbol": "bsv",
       "image": "https://coin-images.coingecko.com/coins/images/6799/large/BSV.png?1696507128",
       "price": 16.92,
-      "chg24h": 0.68159,
+      "chg24h": 0.37982,
       "chg7d": 1.4,
-      "mcap": 339828502.0,
-      "fdv": 339830406.0,
-      "athChg": -96.54442
+      "mcap": 339814569.0,
+      "fdv": 339816473.0,
+      "athChg": -96.54478
     },
     {
       "rank": 126,
@@ -1829,12 +1832,12 @@
       "name": "Unibase",
       "symbol": "ub",
       "image": "https://coin-images.coingecko.com/coins/images/69108/large/unibase.png?1757501820",
-      "price": 0.13547,
-      "chg24h": 3.2164,
+      "price": 0.135379,
+      "chg24h": 3.13889,
       "chg7d": 3.1,
-      "mcap": 338659668.0,
-      "fdv": 1354638673.0,
-      "athChg": -44.37852
+      "mcap": 338448265.0,
+      "fdv": 1353793061.0,
+      "athChg": -44.41563
     },
     {
       "rank": 127,
@@ -1855,12 +1858,12 @@
       "name": "First Digital USD",
       "symbol": "fdusd",
       "image": "https://coin-images.coingecko.com/coins/images/31079/large/FDUSD_icon_black.png?1731097953",
-      "price": 0.998786,
-      "chg24h": 0.0038,
+      "price": 0.998795,
+      "chg24h": 0.00439,
       "chg7d": 0.0,
-      "mcap": 334010984.0,
-      "fdv": 334010984.0,
-      "athChg": -13.24955
+      "mcap": 334022152.0,
+      "fdv": 334022152.0,
+      "athChg": -13.24873
     },
     {
       "rank": 129,
@@ -1868,12 +1871,12 @@
       "name": "Sei",
       "symbol": "sei",
       "image": "https://coin-images.coingecko.com/coins/images/28205/large/Sei_Logo_-_Transparent.png?1696527207",
-      "price": 0.04899538,
-      "chg24h": 2.21109,
+      "price": 0.04897189,
+      "chg24h": 2.18028,
       "chg7d": 7.3,
-      "mcap": 329940573.0,
-      "fdv": 490010753.0,
-      "athChg": -95.7011
+      "mcap": 329889456.0,
+      "fdv": 489934836.0,
+      "athChg": -95.70316
     },
     {
       "rank": 130,
@@ -1881,11 +1884,11 @@
       "name": "Sun Token",
       "symbol": "sun",
       "image": "https://coin-images.coingecko.com/coins/images/12424/large/RSFOmQ.png?1696512245",
-      "price": 0.01687429,
-      "chg24h": 1.65915,
+      "price": 0.01687427,
+      "chg24h": 1.63635,
       "chg7d": 0.3,
-      "mcap": 324336241.0,
-      "fdv": 335785394.0,
+      "mcap": 324358260.0,
+      "fdv": 335808191.0,
       "athChg": -99.9746
     },
     {
@@ -1894,12 +1897,12 @@
       "name": "SoFiUSD",
       "symbol": "sofid",
       "image": "https://coin-images.coingecko.com/coins/images/71688/large/CRY25-3266080_StableCoinLogo.png?1768922282",
-      "price": 0.999332,
-      "chg24h": -0.0569,
+      "price": 0.99933,
+      "chg24h": -0.05857,
       "chg7d": 0.0,
-      "mcap": 323772282.0,
-      "fdv": 323772282.0,
-      "athChg": -0.23258
+      "mcap": 323778678.0,
+      "fdv": 323778678.0,
+      "athChg": -0.23282
     },
     {
       "rank": 132,
@@ -1907,12 +1910,12 @@
       "name": "Monad",
       "symbol": "mon",
       "image": "https://coin-images.coingecko.com/coins/images/38927/large/mon.png?1766029057",
-      "price": 0.02715166,
-      "chg24h": 8.57058,
+      "price": 0.02719439,
+      "chg24h": 8.91119,
       "chg7d": 2.0,
-      "mcap": 320938467.0,
-      "fdv": 2732564287.0,
-      "athChg": -44.39441
+      "mcap": 320905191.0,
+      "fdv": 2732280970.0,
+      "athChg": -44.30689
     },
     {
       "rank": 133,
@@ -1920,12 +1923,12 @@
       "name": "apxUSD",
       "symbol": "apxusd",
       "image": "https://coin-images.coingecko.com/coins/images/102172243/large/apxUSD.png?1772448502",
-      "price": 0.96919,
-      "chg24h": -0.1977,
+      "price": 0.969189,
+      "chg24h": -0.18955,
       "chg7d": 0.0,
-      "mcap": 319713237.0,
-      "fdv": 319713237.0,
-      "athChg": -4.20893
+      "mcap": 319719038.0,
+      "fdv": 319719038.0,
+      "athChg": -4.20899
     },
     {
       "rank": 134,
@@ -1933,12 +1936,12 @@
       "name": "Akedo",
       "symbol": "ake",
       "image": "https://coin-images.coingecko.com/coins/images/68410/large/akedo.png?1755678461",
-      "price": 0.01391884,
-      "chg24h": -27.61299,
+      "price": 0.01396229,
+      "chg24h": -24.52674,
       "chg7d": 75.9,
-      "mcap": 317848750.0,
-      "fdv": 1394302793.0,
-      "athChg": -61.73577
+      "mcap": 317319823.0,
+      "fdv": 1391982556.0,
+      "athChg": -61.61632
     },
     {
       "rank": 135,
@@ -1946,12 +1949,12 @@
       "name": "Gnosis",
       "symbol": "gno",
       "image": "https://coin-images.coingecko.com/coins/images/662/large/logo_square_simple_300px.png?1696501854",
-      "price": 118.13,
-      "chg24h": 0.26349,
+      "price": 118.25,
+      "chg24h": 0.35667,
       "chg7d": -0.5,
-      "mcap": 311797004.0,
-      "fdv": 354369946.0,
-      "athChg": -81.6631
+      "mcap": 312138773.0,
+      "fdv": 354758380.0,
+      "athChg": -81.64343
     },
     {
       "rank": 136,
@@ -1960,11 +1963,11 @@
       "symbol": "ray",
       "image": "https://coin-images.coingecko.com/coins/images/13928/large/PSigc4ie_400x400.jpg?1696513668",
       "price": 1.15,
-      "chg24h": 37.86462,
+      "chg24h": 37.42704,
       "chg7d": 48.1,
-      "mcap": 311024079.0,
-      "fdv": 640421257.0,
-      "athChg": -93.15291
+      "mcap": 309622802.0,
+      "fdv": 637535925.0,
+      "athChg": -93.17266
     },
     {
       "rank": 137,
@@ -1973,10 +1976,10 @@
       "symbol": "ohm",
       "image": "https://coin-images.coingecko.com/coins/images/14483/large/token_OHM_%281%29.png?1696514169",
       "price": 20.31,
-      "chg24h": 0.59291,
+      "chg24h": 0.50853,
       "chg7d": 3.5,
-      "mcap": 303033483.0,
-      "fdv": 402416475.0,
+      "mcap": 303226185.0,
+      "fdv": 402672376.0,
       "athChg": -98.5648
     },
     {
@@ -1985,12 +1988,12 @@
       "name": "Kite",
       "symbol": "kite",
       "image": "https://coin-images.coingecko.com/coins/images/70426/large/KITE-ICON.png?1762328605",
-      "price": 0.126663,
-      "chg24h": -3.00215,
+      "price": 0.1267,
+      "chg24h": -2.87419,
       "chg7d": -0.8,
-      "mcap": 302818162.0,
-      "fdv": 1266387868.0,
-      "athChg": -60.3864
+      "mcap": 302852760.0,
+      "fdv": 1266532559.0,
+      "athChg": -60.37486
     },
     {
       "rank": 139,
@@ -1999,11 +2002,11 @@
       "symbol": "onyc",
       "image": "https://coin-images.coingecko.com/coins/images/67072/large/3D_ONYC.png?1779524172",
       "price": 1.14,
-      "chg24h": -0.10583,
+      "chg24h": -0.10767,
       "chg7d": 0.2,
-      "mcap": 298734191.0,
-      "fdv": 298734191.0,
-      "athChg": -2.16702
+      "mcap": 298739909.0,
+      "fdv": 298739909.0,
+      "athChg": -2.16688
     },
     {
       "rank": 140,
@@ -2011,12 +2014,12 @@
       "name": "BitTorrent",
       "symbol": "btt",
       "image": "https://coin-images.coingecko.com/coins/images/22457/large/btt_logo.png?1696521780",
-      "price": 3.01092e-07,
-      "chg24h": 0.83994,
+      "price": 3.01067e-07,
+      "chg24h": 0.88993,
       "chg7d": 3.1,
-      "mcap": 297211487.0,
-      "fdv": 298103423.0,
-      "athChg": -91.22525
+      "mcap": 297101047.0,
+      "fdv": 297992651.0,
+      "athChg": -91.22596
     },
     {
       "rank": 141,
@@ -2024,12 +2027,12 @@
       "name": "Decred",
       "symbol": "dcr",
       "image": "https://coin-images.coingecko.com/coins/images/329/large/dcr.png?1762890696",
-      "price": 16.66,
-      "chg24h": -2.60371,
+      "price": 16.69,
+      "chg24h": -2.29772,
       "chg7d": 18.4,
-      "mcap": 293062347.0,
-      "fdv": 293078123.0,
-      "athChg": -93.26342
+      "mcap": 293634055.0,
+      "fdv": 293649862.0,
+      "athChg": -93.25143
     },
     {
       "rank": 142,
@@ -2038,11 +2041,11 @@
       "symbol": "bonk",
       "image": "https://coin-images.coingecko.com/coins/images/28600/large/bonk.jpg?1696527587",
       "price": 3.3e-06,
-      "chg24h": 0.9915,
+      "chg24h": 1.08506,
       "chg7d": 11.5,
-      "mcap": 289878831.0,
-      "fdv": 289878831.0,
-      "athChg": -94.34032
+      "mcap": 290096935.0,
+      "fdv": 290096935.0,
+      "athChg": -94.34155
     },
     {
       "rank": 143,
@@ -2050,11 +2053,11 @@
       "name": "Terra Luna Classic",
       "symbol": "lunc",
       "image": "https://coin-images.coingecko.com/coins/images/8284/large/01_LunaClassic_color.png?1696508486",
-      "price": 5.237e-05,
-      "chg24h": -0.15262,
+      "price": 5.236e-05,
+      "chg24h": -0.13344,
       "chg7d": -0.2,
-      "mcap": 289608184.0,
-      "fdv": 337836802.0,
+      "mcap": 289535973.0,
+      "fdv": 337752566.0,
       "athChg": -99.99996
     },
     {
@@ -2064,11 +2067,11 @@
       "symbol": "usdai",
       "image": "https://coin-images.coingecko.com/coins/images/55857/large/USDai_Token_Full_Glyph.png?1755229050",
       "price": 1.0,
-      "chg24h": -0.03002,
+      "chg24h": -0.03068,
       "chg7d": 0.0,
-      "mcap": 282972836.0,
-      "fdv": 283029841.0,
-      "athChg": -15.80526
+      "mcap": 282982499.0,
+      "fdv": 283039507.0,
+      "athChg": -15.80375
     },
     {
       "rank": 145,
@@ -2077,11 +2080,11 @@
       "symbol": "pieverse",
       "image": "https://coin-images.coingecko.com/coins/images/68773/large/pieverse.png?1756546685",
       "price": 1.017,
-      "chg24h": -2.36675,
+      "chg24h": -2.56167,
       "chg7d": 1.5,
-      "mcap": 279389790.0,
-      "fdv": 1016887316.0,
-      "athChg": -38.96036
+      "mcap": 279434234.0,
+      "fdv": 1017049076.0,
+      "athChg": -38.96282
     },
     {
       "rank": 146,
@@ -2089,12 +2092,12 @@
       "name": "Tezos",
       "symbol": "xtz",
       "image": "https://coin-images.coingecko.com/coins/images/976/large/Tezos-logo.png?1696502091",
-      "price": 0.239464,
-      "chg24h": 2.49013,
+      "price": 0.23964,
+      "chg24h": 2.56381,
       "chg7d": 9.7,
-      "mcap": 262243497.0,
-      "fdv": 267026610.0,
-      "athChg": -97.37316
+      "mcap": 262436845.0,
+      "fdv": 267223484.0,
+      "athChg": -97.37124
     },
     {
       "rank": 147,
@@ -2102,12 +2105,12 @@
       "name": "Conflux",
       "symbol": "cfx",
       "image": "https://coin-images.coingecko.com/coins/images/13079/large/3vuYMbjN.png?1696512867",
-      "price": 0.050067,
-      "chg24h": 5.35993,
+      "price": 0.050055,
+      "chg24h": 5.41612,
       "chg7d": 9.1,
-      "mcap": 262159171.0,
-      "fdv": 262167516.0,
-      "athChg": -97.05637
+      "mcap": 262256582.0,
+      "fdv": 262264930.0,
+      "athChg": -97.05703
     },
     {
       "rank": 148,
@@ -2115,12 +2118,12 @@
       "name": "AUSD",
       "symbol": "ausd",
       "image": "https://coin-images.coingecko.com/coins/images/39284/large/AUSD_1024px.png?1764684132",
-      "price": 0.999885,
-      "chg24h": -0.02093,
+      "price": 0.999887,
+      "chg24h": -0.02284,
       "chg7d": 0.0,
-      "mcap": 260043002.0,
-      "fdv": 260043002.0,
-      "athChg": -2.13009
+      "mcap": 260049140.0,
+      "fdv": 260049140.0,
+      "athChg": -2.12989
     },
     {
       "rank": 149,
@@ -2129,11 +2132,11 @@
       "symbol": "ens",
       "image": "https://coin-images.coingecko.com/coins/images/19785/large/ENS.jpg?1727872989",
       "price": 6.12,
-      "chg24h": 5.39213,
+      "chg24h": 5.40137,
       "chg7d": 10.3,
-      "mcap": 257412106.0,
-      "fdv": 611790908.0,
-      "athChg": -92.66318
+      "mcap": 257417158.0,
+      "fdv": 611802917.0,
+      "athChg": -92.66491
     },
     {
       "rank": 150,
@@ -2141,12 +2144,12 @@
       "name": "Plasma",
       "symbol": "xpl",
       "image": "https://coin-images.coingecko.com/coins/images/66489/large/Plasma-symbol-green-1.png?1755142558",
-      "price": 0.091831,
-      "chg24h": -2.8265,
+      "price": 0.091739,
+      "chg24h": -3.14167,
       "chg7d": 4.0,
-      "mcap": 255236066.0,
-      "fdv": 918849838.0,
-      "athChg": -94.54238
+      "mcap": 254814651.0,
+      "fdv": 917332742.0,
+      "athChg": -94.54786
     },
     {
       "rank": 151,
@@ -2154,12 +2157,12 @@
       "name": "Trust Wallet",
       "symbol": "twt",
       "image": "https://coin-images.coingecko.com/coins/images/11085/large/Trust.png?1696511026",
-      "price": 0.610576,
-      "chg24h": -5.90808,
+      "price": 0.610459,
+      "chg24h": -5.87717,
       "chg7d": 27.4,
-      "mcap": 254276817.0,
-      "fdv": 610288918.0,
-      "athChg": -77.55985
+      "mcap": 254334040.0,
+      "fdv": 610426260.0,
+      "athChg": -77.56416
     },
     {
       "rank": 152,
@@ -2167,12 +2170,12 @@
       "name": "RealLink",
       "symbol": "real",
       "image": "https://coin-images.coingecko.com/coins/images/20665/large/TGBfBt6Y2Dm3RHdNpZAdqywBsvfdysf834.jpeg?1749135788",
-      "price": 0.074328,
-      "chg24h": 0.73817,
+      "price": 0.074317,
+      "chg24h": 0.72471,
       "chg7d": 4.6,
-      "mcap": 252319575.0,
-      "fdv": 252319575.0,
-      "athChg": -92.49731
+      "mcap": 252257495.0,
+      "fdv": 252257495.0,
+      "athChg": -92.49845
     },
     {
       "rank": 153,
@@ -2181,11 +2184,11 @@
       "symbol": "reusd",
       "image": "https://coin-images.coingecko.com/coins/images/66291/large/Points_Program_Group_91.png?1749676055",
       "price": 1.099,
-      "chg24h": 0.021,
+      "chg24h": 0.01907,
       "chg7d": 0.2,
-      "mcap": 252167582.0,
-      "fdv": 252167582.0,
-      "athChg": -0.36176
+      "mcap": 252172254.0,
+      "fdv": 252172254.0,
+      "athChg": -0.36153
     },
     {
       "rank": 154,
@@ -2193,38 +2196,38 @@
       "name": "Maple Finance",
       "symbol": "syrup",
       "image": "https://coin-images.coingecko.com/coins/images/51232/large/_syrup_token_logo.png?1747292046",
-      "price": 0.215996,
-      "chg24h": 1.77372,
+      "price": 0.215802,
+      "chg24h": 1.57116,
       "chg7d": 22.5,
-      "mcap": 252146081.0,
-      "fdv": 268866694.0,
-      "athChg": -66.93419
+      "mcap": 251965032.0,
+      "fdv": 268673638.0,
+      "athChg": -66.96381
     },
     {
-      "rank": 155,
+      "rank": 156,
       "id": "crvusd",
       "name": "crvUSD",
       "symbol": "crvusd",
       "image": "https://coin-images.coingecko.com/coins/images/30118/large/crvusd.jpg?1746670973",
-      "price": 1.002,
-      "chg24h": 0.15845,
+      "price": 1.0,
+      "chg24h": 0.13475,
       "chg7d": 0.0,
-      "mcap": 250086135.0,
-      "fdv": 250087125.0,
-      "athChg": -9.44913
+      "mcap": 250171387.0,
+      "fdv": 250172378.0,
+      "athChg": -9.58266
     },
     {
-      "rank": 156,
+      "rank": 155,
       "id": "optimism",
       "name": "Optimism",
       "symbol": "op",
       "image": "https://coin-images.coingecko.com/coins/images/25244/large/Token.png?1774456081",
-      "price": 0.109255,
-      "chg24h": 8.04823,
+      "price": 0.109282,
+      "chg24h": 8.03051,
       "chg7d": 21.4,
-      "mcap": 249923347.0,
-      "fdv": 469149925.0,
-      "athChg": -97.74468
+      "mcap": 250143034.0,
+      "fdv": 469562315.0,
+      "athChg": -97.74412
     },
     {
       "rank": 157,
@@ -2232,12 +2235,12 @@
       "name": "Ribbita by Virtuals",
       "symbol": "tibbir",
       "image": "https://coin-images.coingecko.com/coins/images/54970/large/Untitled_design.png?1742941268",
-      "price": 0.245499,
-      "chg24h": 0.47972,
+      "price": 0.245605,
+      "chg24h": 0.64105,
       "chg7d": -10.0,
-      "mcap": 245409109.0,
-      "fdv": 245409109.0,
-      "athChg": -44.20819
+      "mcap": 245690920.0,
+      "fdv": 245690920.0,
+      "athChg": -44.1841
     },
     {
       "rank": 158,
@@ -2246,11 +2249,11 @@
       "symbol": "kag",
       "image": "https://coin-images.coingecko.com/coins/images/29789/large/kag-currency-ticker.png?1696528719",
       "price": 65.76,
-      "chg24h": -0.75943,
+      "chg24h": -0.76132,
       "chg7d": -0.8,
-      "mcap": 244736340.0,
-      "fdv": 241602069.0,
-      "athChg": -49.4187
+      "mcap": 244740919.0,
+      "fdv": 241606590.0,
+      "athChg": -49.41857
     },
     {
       "rank": 159,
@@ -2259,11 +2262,11 @@
       "symbol": "apepe",
       "image": "https://coin-images.coingecko.com/coins/images/39614/large/APEPE_200.png?1723142351",
       "price": 1.15e-06,
-      "chg24h": 2.52603,
+      "chg24h": 2.54583,
       "chg7d": 1.9,
-      "mcap": 242260071.0,
-      "fdv": 242260071.0,
-      "athChg": -83.24618
+      "mcap": 242370412.0,
+      "fdv": 242370412.0,
+      "athChg": -83.24421
     },
     {
       "rank": 160,
@@ -2271,12 +2274,12 @@
       "name": "AINFT",
       "symbol": "nft",
       "image": "https://coin-images.coingecko.com/coins/images/15687/large/AINFT.png?1761099340",
-      "price": 2.40992e-07,
-      "chg24h": -0.02674,
+      "price": 2.4096e-07,
+      "chg24h": -0.09383,
       "chg7d": 0.4,
-      "mcap": 238712322.0,
-      "fdv": 238712322.0,
-      "athChg": -96.79958
+      "mcap": 238599983.0,
+      "fdv": 238599983.0,
+      "athChg": -96.80002
     },
     {
       "rank": 161,
@@ -2285,11 +2288,11 @@
       "symbol": "usx",
       "image": "https://coin-images.coingecko.com/coins/images/68429/large/Solstice_Icons_for_DEX_512x512_USX.png?1755718377",
       "price": 0.999453,
-      "chg24h": -0.00279,
+      "chg24h": -0.00459,
       "chg7d": 0.0,
-      "mcap": 237899999.0,
-      "fdv": 237899999.0,
-      "athChg": -17.3915
+      "mcap": 237904700.0,
+      "fdv": 237904700.0,
+      "athChg": -17.39156
     },
     {
       "rank": 162,
@@ -2297,12 +2300,12 @@
       "name": "Jito",
       "symbol": "jto",
       "image": "https://coin-images.coingecko.com/coins/images/33228/large/jto.png?1701137022",
-      "price": 0.452797,
-      "chg24h": 7.79038,
+      "price": 0.452733,
+      "chg24h": 7.79207,
       "chg7d": -6.2,
-      "mcap": 234567034.0,
-      "fdv": 452638083.0,
-      "athChg": -92.47038
+      "mcap": 234727965.0,
+      "fdv": 452948626.0,
+      "athChg": -92.47144
     },
     {
       "rank": 163,
@@ -2310,12 +2313,12 @@
       "name": "Grass",
       "symbol": "grass",
       "image": "https://coin-images.coingecko.com/coins/images/40094/large/Grass.jpg?1725697048",
-      "price": 0.344204,
-      "chg24h": -1.39086,
+      "price": 0.344249,
+      "chg24h": -1.36597,
       "chg7d": -6.1,
-      "mcap": 232924967.0,
-      "fdv": 344043139.0,
-      "athChg": -91.15668
+      "mcap": 233024282.0,
+      "fdv": 344189833.0,
+      "athChg": -91.15553
     },
     {
       "rank": 164,
@@ -2324,11 +2327,11 @@
       "symbol": "koge",
       "image": "https://coin-images.coingecko.com/coins/images/13827/large/bnb48.png?1696513570",
       "price": 68.69,
-      "chg24h": 2.39391,
+      "chg24h": 2.38775,
       "chg7d": 5.4,
-      "mcap": 232179176.0,
-      "fdv": 232179176.0,
-      "athChg": -51.43582
+      "mcap": 232170145.0,
+      "fdv": 232170145.0,
+      "athChg": -51.43806
     },
     {
       "rank": 165,
@@ -2336,12 +2339,12 @@
       "name": "Cash Cat",
       "symbol": "cashcat",
       "image": "https://coin-images.coingecko.com/coins/images/102174280/large/cashcat-logo.jpg?1782922765",
-      "price": 0.234076,
-      "chg24h": -7.00648,
+      "price": 0.234117,
+      "chg24h": -7.24528,
       "chg7d": 8.0,
-      "mcap": 231334391.0,
-      "fdv": 231334391.0,
-      "athChg": -25.52391
+      "mcap": 231424671.0,
+      "fdv": 231424671.0,
+      "athChg": -25.51101
     },
     {
       "rank": 166,
@@ -2349,12 +2352,12 @@
       "name": "edgeX",
       "symbol": "edge",
       "image": "https://coin-images.coingecko.com/coins/images/102172616/large/edgex.png?1774332310",
-      "price": 0.655573,
-      "chg24h": 2.28033,
+      "price": 0.651506,
+      "chg24h": 1.89718,
       "chg7d": 77.1,
-      "mcap": 229331504.0,
-      "fdv": 655232868.0,
-      "athChg": -57.48721
+      "mcap": 227883772.0,
+      "fdv": 651096491.0,
+      "athChg": -57.75096
     },
     {
       "rank": 167,
@@ -2362,12 +2365,12 @@
       "name": "Starknet",
       "symbol": "strk",
       "image": "https://coin-images.coingecko.com/coins/images/26433/large/starknet.png?1696525507",
-      "price": 0.03088823,
-      "chg24h": 6.44376,
+      "price": 0.03086883,
+      "chg24h": 6.35652,
       "chg7d": 18.5,
-      "mcap": 221770031.0,
-      "fdv": 308806470.0,
-      "athChg": -99.30017
+      "mcap": 221777450.0,
+      "fdv": 308816801.0,
+      "athChg": -99.30061
     },
     {
       "rank": 168,
@@ -2375,12 +2378,12 @@
       "name": "Useless Coin",
       "symbol": "useless",
       "image": "https://coin-images.coingecko.com/coins/images/55684/large/coingeckoupdate.png?1755203747",
-      "price": 0.221085,
-      "chg24h": -6.46688,
+      "price": 0.221369,
+      "chg24h": -6.5966,
       "chg7d": 246.0,
-      "mcap": 220786590.0,
-      "fdv": 220786590.0,
-      "athChg": -49.12808
+      "mcap": 221464630.0,
+      "fdv": 221464630.0,
+      "athChg": -49.06272
     },
     {
       "rank": 169,
@@ -2388,12 +2391,12 @@
       "name": "Legacy Frax Dollar",
       "symbol": "frax",
       "image": "https://coin-images.coingecko.com/coins/images/13422/large/LFRAX.png?1751911193",
-      "price": 0.991937,
-      "chg24h": 0.02419,
+      "price": 0.992027,
+      "chg24h": 0.03085,
       "chg7d": 0.1,
-      "mcap": 217533296.0,
-      "fdv": 217533296.0,
-      "athChg": -40.35998
+      "mcap": 217565515.0,
+      "fdv": 217565515.0,
+      "athChg": -40.35458
     },
     {
       "rank": 170,
@@ -2402,11 +2405,11 @@
       "symbol": "cvx",
       "image": "https://coin-images.coingecko.com/coins/images/15585/large/convex.png?1696515221",
       "price": 2.33,
-      "chg24h": 3.86954,
+      "chg24h": 3.98659,
       "chg7d": 4.9,
-      "mcap": 217439468.0,
-      "fdv": 233292420.0,
-      "athChg": -96.11627
+      "mcap": 217490474.0,
+      "fdv": 233347145.0,
+      "athChg": -96.11588
     },
     {
       "rank": 171,
@@ -2414,12 +2417,12 @@
       "name": "The Graph",
       "symbol": "grt",
       "image": "https://coin-images.coingecko.com/coins/images/13397/large/Graph_Token.png?1696513159",
-      "price": 0.01972755,
-      "chg24h": 12.78587,
+      "price": 0.01972429,
+      "chg24h": 12.55258,
       "chg7d": 20.1,
-      "mcap": 216053916.0,
-      "fdv": 229317216.0,
-      "athChg": -99.30573
+      "mcap": 215452479.0,
+      "fdv": 228678858.0,
+      "athChg": -99.30585
     },
     {
       "rank": 172,
@@ -2427,12 +2430,12 @@
       "name": "dogwifhat",
       "symbol": "wif",
       "image": "https://coin-images.coingecko.com/coins/images/33566/large/dogwifhat.jpg?1702499428",
-      "price": 0.215272,
-      "chg24h": 1.22765,
+      "price": 0.215136,
+      "chg24h": 1.1803,
       "chg7d": 8.2,
-      "mcap": 214988733.0,
-      "fdv": 214988733.0,
-      "athChg": -95.53882
+      "mcap": 214933680.0,
+      "fdv": 214933680.0,
+      "athChg": -95.54165
     },
     {
       "rank": 173,
@@ -2440,11 +2443,11 @@
       "name": "JasmyCoin",
       "symbol": "jasmy",
       "image": "https://coin-images.coingecko.com/coins/images/13876/large/JASMY200x200.jpg?1696513620",
-      "price": 0.00429616,
-      "chg24h": -1.15622,
+      "price": 0.0042962,
+      "chg24h": -1.15896,
       "chg7d": -4.7,
-      "mcap": 212464899.0,
-      "fdv": 214849732.0,
+      "mcap": 212430620.0,
+      "fdv": 214815069.0,
       "athChg": -99.91031
     },
     {
@@ -2454,11 +2457,11 @@
       "symbol": "comp",
       "image": "https://coin-images.coingecko.com/coins/images/10775/large/COMP.png?1696510737",
       "price": 21.1,
-      "chg24h": 5.472,
+      "chg24h": 5.57218,
       "chg7d": 14.3,
-      "mcap": 210895982.0,
-      "fdv": 210895982.0,
-      "athChg": -97.53106
+      "mcap": 211009825.0,
+      "fdv": 211009825.0,
+      "athChg": -97.53046
     },
     {
       "rank": 175,
@@ -2466,12 +2469,12 @@
       "name": "Artificial Inu",
       "symbol": "ai",
       "image": "https://coin-images.coingecko.com/coins/images/102176647/large/5ou9sb7h478ezv28urbjpzf1fl3e.?1788401429",
-      "price": 0.209262,
-      "chg24h": -11.69691,
+      "price": 0.208112,
+      "chg24h": -11.40499,
       "chg7d": 101.6,
-      "mcap": 208044243.0,
-      "fdv": 208043606.0,
-      "athChg": -34.12784
+      "mcap": 207261673.0,
+      "fdv": 207261038.0,
+      "athChg": -34.48983
     },
     {
       "rank": 176,
@@ -2492,12 +2495,12 @@
       "name": "Kaia",
       "symbol": "kaia",
       "image": "https://coin-images.coingecko.com/coins/images/39901/large/KAIA.png?1724734368",
-      "price": 0.03106493,
-      "chg24h": 0.64633,
+      "price": 0.03107654,
+      "chg24h": 0.64262,
       "chg7d": 4.9,
-      "mcap": 199157882.0,
-      "fdv": 199172918.0,
-      "athChg": -92.36167
+      "mcap": 199192212.0,
+      "fdv": 199207250.0,
+      "athChg": -92.35882
     },
     {
       "rank": 178,
@@ -2505,12 +2508,12 @@
       "name": "IOTA",
       "symbol": "iota",
       "image": "https://coin-images.coingecko.com/coins/images/692/large/IOTA_Thumbnail_%281%29.png?1743772896",
-      "price": 0.04270045,
-      "chg24h": 7.594,
+      "price": 0.04300189,
+      "chg24h": 8.54392,
       "chg7d": 6.3,
-      "mcap": 197469030.0,
-      "fdv": 212246176.0,
-      "athChg": -99.18647
+      "mcap": 198617766.0,
+      "fdv": 213480875.0,
+      "athChg": -99.18073
     },
     {
       "rank": 179,
@@ -2518,12 +2521,12 @@
       "name": "MarsCoin",
       "symbol": "marscoin",
       "image": "https://coin-images.coingecko.com/coins/images/102175246/large/1000299474.png?1785934648",
-      "price": 0.195144,
-      "chg24h": -17.88765,
+      "price": 0.195696,
+      "chg24h": -18.32559,
       "chg7d": 374.0,
-      "mcap": 194663634.0,
-      "fdv": 194663634.0,
-      "athChg": -25.92608
+      "mcap": 195575195.0,
+      "fdv": 195575195.0,
+      "athChg": -25.71645
     },
     {
       "rank": 180,
@@ -2532,11 +2535,11 @@
       "symbol": "ar",
       "image": "https://coin-images.coingecko.com/coins/images/4343/large/oRt6SiEN_400x400.jpg?1696504946",
       "price": 2.96,
-      "chg24h": 3.41173,
+      "chg24h": 3.95781,
       "chg7d": 41.8,
-      "mcap": 194022039.0,
-      "fdv": 194022039.0,
-      "athChg": -96.68798
+      "mcap": 194559438.0,
+      "fdv": 194559438.0,
+      "athChg": -96.67905
     },
     {
       "rank": 181,
@@ -2544,12 +2547,12 @@
       "name": "EigenCloud (prev. EigenLayer)",
       "symbol": "eigen",
       "image": "https://coin-images.coingecko.com/coins/images/37441/large/eigencloud.jpg?1751003565",
-      "price": 0.210764,
-      "chg24h": 4.82497,
+      "price": 0.210689,
+      "chg24h": 4.94986,
       "chg7d": 7.8,
-      "mcap": 193968428.0,
-      "fdv": 387722522.0,
-      "athChg": -96.26685
+      "mcap": 193978377.0,
+      "fdv": 387742411.0,
+      "athChg": -96.26818
     },
     {
       "rank": 182,
@@ -2557,12 +2560,12 @@
       "name": "Zebec Network",
       "symbol": "zbcn",
       "image": "https://coin-images.coingecko.com/coins/images/37052/large/zbcn.jpeg?1713168241",
-      "price": 0.00188652,
-      "chg24h": -1.11872,
+      "price": 0.00188557,
+      "chg24h": -1.56763,
       "chg7d": -3.3,
-      "mcap": 188626953.0,
-      "fdv": 188626953.0,
-      "athChg": -73.05972
+      "mcap": 188583495.0,
+      "fdv": 188583495.0,
+      "athChg": -73.07326
     },
     {
       "rank": 183,
@@ -2571,11 +2574,11 @@
       "symbol": "eurcv",
       "image": "https://coin-images.coingecko.com/coins/images/33415/large/eurcv_%281%29.png?1701752017",
       "price": 1.16,
-      "chg24h": 0.01562,
+      "chg24h": 0.02608,
       "chg7d": 0.3,
-      "mcap": 187204371.0,
-      "fdv": 187204371.0,
-      "athChg": -4.72195
+      "mcap": 187241350.0,
+      "fdv": 187241350.0,
+      "athChg": -4.70522
     },
     {
       "rank": 184,
@@ -2584,37 +2587,37 @@
       "symbol": "apyusd",
       "image": "https://coin-images.coingecko.com/coins/images/102172527/large/apyUSD.png?1773763322",
       "price": 1.37,
-      "chg24h": -0.16577,
+      "chg24h": -0.16744,
       "chg7d": 0.0,
-      "mcap": 186731446.0,
-      "fdv": 186731446.0,
+      "mcap": 186735470.0,
+      "fdv": 186735470.0,
       "athChg": -99.97151
     },
     {
       "rank": 185,
-      "id": "fartcoin",
-      "name": "Fartcoin",
-      "symbol": "fartcoin",
-      "image": "https://coin-images.coingecko.com/coins/images/50891/large/fart.jpg?1729503972",
-      "price": 0.184259,
-      "chg24h": 11.25925,
-      "chg7d": -2.6,
-      "mcap": 184219191.0,
-      "fdv": 184219191.0,
-      "athChg": -92.56684
-    },
-    {
-      "rank": 186,
       "id": "usa",
       "name": "USAT",
       "symbol": "usat",
       "image": "https://coin-images.coingecko.com/coins/images/71792/large/usat_logo_200x200.png?1769440161",
-      "price": 0.99942,
-      "chg24h": -0.02213,
+      "price": 0.999429,
+      "chg24h": -0.04078,
       "chg7d": 0.0,
-      "mcap": 184206349.0,
-      "fdv": 184206349.0,
-      "athChg": -0.29935
+      "mcap": 184212555.0,
+      "fdv": 184212555.0,
+      "athChg": -0.29853
+    },
+    {
+      "rank": 186,
+      "id": "fartcoin",
+      "name": "Fartcoin",
+      "symbol": "fartcoin",
+      "image": "https://coin-images.coingecko.com/coins/images/50891/large/fart.jpg?1729503972",
+      "price": 0.184032,
+      "chg24h": 11.222,
+      "chg7d": -2.6,
+      "mcap": 183873814.0,
+      "fdv": 183873814.0,
+      "athChg": -92.57596
     },
     {
       "rank": 187,
@@ -2622,12 +2625,12 @@
       "name": "SwissBorg",
       "symbol": "borg",
       "image": "https://coin-images.coingecko.com/coins/images/2117/large/YJUrRy7r_400x400.png?1696503083",
-      "price": 0.187065,
-      "chg24h": 2.52429,
+      "price": 0.187113,
+      "chg24h": 2.13937,
       "chg7d": 1.8,
-      "mcap": 184183692.0,
-      "fdv": 184183692.0,
-      "athChg": -88.59274
+      "mcap": 183622568.0,
+      "fdv": 183622568.0,
+      "athChg": -88.58982
     },
     {
       "rank": 188,
@@ -2635,12 +2638,12 @@
       "name": "Theta Network",
       "symbol": "theta",
       "image": "https://coin-images.coingecko.com/coins/images/2538/large/theta-token-logo.png?1696503349",
-      "price": 0.18327,
-      "chg24h": 3.92771,
+      "price": 0.18297,
+      "chg24h": 3.65015,
       "chg7d": 6.8,
-      "mcap": 183190264.0,
-      "fdv": 183190264.0,
-      "athChg": -98.83414
+      "mcap": 182955548.0,
+      "fdv": 182955548.0,
+      "athChg": -98.83605
     },
     {
       "rank": 189,
@@ -2648,12 +2651,12 @@
       "name": "DoubleZero",
       "symbol": "2z",
       "image": "https://coin-images.coingecko.com/coins/images/68339/large/Coingecko_-_PFP.png?1755694420",
-      "price": 0.052544,
-      "chg24h": -0.07802,
+      "price": 0.052641,
+      "chg24h": 0.10712,
       "chg7d": -5.7,
-      "mcap": 182494948.0,
-      "fdv": 525896016.0,
-      "athChg": -94.12045
+      "mcap": 182616413.0,
+      "fdv": 526246041.0,
+      "athChg": -94.10959
     },
     {
       "rank": 190,
@@ -2661,12 +2664,12 @@
       "name": "BUILDon",
       "symbol": "b",
       "image": "https://coin-images.coingecko.com/coins/images/55974/large/T7asvmCb_400x400.jpg?1747902862",
-      "price": 0.180742,
-      "chg24h": -0.73081,
+      "price": 0.181162,
+      "chg24h": -0.37913,
       "chg7d": 26.0,
-      "mcap": 180720101.0,
-      "fdv": 180720101.0,
-      "athChg": -76.29885
+      "mcap": 180945603.0,
+      "fdv": 180945603.0,
+      "athChg": -76.24374
     },
     {
       "rank": 191,
@@ -2674,12 +2677,12 @@
       "name": "Ultima",
       "symbol": "ultima",
       "image": "https://coin-images.coingecko.com/coins/images/31844/large/ULTIMA-200x200.png?1763090865",
-      "price": 2120.92,
-      "chg24h": -0.54797,
+      "price": 2120.8,
+      "chg24h": -0.47956,
       "chg7d": -7.1,
-      "mcap": 179603605.0,
-      "fdv": 212026733.0,
-      "athChg": -90.71834
+      "mcap": 179641288.0,
+      "fdv": 212071219.0,
+      "athChg": -90.71883
     },
     {
       "rank": 192,
@@ -2687,12 +2690,12 @@
       "name": "coco",
       "symbol": "coco",
       "image": "https://coin-images.coingecko.com/coins/images/71124/large/%E6%9C%AA%E5%91%BD%E5%90%8D%E7%9A%84%E8%AE%BE%E8%AE%A1_%2821%29.png?1765893957",
-      "price": 0.171737,
-      "chg24h": 0.24183,
+      "price": 0.172516,
+      "chg24h": 0.69177,
       "chg7d": 3.5,
-      "mcap": 171735258.0,
-      "fdv": 171735258.0,
-      "athChg": -51.61094
+      "mcap": 172520879.0,
+      "fdv": 172520879.0,
+      "athChg": -51.39143
     },
     {
       "rank": 193,
@@ -2713,12 +2716,12 @@
       "name": "Telcoin",
       "symbol": "tel",
       "image": "https://coin-images.coingecko.com/coins/images/1899/large/tel.png?1696502892",
-      "price": 0.00171819,
-      "chg24h": 1.40104,
+      "price": 0.00171942,
+      "chg24h": 1.46242,
       "chg7d": 1.6,
-      "mcap": 169551447.0,
-      "fdv": 171835285.0,
-      "athChg": -97.33542
+      "mcap": 169500169.0,
+      "fdv": 171783317.0,
+      "athChg": -97.33351
     },
     {
       "rank": 195,
@@ -2726,12 +2729,12 @@
       "name": "Axie Infinity",
       "symbol": "axs",
       "image": "https://coin-images.coingecko.com/coins/images/13029/large/axie_infinity_logo.png?1696512817",
-      "price": 0.961468,
-      "chg24h": 1.24267,
+      "price": 0.961722,
+      "chg24h": 1.27652,
       "chg7d": 5.3,
-      "mcap": 167678327.0,
-      "fdv": 259554481.0,
-      "athChg": -99.41693
+      "mcap": 167751484.0,
+      "fdv": 259667724.0,
+      "athChg": -99.41678
     },
     {
       "rank": 196,
@@ -2739,12 +2742,12 @@
       "name": "Derive",
       "symbol": "drv",
       "image": "https://coin-images.coingecko.com/coins/images/52889/large/Token_Logo.png?1734601695",
-      "price": 0.166613,
-      "chg24h": -11.46724,
+      "price": 0.166601,
+      "chg24h": -10.92118,
       "chg7d": 2.7,
-      "mcap": 166582113.0,
-      "fdv": 249945758.0,
-      "athChg": -27.00876
+      "mcap": 166559533.0,
+      "fdv": 249911878.0,
+      "athChg": -27.01402
     },
     {
       "rank": 197,
@@ -2752,12 +2755,12 @@
       "name": "Akash Network",
       "symbol": "akt",
       "image": "https://coin-images.coingecko.com/coins/images/12785/large/akash-logo.png?1696512580",
-      "price": 0.557341,
-      "chg24h": 6.48519,
+      "price": 0.558424,
+      "chg24h": 6.50099,
       "chg7d": 6.2,
-      "mcap": 165979781.0,
-      "fdv": 165991980.0,
-      "athChg": -93.09791
+      "mcap": 165917085.0,
+      "fdv": 165929279.0,
+      "athChg": -93.0845
     },
     {
       "rank": 198,
@@ -2765,12 +2768,12 @@
       "name": "Onyxcoin",
       "symbol": "xcn",
       "image": "https://coin-images.coingecko.com/coins/images/24210/large/onyxlogo.jpg?1696523397",
-      "price": 0.00419598,
-      "chg24h": -0.63871,
+      "price": 0.00419314,
+      "chg24h": -0.53869,
       "chg7d": 22.3,
-      "mcap": 165066426.0,
-      "fdv": 224197788.0,
-      "athChg": -97.7213
+      "mcap": 164822392.0,
+      "fdv": 223866334.0,
+      "athChg": -97.72284
     },
     {
       "rank": 199,
@@ -2791,12 +2794,12 @@
       "name": "Non-Playable Coin",
       "symbol": "npc",
       "image": "https://coin-images.coingecko.com/coins/images/31193/large/NPC_200x200.png?1696530021",
-      "price": 0.02023369,
-      "chg24h": -3.17902,
+      "price": 0.02022369,
+      "chg24h": -3.44759,
       "chg7d": 22.6,
-      "mcap": 162781723.0,
-      "fdv": 162781723.0,
-      "athChg": -69.42128
+      "mcap": 162822929.0,
+      "fdv": 162822929.0,
+      "athChg": -69.43638
     },
     {
       "rank": 201,
@@ -2817,12 +2820,12 @@
       "name": "THORChain",
       "symbol": "rune",
       "image": "https://coin-images.coingecko.com/coins/images/6595/large/THORChain_RUNE_Token.png?1782452363",
-      "price": 0.491076,
-      "chg24h": 2.30775,
+      "price": 0.491198,
+      "chg24h": 2.29328,
       "chg7d": 4.7,
-      "mcap": 161441467.0,
-      "fdv": 173872817.0,
-      "athChg": -97.6467
+      "mcap": 161448967.0,
+      "fdv": 173880894.0,
+      "athChg": -97.64612
     },
     {
       "rank": 203,
@@ -2831,11 +2834,11 @@
       "symbol": "mx",
       "image": "https://coin-images.coingecko.com/coins/images/8545/large/mexc.jpg?1747142259",
       "price": 1.73,
-      "chg24h": -1.61284,
+      "chg24h": -1.60188,
       "chg7d": -0.8,
-      "mcap": 158942941.0,
-      "fdv": 707899580.0,
-      "athChg": -70.43849
+      "mcap": 158918246.0,
+      "fdv": 707789593.0,
+      "athChg": -70.44489
     },
     {
       "rank": 204,
@@ -2843,12 +2846,12 @@
       "name": "SAFEbit",
       "symbol": "safe",
       "image": "https://coin-images.coingecko.com/coins/images/67434/large/200x200_%281%29.png?1752777433",
-      "price": 0.219824,
-      "chg24h": -0.77676,
+      "price": 0.220773,
+      "chg24h": -0.3462,
       "chg7d": 28.0,
-      "mcap": 156867333.0,
-      "fdv": 220178842.0,
-      "athChg": -56.36519
+      "mcap": 157290968.0,
+      "fdv": 220773456.0,
+      "athChg": -56.17679
     },
     {
       "rank": 205,
@@ -2857,11 +2860,11 @@
       "symbol": "strcx",
       "image": "https://coin-images.coingecko.com/coins/images/71033/large/Ticker_STRCx__Company_Name_Strategy_PP_Variable__size_200x200.png?1765380234",
       "price": 106.38,
-      "chg24h": -0.02605,
+      "chg24h": -0.02755,
       "chg7d": 2.6,
-      "mcap": 154979135.0,
-      "fdv": 299688110.0,
-      "athChg": -23.99487
+      "mcap": 154982649.0,
+      "fdv": 299694905.0,
+      "athChg": -23.99438
     },
     {
       "rank": 206,
@@ -2869,12 +2872,12 @@
       "name": "Vision",
       "symbol": "vsn",
       "image": "https://coin-images.coingecko.com/coins/images/67399/large/Logo-Vision-Symbol-BG-Green.png?1752676915",
-      "price": 0.0406877,
-      "chg24h": -0.24645,
+      "price": 0.04072272,
+      "chg24h": -0.1902,
       "chg7d": 1.6,
-      "mcap": 152915296.0,
-      "fdv": 170857064.0,
-      "athChg": -81.82562
+      "mcap": 153081000.0,
+      "fdv": 171042211.0,
+      "athChg": -81.80997
     },
     {
       "rank": 207,
@@ -2883,37 +2886,37 @@
       "symbol": "neo",
       "image": "https://coin-images.coingecko.com/coins/images/480/large/NEO_512_512.png?1696501735",
       "price": 2.16,
-      "chg24h": 1.5602,
+      "chg24h": 1.48602,
       "chg7d": 3.5,
-      "mcap": 152450383.0,
-      "fdv": 216149699.0,
-      "athChg": -98.9103
+      "mcap": 152376456.0,
+      "fdv": 216044883.0,
+      "athChg": -98.91109
     },
     {
       "rank": 208,
-      "id": "zama",
-      "name": "Zama",
-      "symbol": "zama",
-      "image": "https://coin-images.coingecko.com/coins/images/70921/large/zama.png?1764591992",
-      "price": 0.060896,
-      "chg24h": 18.75813,
-      "chg7d": 15.9,
-      "mcap": 151339433.0,
-      "fdv": 689399579.0,
-      "athChg": -8.12346
-    },
-    {
-      "rank": 209,
       "id": "origintrail",
       "name": "OriginTrail",
       "symbol": "trac",
       "image": "https://coin-images.coingecko.com/coins/images/1877/large/TRAC.jpg?1696502873",
-      "price": 0.337253,
-      "chg24h": 4.75745,
+      "price": 0.337361,
+      "chg24h": 4.90654,
       "chg7d": 0.4,
-      "mcap": 150868421.0,
-      "fdv": 168653199.0,
-      "athChg": -90.37779
+      "mcap": 150893415.0,
+      "fdv": 168681139.0,
+      "athChg": -90.3747
+    },
+    {
+      "rank": 209,
+      "id": "zama",
+      "name": "Zama",
+      "symbol": "zama",
+      "image": "https://coin-images.coingecko.com/coins/images/70921/large/zama.png?1764591992",
+      "price": 0.060447,
+      "chg24h": 17.98477,
+      "chg7d": 15.9,
+      "mcap": 149877204.0,
+      "fdv": 682738661.0,
+      "athChg": -8.80029
     },
     {
       "rank": 210,
@@ -2921,25 +2924,12 @@
       "name": "GUSD",
       "symbol": "gusd",
       "image": "https://coin-images.coingecko.com/coins/images/68725/large/gusd-logo.jpeg?1757681286",
-      "price": 0.998473,
-      "chg24h": -0.05604,
+      "price": 0.998475,
+      "chg24h": -0.05796,
       "chg7d": 0.0,
-      "mcap": 149558815.0,
-      "fdv": 319506113.0,
-      "athChg": -2.28918
-    },
-    {
-      "rank": 211,
-      "id": "decentraland",
-      "name": "Decentraland",
-      "symbol": "mana",
-      "image": "https://coin-images.coingecko.com/coins/images/878/large/decentraland-mana.png?1696502010",
-      "price": 0.075591,
-      "chg24h": 0.74485,
-      "chg7d": -0.5,
-      "mcap": 148036424.0,
-      "fdv": 165787607.0,
-      "athChg": -98.70803
+      "mcap": 149561586.0,
+      "fdv": 319512033.0,
+      "athChg": -2.28896
     },
     {
       "rank": 212,
@@ -2947,64 +2937,77 @@
       "name": "Humanity",
       "symbol": "h",
       "image": "https://coin-images.coingecko.com/coins/images/66811/large/H_tokenLogo_original.png?1750581252",
-      "price": 0.074279,
-      "chg24h": -5.61172,
+      "price": 0.074306,
+      "chg24h": -5.09524,
       "chg7d": -2.1,
-      "mcap": 147924698.0,
-      "fdv": 742674658.0,
-      "athChg": -91.29964
+      "mcap": 148068345.0,
+      "fdv": 743395859.0,
+      "athChg": -91.29651
+    },
+    {
+      "rank": 211,
+      "id": "decentraland",
+      "name": "Decentraland",
+      "symbol": "mana",
+      "image": "https://coin-images.coingecko.com/coins/images/878/large/decentraland-mana.png?1696502010",
+      "price": 0.075601,
+      "chg24h": 0.75052,
+      "chg7d": -0.5,
+      "mcap": 148027600.0,
+      "fdv": 165777725.0,
+      "athChg": -98.70786
     },
     {
       "rank": 213,
-      "id": "seeker",
-      "name": "Seeker",
-      "symbol": "skr",
-      "image": "https://coin-images.coingecko.com/coins/images/70974/large/seeker-logo.jpg?1764922774",
-      "price": 0.02116854,
-      "chg24h": -7.47647,
-      "chg7d": 40.3,
-      "mcap": 147736175.0,
-      "fdv": 224015901.0,
-      "athChg": -62.07599
-    },
-    {
-      "rank": 214,
       "id": "ecash",
       "name": "eCash",
       "symbol": "xec",
       "image": "https://coin-images.coingecko.com/coins/images/16646/large/Logo_final-22.png?1696516207",
-      "price": 7.35e-06,
-      "chg24h": 2.17155,
+      "price": 7.36e-06,
+      "chg24h": 2.31743,
       "chg7d": 5.7,
-      "mcap": 147662915.0,
-      "fdv": 147665443.0,
-      "athChg": -98.06596
+      "mcap": 147561906.0,
+      "fdv": 147564433.0,
+      "athChg": -98.06434
     },
     {
-      "rank": 215,
+      "rank": 214,
       "id": "chiliz",
       "name": "Chiliz",
       "symbol": "chz",
       "image": "https://coin-images.coingecko.com/coins/images/8834/large/CHZ_Token_updated.png?1696508986",
-      "price": 0.01401956,
-      "chg24h": 2.57131,
+      "price": 0.01400942,
+      "chg24h": 2.52946,
       "chg7d": 1.7,
-      "mcap": 147475824.0,
-      "fdv": 147475824.0,
-      "athChg": -98.40439
+      "mcap": 147400754.0,
+      "fdv": 147400754.0,
+      "athChg": -98.40554
     },
     {
-      "rank": 216,
+      "rank": 215,
       "id": "gmt-token",
       "name": "GoMining Token",
       "symbol": "gomining",
       "image": "https://coin-images.coingecko.com/coins/images/15662/large/GoMining_Logo.webp?1769225542",
-      "price": 0.364969,
-      "chg24h": -1.38941,
+      "price": 0.364879,
+      "chg24h": -1.45579,
       "chg7d": 8.7,
-      "mcap": 147164871.0,
-      "fdv": 147164871.0,
-      "athChg": -35.36979
+      "mcap": 147142763.0,
+      "fdv": 147142763.0,
+      "athChg": -35.38577
+    },
+    {
+      "rank": 216,
+      "id": "seeker",
+      "name": "Seeker",
+      "symbol": "skr",
+      "image": "https://coin-images.coingecko.com/coins/images/70974/large/seeker-logo.jpg?1764922774",
+      "price": 0.02110173,
+      "chg24h": -7.96115,
+      "chg7d": 40.3,
+      "mcap": 147137398.0,
+      "fdv": 223107960.0,
+      "athChg": -62.19566
     },
     {
       "rank": 217,
@@ -3012,38 +3015,38 @@
       "name": "ApeCoin",
       "symbol": "ape",
       "image": "https://coin-images.coingecko.com/coins/images/24383/large/APECOIN.png?1756551529",
-      "price": 0.144458,
-      "chg24h": 2.01054,
+      "price": 0.14441,
+      "chg24h": 2.02908,
       "chg7d": 3.5,
-      "mcap": 144444175.0,
-      "fdv": 144444175.0,
-      "athChg": -99.4589
+      "mcap": 144412641.0,
+      "fdv": 144412641.0,
+      "athChg": -99.45907
     },
     {
       "rank": 218,
-      "id": "shuffle-2",
-      "name": "Shuffle",
-      "symbol": "shfl",
-      "image": "https://coin-images.coingecko.com/coins/images/35148/large/shuffle_token_200x200.png?1707552712",
-      "price": 0.299168,
-      "chg24h": -3.17856,
-      "chg7d": 0.3,
-      "mcap": 141961492.0,
-      "fdv": 275413157.0,
-      "athChg": -62.01152
-    },
-    {
-      "rank": 219,
       "id": "safepal",
       "name": "SafePal",
       "symbol": "sfp",
       "image": "https://coin-images.coingecko.com/coins/images/13905/large/sfp.png?1696513647",
-      "price": 0.283829,
-      "chg24h": 1.27444,
+      "price": 0.283849,
+      "chg24h": 1.49034,
       "chg7d": 8.4,
-      "mcap": 141855471.0,
-      "fdv": 141855471.0,
-      "athChg": -93.22198
+      "mcap": 141918234.0,
+      "fdv": 141918234.0,
+      "athChg": -93.22151
+    },
+    {
+      "rank": 219,
+      "id": "shuffle-2",
+      "name": "Shuffle",
+      "symbol": "shfl",
+      "image": "https://coin-images.coingecko.com/coins/images/35148/large/shuffle_token_200x200.png?1707552712",
+      "price": 0.298684,
+      "chg24h": -3.52432,
+      "chg7d": 0.3,
+      "mcap": 141733833.0,
+      "fdv": 274971485.0,
+      "athChg": -62.07306
     },
     {
       "rank": 220,
@@ -3052,11 +3055,11 @@
       "symbol": "egld",
       "image": "https://coin-images.coingecko.com/coins/images/12335/large/egld-token-logo.png?1696512162",
       "price": 4.57,
-      "chg24h": -2.11861,
+      "chg24h": -2.10397,
       "chg7d": 15.5,
-      "mcap": 140519253.0,
-      "fdv": 140519253.0,
-      "athChg": -99.1617
+      "mcap": 140490911.0,
+      "fdv": 140490911.0,
+      "athChg": -99.16202
     },
     {
       "rank": 221,
@@ -3064,77 +3067,77 @@
       "name": "Kamino",
       "symbol": "kmno",
       "image": "https://coin-images.coingecko.com/coins/images/35801/large/Kamino_200x200.png?1767944671",
-      "price": 0.02530237,
-      "chg24h": 1.05353,
+      "price": 0.02530154,
+      "chg24h": 1.09382,
       "chg7d": -0.6,
-      "mcap": 138445877.0,
-      "fdv": 253010513.0,
-      "athChg": -89.79094
+      "mcap": 138461836.0,
+      "fdv": 253039678.0,
+      "athChg": -89.79128
     },
     {
-      "rank": 222,
+      "rank": 223,
       "id": "btse-token",
       "name": "BTSE Token",
       "symbol": "btse",
       "image": "https://coin-images.coingecko.com/coins/images/10807/large/BTSE_logo_Square.jpeg?1696510765",
-      "price": 0.839373,
-      "chg24h": -2.9658,
+      "price": 0.840271,
+      "chg24h": -2.98005,
       "chg7d": 22.7,
-      "mcap": 136059380.0,
-      "fdv": 167910799.0,
-      "athChg": -90.89083
+      "mcap": 136207858.0,
+      "fdv": 168094034.0,
+      "athChg": -90.88109
     },
     {
-      "rank": 223,
+      "rank": 222,
+      "id": "railgun",
+      "name": "Railgun",
+      "symbol": "rail",
+      "image": "https://coin-images.coingecko.com/coins/images/16840/large/railgun.jpeg?1696516407",
+      "price": 2.29,
+      "chg24h": 15.21361,
+      "chg7d": 5.8,
+      "mcap": 135608449.0,
+      "fdv": 135608449.0,
+      "athChg": -59.55409
+    },
+    {
+      "rank": 224,
       "id": "vaulta",
       "name": "Vaulta",
       "symbol": "a",
       "image": "https://coin-images.coingecko.com/coins/images/55616/large/Vaulta_CEX_Icon_Circle_-_cmc.png?1746859132",
-      "price": 0.081431,
-      "chg24h": 3.67095,
+      "price": 0.081373,
+      "chg24h": 3.53597,
       "chg7d": 6.0,
-      "mcap": 135563042.0,
-      "fdv": 170955128.0,
-      "athChg": -89.54316
+      "mcap": 135538695.0,
+      "fdv": 170924425.0,
+      "athChg": -89.55058
     },
     {
-      "rank": 224,
+      "rank": 225,
       "id": "antfun",
       "name": "AntFun",
       "symbol": "antfun",
       "image": "https://coin-images.coingecko.com/coins/images/102174619/large/antfun_logo_200x200_transparent.png?1784200901",
       "price": 0.071687,
-      "chg24h": 3.87547,
+      "chg24h": 3.84205,
       "chg7d": 33.8,
-      "mcap": 135289203.0,
-      "fdv": 605722663.0,
-      "athChg": -0.57018
+      "mcap": 135316584.0,
+      "fdv": 605845254.0,
+      "athChg": -0.56947
     },
     {
-      "rank": 225,
+      "rank": 226,
       "id": "collector-crypt",
       "name": "Collector Crypt",
       "symbol": "cards",
       "image": "https://coin-images.coingecko.com/coins/images/68728/large/cards-logo.jpeg?1756534539",
-      "price": 0.14493,
-      "chg24h": 0.63576,
+      "price": 0.144938,
+      "chg24h": 1.03016,
       "chg7d": -35.1,
-      "mcap": 135152310.0,
-      "fdv": 286649258.0,
-      "athChg": -62.00484
-    },
-    {
-      "rank": 226,
-      "id": "railgun",
-      "name": "Railgun",
-      "symbol": "rail",
-      "image": "https://coin-images.coingecko.com/coins/images/16840/large/railgun.jpeg?1696516407",
-      "price": 2.26,
-      "chg24h": 13.64798,
-      "chg7d": 5.8,
-      "mcap": 135127105.0,
-      "fdv": 135127105.0,
-      "athChg": -60.07001
+      "mcap": 135092062.0,
+      "fdv": 286521475.0,
+      "athChg": -62.00273
     },
     {
       "rank": 227,
@@ -3142,12 +3145,12 @@
       "name": "1INCH",
       "symbol": "1inch",
       "image": "https://coin-images.coingecko.com/coins/images/13469/large/0x111111111117dc0aa78b770fa6a738034120c302_0x2b2c127f11a6604d4319c936334506b86c339a3773b6f2731db0ed4a4fb7fb72.jpg?1787890016",
-      "price": 0.095809,
-      "chg24h": 5.30925,
+      "price": 0.095772,
+      "chg24h": 5.2607,
       "chg7d": 8.2,
-      "mcap": 134650013.0,
-      "fdv": 143695760.0,
-      "athChg": -98.89259
+      "mcap": 134621509.0,
+      "fdv": 143665342.0,
+      "athChg": -98.89302
     },
     {
       "rank": 228,
@@ -3168,12 +3171,12 @@
       "name": "Avant USD",
       "symbol": "avusd",
       "image": "https://coin-images.coingecko.com/coins/images/53527/large/token-avusd.png?1736579003",
-      "price": 0.999558,
-      "chg24h": 0.01127,
+      "price": 0.99956,
+      "chg24h": 0.00935,
       "chg7d": 0.0,
-      "mcap": 133931615.0,
-      "fdv": 133931615.0,
-      "athChg": -8.3159
+      "mcap": 133934097.0,
+      "fdv": 133934097.0,
+      "athChg": -8.31569
     },
     {
       "rank": 230,
@@ -3181,12 +3184,12 @@
       "name": "Synthetix",
       "symbol": "snx",
       "image": "https://coin-images.coingecko.com/coins/images/3406/large/SNX.png?1696504103",
-      "price": 0.229957,
-      "chg24h": 8.3679,
+      "price": 0.229975,
+      "chg24h": 8.38288,
       "chg7d": 8.0,
-      "mcap": 133620148.0,
-      "fdv": 133717580.0,
-      "athChg": -99.19405
+      "mcap": 133613597.0,
+      "fdv": 133711024.0,
+      "athChg": -99.19398
     },
     {
       "rank": 231,
@@ -3194,12 +3197,12 @@
       "name": "Horizen",
       "symbol": "zen",
       "image": "https://coin-images.coingecko.com/coins/images/691/large/Horizen2.0-logo_icon-on-yellow_%281%29.png?1751696763",
-      "price": 7.2,
-      "chg24h": -1.81244,
+      "price": 7.21,
+      "chg24h": -1.78883,
       "chg7d": 44.0,
-      "mcap": 132105820.0,
-      "fdv": 151347284.0,
-      "athChg": -95.65761
+      "mcap": 132119115.0,
+      "fdv": 151362517.0,
+      "athChg": -95.65527
     },
     {
       "rank": 232,
@@ -3207,12 +3210,12 @@
       "name": "UnifAI Network",
       "symbol": "uai",
       "image": "https://coin-images.coingecko.com/coins/images/70521/large/uai.png?1762323485",
-      "price": 0.541069,
-      "chg24h": 14.87418,
+      "price": 0.544538,
+      "chg24h": 15.94022,
       "chg7d": 59.9,
-      "mcap": 129278357.0,
-      "fdv": 540913627.0,
-      "athChg": -21.10211
+      "mcap": 130149809.0,
+      "fdv": 544559872.0,
+      "athChg": -20.5962
     },
     {
       "rank": 233,
@@ -3233,12 +3236,12 @@
       "name": "Circle Internet Group (Ondo Tokenized Stock)",
       "symbol": "crclon",
       "image": "https://coin-images.coingecko.com/coins/images/68595/large/crclon_160x160.png?1756129889",
-      "price": 104.56,
-      "chg24h": 2.82513,
+      "price": 104.59,
+      "chg24h": 2.96615,
       "chg7d": 18.7,
-      "mcap": 126934508.0,
-      "fdv": 126882988.0,
-      "athChg": -33.97778
+      "mcap": 126999263.0,
+      "fdv": 126947718.0,
+      "athChg": -33.96044
     },
     {
       "rank": 235,
@@ -3246,12 +3249,12 @@
       "name": "CASH",
       "symbol": "cash",
       "image": "https://coin-images.coingecko.com/coins/images/69679/large/cash.jpg?1759283906",
-      "price": 0.999959,
-      "chg24h": 0.05793,
+      "price": 0.999963,
+      "chg24h": 0.05635,
       "chg7d": 0.0,
-      "mcap": 126602404.0,
-      "fdv": 126602404.0,
-      "athChg": -5.51512
+      "mcap": 126604962.0,
+      "fdv": 126604962.0,
+      "athChg": -5.51466
     },
     {
       "rank": 236,
@@ -3260,11 +3263,11 @@
       "symbol": "meta",
       "image": "https://coin-images.coingecko.com/coins/images/68320/large/META.png?1755335883",
       "price": 5.57,
-      "chg24h": -3.24426,
+      "chg24h": -3.24746,
       "chg7d": -5.9,
-      "mcap": 126433735.0,
-      "fdv": 126433735.0,
-      "athChg": -48.58743
+      "mcap": 126429234.0,
+      "fdv": 126429234.0,
+      "athChg": -48.58812
     },
     {
       "rank": 237,
@@ -3272,12 +3275,12 @@
       "name": "Ozone Chain",
       "symbol": "ozo",
       "image": "https://coin-images.coingecko.com/coins/images/31385/large/ozonechain-momogram-200x200.png?1696530201",
-      "price": 0.130796,
-      "chg24h": -0.00599,
+      "price": 0.130897,
+      "chg24h": -0.00791,
       "chg7d": 0.1,
-      "mcap": 125876793.0,
-      "fdv": 130994307.0,
-      "athChg": -73.03596
+      "mcap": 125783035.0,
+      "fdv": 130896736.0,
+      "athChg": -73.01528
     },
     {
       "rank": 238,
@@ -3286,11 +3289,11 @@
       "symbol": "rlb",
       "image": "https://coin-images.coingecko.com/coins/images/24552/large/unziL6wO_400x400.jpg?1696523729",
       "price": 0.07903,
-      "chg24h": -3.17058,
+      "chg24h": -3.17234,
       "chg7d": -2.2,
-      "mcap": 124712109.0,
-      "fdv": 124713481.0,
-      "athChg": -70.10489
+      "mcap": 124740369.0,
+      "fdv": 124741742.0,
+      "athChg": -70.10483
     },
     {
       "rank": 229,
@@ -3311,12 +3314,12 @@
       "name": "Dog (Bitcoin)",
       "symbol": "dog",
       "image": "https://coin-images.coingecko.com/coins/images/37352/large/DOGGOTOTHEMOON.png?1714096969",
-      "price": 0.001224,
-      "chg24h": -0.11597,
+      "price": 0.00122339,
+      "chg24h": 0.18531,
       "chg7d": 1.9,
-      "mcap": 122313985.0,
-      "fdv": 122313985.0,
-      "athChg": -87.6659
+      "mcap": 122315009.0,
+      "fdv": 122315009.0,
+      "athChg": -87.67204
     },
     {
       "rank": 240,
@@ -3324,12 +3327,12 @@
       "name": "Quack AI",
       "symbol": "q",
       "image": "https://coin-images.coingecko.com/coins/images/68793/large/quack_ai.png?1756615808",
-      "price": 0.02711072,
-      "chg24h": -1.87699,
+      "price": 0.02715057,
+      "chg24h": -1.78965,
       "chg7d": 17.4,
-      "mcap": 120541057.0,
-      "fdv": 271132645.0,
-      "athChg": -48.31955
+      "mcap": 120563164.0,
+      "fdv": 271182369.0,
+      "athChg": -48.24359
     },
     {
       "rank": 241,
@@ -3337,51 +3340,51 @@
       "name": "Immutable",
       "symbol": "imx",
       "image": "https://coin-images.coingecko.com/coins/images/17233/large/immutableX-symbol-BLK-RGB.png?1696516787",
-      "price": 0.13644,
-      "chg24h": 8.63981,
+      "price": 0.136221,
+      "chg24h": 8.26001,
       "chg7d": 6.4,
-      "mcap": 119990889.0,
-      "fdv": 272870272.0,
-      "athChg": -98.56679
+      "mcap": 119866310.0,
+      "fdv": 272586968.0,
+      "athChg": -98.5691
     },
     {
       "rank": 242,
-      "id": "sonic-3",
-      "name": "Sonic",
-      "symbol": "s",
-      "image": "https://coin-images.coingecko.com/coins/images/38108/large/200x200_Sonic_Logo.png?1734679256",
-      "price": 0.03060041,
-      "chg24h": 4.41254,
-      "chg7d": 5.1,
-      "mcap": 118903136.0,
-      "fdv": 118903136.0,
-      "athChg": -97.02756
-    },
-    {
-      "rank": 243,
-      "id": "stp-network",
-      "name": "AWE Network",
-      "symbol": "awe",
-      "image": "https://coin-images.coingecko.com/coins/images/8713/large/awe-network.jpg?1747816016",
-      "price": 0.061112,
-      "chg24h": -0.2127,
-      "chg7d": -2.1,
-      "mcap": 118839616.0,
-      "fdv": 118839616.0,
-      "athChg": -77.37321
-    },
-    {
-      "rank": 244,
       "id": "chip-2",
       "name": "USD.AI",
       "symbol": "chip",
       "image": "https://coin-images.coingecko.com/coins/images/102171777/large/CHIP_Token_Logo_Large.png?1776777444",
-      "price": 0.059543,
-      "chg24h": 5.7742,
+      "price": 0.059689,
+      "chg24h": 5.95919,
       "chg7d": 50.3,
-      "mcap": 118759906.0,
-      "fdv": 593799531.0,
-      "athChg": -57.52652
+      "mcap": 119389306.0,
+      "fdv": 596946531.0,
+      "athChg": -57.42238
+    },
+    {
+      "rank": 243,
+      "id": "sonic-3",
+      "name": "Sonic",
+      "symbol": "s",
+      "image": "https://coin-images.coingecko.com/coins/images/38108/large/200x200_Sonic_Logo.png?1734679256",
+      "price": 0.03058896,
+      "chg24h": 4.17699,
+      "chg7d": 5.1,
+      "mcap": 118834302.0,
+      "fdv": 118834302.0,
+      "athChg": -97.02868
+    },
+    {
+      "rank": 244,
+      "id": "stp-network",
+      "name": "AWE Network",
+      "symbol": "awe",
+      "image": "https://coin-images.coingecko.com/coins/images/8713/large/awe-network.jpg?1747816016",
+      "price": 0.06113,
+      "chg24h": -0.08935,
+      "chg7d": -2.1,
+      "mcap": 118746542.0,
+      "fdv": 118746542.0,
+      "athChg": -77.36634
     },
     {
       "rank": 245,
@@ -3389,12 +3392,12 @@
       "name": "DGrid AI",
       "symbol": "dgai",
       "image": "https://coin-images.coingecko.com/coins/images/102175792/large/dgrid.png?1787573447",
-      "price": 0.790857,
-      "chg24h": 0.79853,
+      "price": 0.790884,
+      "chg24h": 0.83208,
       "chg7d": 14.8,
-      "mcap": 118650951.0,
-      "fdv": 791006340.0,
-      "athChg": -6.53622
+      "mcap": 118618137.0,
+      "fdv": 790787579.0,
+      "athChg": -6.53303
     },
     {
       "rank": 246,
@@ -3403,11 +3406,11 @@
       "symbol": "thbill",
       "image": "https://coin-images.coingecko.com/coins/images/67650/large/thBILL.png?1753401034",
       "price": 1.017,
-      "chg24h": -0.00949,
+      "chg24h": -0.01141,
       "chg7d": 0.0,
-      "mcap": 117822308.0,
-      "fdv": 117822308.0,
-      "athChg": -8.49708
+      "mcap": 117824491.0,
+      "fdv": 117824491.0,
+      "athChg": -8.49687
     },
     {
       "rank": 247,
@@ -3415,12 +3418,12 @@
       "name": "The Sandbox",
       "symbol": "sand",
       "image": "https://coin-images.coingecko.com/coins/images/12129/large/sandbox_logo.jpg?1696511971",
-      "price": 0.04007103,
-      "chg24h": 0.29865,
+      "price": 0.04005602,
+      "chg24h": 0.15347,
       "chg7d": 2.6,
-      "mcap": 117719866.0,
-      "fdv": 120218826.0,
-      "athChg": -99.52278
+      "mcap": 117691481.0,
+      "fdv": 120189839.0,
+      "athChg": -99.52296
     },
     {
       "rank": 248,
@@ -3428,662 +3431,12 @@
       "name": "Meteora",
       "symbol": "met",
       "image": "https://coin-images.coingecko.com/coins/images/69110/large/meteora.png?1757517561",
-      "price": 0.212343,
-      "chg24h": 11.92814,
+      "price": 0.211649,
+      "chg24h": 11.56694,
       "chg7d": 10.0,
-      "mcap": 116854899.0,
-      "fdv": 211793176.0,
-      "athChg": -69.0874
-    },
-    {
-      "rank": 249,
-      "id": "zksync",
-      "name": "ZKsync",
-      "symbol": "zk",
-      "image": "https://coin-images.coingecko.com/coins/images/38043/large/ZKTokenBlack.png?1718614502",
-      "price": 0.01104098,
-      "chg24h": 10.79486,
-      "chg7d": 13.7,
-      "mcap": 114786968.0,
-      "fdv": 232443277.0,
-      "athChg": -96.56026
-    },
-    {
-      "rank": null,
-      "id": "tradable-singapore-fintech-ssl-2",
-      "name": "Tradable Singapore Fintech SSL",
-      "symbol": "pc0000023",
-      "image": "https://coin-images.coingecko.com/coins/images/66954/large/tradable.jpg?1751254449",
-      "price": 1.0,
-      "chg24h": null,
-      "chg7d": 0.0,
-      "mcap": 114500000.0,
-      "fdv": 114500000.0,
-      "athChg": 0.0
-    },
-    {
-      "rank": 250,
-      "id": "alpha-bulgaria-warrants",
-      "name": "Alpha Bulgaria Warrants",
-      "symbol": "alfw",
-      "image": "https://coin-images.coingecko.com/coins/images/102174400/large/0fc344_46599cf95f3b4eac9dcd8b50a1fcd064_mv2%281%29%281%29.png?1783581235",
-      "price": 3.2,
-      "chg24h": 0.0,
-      "chg7d": 0.0,
-      "mcap": 114330001.0,
-      "fdv": 114330001.0,
-      "athChg": 0.0
-    },
-    {
-      "rank": 251,
-      "id": "melania-meme",
-      "name": "Melania Meme",
-      "symbol": "melania",
-      "image": "https://coin-images.coingecko.com/coins/images/53775/large/melania-meme.png?1737329885",
-      "price": 0.11391,
-      "chg24h": 3.10052,
-      "chg7d": 2.5,
-      "mcap": 113895094.0,
-      "fdv": 113895094.0,
-      "athChg": -99.12726
-    },
-    {
-      "rank": 252,
-      "id": "frax-usd",
-      "name": "Frax USD",
-      "symbol": "frxusd",
-      "image": "https://coin-images.coingecko.com/coins/images/53963/large/frxUSD.png?1737792154",
-      "price": 0.999928,
-      "chg24h": -0.02705,
-      "chg7d": 0.0,
-      "mcap": 113297023.0,
-      "fdv": 113288026.0,
-      "athChg": -8.07284
-    },
-    {
-      "rank": 253,
-      "id": "golem",
-      "name": "Golem",
-      "symbol": "glm",
-      "image": "https://coin-images.coingecko.com/coins/images/542/large/Golem_Submark_Positive_RGB.png?1696501761",
-      "price": 0.113229,
-      "chg24h": 3.31135,
-      "chg7d": -0.3,
-      "mcap": 113251953.0,
-      "fdv": 113251953.0,
-      "athChg": -91.44994
-    },
-    {
-      "rank": 254,
-      "id": "astherus-usdf",
-      "name": "Aster USDF",
-      "symbol": "usdf",
-      "image": "https://coin-images.coingecko.com/coins/images/54133/large/USDF_LOGO.png?1738393978",
-      "price": 0.998318,
-      "chg24h": -0.03954,
-      "chg7d": -0.1,
-      "mcap": 112866015.0,
-      "fdv": 112867526.0,
-      "athChg": -4.58444
-    },
-    {
-      "rank": 255,
-      "id": "cheems-token",
-      "name": "Cheems Token",
-      "symbol": "cheems",
-      "image": "https://coin-images.coingecko.com/coins/images/30376/large/Hg4_Lhbg_400x400.jpg?1696529270",
-      "price": 5.53171e-07,
-      "chg24h": 1.79467,
-      "chg7d": 7.9,
-      "mcap": 112643612.0,
-      "fdv": 112643612.0,
-      "athChg": -74.40095
-    },
-    {
-      "rank": 256,
-      "id": "permacast",
-      "name": "Permacast",
-      "symbol": "pwt",
-      "image": "https://coin-images.coingecko.com/coins/images/102175793/large/permacast.jpg?1787581166",
-      "price": 0.582403,
-      "chg24h": 0.3837,
-      "chg7d": 8.1,
-      "mcap": 112609769.0,
-      "fdv": 536236994.0,
-      "athChg": -14.79074
-    },
-    {
-      "rank": 257,
-      "id": "the-black-bull",
-      "name": "The Black Bull",
-      "symbol": "ansem",
-      "image": "https://coin-images.coingecko.com/coins/images/102174035/large/IMG_9497.jpeg?1782005339",
-      "price": 0.271153,
-      "chg24h": 12.12909,
-      "chg7d": -20.5,
-      "mcap": 112437393.0,
-      "fdv": 270354501.0,
-      "athChg": -38.87665
-    },
-    {
-      "rank": 258,
-      "id": "backpack",
-      "name": "Backpack",
-      "symbol": "bp",
-      "image": "https://coin-images.coingecko.com/coins/images/102171961/large/image_%285%29.png?1774269858",
-      "price": 0.43819,
-      "chg24h": 0.98963,
-      "chg7d": 8.6,
-      "mcap": 109546115.0,
-      "fdv": 438184459.0,
-      "athChg": -44.1916
-    },
-    {
-      "rank": 259,
-      "id": "helium",
-      "name": "Helium",
-      "symbol": "hnt",
-      "image": "https://coin-images.coingecko.com/coins/images/4284/large/helium_logo_use.png?1748092589",
-      "price": 0.580511,
-      "chg24h": -3.4967,
-      "chg7d": -2.1,
-      "mcap": 108946340.0,
-      "fdv": 108946340.0,
-      "athChg": -98.94216
-    },
-    {
-      "rank": 260,
-      "id": "basic-attention-token",
-      "name": "Basic Attention",
-      "symbol": "bat",
-      "image": "https://coin-images.coingecko.com/coins/images/677/large/basic-attention-token.png?1696501867",
-      "price": 0.0727,
-      "chg24h": 1.89389,
-      "chg7d": 4.6,
-      "mcap": 108708341.0,
-      "fdv": 109019070.0,
-      "athChg": -96.1748
-    },
-    {
-      "rank": 261,
-      "id": "nxm",
-      "name": "Nexus Mutual",
-      "symbol": "nxm",
-      "image": "https://coin-images.coingecko.com/coins/images/11810/large/NXMmain.png?1696511684",
-      "price": 64.01,
-      "chg24h": 1.59487,
-      "chg7d": 1.3,
-      "mcap": 108099177.0,
-      "fdv": 108099286.0,
-      "athChg": -65.58237
-    },
-    {
-      "rank": 262,
-      "id": "bc-token",
-      "name": "BCGame Coin",
-      "symbol": "bc",
-      "image": "https://coin-images.coingecko.com/coins/images/53197/large/Graphic_Only-200black.png?1746867614",
-      "price": 0.03361965,
-      "chg24h": 6.05807,
-      "chg7d": -1.1,
-      "mcap": 107867296.0,
-      "fdv": 316153393.0,
-      "athChg": -18.16755
-    },
-    {
-      "rank": 263,
-      "id": "instadapp",
-      "name": "Fluid",
-      "symbol": "fluid",
-      "image": "https://coin-images.coingecko.com/coins/images/14688/large/Frame_1686566116_%281%29_%281%29.png?1784708239",
-      "price": 1.28,
-      "chg24h": 2.53303,
-      "chg7d": -4.4,
-      "mcap": 107202693.0,
-      "fdv": 128084276.0,
-      "athChg": -94.75001
-    },
-    {
-      "rank": 264,
-      "id": "chutes",
-      "name": "Chutes",
-      "symbol": "sn64",
-      "image": "https://coin-images.coingecko.com/coins/images/66308/large/chutes.jpg?1749181700",
-      "price": 18.21,
-      "chg24h": 2.27958,
-      "chg7d": -0.9,
-      "mcap": 106680059.0,
-      "fdv": 106680059.0,
-      "athChg": -82.565
-    },
-    {
-      "rank": 265,
-      "id": "sosovalue",
-      "name": "SoSoValue",
-      "symbol": "soso",
-      "image": "https://coin-images.coingecko.com/coins/images/53919/large/soso.jpg?1737717378",
-      "price": 0.311164,
-      "chg24h": 0.24772,
-      "chg7d": -1.8,
-      "mcap": 106416326.0,
-      "fdv": 311157439.0,
-      "athChg": -78.09527
-    },
-    {
-      "rank": 266,
-      "id": "tradable-na-third-party-online-merchant-sstn",
-      "name": "Tradable NA Third Party Online Merchant SSTN",
-      "symbol": "pc0000015",
-      "image": "https://coin-images.coingecko.com/coins/images/66880/large/tradable.jpg?1750921859",
-      "price": 1.0,
-      "chg24h": 0.0,
-      "chg7d": 0.0,
-      "mcap": 105971760.0,
-      "fdv": 105971760.0,
-      "athChg": 0.0
-    },
-    {
-      "rank": 267,
-      "id": "geodnet",
-      "name": "Geodnet",
-      "symbol": "geod",
-      "image": "https://coin-images.coingecko.com/coins/images/31608/large/Circular_White.png?1696530424",
-      "price": 0.226075,
-      "chg24h": -6.69411,
-      "chg7d": 0.4,
-      "mcap": 104528650.0,
-      "fdv": 217569393.0,
-      "athChg": -39.60743
-    },
-    {
-      "rank": 268,
-      "id": "zano",
-      "name": "Zano",
-      "symbol": "zano",
-      "image": "https://coin-images.coingecko.com/coins/images/8370/large/Icon-App-512x512.png?1761825305",
-      "price": 6.75,
-      "chg24h": 0.55538,
-      "chg7d": -8.6,
-      "mcap": 104275638.0,
-      "fdv": 104281681.0,
-      "athChg": -62.09337
-    },
-    {
-      "rank": 269,
-      "id": "dydx-chain",
-      "name": "dYdX",
-      "symbol": "dydx",
-      "image": "https://coin-images.coingecko.com/coins/images/32594/large/dydx.png?1698673495",
-      "price": 0.123173,
-      "chg24h": 4.88318,
-      "chg7d": 10.0,
-      "mcap": 104195926.0,
-      "fdv": 118019256.0,
-      "athChg": -97.27413
-    },
-    {
-      "rank": 270,
-      "id": "circle-internet-group-bstock",
-      "name": "Circle Internet Group (bStocks Tokenized Stock)",
-      "symbol": "crclb",
-      "image": "https://coin-images.coingecko.com/coins/images/102173742/large/circle-internet-group-tokenized-bStocks-crclb.png?1781196448",
-      "price": 104.75,
-      "chg24h": 2.92252,
-      "chg7d": 19.0,
-      "mcap": 103960190.0,
-      "fdv": 104163626.0,
-      "athChg": -0.44303
-    },
-    {
-      "rank": 271,
-      "id": "securitize-tokenized-aaa-clo-fund",
-      "name": "Securitize Tokenized AAA CLO Fund",
-      "symbol": "stac",
-      "image": "https://coin-images.coingecko.com/coins/images/71167/large/stac_logo.png?1766163743",
-      "price": 1031.78,
-      "chg24h": 0.00254,
-      "chg7d": 0.0,
-      "mcap": 103382139.0,
-      "fdv": 103382139.0,
-      "athChg": -1.74084
-    },
-    {
-      "rank": 272,
-      "id": "four",
-      "name": "Four",
-      "symbol": "form",
-      "image": "https://coin-images.coingecko.com/coins/images/54912/large/four.jpg?1742461445",
-      "price": 0.268874,
-      "chg24h": -10.14961,
-      "chg7d": 7.2,
-      "mcap": 102662238.0,
-      "fdv": 153859215.0,
-      "athChg": -93.57999
-    },
-    {
-      "rank": 273,
-      "id": "stonk-3",
-      "name": "STONK",
-      "symbol": "stonk",
-      "image": "https://coin-images.coingecko.com/coins/images/102175239/large/tscmgapqpfx5j4hu8gbs3aj85s7a.?1785895603",
-      "price": 0.116413,
-      "chg24h": 284.77283,
-      "chg7d": 346.2,
-      "mcap": 102298180.0,
-      "fdv": 102285190.0,
-      "athChg": -24.65951
-    },
-    {
-      "rank": 274,
-      "id": "tradable-latam-middle-market-lender-sstl",
-      "name": "Tradable LatAm Middle-Market Lender SSTL",
-      "symbol": "pc0000085",
-      "image": "https://coin-images.coingecko.com/coins/images/66877/large/tradable.jpg?1750921571",
-      "price": 1.0,
-      "chg24h": 0.0,
-      "chg7d": 0.0,
-      "mcap": 100124199.0,
-      "fdv": 100124199.0,
-      "athChg": 0.0
-    },
-    {
-      "rank": 275,
-      "id": "unity-usd",
-      "name": "Unity USD",
-      "symbol": "uusd",
-      "image": "https://coin-images.coingecko.com/coins/images/102172413/large/UUSD.png?1773390929",
-      "price": 1.0,
-      "chg24h": 0.02503,
-      "chg7d": -0.1,
-      "mcap": 100042746.0,
-      "fdv": 100042746.0,
-      "athChg": -20.33994
-    },
-    {
-      "rank": 276,
-      "id": "tradable-singapore-fintech-ssl",
-      "name": "Tradable Singapore Fintech SSL",
-      "symbol": "pc0000077",
-      "image": "https://coin-images.coingecko.com/coins/images/66878/large/tradable.jpg?1750921608",
-      "price": 1.0,
-      "chg24h": 0.0,
-      "chg7d": 0.0,
-      "mcap": 100000000.0,
-      "fdv": 0.0,
-      "athChg": 0.0
-    },
-    {
-      "rank": 277,
-      "id": "dai-on-pulsechain",
-      "name": "DAI on PulseChain",
-      "symbol": "dai",
-      "image": "https://coin-images.coingecko.com/coins/images/36735/large/pDAI_200x200.png?1712451453",
-      "price": 0.00225173,
-      "chg24h": 4.88638,
-      "chg7d": -13.8,
-      "mcap": 99977236.0,
-      "fdv": 99977236.0,
-      "athChg": -93.3253
-    },
-    {
-      "rank": 278,
-      "id": "mina-protocol",
-      "name": "Mina Protocol",
-      "symbol": "mina",
-      "image": "https://coin-images.coingecko.com/coins/images/15628/large/JM4_vQ34_400x400.png?1696515261",
-      "price": 0.076606,
-      "chg24h": 2.31516,
-      "chg7d": 16.0,
-      "mcap": 99094941.0,
-      "fdv": 99094941.0,
-      "athChg": -99.15728
-    },
-    {
-      "rank": 279,
-      "id": "genius-3",
-      "name": "Genius",
-      "symbol": "genius",
-      "image": "https://coin-images.coingecko.com/coins/images/71660/large/genius.png?1768804210",
-      "price": 0.294443,
-      "chg24h": -2.76867,
-      "chg7d": 3.1,
-      "mcap": 98721668.0,
-      "fdv": 280811805.0,
-      "athChg": -69.11302
-    },
-    {
-      "rank": 280,
-      "id": "prometeus",
-      "name": "Prom",
-      "symbol": "prom",
-      "image": "https://coin-images.coingecko.com/coins/images/8825/large/Ticker.png?1696508978",
-      "price": 5.38,
-      "chg24h": -0.72204,
-      "chg7d": -19.4,
-      "mcap": 98267140.0,
-      "fdv": 103651640.0,
-      "athChg": -94.91806
-    },
-    {
-      "rank": 281,
-      "id": "niu-lai",
-      "name": "牛来 (Niu Lai)",
-      "symbol": "牛来",
-      "image": "https://coin-images.coingecko.com/coins/images/102175567/large/niulai.webp?1786873800",
-      "price": 0.097631,
-      "chg24h": -18.94921,
-      "chg7d": 6.5,
-      "mcap": 97622542.0,
-      "fdv": 97622542.0,
-      "athChg": -29.90749
-    },
-    {
-      "rank": 282,
-      "id": "bermuda-shorts",
-      "name": "Bermuda Shorts",
-      "symbol": "short",
-      "image": "https://coin-images.coingecko.com/coins/images/55052/large/20250304_082156_%281%29.png?1743439016",
-      "price": 2.365e-05,
-      "chg24h": -4.22262,
-      "chg7d": 6.8,
-      "mcap": 97552718.0,
-      "fdv": 97552718.0,
-      "athChg": -96.1915
-    },
-    {
-      "rank": 283,
-      "id": "celium",
-      "name": "lium",
-      "symbol": "sn51",
-      "image": "https://coin-images.coingecko.com/coins/images/66328/large/lium_Icon_FullColor_500x500.png?1766792920",
-      "price": 20.92,
-      "chg24h": 3.02464,
-      "chg7d": 4.0,
-      "mcap": 97429792.0,
-      "fdv": 97429792.0,
-      "athChg": -43.63572
-    },
-    {
-      "rank": 284,
-      "id": "sentient",
-      "name": "Sentient",
-      "symbol": "sent",
-      "image": "https://coin-images.coingecko.com/coins/images/70508/large/SENTIENT-Icon-BlushForce-L.png?1762267532",
-      "price": 0.01343969,
-      "chg24h": 0.94862,
-      "chg7d": 4.5,
-      "mcap": 97278565.0,
-      "fdv": 461801674.0,
-      "athChg": -72.03161
-    },
-    {
-      "rank": 285,
-      "id": "unitas",
-      "name": "Unitas",
-      "symbol": "up",
-      "image": "https://coin-images.coingecko.com/coins/images/71531/large/Logo_Mark_200.png?1772722048",
-      "price": 0.444212,
-      "chg24h": -12.67163,
-      "chg7d": -6.1,
-      "mcap": 95945660.0,
-      "fdv": 444192939.0,
-      "athChg": -15.0035
-    },
-    {
-      "rank": 286,
-      "id": "wemix-token",
-      "name": "WEMIX",
-      "symbol": "wemix",
-      "image": "https://coin-images.coingecko.com/coins/images/12998/large/wemixcoin_color_200.png?1696512788",
-      "price": 0.19216,
-      "chg24h": 1.00098,
-      "chg7d": -7.5,
-      "mcap": 95918688.0,
-      "fdv": 107603948.0,
-      "athChg": -99.22239
-    },
-    {
-      "rank": 287,
-      "id": "aethir",
-      "name": "Aethir",
-      "symbol": "ath",
-      "image": "https://coin-images.coingecko.com/coins/images/36179/large/logogram_circle_dark_green_vb_green_%281%29.png?1718232706",
-      "price": 0.00475627,
-      "chg24h": 2.85071,
-      "chg7d": -5.0,
-      "mcap": 95710163.0,
-      "fdv": 199705591.0,
-      "athChg": -95.98748
-    },
-    {
-      "rank": 288,
-      "id": "apollo-diversified-credit-securitize-fund",
-      "name": "Apollo Diversified Credit Securitize Fund",
-      "symbol": "acred",
-      "image": "https://coin-images.coingecko.com/coins/images/54809/large/ACRED.png?1741801356",
-      "price": 1112.0,
-      "chg24h": 0.00254,
-      "chg7d": 0.0,
-      "mcap": 95603296.0,
-      "fdv": 95603296.0,
-      "athChg": -1.00741
-    },
-    {
-      "rank": 289,
-      "id": "ai-xovia",
-      "name": "AI XOVIA",
-      "symbol": "aix",
-      "image": "https://coin-images.coingecko.com/coins/images/67657/large/Aixovia-Logo-200x200.png?1753425170",
-      "price": 0.954914,
-      "chg24h": -2.06863,
-      "chg7d": 116.6,
-      "mcap": 95058048.0,
-      "fdv": 95058048.0,
-      "athChg": -97.87787
-    },
-    {
-      "rank": 290,
-      "id": "bitget-wrapped-btc",
-      "name": "Bitget Wrapped BTC",
-      "symbol": "bgbtc",
-      "image": "https://coin-images.coingecko.com/coins/images/102172988/large/20260423-114744.png?1777014158",
-      "price": 79971.0,
-      "chg24h": 0.33826,
-      "chg7d": 2.3,
-      "mcap": 94683680.0,
-      "fdv": 94683680.0,
-      "athChg": -3.30038
-    },
-    {
-      "rank": 291,
-      "id": "gala",
-      "name": "GALA",
-      "symbol": "gala",
-      "image": "https://coin-images.coingecko.com/coins/images/12493/large/GALA_token_image_-_200PNG.png?1709725869",
-      "price": 0.00189713,
-      "chg24h": 1.17195,
-      "chg7d": 7.0,
-      "mcap": 94575226.0,
-      "fdv": 94575226.0,
-      "athChg": -99.77
-    },
-    {
-      "rank": 260,
-      "id": "usda-2",
-      "name": "USDa",
-      "symbol": "usda",
-      "image": "https://coin-images.coingecko.com/coins/images/51599/large/SUSDA.png?1731604761",
-      "price": 0.967102,
-      "chg24h": null,
-      "chg7d": -1.9,
-      "mcap": 94542304.0,
-      "fdv": 94542304.0,
-      "athChg": -5.32297
-    },
-    {
-      "rank": 292,
-      "id": "newton-project",
-      "name": "AB",
-      "symbol": "ab",
-      "image": "https://coin-images.coingecko.com/coins/images/4376/large/400%E6%96%B9.png?1740377493",
-      "price": 0.00095439,
-      "chg24h": 0.7125,
-      "chg7d": -2.7,
-      "mcap": 94303558.0,
-      "fdv": 94303558.0,
-      "athChg": -94.47489
-    },
-    {
-      "rank": 293,
-      "id": "digibyte",
-      "name": "DigiByte",
-      "symbol": "dgb",
-      "image": "https://coin-images.coingecko.com/coins/images/63/large/digibyte.png?1696501454",
-      "price": 0.0050891,
-      "chg24h": 2.12519,
-      "chg7d": 5.0,
-      "mcap": 93928516.0,
-      "fdv": 93933389.0,
-      "athChg": -97.14231
-    },
-    {
-      "rank": 294,
-      "id": "qtum",
-      "name": "Qtum",
-      "symbol": "qtum",
-      "image": "https://coin-images.coingecko.com/coins/images/684/large/Qtum_Logo_blue_CG.png?1696501874",
-      "price": 0.877815,
-      "chg24h": 1.25492,
-      "chg7d": 8.1,
-      "mcap": 93118475.0,
-      "fdv": 94628566.0,
-      "athChg": -99.12415
-    },
-    {
-      "rank": null,
-      "id": "baby-claw",
-      "name": "Baby Claw",
-      "symbol": "babyclaw",
-      "image": "https://coin-images.coingecko.com/coins/images/102172057/large/2.jpg?1771331936",
-      "price": 0.091376,
-      "chg24h": null,
-      "chg7d": 56177.8,
-      "mcap": 91376294.0,
-      "fdv": 91376294.0,
-      "athChg": 18791.64389
-    },
-    {
-      "rank": 295,
-      "id": "reserve-rights-token",
-      "name": "Reserve Rights",
-      "symbol": "rsr",
-      "image": "https://coin-images.coingecko.com/coins/images/8365/large/RSR_Blue_Circle_1000.png?1721777856",
-      "price": 0.00145984,
-      "chg24h": 4.91141,
-      "chg7d": 4.8,
-      "mcap": 91331603.0,
-      "fdv": 146006345.0,
-      "athChg": -98.75678
+      "mcap": 116691790.0,
+      "fdv": 211497550.0,
+      "athChg": -69.18842
     }
   ],
   "coins": [
@@ -4092,24 +3445,24 @@
       "name": "Bitcoin",
       "symbol": "btc",
       "image": "https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400",
-      "price": 79962.0,
-      "chg": 0.3741
+      "price": 79963.0,
+      "chg": 0.379
     },
     {
       "id": "ethereum",
       "name": "Ethereum",
       "symbol": "eth",
       "image": "https://coin-images.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
-      "price": 2503.49,
-      "chg": 1.96853
+      "price": 2503.1,
+      "chg": 1.96026
     },
     {
       "id": "binancecoin",
       "name": "BNB",
       "symbol": "bnb",
       "image": "https://coin-images.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501970",
-      "price": 758.14,
-      "chg": 0.6693
+      "price": 757.67,
+      "chg": 0.5507
     },
     {
       "id": "ripple",
@@ -4117,15 +3470,15 @@
       "symbol": "xrp",
       "image": "https://coin-images.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1696501442",
       "price": 1.42,
-      "chg": 1.22906
+      "chg": 1.18055
     },
     {
       "id": "solana",
       "name": "Solana",
       "symbol": "sol",
       "image": "https://coin-images.coingecko.com/coins/images/4128/large/solana.png?1718769756",
-      "price": 106.68,
-      "chg": 4.20343
+      "price": 106.64,
+      "chg": 4.13756
     }
   ],
   "btc_dominance": 59.17323016522178,
@@ -4136,11 +3489,11 @@
     "value": 73,
     "class": "Greed"
   },
-  "kimchi": 0.9204,
+  "kimchi": 0.914,
   "domestic": {
-    "btcKrw": 108976000.0,
-    "ethKrw": 3411000.0,
+    "btcKrw": 108980000.0,
+    "ethKrw": 3410000.0,
     "usdKrw": 1350.35,
-    "btcVol": 45788761628.78926
+    "btcVol": 45812253656.01584
   }
 }
