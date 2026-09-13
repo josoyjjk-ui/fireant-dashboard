@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-09-13T23:36:42+09:00",
-  "run_id": "1789310210",
-  "status": "ok",
+  "generated_at": "2026-09-13T23:39:28+09:00",
+  "run_id": "1789310409",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -147,7 +147,8 @@
       "change": 124.01,
       "change_pct": 1.76,
       "currency": "KRW",
-      "market_time": "2026-09-11T18:59:00+09:00"
+      "market_time": "2026-09-11T18:59:00+09:00",
+      "stale": true
     },
     {
       "name": "코스닥",
@@ -162,5 +163,7 @@
       "market_time": "2026-09-11T18:59:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "코스피(KOSPI): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
