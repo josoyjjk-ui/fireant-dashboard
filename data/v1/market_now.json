@@ -1,9 +1,12 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-09-14T03:53:05+09:00",
-  "run_id": "1789325585",
-  "status": "ok",
-  "failures": [],
+  "generated_at": "2026-09-14T03:55:30+09:00",
+  "run_id": "1789325730",
+  "status": "partial",
+  "failures": [
+    "coingecko/markets: HTTP Error 429: Too Many Requests",
+    "coingecko/global: HTTP Error 429: Too Many Requests"
+  ],
   "btc": {
     "id": "bitcoin",
     "name": "Bitcoin",
@@ -4136,11 +4139,11 @@
     "value": 61,
     "class": "Greed"
   },
-  "kimchi": 1.1864,
+  "kimchi": 1.2031,
   "domestic": {
     "btcKrw": 105128000.0,
     "ethKrw": 3408000.0,
     "usdKrw": 1342.79,
-    "btcVol": 43121205483.45099
+    "btcVol": 43098390805.84283
   }
 }
