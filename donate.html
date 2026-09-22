@@ -241,19 +241,19 @@ html{background:#0a0c10;}</style></head>
  * 데이터: data/donations.json (운영자가 수동 편집)
  * {
  *   "updated_at": "2026-09-22T23:30:00+09:00",
- *   "goal_krw": 0,                 // 목표액(원). 0 또는 null이면 진행바 숨김
+ *   "goal_usd": 0,                 // 목표액(USD). 0 또는 null이면 진행바 숨김
  *   "methods": [                   // 비어 있으면 "후원 계좌 안내 준비 중입니다"
  *     {"type":"bank"|"wallet", "label":"...", "chain":"Solana|Ethereum|...", "value":"계좌번호 또는 지갑주소", "holder":"예금주(선택)"}
  *   ],
  *   "donations": [                 // 같은 name은 합산해 순위 산정
- *     {"name":"...", "amount_krw":10000, "date":"YYYY-MM-DD", "message":"선택"}
+ *     {"name":"...", "amount_usd":10000, "date":"YYYY-MM-DD", "message":"선택"}
  *   ]
  * }
  * 사용자 입력 문자열(name/message/value 등)은 전부 textContent로만 삽입합니다.
  */
 (function(){
   function el(tag, cls, text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=String(text);return e;}
-  function won(n){return (Math.round(Number(n)||0)).toLocaleString('ko-KR')+'원';}
+  function won(n){return '$'+(Math.round((Number(n)||0)*100)/100).toLocaleString('en-US');}
   function str(v){return v==null?'':String(v).trim();}
   function fmtTime(iso){var d=new Date(iso);if(isNaN(d))return str(iso)||'—';
     var k=new Date(d.getTime()+(9*60+d.getTimezoneOffset())*60000);
@@ -261,11 +261,11 @@ html{background:#0a0c10;}</style></head>
     return k.getFullYear()+'-'+p(k.getMonth()+1)+'-'+p(k.getDate())+' '+p(k.getHours())+':'+p(k.getMinutes())+' KST';}
 
   function render(d){
-    var list=(Array.isArray(d.donations)?d.donations:[]).filter(function(x){return x&&str(x.name)&&Number(x.amount_krw)>0;});
+    var list=(Array.isArray(d.donations)?d.donations:[]).filter(function(x){return x&&str(x.name)&&Number(x.amount_usd)>0;});
     // 이름별 합산
     var map={},order=[];
     list.forEach(function(x,i){
-      var name=str(x.name),amt=Number(x.amount_krw),date=str(x.date);
+      var name=str(x.name),amt=Number(x.amount_usd),date=str(x.date);
       var a=map[name];
       if(!a){a=map[name]={name:name,total:0,count:0,lastDate:'',lastIdx:-1,msg:''};order.push(a);}
       a.total+=amt;a.count++;
@@ -278,7 +278,7 @@ html{background:#0a0c10;}</style></head>
     document.getElementById('dnTotal').textContent=won(total);
     document.getElementById('dnCount').textContent=rank.length.toLocaleString('ko-KR')+'명';
 
-    var goal=Number(d.goal_krw)||0,g=document.getElementById('dnGoal');
+    var goal=Number(d.goal_usd)||0,g=document.getElementById('dnGoal');
     if(goal>0){
       var pct=Math.min(100,total/goal*100);
       g.hidden=false;
@@ -309,7 +309,7 @@ html{background:#0a0c10;}</style></head>
       var li=el('li','dn-fi');
       var top=el('div','dn-fi-top');
       top.appendChild(el('span','dn-fi-name',str(r.x.name)));
-      top.appendChild(el('span','dn-fi-amt mono',won(r.x.amount_krw)));
+      top.appendChild(el('span','dn-fi-amt mono',won(r.x.amount_usd)));
       li.appendChild(top);
       var sub=el('div','dn-fi-sub');
       sub.appendChild(el('span','dn-fi-date mono',str(r.x.date)));
@@ -350,7 +350,7 @@ html{background:#0a0c10;}</style></head>
   fetch('data/donations.json?t='+Date.now(),{cache:'no-store'})
     .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
     .then(render)
-    .catch(function(){render({donations:[],methods:[],goal_krw:0,updated_at:null});document.getElementById('dnUpdated').textContent='불러오기 실패';});
+    .catch(function(){render({donations:[],methods:[],goal_usd:0,updated_at:null});document.getElementById('dnUpdated').textContent='불러오기 실패';});
 })();
 </script>
 <script src="assets/vendor/supabase.js"></script>
