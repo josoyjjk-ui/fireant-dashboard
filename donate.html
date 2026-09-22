@@ -9,7 +9,7 @@
 <meta property="og:title" content="ANTINFO — 코인과세유예 후원 리더보드">
 <meta property="og:description" content="코인 과세 유예 트럭시위·집회 후원 현황과 후원자 순위.">
 <meta property="og:type" content="website">
-<meta name="description" content="코인 과세 유예 트럭시위·집회를 위한 후원 리더보드. 총 후원액·후원자 순위·후원 방법 안내.">
+<meta name="description" content="코인 과세 유예 트럭시위·집회를 위한 후원 리더보드. 후원자 수·후원자 순위·후원 방법 안내.">
 <link rel="canonical" href="https://antinfo.io/donate">
 <style>
 
@@ -104,11 +104,11 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .dn-kicker{display:inline-block;font-size:12px;font-weight:900;color:var(--accent2);border:1px solid rgba(255,181,71,.32);background:rgba(255,181,71,.08);border-radius:999px;padding:4px 10px;margin-bottom:12px;}
 .dn-title{font-size:28px;font-weight:900;letter-spacing:-0.5px;color:#fff;line-height:1.25;}
 .dn-sub{margin-top:10px;color:#cbd4df;font-size:14.5px;font-weight:600;line-height:1.7;}
-.dn-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.dn-stats{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px;}
 .dn-stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;}
 .dn-stat-lab{font-size:13px;color:var(--dim);font-weight:800;margin-bottom:6px;}
 .dn-stat-val{font-size:28px;font-weight:900;color:#fff;letter-spacing:-0.5px;}
-#dnTotal{color:var(--accent2);}
+#dnCount{color:var(--accent2);}
 .dn-goal{grid-column:1/-1;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 20px;}
 .dn-goal[hidden]{display:none;}
 .dn-goal-row{display:flex;justify-content:space-between;font-size:13px;font-weight:800;color:var(--dim);margin-bottom:9px;}
@@ -208,8 +208,7 @@ html{background:#0a0c10;}</style></head>
   </section>
 
   <section class="dn-stats">
-    <div class="dn-stat"><div class="dn-stat-lab">총 후원액</div><div class="dn-stat-val mono" id="dnTotal">—</div></div>
-    <div class="dn-stat"><div class="dn-stat-lab">후원자 수</div><div class="dn-stat-val mono" id="dnCount">—</div></div>
+    <div class="dn-stat"><div class="dn-stat-lab">총 후원자</div><div class="dn-stat-val mono" id="dnCount">—</div></div>
     <div class="dn-goal" id="dnGoal" hidden>
       <div class="dn-goal-row"><span>목표 달성률</span><b class="mono" id="dnGoalPct">0%</b></div>
       <div class="dn-bar"><div class="dn-bar-fill" id="dnGoalBar"></div></div>
@@ -275,8 +274,9 @@ html{background:#0a0c10;}</style></head>
     var rank=order.slice().sort(function(a,b){return b.total-a.total||(a.lastDate<b.lastDate?-1:a.lastDate>b.lastDate?1:0);});
     var total=rank.reduce(function(s,a){return s+a.total;},0);
 
-    document.getElementById('dnTotal').textContent=won(total);
-    document.getElementById('dnCount').textContent=rank.length.toLocaleString('ko-KR')+'명';
+    // 총 후원자 = 후원 지갑 2개로 들어온 입금 tx 수 (scripts/donate_txs_*.py가 donor_count 갱신)
+    var dc=Number(d.donor_count);
+    document.getElementById('dnCount').textContent=(dc>0?dc:rank.length).toLocaleString('ko-KR')+'명';
 
     var goal=Number(d.goal_usd)||0,g=document.getElementById('dnGoal');
     if(goal>0){
