@@ -131,6 +131,10 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .dn-name{display:flex;align-items:center;gap:8px;min-width:0;}
 .dn-nm{font-size:15.5px;font-weight:900;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .dn-cnt{flex:0 0 auto;font-size:11px;font-weight:900;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:2px 7px;}
+a.dn-nm,a.dn-fi-name{text-decoration:none;cursor:pointer;}
+a.dn-nm:hover,a.dn-fi-name:hover{color:var(--accent2);text-decoration:underline;}
+a.dn-nm::after,a.dn-fi-name::after{content:'↗';margin-left:5px;font-size:.78em;color:var(--dim);font-weight:900;}
+a.dn-nm:hover::after,a.dn-fi-name:hover::after{color:var(--accent2);}
 .dn-msg{margin-top:3px;font-size:13px;color:var(--dim);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .dn-amt{flex:0 0 auto;font-size:16px;font-weight:900;color:#fff;}
 .dn-row.top1 .dn-amt{color:#ffd24a;}
@@ -245,7 +249,7 @@ html{background:#0a0c10;}</style></head>
  *     {"type":"bank"|"wallet", "label":"...", "chain":"Solana|Ethereum|...", "value":"계좌번호 또는 지갑주소", "holder":"예금주(선택)"}
  *   ],
  *   "donations": [                 // 같은 name은 합산해 순위 산정
- *     {"name":"...", "amount_usd":10000, "date":"YYYY-MM-DD", "message":"선택"}
+ *     {"name":"...", "amount_usd":10000, "date":"YYYY-MM-DD", "message":"선택", "link":"https://t.me/... (선택, 이름에 링크)"}
  *   ]
  * }
  * 사용자 입력 문자열(name/message/value 등)은 전부 textContent로만 삽입합니다.
@@ -254,6 +258,14 @@ html{background:#0a0c10;}</style></head>
   function el(tag, cls, text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=String(text);return e;}
   function won(n){return '$'+(Math.round((Number(n)||0)*100)/100).toLocaleString('en-US');}
   function str(v){return v==null?'':String(v).trim();}
+  // 링크는 http/https 절대주소만 허용 (javascript: 등 차단)
+  function safeUrl(v){var u=str(v);return /^https?:\/\//i.test(u)?u:'';}
+  function nameEl(cls,text,link){
+    var u=safeUrl(link);
+    if(!u)return el('span',cls,text);
+    var a=el('a',cls,text);a.href=u;a.target='_blank';a.rel='noopener noreferrer';
+    a.title=text+' 채널 열기';
+    return a;}
   function fmtTime(iso){var d=new Date(iso);if(isNaN(d))return str(iso)||'—';
     var k=new Date(d.getTime()+(9*60+d.getTimezoneOffset())*60000);
     function p(x){return (x<10?'0':'')+x;}
@@ -266,8 +278,9 @@ html{background:#0a0c10;}</style></head>
     list.forEach(function(x,i){
       var name=str(x.name),amt=Number(x.amount_usd),date=str(x.date);
       var a=map[name];
-      if(!a){a=map[name]={name:name,total:0,count:0,lastDate:'',lastIdx:-1,msg:''};order.push(a);}
+      if(!a){a=map[name]={name:name,total:0,count:0,lastDate:'',lastIdx:-1,msg:'',link:''};order.push(a);}
       a.total+=amt;a.count++;
+      if(!a.link&&str(x.link))a.link=str(x.link);
       if(date>=a.lastDate){a.lastDate=date;a.lastIdx=i;if(str(x.message))a.msg=str(x.message);}
       else if(!a.msg&&str(x.message)){a.msg=str(x.message);}
     });
@@ -294,7 +307,7 @@ html{background:#0a0c10;}</style></head>
       var li=el('li','dn-row'+(i<3?' top'+(i+1):''));
       li.appendChild(el('div','dn-rank',i<3?medals[i]:String(i+1)));
       var mid=el('div','dn-mid');
-      var nm=el('div','dn-name');nm.appendChild(el('span','dn-nm',a.name));nm.appendChild(el('span','dn-cnt',a.count+'회'));
+      var nm=el('div','dn-name');nm.appendChild(nameEl('dn-nm',a.name,a.link));nm.appendChild(el('span','dn-cnt',a.count+'회'));
       mid.appendChild(nm);
       if(a.msg)mid.appendChild(el('div','dn-msg',a.msg));
       li.appendChild(mid);
@@ -308,7 +321,7 @@ html{background:#0a0c10;}</style></head>
     recent.forEach(function(r){
       var li=el('li','dn-fi');
       var top=el('div','dn-fi-top');
-      top.appendChild(el('span','dn-fi-name',str(r.x.name)));
+      top.appendChild(nameEl('dn-fi-name',str(r.x.name),r.x.link));
       top.appendChild(el('span','dn-fi-amt mono',won(r.x.amount_usd)));
       li.appendChild(top);
       var sub=el('div','dn-fi-sub');
