@@ -243,11 +243,9 @@ html{background:#0a0c10;}
           <div class="hero-brand">
             <img src="/assets/antinfo-logo.png" alt="ANTINFO">
             <span class="hero-title">코인과세유예 후원 리더보드</span>
-            <span class="hero-badge neutral" id="verdictBadge">중립</span>
           </div>
-          <div class="hero-content verdict-text" id="verdictOpinion">모든 지표가 약세입니다. 하지만 매도세가 눈에 띄게 잦아들고 있습니다. 매수 및 향후 상승 예상합니다.</div>
         </div>
-        <a class="hero-cta" href="donate">📡 불개미 시그널, 텔레그램으로 받기 →</a>
+        <a class="hero-cta" href="donate">🚚 코인과세유예 후원하기 →</a>
       </div>
     </div>
     <div class="positioning">
@@ -345,30 +343,6 @@ html{background:#0a0c10;}
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=4"></script>
 <script>
-/* 전문가 의견: data/v1/verdict.json(운영자 설정, 전 방문자 공유)에서 읽어 표시 */
-(function() {
-  function render(v) {
-    var labels = { up: '상승', neutral: '중립', down: '하락' };
-    var badge = document.getElementById('verdictBadge');
-    if (badge) {
-      badge.className = 'hero-badge ' + v;
-      badge.textContent = labels[v] || labels.down;
-    }
-  }
-  function load() {
-    fetch('data/v1/verdict.json?t=' + Date.now(), { cache: 'no-store' })
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (d && (d.conclusion === 'up' || d.conclusion === 'neutral' || d.conclusion === 'down')) render(d.conclusion);
-        else render('down');
-        var op = document.getElementById('verdictOpinion');
-        if (op && d && d.opinion) op.textContent = d.opinion;
-      })
-      .catch(function(){ render('down'); });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load);
-  else load();
-})();
 </script>
 <script defer src="/assets/visit.js?v=2"></script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",function(){try{navigator.serviceWorker.register("/sw.js").catch(function(){});}catch(e){}});}</script>
