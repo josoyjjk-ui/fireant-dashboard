@@ -287,7 +287,7 @@ html{background:#0a0c10;}</style></head>
     var rank=order.slice().sort(function(a,b){return b.total-a.total||(a.lastDate<b.lastDate?-1:a.lastDate>b.lastDate?1:0);});
     var total=rank.reduce(function(s,a){return s+a.total;},0);
 
-    // 총 후원자 = 후원 지갑 2개로 들어온 입금 tx 수 (scripts/donate_txs_*.py가 donor_count 갱신)
+    // 총 후원자 = 후원 지갑 2개로 입금한 고유 지갑 수 (scripts/donate_txs_*.py가 donor_count 갱신)
     var dc=Number(d.donor_count);
     document.getElementById('dnCount').textContent=(dc>0?dc:rank.length).toLocaleString('ko-KR')+'명';
 
