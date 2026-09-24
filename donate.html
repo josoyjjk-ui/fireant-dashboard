@@ -118,7 +118,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .dn-goal-txt{margin-top:8px;font-size:12.5px;color:var(--dim);font-weight:700;text-align:right;}
 .dn-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:16px;}
 .dn-h2{font-size:17px;font-weight:900;color:var(--accent2);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line);}
-.dn-board,.dn-feed{list-style:none;}
+.dn-board{list-style:none;}
 .dn-row{display:flex;align-items:center;gap:14px;padding:12px 12px;border-radius:12px;border:1px solid transparent;}
 .dn-row+.dn-row{margin-top:6px;}
 .dn-row:not(.top1):not(.top2):not(.top3){border-bottom:1px solid var(--line);border-radius:0;}
@@ -131,22 +131,14 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .dn-name{display:flex;align-items:center;gap:8px;min-width:0;}
 .dn-nm{font-size:15.5px;font-weight:900;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .dn-cnt{flex:0 0 auto;font-size:11px;font-weight:900;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:2px 7px;}
-a.dn-nm,a.dn-fi-name{text-decoration:none;cursor:pointer;}
-a.dn-nm:hover,a.dn-fi-name:hover{color:var(--accent2);text-decoration:underline;}
-a.dn-nm::after,a.dn-fi-name::after{content:'↗';margin-left:5px;font-size:.78em;color:var(--dim);font-weight:900;}
-a.dn-nm:hover::after,a.dn-fi-name:hover::after{color:var(--accent2);}
+a.dn-nm{text-decoration:none;cursor:pointer;}
+a.dn-nm:hover{color:var(--accent2);text-decoration:underline;}
+a.dn-nm::after{content:'↗';margin-left:5px;font-size:.78em;color:var(--dim);font-weight:900;}
+a.dn-nm:hover::after{color:var(--accent2);}
 .dn-msg{margin-top:3px;font-size:13px;color:var(--dim);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .dn-amt{flex:0 0 auto;font-size:16px;font-weight:900;color:#fff;}
 .dn-row.top1 .dn-amt{color:#ffd24a;}
 .dn-empty{padding:26px 12px;text-align:center;color:var(--dim);font-size:15px;font-weight:800;}
-.dn-fi{padding:11px 4px;border-bottom:1px solid var(--line);}
-.dn-fi:last-child{border-bottom:0;}
-.dn-fi-top{display:flex;justify-content:space-between;gap:12px;}
-.dn-fi-name{font-weight:800;color:#fff;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
-.dn-fi-amt{flex:0 0 auto;font-weight:900;color:var(--accent2);font-size:14.5px;}
-.dn-fi-sub{display:flex;gap:10px;margin-top:3px;font-size:12.5px;color:var(--dim);font-weight:600;min-width:0;}
-.dn-fi-date{flex:0 0 auto;}
-.dn-fi-msg{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
 .dn-method{border:1px solid var(--line);background:#0f1218;border-radius:12px;padding:13px 14px;margin-bottom:10px;}
 .dn-m-hd{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:9px;}
 .dn-m-type{font-size:13px;font-weight:900;color:#fff;}
@@ -225,11 +217,6 @@ html{background:#0a0c10;}</style></head>
     <ol class="dn-board" id="dnBoard"></ol>
   </section>
 
-  <section class="dn-card">
-    <h2 class="dn-h2">🕒 최근 후원</h2>
-    <ul class="dn-feed" id="dnFeed"></ul>
-  </section>
-
   <section class="dn-card" id="donateHow">
     <h2 class="dn-h2">💸 후원하기</h2>
     <div id="dnMethods"></div>
@@ -287,8 +274,8 @@ html{background:#0a0c10;}</style></head>
     var rank=order.slice().sort(function(a,b){return b.total-a.total||(a.lastDate<b.lastDate?-1:a.lastDate>b.lastDate?1:0);});
     var total=rank.reduce(function(s,a){return s+a.total;},0);
 
-    // 총 후원자 = 후원 지갑 2개로 입금한 고유 지갑 수 (scripts/donate_txs_*.py가 donor_count 갱신)
-    var dc=Number(d.donor_count);
+    // 총 후원자 = 후원 지갑 2개로 들어온 입금 tx 수 (scripts/donate_donor_count.py가 donor_tx_count 갱신)
+    var dc=Number(d.donor_tx_count)||Number(d.donor_count);
     document.getElementById('dnCount').textContent=(dc>0?dc:rank.length).toLocaleString('ko-KR')+'명';
 
     var goal=Number(d.goal_usd)||0,g=document.getElementById('dnGoal');
@@ -313,22 +300,6 @@ html{background:#0a0c10;}</style></head>
       li.appendChild(mid);
       li.appendChild(el('div','dn-amt mono',won(a.total)));
       board.appendChild(li);
-    });
-
-    var feed=document.getElementById('dnFeed');feed.textContent='';
-    var recent=list.map(function(x,i){return {x:x,i:i};}).sort(function(a,b){var da=str(a.x.date),db=str(b.x.date);return da<db?1:da>db?-1:b.i-a.i;}).slice(0,10);
-    if(!recent.length)feed.appendChild(el('li','dn-empty','아직 후원 내역이 없습니다.'));
-    recent.forEach(function(r){
-      var li=el('li','dn-fi');
-      var top=el('div','dn-fi-top');
-      top.appendChild(nameEl('dn-fi-name',str(r.x.name),r.x.link));
-      top.appendChild(el('span','dn-fi-amt mono',won(r.x.amount_usd)));
-      li.appendChild(top);
-      var sub=el('div','dn-fi-sub');
-      sub.appendChild(el('span','dn-fi-date mono',str(r.x.date)));
-      if(str(r.x.message))sub.appendChild(el('span','dn-fi-msg',str(r.x.message)));
-      li.appendChild(sub);
-      feed.appendChild(li);
     });
 
     var box=document.getElementById('dnMethods');box.textContent='';
