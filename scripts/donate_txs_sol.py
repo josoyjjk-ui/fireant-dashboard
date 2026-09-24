@@ -38,9 +38,20 @@ Method
    single tx received multiple distinct assets, it appears as multiple
    line items in `txs` (same hash) but is only counted once in `count`.
 
+Incremental mode (default)
+--------------------------
+Processed signatures and their classification results are cached in
+CACHE_PATH (outside the repo). Each run only pulls signatures newer than the
+per-address cursor (getSignaturesForAddress `until`) and fetches only txs not
+yet in the cache; the output is rebuilt from the cache, so it is identical to
+a full run. Failed getTransaction calls are not cached and are retried on the
+next run. `--full` ignores the cache and rebuilds it; a missing/corrupt cache
+falls back to full automatically.
+
 Only stdlib (urllib) is used for HTTP. Safe to re-run any time.
 """
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -49,6 +60,9 @@ from datetime import datetime, timezone
 
 WALLET = "FQASshV6GR8ZGD7XTwsW7TQuz8Jou3GQcZ2HHwC5a8DW"
 OUT_PATH = "/Users/fireant/fireant-dashboard/data/donate_txs_sol.json"
+# 증분 캐시(레포 밖 — 러너가 추적 파일을 git checkout으로 되돌려도 유지되어야 함)
+CACHE_PATH = "/Users/fireant/.openclaw/state/donate_sync/sol_cache.json"
+CACHE_VERSION = 1
 
 RPC_ENDPOINTS = [
     "https://api.mainnet-beta.solana.com",
@@ -140,16 +154,22 @@ def get_token_accounts(owner):
     return accounts
 
 
-def get_all_signatures(address):
+def get_all_signatures(address, until=None):
+    """(sigs, ok) 반환. until이 주어지면 그보다 새로운 서명만 가져온다(증분).
+    ok=False면 페이지 조회 도중 실패 — 호출부는 커서를 전진시키지 않는다."""
     sigs = {}
     before = None
+    ok = True
     while True:
         opts = {"limit": SIG_PAGE_LIMIT}
         if before:
             opts["before"] = before
+        if until:
+            opts["until"] = until
         result, err = rpc_call("getSignaturesForAddress", [address, opts])
         if err:
             log(f"WARN getSignaturesForAddress({address}) failed: {err}")
+            ok = False
             break
         if not result:
             break
@@ -159,7 +179,7 @@ def get_all_signatures(address):
             break
         before = result[-1]["signature"]
         time.sleep(0.15)
-    return sigs
+    return sigs, ok
 
 
 def combined_account_keys(tx):
@@ -320,39 +340,80 @@ def get_transaction(sig):
     return None, last_err
 
 
-def main():
+def load_cache():
+    """증분 캐시 로드. 없거나 깨졌거나 지갑/버전이 다르면 None(=전체 재수집)."""
+    try:
+        with open(CACHE_PATH) as f:
+            c = json.load(f)
+        if c.get("version") != CACHE_VERSION or c.get("wallet") != WALLET:
+            log("캐시 버전/지갑 불일치 — 전체 재수집")
+            return None
+        if not all(isinstance(c.get(k), dict) for k in ("cursors", "sigs", "results")):
+            raise ValueError("cache shape")
+        return c
+    except FileNotFoundError:
+        log("캐시 없음 — 전체 재수집")
+        return None
+    except Exception as e:  # noqa: BLE001
+        log(f"캐시 손상({e}) — 전체 재수집")
+        return None
+
+
+def save_cache(cache):
+    os.makedirs(os.path.dirname(CACHE_PATH), exist_ok=True)
+    tmp = CACHE_PATH + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(cache, f, ensure_ascii=False)
+    os.replace(tmp, CACHE_PATH)
+
+
+def main(full=False):
+    cache = None if full else load_cache()
+    mode = "incremental" if cache else "full"
+    if cache is None:
+        cache = {"version": CACHE_VERSION, "wallet": WALLET, "cursors": {}, "sigs": {}, "results": {}}
+    cursors = cache["cursors"]   # address -> 가장 최근 서명(getSignaturesForAddress until 커서)
+    known = cache["sigs"]        # signature -> blockTime (지갑/토큰계정에서 발견된 모든 서명)
+    results = cache["results"]   # signature -> {"time", "items", "excluded"} (getTransaction 성공분만)
+    log(f"mode={mode} (캐시 서명 {len(known)}개, 처리 완료 {len(results)}개)")
+
     log(f"Collecting token accounts for {WALLET} ...")
     token_accounts = get_token_accounts(WALLET)
     log(f"Found {len(token_accounts)} token account(s): {sorted(token_accounts)}")
 
     addresses = [WALLET] + sorted(token_accounts)
-    all_sigs = {}
+    new_sig_count = 0
     for addr in addresses:
-        sigs = get_all_signatures(addr)
-        log(f"  {addr}: {len(sigs)} signature(s)")
-        all_sigs.update(sigs)
+        until = cursors.get(addr)
+        sigs, ok = get_all_signatures(addr, until=until)
+        log(f"  {addr}: {len(sigs)} {'new ' if until else ''}signature(s)")
+        for sig, item in sigs.items():
+            if sig not in known:
+                new_sig_count += 1
+            known[sig] = item.get("blockTime")
+        # 응답은 최신순 — 첫 항목이 새 커서. 조회 도중 실패하면 커서를 유지해 다음 실행에서 다시 본다.
+        if ok and sigs:
+            cursors[addr] = next(iter(sigs))
 
-    log(f"Total unique signatures: {len(all_sigs)}")
+    log(f"Total unique signatures: {len(known)} (신규 {new_sig_count})")
 
-    ordered_sigs = sorted(all_sigs.items(), key=lambda kv: kv[1].get("blockTime") or 0)
+    # blockTime 순(동률은 발견 순) — 전체 실행과 동일한 처리/출력 순서
+    ordered_sigs = sorted(known.items(), key=lambda kv: kv[1] or 0)
+    pending = [(sig, bt) for sig, bt in ordered_sigs if sig not in results]
 
-    complete = True
     failed_sigs = []
-    counted_txs = []
     excluded_report = []
-    seen_signatures = set()
 
-    for i, (sig, meta) in enumerate(ordered_sigs, 1):
+    for i, (sig, sig_bt) in enumerate(pending, 1):
         result, err = get_transaction(sig)
         if err or result is None:
             log(f"FAIL getTransaction {sig}: {err}")
             failed_sigs.append(sig)
-            complete = False
             time.sleep(0.2)
             continue
 
         receipts, excluded = extract_receipts(sig, result)
-        block_time = result.get("blockTime") or meta.get("blockTime")
+        block_time = result.get("blockTime") or sig_bt
 
         # aggregate by asset within this signature
         agg = {}
@@ -364,25 +425,38 @@ def main():
             if from_addr not in agg[key]["froms"]:
                 agg[key]["froms"].append(from_addr)
 
-        if agg:
-            seen_signatures.add(sig)
-            for asset, d in agg.items():
-                counted_txs.append(
-                    {
-                        "hash": sig,
-                        "time": block_time,
-                        "asset": asset,
-                        "amount": round(d["amount"], 9),
-                        "from": ",".join(d["froms"]),
-                    }
-                )
+        items = [
+            {
+                "hash": sig,
+                "time": block_time,
+                "asset": asset,
+                "amount": round(d["amount"], 9),
+                "from": ",".join(d["froms"]),
+            }
+            for asset, d in agg.items()
+        ]
+        results[sig] = {"time": block_time, "items": items, "excluded": [list(e) for e in excluded]}
 
         for asset, amount, reason in excluded:
             excluded_report.append({"hash": sig, "asset": asset, "amount": amount, "reason": reason})
 
-        if i % 10 == 0 or i == len(ordered_sigs):
-            log(f"  processed {i}/{len(ordered_sigs)}")
+        if i % 10 == 0 or i == len(pending):
+            log(f"  processed {i}/{len(pending)}")
         time.sleep(0.12)
+
+    # 캐시(이전 실행분 + 이번 실행분)에서 출력 재구성
+    complete = not failed_sigs
+    counted_txs = []
+    seen_signatures = set()
+    excluded_total = 0
+    for sig, _bt in ordered_sigs:
+        r = results.get(sig)
+        if not r:
+            continue
+        excluded_total += len(r.get("excluded") or [])
+        if r["items"]:
+            seen_signatures.add(sig)
+            counted_txs.extend(r["items"])
 
     counted_txs.sort(key=lambda t: (t["time"] or 0))
 
@@ -397,15 +471,16 @@ def main():
     with open(OUT_PATH, "w") as f:
         json.dump(out, f, indent=2, ensure_ascii=False)
 
+    save_cache(cache)
+
     log(f"Wrote {OUT_PATH}")
-    log(f"count={out['count']} complete={out['complete']} failed_sigs={len(failed_sigs)}")
-    if excluded_report:
-        log(f"Excluded {len(excluded_report)} spam/dust entries:")
-        for e in excluded_report:
-            log(f"  {e['hash'][:12]}... {e['asset']} {e['amount']} - {e['reason']}")
+    log(f"mode={mode} count={out['count']} complete={out['complete']} fetched={len(pending)} failed_sigs={len(failed_sigs)}")
+    log(f"Excluded spam/dust entries total={excluded_total} (이번 실행 신규 {len(excluded_report)})")
+    for e in excluded_report:
+        log(f"  {e['hash'][:12]}... {e['asset']} {e['amount']} - {e['reason']}")
 
     return out, excluded_report, failed_sigs
 
 
 if __name__ == "__main__":
-    main()
+    main(full="--full" in sys.argv[1:])
