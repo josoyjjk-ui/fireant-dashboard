@@ -219,7 +219,8 @@ def collect_evm_explorer(chain: str, cfg: dict, wallet: str) -> tuple[list, list
             if ts < START_TS:
                 continue
             v = int(t.get("value") or 0) / 1e18
-            h = t["hash"].lower()
+            # Blockscout txlistinternal은 "hash" 대신 "transactionHash"를 준다
+            h = (t.get("hash") or t.get("transactionHash") or "").lower()
             frm = (t.get("from") or "").lower()
             if v <= 0:
                 continue  # 0원 호출(컨트랙트 상호작용 등)은 입금 아님
