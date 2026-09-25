@@ -138,6 +138,11 @@ a.dn-nm:hover::after{color:var(--accent2);}
 .dn-msg{margin-top:3px;font-size:13px;color:var(--dim);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .dn-amt{flex:0 0 auto;font-size:16px;font-weight:900;color:#fff;}
 .dn-row.top1 .dn-amt{color:#ffd24a;}
+.dn-sup-lede{font-size:13px;color:var(--dim);font-weight:700;margin:-2px 0 10px;line-height:1.55;}
+.dn-sup{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid rgba(255,181,71,.28);background:rgba(255,181,71,.05);border-radius:12px;}
+.dn-sup+.dn-sup{margin-top:8px;}
+.dn-sup-ic{flex:0 0 34px;text-align:center;font-size:20px;}
+.dn-sup-tag{flex:0 0 auto;font-size:11px;font-weight:900;color:var(--accent2);border:1px solid rgba(255,181,71,.35);border-radius:999px;padding:3px 8px;}
 .dn-empty{padding:26px 12px;text-align:center;color:var(--dim);font-size:15px;font-weight:800;}
 .dn-method{border:1px solid var(--line);background:#0f1218;border-radius:12px;padding:13px 14px;margin-bottom:10px;}
 .dn-m-hd{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:9px;}
@@ -215,6 +220,12 @@ html{background:#0a0c10;}</style></head>
   <section class="dn-card">
     <h2 class="dn-h2">🏆 후원 리더보드</h2>
     <ol class="dn-board" id="dnBoard"></ol>
+  </section>
+
+  <section class="dn-card" id="dnSupWrap" hidden>
+    <h2 class="dn-h2">🤝 후원 지원 KOL</h2>
+    <p class="dn-sup-lede">직접 후원 대신, 후원에 참여한 분들께 보상을 제공하며 함께하는 KOL입니다.</p>
+    <ul class="dn-board" id="dnSup"></ul>
   </section>
 
   <section class="dn-card" id="donateHow">
@@ -300,6 +311,21 @@ html{background:#0a0c10;}</style></head>
       li.appendChild(mid);
       li.appendChild(el('div','dn-amt mono',won(a.total)));
       board.appendChild(li);
+    });
+
+    var sups=(Array.isArray(d.supporters)?d.supporters:[]).filter(function(x){return x&&str(x.name);});
+    var supWrap=document.getElementById('dnSupWrap'),supBox=document.getElementById('dnSup');supBox.textContent='';
+    supWrap.hidden=!sups.length;
+    sups.forEach(function(x){
+      var li=el('li','dn-sup');
+      li.appendChild(el('div','dn-sup-ic','🎁'));
+      var mid=el('div','dn-mid');
+      var nm=el('div','dn-name');nm.appendChild(nameEl('dn-nm',str(x.name),x.link));
+      mid.appendChild(nm);
+      if(str(x.note))mid.appendChild(el('div','dn-msg',str(x.note)));
+      li.appendChild(mid);
+      li.appendChild(el('span','dn-sup-tag','보상 지원'));
+      supBox.appendChild(li);
     });
 
     var box=document.getElementById('dnMethods');box.textContent='';
