@@ -246,15 +246,20 @@ class RateLimited(Exception):
 
 
 def explorer_list(apis: list[str], action: str, wallet: str, startblock: int = 0, deadline: float | None = None) -> list:
-    """explorer account API 목록 조회. 429는 Retry-After(없으면 지수 백오프)를 따르되 deadline을 넘기면 즉시 실패."""
+    """explorer account API 목록 조회. 429는 Retry-After(없으면 지수 백오프)를 따르되 deadline을 넘기면 즉시 실패.
+
+    한 explorer가 429 장기대기(RateLimited)나 시간 예산 초과(Deadline)로 막혀도 다음(백업) explorer를 시도하고,
+    모두 실패했을 때만 첫 번째 RateLimited/Deadline을 다시 던진다(호출부 쿨다운 판단용)."""
     last: Any = None
+    blocked: Exception | None = None
 
     def pause(sec: float) -> None:
         if deadline is not None and time.time() + sec > deadline:
             raise Deadline(f"{action} 시간 예산 초과(마지막 오류: {str(last)[:120]})")
         time.sleep(sec)
 
-    for api in apis:
+    def try_api(api: str) -> list | None:
+        nonlocal last
         gate = _gate_for(api)
         for attempt in range(4):
             if deadline is not None and time.time() > deadline:
@@ -294,11 +299,24 @@ def explorer_list(apis: list[str], action: str, wallet: str, startblock: int = 0
                 return []  # 내부 tx 인덱싱 미완 — 빈 목록으로 처리(실패 아님)
             last = d
             pause(3)
+        return None
+
+    for api in apis:
+        try:
+            res = try_api(api)
+        except (RateLimited, Deadline) as e:
+            blocked = blocked or e
+            log(f"WARN {action} {api.split('/')[2]} 막힘({str(e)[:80]}) — 다음 explorer 시도")
+            continue
+        if res is not None:
+            return res
+    if blocked is not None:
+        raise blocked
     raise RuntimeError(f"{action} 실패: {str(last)[:160]}")
 
 
 def collect_evm_explorer(chain: str, cfg: dict, wallet: str, prev: dict | None = None, deadline: float | None = None,
-                         actions: list[str] | None = None) -> tuple[list, list, dict]:
+                         actions: list[str] | None = None, floor_block: int | None = None) -> tuple[list, list, dict]:
     """(counted_txs, excluded_txs, new_chain_state) 반환. 실패 시 예외를 던진다(호출부에서 처리).
 
     prev(이전 실행의 체인 상태 {last_block, txs})가 있으면 startblock=last_block-EXPLORER_MARGIN_BLOCKS부터만
@@ -309,23 +327,28 @@ def collect_evm_explorer(chain: str, cfg: dict, wallet: str, prev: dict | None =
     seen: dict[str, dict] = dict(prev["txs"]) if prev else {}
     excluded: list = []
     last_block = int(prev["last_block"]) if prev else 0
-    startblock = max(0, last_block - EXPLORER_MARGIN_BLOCKS) if prev else 0
+    # floor_block: 아직 반영 확인이 안 된 입금 블록(pending/backfill) — 커서가 앞서가도 그 지점부터 다시 본다
+    base_block = min(last_block, floor_block) if floor_block is not None else last_block
+    startblock = max(0, base_block - EXPLORER_MARGIN_BLOCKS) if prev else 0
     max_block = last_block
+    action_max = {"txlist": 0, "txlistinternal": 0, "tokentx": 0}
 
     def add(rec: dict) -> None:
         seen.setdefault(rec["hash"], rec)
 
-    def note_block(t: dict) -> None:
+    def note_block(t: dict, action: str) -> None:
         nonlocal max_block
         try:
-            max_block = max(max_block, int(t.get("blockNumber") or 0))
+            b = int(t.get("blockNumber") or 0)
         except (TypeError, ValueError):
-            pass
+            return
+        max_block = max(max_block, b)
+        action_max[action] = max(action_max[action], b)
 
     actions = actions or ["txlist", "txlistinternal", "tokentx"]
     for action in [a for a in ("txlist", "txlistinternal") if a in actions]:
         for t in explorer_list(cfg["api"], action, wallet, startblock, deadline):
-            note_block(t)
+            note_block(t, action)
             if (t.get("to") or "").lower() != wallet_l or str(t.get("isError", "0")) == "1":
                 continue
             ts = int(t.get("timeStamp") or 0)
@@ -344,7 +367,7 @@ def collect_evm_explorer(chain: str, cfg: dict, wallet: str, prev: dict | None =
             add(rec)
 
     for t in (explorer_list(cfg["api"], "tokentx", wallet, startblock, deadline) if "tokentx" in actions else []):
-        note_block(t)
+        note_block(t, "tokentx")
         if (t.get("to") or "").lower() != wallet_l:
             continue
         ts = int(t.get("timeStamp") or 0)
@@ -370,7 +393,7 @@ def collect_evm_explorer(chain: str, cfg: dict, wallet: str, prev: dict | None =
             continue
         add(rec)
 
-    return list(seen.values()), excluded, {"last_block": max_block, "txs": seen}
+    return list(seen.values()), excluded, {"last_block": max_block, "txs": seen, "_action_max": action_max, "_startblock": startblock}
 
 
 # ───────────────────────── BSC (공개 RPC) ─────────────────────────
@@ -568,32 +591,41 @@ ALL_ACTIONS = ["txlist", "txlistinternal", "tokentx"]
 KIND_ACTIONS = {"native": ["txlist", "txlistinternal"], "token": ["tokentx"]}
 
 
-def gate_check(cfg: dict, wallet: str, gate: dict | None) -> tuple[dict, int | None, set[str]]:
-    """공개 RPC로 변화 감지. (새 gate, 트리거 블록 또는 None, 변화 종류) 반환.
-    변화 종류: "token"(화이트리스트 토큰 Transfer 로그) / "native"(잔고 변화) / "all"(조회 폭 초과 등).
-    트리거 블록 -1 = 정확한 블록 미상('explorer 결과가 이전보다 앞으로 나아가야 함'). 실패 시 예외."""
+def gate_check(cfg: dict, wallet: str, gate: dict | None) -> tuple[dict, dict[str, int]]:
+    """공개 RPC로 변화 감지. (새 gate, {변화 종류: 목표 블록}) 반환. 변화 없으면 빈 dict.
+    변화 종류: "token"(화이트리스트 토큰 Transfer 로그 — 목표=로그 최고 블록)
+             / "native"(잔고 변화 — 목표=게이트 다음 블록, 그 이후 어딘가에 입금 tx가 있어야 함)
+             / "all"(조회 폭 초과 — 목표 -1 = '이전 커서보다 앞으로'). 실패 시 예외."""
     rpcs = cfg["rpc"]
     latest = int(rpc_call(rpcs, "eth_blockNumber", [], tries=3, timeout=8), 16) - 2  # 확정 여유
     bal = rpc_call(rpcs, "eth_getBalance", [wallet, hex(latest)], tries=3, timeout=8)
     new_gate = {"block": latest, "balance": bal}
     if not gate:
-        return new_gate, None, set()
+        return new_gate, {}
     frm = int(gate["block"]) + 1
     if latest < frm:
-        return gate, None, set()  # 노드 높이 역전 — 변화 없음으로 보고 기존 게이트 유지
+        return gate, {}  # 노드 높이 역전 — 변화 없음으로 보고 기존 게이트 유지
     if latest - frm > GATE_MAX_SPAN:
-        return new_gate, -1, {"all"}
+        return new_gate, {"all": -1}
     pad = "0x" + "0" * 24 + wallet.lower()[2:]
     logs = rpc_call(rpcs, "eth_getLogs", [{"fromBlock": hex(frm), "toBlock": hex(latest), "address": list(cfg["tokens"]), "topics": [TRANSFER_TOPIC, None, pad]}], tries=3, timeout=8)
-    kinds: set[str] = set()
-    trig: int | None = None
+    targets: dict[str, int] = {}
     if logs:
-        kinds.add("token")
-        trig = max(int(lg["blockNumber"], 16) for lg in logs)
+        targets["token"] = max(int(lg["blockNumber"], 16) for lg in logs)
     if bal != gate.get("balance"):
-        kinds.add("native")
-        trig = trig if trig is not None else -1
-    return new_gate, trig, kinds
+        targets["native"] = frm
+    return new_gate, targets
+
+
+def _norm_pending(p: dict | None) -> dict | None:
+    """구 형식 {"target", "kinds"}를 종류별 목표 형식 {"targets": {종류: 블록}}으로 변환."""
+    if not p:
+        return None
+    if "targets" not in p:
+        kinds = p.get("kinds") or ["all"]
+        p = {"targets": {k: int(p.get("target") or 0) for k in kinds}, "since": p.get("since", time.time())}
+    p["kinds"] = sorted(p["targets"])
+    return p if p["targets"] else None
 
 
 def run_explorer(chain: str, cfg: dict, wallet: str, prev: dict | None, deadline: float | None) -> tuple[dict, dict | None]:
@@ -604,21 +636,21 @@ def run_explorer(chain: str, cfg: dict, wallet: str, prev: dict | None, deadline
     """
     now = time.time()
     gate = (prev or {}).get("gate")
-    pending = (prev or {}).get("pending")  # {"target": 블록, "since": ts, "kinds": [...]}
+    # pending = {"targets": {종류: 목표 블록}, "since": ts, "kinds": [...]} — 종류별로 해당 action 결과가 목표에 닿아야 해제
+    pending = _norm_pending((prev or {}).get("pending"))
+    backfill = (prev or {}).get("backfill_from")  # 대기 만료로 풀린 미확인 입금 블록 — 다음 전체 재조회 때 여기부터 본다
     try:
-        new_gate, trig, kinds = gate_check(cfg, wallet, gate if prev else None)
+        new_gate, found = gate_check(cfg, wallet, gate if prev else None)
         gate_ok = True
     except Exception as e:  # noqa: BLE001
         log(f"WARN {chain} 변화 감지(RPC) 실패 — explorer 조회로 대체: {str(e)[:120]}")
-        new_gate, trig, kinds, gate_ok = gate, None, set(), False
-    if trig is not None and prev:
-        target = trig if trig >= 0 else int(prev["last_block"]) + 1
-        old = pending or {}
-        pending = {
-            "target": max(target, int(old.get("target") or 0)),
-            "since": old.get("since", now),
-            "kinds": sorted(set(old.get("kinds") or []) | kinds),
-        }
+        new_gate, found, gate_ok = gate, {}, False
+    if found and prev:
+        targets = dict((pending or {}).get("targets") or {})
+        for k, t in found.items():
+            t = t if t >= 0 else int(prev["last_block"]) + 1
+            targets[k] = max(t, int(targets.get(k) or 0))
+        pending = {"targets": targets, "since": (pending or {}).get("since", now), "kinds": sorted(targets)}
 
     # 체인마다 강제 재조회 시점을 5분씩 어긋나게(한 실행에 explorer 호출이 몰리지 않도록)
     refresh_due = now - float((prev or {}).get("refreshed_at") or 0) >= EXPLORER_REFRESH_INTERVAL + CHAIN_ORDER.index(chain) * 300
@@ -641,18 +673,40 @@ def run_explorer(chain: str, cfg: dict, wallet: str, prev: dict | None, deadline
         actions = [a for a in ALL_ACTIONS if any(a in KIND_ACTIONS[k] for k in pending["kinds"])]
 
     try:
-        counted, excluded, new_state = collect_evm_explorer(chain, cfg, wallet, prev, deadline, actions)
+        floors = [int(t) for t in ((pending or {}).get("targets") or {}).values()]
+        if backfill is not None:
+            floors.append(int(backfill))
+        counted, excluded, new_state = collect_evm_explorer(chain, cfg, wallet, prev, deadline, actions,
+                                                            floor_block=min(floors) if floors else None)
         counted.sort(key=lambda r: r["time"])
+        amax = new_state.pop("_action_max")
+        used_start = new_state.pop("_startblock")
+        # 전체 action을 backfill 지점 이전부터 다시 훑었으면 backfill 해제
+        if backfill is not None and actions == ALL_ACTIONS and used_start <= int(backfill):
+            backfill = None
         if pending:
-            if new_state["last_block"] >= int(pending["target"]):
+            left: dict[str, int] = {}
+            for k, t in pending["targets"].items():
+                if k == "token":
+                    reached = "tokentx" in actions and amax["tokentx"] >= t
+                elif k == "native":
+                    reached = "txlist" in actions and max(amax["txlist"], amax["txlistinternal"]) >= t
+                else:  # "all"
+                    reached = actions == ALL_ACTIONS and new_state["last_block"] >= t
+                if not reached:
+                    left[k] = int(t)
+            if not left:
                 pending = None
             elif now - float(pending["since"]) > PENDING_MAX_AGE:
-                log(f"WARN {chain} explorer가 {PENDING_MAX_AGE // 60}분간 변화(블록 {pending['target']})를 반영하지 않음 — 대기 해제")
+                backfill = min([*left.values(), *([int(backfill)] if backfill is not None else [])])
+                log(f"WARN {chain} explorer가 {PENDING_MAX_AGE // 60}분간 변화({left})를 반영하지 않음 — 대기 해제, 다음 전체 재조회 때 블록 {backfill}부터 재확인")
                 pending = None
             else:
-                log(f"{chain}: explorer 인덱싱 대기(목표 블록 {pending['target']}, 현재 {new_state['last_block']}) — 다음 실행 재조회")
+                pending = {**pending, "targets": left, "kinds": sorted(left)}
+                log(f"{chain}: explorer 인덱싱 대기(목표 {left}, action별 최고 블록 {amax}) — 다음 실행 재조회")
         refreshed_at = now if actions == ALL_ACTIONS else float((prev or {}).get("refreshed_at") or 0)
-        new_state.update({"gate": new_gate, "pending": pending, "refreshed_at": refreshed_at, "cooldown_until": 0})
+        new_state.update({"gate": new_gate, "pending": pending, "backfill_from": backfill,
+                          "refreshed_at": refreshed_at, "cooldown_until": 0})
         log(f"{chain}: {len(counted)}건 수집 완료({'증분' if prev else '전체'}, {'+'.join(actions)}) (이번 조회 제외 {len(excluded)}건: {[e.get('reason') for e in excluded]})")
         return {"chain": chain, "count": len(counted), "complete": True, "txs": counted}, new_state
     except Exception as e:  # noqa: BLE001
@@ -660,7 +714,7 @@ def run_explorer(chain: str, cfg: dict, wallet: str, prev: dict | None, deadline
             # 일시 오류(429 등) — 직전 성공 결과를 그대로 쓰고 explorer 커서는 유지해 다음 실행에서 재시도
             cached = sorted(prev["txs"].values(), key=lambda r: r["time"])
             log(f"WARN {chain} explorer 조회 실패 — 직전 캐시 {len(cached)}건 재사용(커서 유지, 다음 실행 재시도): {e}")
-            st = {**prev, "gate": new_gate, "pending": pending or {"target": int(prev["last_block"]), "since": now, "kinds": ["all"]}}
+            st = {**prev, "gate": new_gate, "pending": pending or {"targets": {"all": int(prev["last_block"])}, "since": now, "kinds": ["all"]}}
             if isinstance(e, RateLimited):
                 st["cooldown_until"] = now + e.cooldown
             return {"chain": chain, "count": len(cached), "complete": True, "txs": cached}, st
