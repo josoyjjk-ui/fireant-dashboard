@@ -46,6 +46,11 @@ if prev_tx is not None and tx_count < prev_tx:
     print(f"skip: tx count decreased {prev_tx} -> {tx_count}")
     sys.exit(0)
 
+if (prev, prev_tx, d.get("donor_count_by_chain")) == (total, tx_count, dict(by_chain)):
+    # 변화 없으면 파일을 건드리지 않는다(5분 주기에서 타임스탬프만 바뀐 커밋·배포가 쌓이지 않도록)
+    print(f"ok: donor_count {prev} -> {total} (변화 없음)")
+    sys.exit(0)
+
 d["donor_count"] = total
 d["donor_tx_count"] = tx_count
 d["donor_count_by_chain"] = by_chain
