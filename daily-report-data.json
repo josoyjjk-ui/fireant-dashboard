@@ -89,26 +89,49 @@
     "last_merge_kst": "2026-10-02T14:30:05.438784+09:00",
     "timezone": "Asia/Seoul (UTC+9)",
     "dat_weekly_source": "SoSoValue sosovalue.com (실시간) as_of=2026-09-28",
-    "dat_weekly_fetched_at_ms": 1791092082695,
-    "btc_etf_source": "farside as_of=2026-10-02 +$31.7M | conf=confirmed | xcheck=OK(soso[headline] 2026-10-02 +$31.7M ~ farside +$31.7M, d0.0, farside_missing=1) | fetched=2026-10-04T14:54:42.879268+09:00",
-    "eth_etf_source": "farside as_of=2026-10-02 -$17.3M | conf=confirmed | xcheck=OK(soso[headline] 2026-10-02 -$17.2M ~ farside -$17.3M, d0.1, farside_missing=2) | fetched=2026-10-04T15:37:29.849818+09:00",
-    "btc_etf_fetched_at_ms": 1791093282879,
-    "eth_etf_fetched_at_ms": 1791095849849,
+    "dat_weekly_fetched_at_ms": 1791097881910,
+    "btc_etf_source": "farside as_of=2026-10-02 +$31.7M | conf=confirmed | xcheck=OK(soso[headline] 2026-10-02 +$31.7M ~ farside +$31.7M, d0.0, farside_missing=1) | fetched=2026-10-04T16:23:01.404403+09:00",
+    "eth_etf_source": "farside as_of=2026-10-01 -$55.4M | conf=single_source | xcheck=single_source(farside 2026-10-01 -$55.4M, 완결행, soso 미반영 asof=unknown) | pending=2026-10-02(farside -$17.3M 미공시셀 2개, soso 미반영) | fetched=2026-10-04T16:23:01.404403+09:00",
+    "btc_etf_fetched_at_ms": 1791098581404,
+    "eth_etf_fetched_at_ms": 1791098581404,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-10-02T14:33:53.365339+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-10-02T14:33:53.365339+09:00",
     "btc_oi_24h_fetched_at_ms": 1790919233365,
     "eth_oi_24h_fetched_at_ms": 1790919233365,
     "dat_weekly_asof": "2026-09-28",
     "btc_etf_asof": "2026-10-02",
-    "eth_etf_asof": "2026-10-02",
+    "eth_etf_asof": "2026-10-01",
     "btc_etf_confidence": "confirmed",
-    "eth_etf_confidence": "confirmed",
+    "eth_etf_confidence": "single_source",
     "global_market_cap_asof_ms": 1790918559000,
     "btc_dominance_asof_ms": 1790918559000,
     "btc_etf_fallback_from": [],
     "btc_etf_farside_missing": 1,
-    "eth_etf_fallback_from": [],
-    "eth_etf_farside_missing": 2
+    "eth_etf_fallback_from": [
+      "2026-10-02"
+    ],
+    "eth_etf_farside_missing": 0,
+    "eth_etf_filled": {},
+    "eth_etf_missing_cols": {
+      "2026-10-02": [
+        "ETHA",
+        "ETHB"
+      ]
+    },
+    "eth_etf_fill_status": {
+      "2026-10-02": "ETHA: ishares 2026-10-05 발행좌수 미공시(T+1); ETHB: ishares 2026-10-05 발행좌수 미공시(T+1)"
+    },
+    "eth_etf_backoff": null,
+    "btc_etf_filled": {},
+    "btc_etf_missing_cols": {
+      "2026-10-02": [
+        "IBIT"
+      ]
+    },
+    "btc_etf_fill_status": {
+      "2026-10-02": "IBIT: ishares 2026-10-05 발행좌수 미공시(T+1)"
+    },
+    "btc_etf_backoff": null
   },
   "btc_usd": "$86,363",
   "eth_usd": "$2,729.03",
@@ -122,7 +145,7 @@
   "date": "2026.10.02 (금)",
   "dat_weekly": "$238.64M",
   "btc_etf": "+$31.7M",
-  "eth_etf": "-$17.3M",
+  "eth_etf": "-$55.4M",
   "btc_oi_24h": "+4.49%",
   "eth_oi_24h": "+1.86%",
   "comment": "BTC는 $86,363, ETH는 $2,729.03에 거래 중이다. 공포탐욕지수는 72 (Greed) 수준이다."
