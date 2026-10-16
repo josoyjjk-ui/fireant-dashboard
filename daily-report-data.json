@@ -90,10 +90,10 @@
     "timezone": "Asia/Seoul (UTC+9)",
     "dat_weekly_source": "SoSoValue sosovalue.com (실시간) as_of=2026-10-12",
     "dat_weekly_fetched_at_ms": 1792106118266,
-    "btc_etf_source": "farside as_of=2026-10-15 +$0M | conf=confirmed | xcheck=OK(soso[headline] 2026-10-15 +$0M ~ farside +$0M, d0.0, farside_missing=11) | fetched=2026-10-16T07:23:00.546074+09:00",
-    "eth_etf_source": "farside as_of=2026-10-15 +$0M | conf=confirmed | xcheck=OK(soso[headline] 2026-10-15 +$0M ~ farside +$0M, d0.0, farside_missing=10) | fetched=2026-10-16T07:23:00.546074+09:00",
-    "btc_etf_fetched_at_ms": 1792102980546,
-    "eth_etf_fetched_at_ms": 1792102980546,
+    "btc_etf_source": "farside as_of=2026-10-15 +$5.1M | conf=single_source | xcheck=single_source(farside 2026-10-15 +$5.1M, 완결행, soso 미반영 asof=unknown) | sosovalue_err: SosoBlockedError: SoSoValue 3회 실패 — bot-block: cf-mitigated=challenge; marker 'just a moment'; marker 'performing security verification'; marker 'ray id:' | status=403 | fetched=2026-10-16T13:23:00.642955+09:00",
+    "eth_etf_source": "farside as_of=2026-10-15 -$60.3M | conf=single_source | xcheck=single_source(farside 2026-10-15 -$60.3M, 완결행, soso 미반영 asof=unknown) | sosovalue_err: SosoBlockedError: SoSoValue 3회 실패 — bot-block: cf-mitigated=challenge; marker 'just a moment'; marker 'performing security verification'; marker 'ray id:' | status=403 | fetched=2026-10-16T13:23:00.642955+09:00",
+    "btc_etf_fetched_at_ms": 1792124580643,
+    "eth_etf_fetched_at_ms": 1792124580643,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-10-15T14:30:39.060317+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-10-15T14:30:39.060317+09:00",
     "btc_oi_24h_fetched_at_ms": 1792042239060,
@@ -101,52 +101,21 @@
     "dat_weekly_asof": "2026-10-12",
     "btc_etf_asof": "2026-10-15",
     "eth_etf_asof": "2026-10-15",
-    "btc_etf_confidence": "confirmed",
-    "eth_etf_confidence": "confirmed",
+    "btc_etf_confidence": "single_source",
+    "eth_etf_confidence": "single_source",
     "global_market_cap_asof_ms": 1792042127000,
     "btc_dominance_asof_ms": 1792042127000,
     "btc_etf_fallback_from": [],
-    "btc_etf_farside_missing": 11,
+    "btc_etf_farside_missing": 0,
     "eth_etf_fallback_from": [],
-    "eth_etf_farside_missing": 10,
+    "eth_etf_farside_missing": 0,
     "eth_etf_filled": {},
-    "eth_etf_missing_cols": {
-      "2026-10-15": [
-        "ETHA",
-        "ETHB",
-        "FETH",
-        "ETHW",
-        "TETH",
-        "ETHV",
-        "QETH",
-        "EZET",
-        "ETHE",
-        "ETH"
-      ]
-    },
-    "eth_etf_fill_status": {
-      "2026-10-15": "ETHA: ishares 2026-10-15 NAV/발행좌수 없음; ETHB: ishares 2026-10-15 NAV/발행좌수 없음"
-    },
+    "eth_etf_missing_cols": {},
+    "eth_etf_fill_status": {},
     "eth_etf_backoff": null,
     "btc_etf_filled": {},
-    "btc_etf_missing_cols": {
-      "2026-10-15": [
-        "IBIT",
-        "FBTC",
-        "BITB",
-        "ARKB",
-        "BTCO",
-        "EZBC",
-        "BRRR",
-        "HODL",
-        "BTCW",
-        "GBTC",
-        "BTC"
-      ]
-    },
-    "btc_etf_fill_status": {
-      "2026-10-15": "IBIT: ishares 2026-10-15 NAV/발행좌수 없음"
-    },
+    "btc_etf_missing_cols": {},
+    "btc_etf_fill_status": {},
     "btc_etf_backoff": null
   },
   "btc_usd": "$81,100",
@@ -160,8 +129,8 @@
   "btc_dominance": "59.51%",
   "date": "2026.10.15 (목)",
   "dat_weekly": "$22.50M",
-  "btc_etf": "+$0M",
-  "eth_etf": "+$0M",
+  "btc_etf": "+$5.1M",
+  "eth_etf": "-$60.3M",
   "btc_oi_24h": "+0.25%",
   "eth_oi_24h": "+1.10%",
   "comment": "BTC는 $81,100, ETH는 $2,361.72에 거래 중이다. 공포탐욕지수는 53 (Neutral) 수준이다."
