@@ -106,6 +106,13 @@
   function safeDateKey(v) {
     return (typeof v === 'string') ? v : '';
   }
+  // 거래소 장애 시 수집기가 직전 데이터를 유지하고 stale 표시 → "점검/지연 · HH:MM 기준" 배지
+  function staleBadgeHTML(e) {
+    if (!e || !e.stale) return '';
+    var d = new Date(e.data_as_of || e.stale_since || '');
+    var hm = isNaN(d.getTime()) ? '' : ' · ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ' 기준';
+    return ' <span class="kr-stale" title="' + esc(e.note || '') + '">점검/지연' + hm + '</span>';
+  }
   function setText(id, t) { var el = document.getElementById(id); if (el) el.textContent = t; }
 
   /* ---------- 에러 / 로딩 ---------- */
@@ -139,7 +146,7 @@
       html += ''
         + '<div class="kr-share-row">'
         +   '<div class="kr-share-info">'
-        +     '<span class="kr-share-name" style="color:' + color + '">' + esc(e.name || k) + '</span>'
+        +     '<span class="kr-share-name" style="color:' + color + '">' + esc(e.name || k) + '</span>' + staleBadgeHTML(e)
         +     '<span class="kr-share-vol">' + fmtVol(e.vol_24h_krw) + '원</span>'
         +     '<span class="kr-share-pct">' + (pct === null ? '—' : pct.toFixed(2) + '%') + '</span>'
         +   '</div>'
@@ -169,7 +176,10 @@
     if (root) root.innerHTML = valHTML + note;
     // 우측 위젯 카드에는 큰 수치만 렌더 (note 생략)
     var widget = document.getElementById('kr-kimchi-widget');
-    if (widget) widget.innerHTML = valHTML;
+    // 업비트 장애 시 수집기가 빗썸 BTC 로 대체(source=bithumb) → 기준 거래소만 작게 표기
+    var srcHTML = (p !== null && kp.source && kp.source !== 'upbit')
+      ? '<div class="kr-kimchi-note">' + esc(EX_NAMES[kp.source] || kp.source) + ' BTC 기준</div>' : '';
+    if (widget) widget.innerHTML = valHTML + srcHTML;
   }
 
   /* ---------- 3. TOP 10 표 ---------- */
@@ -282,7 +292,7 @@
       var color = EX_COLORS[k];
       var logo = 'logos/' + k + '.jpg';
       var head = '<div class="kr-perex-head"><img class="kr-perex-logo" src="' + logo + '" alt="' + esc(name) + '" loading="lazy">'
-        + '<span class="kr-perex-name" style="color:' + color + '">' + esc(name) + '</span></div>';
+        + '<span class="kr-perex-name" style="color:' + color + '">' + esc(name) + '</span>' + staleBadgeHTML(ex[k]) + '</div>';
       if (!p) {
         html += '<div class="kr-perex-card">' + head + '<div class="kr-perex-empty">데이터 없음</div></div>';
         return;
@@ -350,7 +360,7 @@
         +   '<div class="section-head">'
         +     '<img class="exch-logo" src="logos/' + key + '.jpg" alt="' + esc(name) + '" loading="lazy">'
         +     '<h2 class="' + key + '">' + esc(name) + '</h2>'
-        +     '<span class="exch-badge">' + esc(key.toUpperCase()) + '</span>'
+        +     '<span class="exch-badge">' + esc(key.toUpperCase()) + '</span>' + staleBadgeHTML(ex)
         +     '<span class="' + countClass + '">' + count + '</span>'
         +   '</div>'
         +   '<div class="ev-body">' + renderEventCards(source === 'unavailable' ? [] : events) + '</div>'
