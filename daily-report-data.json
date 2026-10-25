@@ -90,29 +90,25 @@
     "timezone": "Asia/Seoul (UTC+9)",
     "dat_weekly_source": "SoSoValue sosovalue.com (실시간) as_of=2026-10-19",
     "dat_weekly_fetched_at_ms": 1792733478586,
-    "btc_etf_source": "farside as_of=2026-10-22 -$635.6M | conf=confirmed | xcheck=OK(soso[table] 2026-10-22 -$635.5M ~ farside -$635.6M, d0.1, farside_missing=0) | pending=2026-10-23(farside -$137.9M 미공시셀 1개, soso 미반영) | fetched=2026-10-25T19:23:04.724939+09:00",
-    "eth_etf_source": "farside as_of=2026-10-22 -$110.6M | conf=single_source | xcheck=single_source(farside 2026-10-22 -$110.6M, 완결행, soso 미반영 asof=unknown) | pending=2026-10-23(farside +$4.4M 미공시셀 1개[ETHV], soso 미반영, 완결행 대기) | fetched=2026-10-25T21:06:43.526668+09:00",
-    "btc_etf_fetched_at_ms": 1792930003526,
-    "eth_etf_fetched_at_ms": 1792930003526,
+    "btc_etf_source": "farside as_of=2026-10-23 -$137.9M | conf=single_source | xcheck=ZERO_FILL farside 2026-10-23 -$137.9M 미공시셀 1개[HODL]=0 반영 잠정 (soso 미반영 asof=unknown) | sosovalue_err: SosoBlockedError: SoSoValue 3회 실패 — bot-block: cf-mitigated=challenge; marker 'just a moment'; marker 'performing security verification'; marker 'ray id:' | status=403 | fetched=2026-10-26T03:56:19.653363+09:00",
+    "eth_etf_source": "farside as_of=2026-10-23 +$4.4M | conf=single_source | xcheck=ZERO_FILL farside 2026-10-23 +$4.4M 미공시셀 1개[ETHV]=0 반영 잠정 (soso 미반영 asof=unknown) | sosovalue_err: SosoBlockedError: SoSoValue 3회 실패 — bot-block: cf-mitigated=challenge; marker 'just a moment'; marker 'performing security verification'; marker 'ray id:' | status=403 | fetched=2026-10-26T03:56:19.653363+09:00",
+    "btc_etf_fetched_at_ms": 1792954579653,
+    "eth_etf_fetched_at_ms": 1792954579653,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-10-25T14:33:12.564489+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-10-25T14:33:12.564489+09:00",
     "btc_oi_24h_fetched_at_ms": 1792906392564,
     "eth_oi_24h_fetched_at_ms": 1792906392564,
     "dat_weekly_asof": "2026-10-19",
-    "btc_etf_asof": "2026-10-22",
-    "eth_etf_asof": "2026-10-22",
-    "btc_etf_confidence": "confirmed",
+    "btc_etf_asof": "2026-10-23",
+    "eth_etf_asof": "2026-10-23",
+    "btc_etf_confidence": "single_source",
     "eth_etf_confidence": "single_source",
     "global_market_cap_asof_ms": 1792905647000,
     "btc_dominance_asof_ms": 1792905647000,
-    "btc_etf_fallback_from": [
-      "2026-10-23"
-    ],
-    "btc_etf_farside_missing": 0,
-    "eth_etf_fallback_from": [
-      "2026-10-23"
-    ],
-    "eth_etf_farside_missing": 0,
+    "btc_etf_fallback_from": [],
+    "btc_etf_farside_missing": 1,
+    "eth_etf_fallback_from": [],
+    "eth_etf_farside_missing": 1,
     "eth_etf_filled": {},
     "eth_etf_missing_cols": {
       "2026-10-23": [
@@ -129,24 +125,34 @@
     },
     "btc_etf_fill_status": {},
     "btc_etf_backoff": null,
-    "btc_etf_pending": {
+    "btc_etf_pending": null,
+    "btc_etf_invalid_rows": {},
+    "eth_etf_pending": null,
+    "eth_etf_invalid_rows": {},
+    "btc_etf_partial": {
       "date": "2026-10-23",
-      "value_m": -137.9,
-      "raw": "-$137.9M",
       "missing_cols": [
         "HODL"
-      ]
+      ],
+      "missing": 1,
+      "value_m": -137.9,
+      "raw": "-$137.9M",
+      "zero_filled": true,
+      "farside_total_m": -137.9,
+      "label": "잠정 · HODL 미공시분 0 반영"
     },
-    "btc_etf_invalid_rows": {},
-    "eth_etf_pending": {
+    "eth_etf_partial": {
       "date": "2026-10-23",
-      "value_m": 4.4,
-      "raw": "+$4.4M",
       "missing_cols": [
         "ETHV"
-      ]
-    },
-    "eth_etf_invalid_rows": {}
+      ],
+      "missing": 1,
+      "value_m": 4.4,
+      "raw": "+$4.4M",
+      "zero_filled": true,
+      "farside_total_m": 4.4,
+      "label": "잠정 · ETHV 미공시분 0 반영"
+    }
   },
   "btc_usd": "$80,824",
   "eth_usd": "$2,364.31",
@@ -159,8 +165,8 @@
   "btc_dominance": "59.45%",
   "date": "2026.10.25 (일)",
   "dat_weekly": "$359.64M",
-  "btc_etf": "-$635.6M",
-  "eth_etf": "-$110.6M",
+  "btc_etf": "-$137.9M",
+  "eth_etf": "+$4.4M",
   "btc_oi_24h": "+1.16%",
   "eth_oi_24h": "-2.31%",
   "comment": "BTC는 $80,824, ETH는 $2,364.31에 거래 중이다. 공포탐욕지수는 54 (Neutral) 수준이다."
