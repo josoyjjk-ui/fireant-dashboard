@@ -49,16 +49,15 @@ antinfo.io의 **정적 단일 파일** 도구입니다. 빌드 스텝·서버·�
 
 ## 아카이브(운영자 로컬 단계)
 
-정적 브라우저 페이지는 로컬 파일시스템·`localhost:9621`(LightRAG)에 접근할 수 없습니다. 따라서:
+정적 브라우저 페이지는 로컬 파일시스템에 접근할 수 없습니다. 따라서:
 
 1. 앱에서 **🗂️ 아카이브(.md)** 클릭 → YAML frontmatter(`title`, `date`, `type: report`, `tags`) + 리캡 + 로그가 담긴 마크다운 노트가 다운로드됩니다.
 2. 운영자가 로컬에서:
    ```bash
    # 다운로드된 report-ama-YYYY-MM-DD-<session>.md 를 Obsidian vault reports/ 로 이동
    mv ~/Downloads/report-ama-*.md /Users/fireant/.openclaw/wiki/main/reports/
-   # 이어서 LightRAG 인덱싱 (MCP lightrag_insert 또는 운영 스크립트)
    ```
-3. 이로써 리서치 산출물 흐름(Obsidian `reports/` → LightRAG 인덱싱)에 편입됩니다.
+3. 이로써 리서치 산출물 흐름(Obsidian `reports/`, Obsidian 검색으로 조회)에 편입됩니다.
 
 클라이언트 책임 범위는 **올바른 frontmatter 노트 생성**까지입니다.
 
