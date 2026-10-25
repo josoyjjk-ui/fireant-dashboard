@@ -337,7 +337,8 @@ function setEtfStat(id,value,detail,cls){
 function renderEtfSummary(detail){
   const s=detail.summary||{};
   const asof=s.soso_asof||detail.asof||'기준 미상';
-  setEtfStat('today',signedUsdM(s.today_flow_m),asof+' 당일',ucls(Number(s.today_flow_m)||0));
+  const pr=detail.partial&&detail.partial.date===detail.asof?detail.partial:null; // 2026-10-26 미공시 셀 0 반영 잠정
+  setEtfStat('today',signedUsdM(s.today_flow_m),(pr?(detail.asof+' 당일 · '+(pr.label||'잠정')):(asof+' 당일')),ucls(Number(s.today_flow_m)||0));
   setEtfStat('cum',usdM(s.cum_inflow_m),'출시 이후 누적 순유입');
   setEtfStat('assets',usdM(s.net_assets_m),'총 순자산');
   setEtfStat('pct',plainPct(s.pct_mktcap),'현물 ETF 순자산 / 시총');
@@ -369,7 +370,7 @@ function renderEtfHistoryTable(detail,fullRows){
   for(const k of issuers)html+=`<th>${esc(k)}</th>`;
   html+='<th>Total</th><th>누적</th></tr></thead><tbody>';
   for(const r of rows.slice().reverse()){
-    html+=`<tr><td>${esc(r.date)}</td>`;
+    html+=`<tr><td>${esc(r.date)}${r.partial?' <span title="'+esc((r.missing_cols||[]).join(',')+' 미공시분 0 반영')+'">(잠정)</span>':''}</td>`;
     for(const k of issuers){const v=Number(r.flows&&r.flows[k])||0;html+=`<td class="${ucls(v)}">${v?signedUsdM(v):'—'}</td>`;}
     const total=Number(r.total_m)||0,cum=cumMap.get(r.date);
     html+=`<td class="${ucls(total)}">${signedUsdM(total)}</td><td>${cum==null?'—':usdM(cum)}</td></tr>`;
@@ -420,7 +421,7 @@ async function fillEtfDetail(){
 let ETFMODE='D', CBMODE='ALL'; const ETFITEMS=[]; let CBHIST=[];
 function isoWeek(ds){const dt=new Date(ds+'T00:00:00Z');const day=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-day+3);const ft=new Date(Date.UTC(dt.getUTCFullYear(),0,4));const wk=1+Math.round(((dt-ft)/864e5-3+((ft.getUTCDay()+6)%7))/7);return dt.getUTCFullYear()+'-W'+String(wk).padStart(2,'0');}
 function aggregate(h,mode){
-  if(mode==='D')return h.map(r=>({label:r.date,value:r.value,cum:r.cum,traded:r.traded,assets:r.assets}));
+  if(mode==='D')return h.map(r=>({label:r.date+(r.partial?' (잠정)':''),value:r.value,cum:r.cum,traded:r.traded,assets:r.assets}));
   const keyf=mode==='W'?isoWeek:(d=>d.slice(0,7));
   const m=new Map();
   for(const r of h){const k=keyf(r.date);if(!m.has(k))m.set(k,{label:k,value:0,cum:null,traded:0,tradedN:0,assets:null});const g=m.get(k);g.value+=r.value||0;if(r.traded!=null){g.traded+=r.traded;g.tradedN++;}if(r.cum!=null)g.cum=r.cum;if(r.assets!=null)g.assets=r.assets;}
