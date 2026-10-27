@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-10-28T03:08:12+09:00",
-  "run_id": "1793124499",
-  "status": "ok",
+  "generated_at": "2026-10-28T03:10:34+09:00",
+  "run_id": "1793124761",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -15,7 +15,8 @@
       "change": 95.92999999999938,
       "change_pct": 1.2583161937541891,
       "currency": "USD",
-      "market_time": 1793124491
+      "market_time": 1793124491,
+      "stale": true
     },
     {
       "name": "나스닥",
@@ -27,7 +28,8 @@
       "change": 504.9429999999993,
       "change_pct": 1.9454301118767825,
       "currency": "USD",
-      "market_time": 1793124490
+      "market_time": 1793124490,
+      "stale": true
     },
     {
       "name": "다우존스",
@@ -39,7 +41,8 @@
       "change": 158.9699999999939,
       "change_pct": 0.3044518105469635,
       "currency": "USD",
-      "market_time": 1793124492
+      "market_time": 1793124492,
+      "stale": true
     },
     {
       "name": "미 3개월물(T-Bill)",
@@ -51,7 +54,8 @@
       "change": 0.01499999999999968,
       "change_pct": 0.37267080745340814,
       "currency": "USD",
-      "market_time": 1793123584
+      "market_time": 1793123584,
+      "stale": true
     },
     {
       "name": "미 5년물",
@@ -63,43 +67,43 @@
       "change": 0.014999699999999727,
       "change_pct": 0.3109390547263625,
       "currency": "USD",
-      "market_time": 1793123584
+      "market_time": 1793123844
     },
     {
       "name": "미 10년물",
       "symbol": "^TNX",
       "group": "미국채 금리",
       "unit": "%",
-      "price": 4.99,
+      "price": 4.993,
       "prev_close": 4.986,
-      "change": 0.004000000000000448,
-      "change_pct": 0.08022462896110004,
+      "change": 0.007000000000000561,
+      "change_pct": 0.14039310068192062,
       "currency": "USD",
-      "market_time": 1793123584
+      "market_time": 1793123854
     },
     {
       "name": "미 30년물",
       "symbol": "^TYX",
       "group": "미국채 금리",
       "unit": "%",
-      "price": 5.303,
+      "price": 5.306,
       "prev_close": 5.301,
-      "change": 0.0019999999999997797,
-      "change_pct": 0.037728730428216936,
+      "change": 0.004999999999999893,
+      "change_pct": 0.09432182607055072,
       "currency": "USD",
-      "market_time": 1793123594
+      "market_time": 1793123854
     },
     {
       "name": "달러인덱스(DXY)",
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 102.323,
+      "price": 102.319,
       "prev_close": 101.96,
-      "change": 0.36299999999999955,
-      "change_pct": 0.35602196939976416,
+      "change": 0.35900000000000887,
+      "change_pct": 0.3520988622989495,
       "currency": "USD",
-      "market_time": 1793123894
+      "market_time": 1793124147
     },
     {
       "name": "VIX 변동성",
@@ -111,31 +115,31 @@
       "change": -0.6700000000000017,
       "change_pct": -3.643284393692233,
       "currency": "USD",
-      "market_time": 1793123581
+      "market_time": 1793123851
     },
     {
       "name": "금",
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 4070.5,
+      "price": 4072.0,
       "prev_close": 4038.4,
-      "change": 32.09999999999991,
-      "change_pct": 0.7948692551505524,
+      "change": 33.59999999999991,
+      "change_pct": 0.8320126782884287,
       "currency": "USD",
-      "market_time": 1793123890
+      "market_time": 1793124154
     },
     {
       "name": "WTI 유가",
       "symbol": "CL=F",
       "group": "원자재",
       "unit": "",
-      "price": 99.79,
+      "price": 99.85,
       "prev_close": 101.76,
-      "change": -1.9699999999999989,
-      "change_pct": -1.9359276729559738,
+      "change": -1.9100000000000108,
+      "change_pct": -1.876965408805042,
       "currency": "USD",
-      "market_time": 1793123889
+      "market_time": 1793124158
     },
     {
       "name": "코스피",
@@ -162,5 +166,10 @@
       "market_time": "2026-10-27T20:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "S&P 500(^GSPC): <urlopen error timed out>",
+    "나스닥(^IXIC): <urlopen error timed out>",
+    "다우존스(^DJI): <urlopen error timed out>",
+    "미 3개월물(T-Bill)(^IRX): <urlopen error timed out>"
+  ]
 }
