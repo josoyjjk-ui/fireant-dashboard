@@ -92,8 +92,8 @@
     "dat_weekly_fetched_at_ms": 1793171947649,
     "btc_etf_source": "farside as_of=2026-10-27 +$176M | conf=confirmed | xcheck=OK(soso[table] 2026-10-27 +$176M ~ farside +$176M, d0.0, farside_missing=0) | fetched=2026-10-28T16:23:02.958698+09:00",
     "eth_etf_source": "farside as_of=2026-10-27 -$60.2M | conf=confirmed | xcheck=OK(soso[table] 2026-10-27 -$60.2M ~ farside -$60.2M, d0.0, farside_missing=0) | fetched=2026-10-28T19:23:03.062481+09:00",
-    "btc_etf_fetched_at_ms": 1793182983062,
-    "eth_etf_fetched_at_ms": 1793182983062,
+    "btc_etf_fetched_at_ms": 1793226180126,
+    "eth_etf_fetched_at_ms": 1793226180126,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-10-28T16:18:20.466428+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-10-28T16:18:20.466428+09:00",
     "btc_oi_24h_fetched_at_ms": 1793171900466,
@@ -110,16 +110,72 @@
     "eth_etf_fallback_from": [],
     "eth_etf_farside_missing": 0,
     "eth_etf_filled": {},
-    "eth_etf_missing_cols": {},
-    "eth_etf_fill_status": {},
+    "eth_etf_missing_cols": {
+      "2026-10-28": [
+        "ETHA",
+        "ETHB",
+        "FETH",
+        "ETHW",
+        "TETH",
+        "ETHV",
+        "QETH",
+        "EZET"
+      ]
+    },
+    "eth_etf_fill_status": {
+      "2026-10-28": "ETHA: ishares 2026-10-28 NAV/발행좌수 없음; ETHB: ishares 2026-10-28 NAV/발행좌수 없음"
+    },
     "eth_etf_backoff": null,
     "btc_etf_filled": {},
-    "btc_etf_missing_cols": {},
-    "btc_etf_fill_status": {},
+    "btc_etf_missing_cols": {
+      "2026-10-28": [
+        "IBIT",
+        "FBTC",
+        "BITB",
+        "ARKB",
+        "BTCO",
+        "EZBC",
+        "BRRR",
+        "HODL",
+        "BTCW"
+      ]
+    },
+    "btc_etf_fill_status": {
+      "2026-10-28": "IBIT: ishares 2026-10-28 NAV/발행좌수 없음"
+    },
     "btc_etf_backoff": null,
-    "btc_etf_pending": null,
+    "btc_etf_pending": {
+      "date": "2026-10-28",
+      "value_m": 0.0,
+      "raw": "+$0M",
+      "missing_cols": [
+        "IBIT",
+        "FBTC",
+        "BITB",
+        "ARKB",
+        "BTCO",
+        "EZBC",
+        "BRRR",
+        "HODL",
+        "BTCW"
+      ]
+    },
     "btc_etf_invalid_rows": {},
-    "eth_etf_pending": null,
+    "eth_etf_pending": {
+      "date": "2026-10-28",
+      "value_m": 4.6,
+      "raw": "+$4.6M",
+      "missing_cols": [
+        "ETHA",
+        "ETHB",
+        "FETH",
+        "ETHW",
+        "TETH",
+        "ETHV",
+        "QETH",
+        "EZET"
+      ]
+    },
     "eth_etf_invalid_rows": {},
     "btc_etf_partial": null,
     "eth_etf_partial": null,
