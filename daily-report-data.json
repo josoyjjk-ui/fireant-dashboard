@@ -92,8 +92,8 @@
     "dat_weekly_fetched_at_ms": 1793338256123,
     "btc_etf_source": "farside as_of=2026-10-29 +$17.2M | conf=single_source | xcheck=single_source(farside 2026-10-29 +$17.2M, 완결행, soso 미반영 asof=unknown) | sosovalue_err: SosoBlockedError: SoSoValue 3회 실패 — bot-block: cf-mitigated=challenge; marker 'just a moment'; marker 'performing security verification'; marker 'ray id:' | status=403 | fetched=2026-10-30T19:23:04.968807+09:00",
     "eth_etf_source": "farside as_of=2026-10-29 -$105.5M | conf=confirmed | xcheck=OK(soso[table] 2026-10-29 -$105.5M ~ farside -$105.5M, d0.0, farside_missing=0) | fetched=2026-10-30T14:30:07.789659+09:00",
-    "btc_etf_fetched_at_ms": 1793355784968,
-    "eth_etf_fetched_at_ms": 1793355784968,
+    "btc_etf_fetched_at_ms": 1793398984994,
+    "eth_etf_fetched_at_ms": 1793398984994,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-10-30T14:30:40.517102+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-10-30T14:30:40.517102+09:00",
     "btc_oi_24h_fetched_at_ms": 1793338240517,
@@ -110,16 +110,84 @@
     "eth_etf_fallback_from": [],
     "eth_etf_farside_missing": 0,
     "eth_etf_filled": {},
-    "eth_etf_missing_cols": {},
-    "eth_etf_fill_status": {},
+    "eth_etf_missing_cols": {
+      "2026-10-30": [
+        "ETHA",
+        "ETHB",
+        "FETH",
+        "ETHW",
+        "TETH",
+        "ETHV",
+        "QETH",
+        "EZET",
+        "MSSE",
+        "ETHE",
+        "ETH"
+      ]
+    },
+    "eth_etf_fill_status": {
+      "2026-10-30": "ETHA: ishares 2026-10-30 NAV/발행좌수 없음; ETHB: ishares 2026-10-30 NAV/발행좌수 없음"
+    },
     "eth_etf_backoff": null,
     "btc_etf_filled": {},
-    "btc_etf_missing_cols": {},
-    "btc_etf_fill_status": {},
+    "btc_etf_missing_cols": {
+      "2026-10-30": [
+        "IBIT",
+        "FBTC",
+        "BITB",
+        "ARKB",
+        "BTCO",
+        "EZBC",
+        "BRRR",
+        "HODL",
+        "BTCW",
+        "MSBT",
+        "GBTC",
+        "BTC"
+      ]
+    },
+    "btc_etf_fill_status": {
+      "2026-10-30": "IBIT: ishares 2026-10-30 NAV/발행좌수 없음"
+    },
     "btc_etf_backoff": null,
-    "btc_etf_pending": null,
+    "btc_etf_pending": {
+      "date": "2026-10-30",
+      "value_m": 0.0,
+      "raw": "+$0M",
+      "missing_cols": [
+        "IBIT",
+        "FBTC",
+        "BITB",
+        "ARKB",
+        "BTCO",
+        "EZBC",
+        "BRRR",
+        "HODL",
+        "BTCW",
+        "MSBT",
+        "GBTC",
+        "BTC"
+      ]
+    },
     "btc_etf_invalid_rows": {},
-    "eth_etf_pending": null,
+    "eth_etf_pending": {
+      "date": "2026-10-30",
+      "value_m": 0.0,
+      "raw": "+$0M",
+      "missing_cols": [
+        "ETHA",
+        "ETHB",
+        "FETH",
+        "ETHW",
+        "TETH",
+        "ETHV",
+        "QETH",
+        "EZET",
+        "MSSE",
+        "ETHE",
+        "ETH"
+      ]
+    },
     "eth_etf_invalid_rows": {},
     "btc_etf_partial": null,
     "eth_etf_partial": null,
