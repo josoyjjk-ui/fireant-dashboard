@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-06T12:28:37+09:00",
-  "run_id": "1793935725",
-  "status": "ok",
+  "generated_at": "2026-11-06T12:31:02+09:00",
+  "run_id": "1793935885",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -99,7 +99,8 @@
       "change": 0.19199999999999307,
       "change_pct": 0.18914392670672156,
       "currency": "USD",
-      "market_time": 1793935119
+      "market_time": 1793935119,
+      "stale": true
     },
     {
       "name": "VIX 변동성",
@@ -118,49 +119,51 @@
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 4059.1,
+      "price": 4059.6,
       "prev_close": 4073.0,
-      "change": -13.900000000000091,
-      "change_pct": -0.3412717898355043,
+      "change": -13.400000000000091,
+      "change_pct": -0.3289958261723568,
       "currency": "USD",
-      "market_time": 1793935119
+      "market_time": 1793935280
     },
     {
       "name": "WTI 유가",
       "symbol": "CL=F",
       "group": "원자재",
       "unit": "",
-      "price": 91.28,
+      "price": 91.3,
       "prev_close": 88.12,
-      "change": 3.1599999999999966,
-      "change_pct": 3.5860190649114805,
+      "change": 3.1799999999999926,
+      "change_pct": 3.6087153881071177,
       "currency": "USD",
-      "market_time": 1793935119
+      "market_time": 1793935278
     },
     {
       "name": "코스피",
       "symbol": "KOSPI",
       "group": "한국증시",
       "unit": "",
-      "price": 5117.32,
-      "prev_close": 4850.84,
-      "change": 266.48,
-      "change_pct": 4.95,
+      "price": 5130.88,
+      "prev_close": 4877.96,
+      "change": 252.92,
+      "change_pct": 4.7,
       "currency": "KRW",
-      "market_time": "2026-11-06T12:28:00+09:00"
+      "market_time": "2026-11-06T12:30:00+09:00"
     },
     {
       "name": "코스닥",
       "symbol": "KOSDAQ",
       "group": "한국증시",
       "unit": "",
-      "price": 651.32,
-      "prev_close": 624.23,
-      "change": 27.09,
-      "change_pct": 3.99,
+      "price": 653.87,
+      "prev_close": 629.33,
+      "change": 24.54,
+      "change_pct": 3.62,
       "currency": "KRW",
-      "market_time": "2026-11-06T12:28:00+09:00"
+      "market_time": "2026-11-06T12:31:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "달러인덱스(DXY)(DX-Y.NYB): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
