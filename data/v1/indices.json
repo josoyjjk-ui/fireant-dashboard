@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-07T23:07:15+09:00",
-  "run_id": "1794060443",
-  "status": "ok",
+  "generated_at": "2026-11-07T23:09:44+09:00",
+  "run_id": "1794060606",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -27,7 +27,8 @@
       "change": -1157.0859999999993,
       "change_pct": -4.495893188314963,
       "currency": "USD",
-      "market_time": 1794003359
+      "market_time": 1794003359,
+      "stale": true
     },
     {
       "name": "다우존스",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-06T20:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "나스닥(^IXIC): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
