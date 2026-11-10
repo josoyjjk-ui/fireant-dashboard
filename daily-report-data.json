@@ -90,23 +90,23 @@
     "timezone": "Asia/Seoul (UTC+9)",
     "dat_weekly_source": "SoSoValue sosovalue.com (실시간) as_of=2026-11-09",
     "dat_weekly_fetched_at_ms": 1794266121351,
-    "btc_etf_source": "farside as_of=2026-11-06 -$411.9M | conf=confirmed | xcheck=OK(soso[table] 2026-11-06 -$411.9M ~ farside -$411.9M, d0.0, farside_missing=0) | fetched=2026-11-09T16:23:03.638021+09:00",
+    "btc_etf_source": "sosovalue as_of=2026-11-09 +$0M | conf=confirmed | xcheck=OVERRIDE→soso[headline] 2026-11-09 +$0M (farside +$22.1M 부분합: 미공시셀 9개[IBIT,FBTC,BITB,ARKB,BTCO,EZBC,BRRR,HODL,BTCW], d22.1) | fetched=2026-11-10T09:23:03.052416+09:00",
     "eth_etf_source": "farside as_of=2026-11-06 -$93.3M | conf=confirmed | xcheck=OK(soso[table] 2026-11-06 -$93.2M ~ farside -$93.3M, d0.1, farside_missing=0) | fetched=2026-11-09T16:23:03.638021+09:00",
-    "btc_etf_fetched_at_ms": 1794262985834,
-    "eth_etf_fetched_at_ms": 1794262985834,
+    "btc_etf_fetched_at_ms": 1794270183052,
+    "eth_etf_fetched_at_ms": 1794270183052,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-11-09T14:30:41.036257+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-11-09T14:30:41.036257+09:00",
     "btc_oi_24h_fetched_at_ms": 1794202241036,
     "eth_oi_24h_fetched_at_ms": 1794202241036,
     "dat_weekly_asof": "2026-11-09",
-    "btc_etf_asof": "2026-11-06",
+    "btc_etf_asof": "2026-11-09",
     "eth_etf_asof": "2026-11-06",
     "btc_etf_confidence": "confirmed",
     "eth_etf_confidence": "confirmed",
     "global_market_cap_asof_ms": 1794201759000,
     "btc_dominance_asof_ms": 1794201759000,
     "btc_etf_fallback_from": [],
-    "btc_etf_farside_missing": 0,
+    "btc_etf_farside_missing": 9,
     "eth_etf_fallback_from": [],
     "eth_etf_farside_missing": 0,
     "eth_etf_filled": {},
@@ -119,10 +119,7 @@
         "TETH",
         "ETHV",
         "QETH",
-        "EZET",
-        "MSSE",
-        "ETHE",
-        "ETH"
+        "EZET"
       ]
     },
     "eth_etf_fill_status": {
@@ -140,20 +137,33 @@
         "EZBC",
         "BRRR",
         "HODL",
-        "BTCW",
-        "MSBT",
-        "GBTC",
-        "BTC"
+        "BTCW"
       ]
     },
     "btc_etf_fill_status": {
       "2026-11-09": "IBIT: ishares 2026-11-09 NAV/발행좌수 없음"
     },
     "btc_etf_backoff": null,
-    "btc_etf_pending": {
+    "btc_etf_pending": null,
+    "btc_etf_invalid_rows": {},
+    "eth_etf_pending": {
       "date": "2026-11-09",
-      "value_m": 0.0,
-      "raw": "+$0M",
+      "value_m": -23.4,
+      "raw": "-$23.4M",
+      "missing_cols": [
+        "ETHA",
+        "ETHB",
+        "FETH",
+        "ETHW",
+        "TETH",
+        "ETHV",
+        "QETH",
+        "EZET"
+      ]
+    },
+    "eth_etf_invalid_rows": {},
+    "btc_etf_partial": {
+      "date": "2026-11-09",
       "missing_cols": [
         "IBIT",
         "FBTC",
@@ -163,33 +173,15 @@
         "EZBC",
         "BRRR",
         "HODL",
-        "BTCW",
-        "MSBT",
-        "GBTC",
-        "BTC"
-      ]
-    },
-    "btc_etf_invalid_rows": {},
-    "eth_etf_pending": {
-      "date": "2026-11-09",
+        "BTCW"
+      ],
+      "missing": 9,
       "value_m": 0.0,
       "raw": "+$0M",
-      "missing_cols": [
-        "ETHA",
-        "ETHB",
-        "FETH",
-        "ETHW",
-        "TETH",
-        "ETHV",
-        "QETH",
-        "EZET",
-        "MSSE",
-        "ETHE",
-        "ETH"
-      ]
+      "zero_filled": false,
+      "farside_total_m": 22.1,
+      "label": "잠정 · IBIT,FBTC,BITB,ARKB,BTCO,EZBC,BRRR,HODL,BTCW 미공시(SoSoValue 집계)"
     },
-    "eth_etf_invalid_rows": {},
-    "btc_etf_partial": null,
     "eth_etf_partial": null,
     "etf_correction": null
   },
@@ -204,7 +196,7 @@
   "btc_dominance": "60.12%",
   "date": "2026.11.09 (월)",
   "dat_weekly": "$94.60M",
-  "btc_etf": "-$411.9M",
+  "btc_etf": "+$0M",
   "eth_etf": "-$93.3M",
   "btc_oi_24h": "+0.46%",
   "eth_oi_24h": "-3.74%",
