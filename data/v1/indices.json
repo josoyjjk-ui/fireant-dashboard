@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-11T11:04:10+09:00",
-  "run_id": "1794362657",
-  "status": "ok",
+  "generated_at": "2026-11-11T11:06:46+09:00",
+  "run_id": "1794362828",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -99,7 +99,8 @@
       "change": 0.583999999999989,
       "change_pct": 0.574520413182478,
       "currency": "USD",
-      "market_time": 1794362052
+      "market_time": 1794362052,
+      "stale": true
     },
     {
       "name": "VIX 변동성",
@@ -118,12 +119,12 @@
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 4052.7,
+      "price": 4053.7,
       "prev_close": 4114.5,
-      "change": -61.80000000000018,
-      "change_pct": -1.502005103900843,
+      "change": -60.80000000000018,
+      "change_pct": -1.4777008141937098,
       "currency": "USD",
-      "market_time": 1794362048
+      "market_time": 1794362224
     },
     {
       "name": "WTI 유가",
@@ -135,32 +136,34 @@
       "change": -0.6199999999999903,
       "change_pct": -0.7138744962579049,
       "currency": "USD",
-      "market_time": 1794362052
+      "market_time": 1794362195
     },
     {
       "name": "코스피",
       "symbol": "KOSPI",
       "group": "한국증시",
       "unit": "",
-      "price": 5282.13,
-      "prev_close": 5239.13,
-      "change": 43.0,
-      "change_pct": 0.82,
+      "price": 5278.69,
+      "prev_close": 5239.129999999999,
+      "change": 39.56,
+      "change_pct": 0.76,
       "currency": "KRW",
-      "market_time": "2026-11-11T11:03:00+09:00"
+      "market_time": "2026-11-11T11:06:00+09:00"
     },
     {
       "name": "코스닥",
       "symbol": "KOSDAQ",
       "group": "한국증시",
       "unit": "",
-      "price": 695.52,
+      "price": 695.92,
       "prev_close": 667.61,
-      "change": 27.91,
-      "change_pct": 4.18,
+      "change": 28.31,
+      "change_pct": 4.24,
       "currency": "KRW",
-      "market_time": "2026-11-11T11:03:00+09:00"
+      "market_time": "2026-11-11T11:06:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "달러인덱스(DXY)(DX-Y.NYB): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
