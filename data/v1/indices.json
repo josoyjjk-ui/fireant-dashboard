@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-14T03:01:01+09:00",
-  "run_id": "1794592868",
-  "status": "ok",
+  "generated_at": "2026-11-14T03:03:28+09:00",
+  "run_id": "1794593029",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -10,36 +10,36 @@
       "symbol": "^GSPC",
       "group": "주가지수",
       "unit": "",
-      "price": 7534.16,
+      "price": 7532.28,
       "prev_close": 7619.38,
-      "change": -85.22000000000025,
-      "change_pct": -1.1184637070207846,
+      "change": -87.10000000000036,
+      "change_pct": -1.143137630620869,
       "currency": "USD",
-      "market_time": 1794592862
+      "market_time": 1794593009
     },
     {
       "name": "나스닥",
       "symbol": "^IXIC",
       "group": "주가지수",
       "unit": "",
-      "price": 25043.164,
+      "price": 25028.68,
       "prev_close": 25466.19,
-      "change": -423.025999999998,
-      "change_pct": -1.6611279504315253,
+      "change": -437.5099999999984,
+      "change_pct": -1.7180033605340979,
       "currency": "USD",
-      "market_time": 1794592860
+      "market_time": 1794593009
     },
     {
       "name": "다우존스",
       "symbol": "^DJI",
       "group": "주가지수",
       "unit": "",
-      "price": 52210.11,
+      "price": 52204.24,
       "prev_close": 52486.49,
-      "change": -276.3799999999974,
-      "change_pct": -0.5265736001778694,
+      "change": -282.25,
+      "change_pct": -0.5377574305311711,
       "currency": "USD",
-      "market_time": 1794592864
+      "market_time": 1794593010
     },
     {
       "name": "미 3개월물(T-Bill)",
@@ -51,7 +51,7 @@
       "change": -0.006000000000000227,
       "change_pct": -0.14534883720930783,
       "currency": "USD",
-      "market_time": 1794591954
+      "market_time": 1794592104
     },
     {
       "name": "미 5년물",
@@ -63,19 +63,19 @@
       "change": 0.0129999999999999,
       "change_pct": 0.26289180990899697,
       "currency": "USD",
-      "market_time": 1794591954
+      "market_time": 1794592104
     },
     {
       "name": "미 10년물",
       "symbol": "^TNX",
       "group": "미국채 금리",
       "unit": "%",
-      "price": 5.131,
+      "price": 5.129,
       "prev_close": 5.103,
-      "change": 0.02800000000000047,
-      "change_pct": 0.5486968449931505,
+      "change": 0.0259999999999998,
+      "change_pct": 0.5095042132079131,
       "currency": "USD",
-      "market_time": 1794591954
+      "market_time": 1794592104
     },
     {
       "name": "미 30년물",
@@ -87,43 +87,44 @@
       "change": 0.031000000000000583,
       "change_pct": 0.570587152586059,
       "currency": "USD",
-      "market_time": 1794591964
+      "market_time": 1794591964,
+      "stale": true
     },
     {
       "name": "달러인덱스(DXY)",
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 103.395,
+      "price": 103.398,
       "prev_close": 103.17,
-      "change": 0.22499999999999432,
-      "change_pct": 0.21808665309682496,
+      "change": 0.22799999999999443,
+      "change_pct": 0.22099447513811615,
       "currency": "USD",
-      "market_time": 1794592265
+      "market_time": 1794592427
     },
     {
       "name": "VIX 변동성",
       "symbol": "^VIX",
       "group": "매크로",
       "unit": "",
-      "price": 19.73,
+      "price": 19.72,
       "prev_close": 18.7,
-      "change": 1.0300000000000011,
-      "change_pct": 5.5080213903743385,
+      "change": 1.0199999999999996,
+      "change_pct": 5.454545454545452,
       "currency": "USD",
-      "market_time": 1794591961
+      "market_time": 1794592126
     },
     {
       "name": "금",
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 3893.1,
+      "price": 3893.5,
       "prev_close": 3885.3,
-      "change": 7.799999999999727,
-      "change_pct": 0.20075669832444668,
+      "change": 8.199999999999818,
+      "change_pct": 0.21105191362313894,
       "currency": "USD",
-      "market_time": 1794592254
+      "market_time": 1794592425
     },
     {
       "name": "WTI 유가",
@@ -135,7 +136,7 @@
       "change": -0.20999999999999375,
       "change_pct": -0.2366463826910004,
       "currency": "USD",
-      "market_time": 1794592266
+      "market_time": 1794592429
     },
     {
       "name": "코스피",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-13T20:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "미 30년물(^TYX): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
