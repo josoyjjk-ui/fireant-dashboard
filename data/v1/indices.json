@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-15T06:54:37+09:00",
-  "run_id": "1794693285",
-  "status": "ok",
+  "generated_at": "2026-11-15T06:57:09+09:00",
+  "run_id": "1794693451",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -87,7 +87,8 @@
       "change": 0.04800000000000004,
       "change_pct": 0.8834897846493658,
       "currency": "USD",
-      "market_time": 1794599994
+      "market_time": 1794599994,
+      "stale": true
     },
     {
       "name": "달러인덱스(DXY)",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-13T20:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "미 30년물(^TYX): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
