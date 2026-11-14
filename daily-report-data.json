@@ -90,10 +90,10 @@
     "timezone": "Asia/Seoul (UTC+9)",
     "dat_weekly_source": "SoSoValue sosovalue.com (실시간) as_of=2026-11-09",
     "dat_weekly_fetched_at_ms": 1794611718152,
-    "btc_etf_source": "farside as_of=2026-11-12 -$284.1M | conf=confirmed | xcheck=OK(soso[table] 2026-11-12 -$284M ~ farside -$284.1M, d0.1, farside_missing=0) | pending=2026-11-13(farside +$0M 미공시셀 6개[IBIT,FBTC,BTCO,BRRR,HODL,BTCW], soso 동일 부분합, 0처리 불가: 뉴욕 장 미마감 행(2026-11-13 > 기대일 2026-11-12), 완결행 대기) | fetched=2026-11-14T09:23:03.853423+09:00",
-    "eth_etf_source": "farside as_of=2026-11-12 -$70.5M | conf=confirmed | xcheck=OK(soso[table] 2026-11-12 -$70.6M ~ farside -$70.5M, d0.1, farside_missing=0) | pending=2026-11-13(farside -$9.3M 미공시셀 5개[ETHA,ETHB,FETH,ETHV,QETH], soso 동일 부분합, 0처리 불가: 뉴욕 장 미마감 행(2026-11-13 > 기대일 2026-11-12), 완결행 대기) | fetched=2026-11-14T09:23:03.853423+09:00",
-    "btc_etf_fetched_at_ms": 1794615783853,
-    "eth_etf_fetched_at_ms": 1794615783853,
+    "btc_etf_source": "farside as_of=2026-11-12 -$284.1M | conf=confirmed | xcheck=OK(soso[table] 2026-11-12 -$284M ~ farside -$284.1M, d0.1, farside_missing=0) | pending=2026-11-13(farside -$41.9M 미공시셀 1개[IBIT], soso 동일 부분합, 0처리 불가: 뉴욕 장 미마감 행(2026-11-13 > 기대일 2026-11-12), 완결행 대기) | fetched=2026-11-14T11:23:05.595425+09:00",
+    "eth_etf_source": "farside as_of=2026-11-12 -$70.5M | conf=confirmed | xcheck=OK(soso[table] 2026-11-12 -$70.6M ~ farside -$70.5M, d0.1, farside_missing=0) | pending=2026-11-13(farside +$2.3M 미공시셀 2개[ETHA,ETHB], soso 동일 부분합, 0처리 불가: 뉴욕 장 미마감 행(2026-11-13 > 기대일 2026-11-12), 완결행 대기) | fetched=2026-11-14T11:23:05.595425+09:00",
+    "btc_etf_fetched_at_ms": 1794622985595,
+    "eth_etf_fetched_at_ms": 1794622985595,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-11-13T23:44:40.785808+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-11-13T23:44:40.785808+09:00",
     "btc_oi_24h_fetched_at_ms": 1794581080785,
@@ -117,55 +117,39 @@
     "eth_etf_missing_cols": {
       "2026-11-13": [
         "ETHA",
-        "ETHB",
-        "FETH",
-        "ETHV",
-        "QETH"
+        "ETHB"
       ]
     },
     "eth_etf_fill_status": {
-      "2026-11-13": "ETHA: ishares 2026-11-13 NAV/발행좌수 없음; ETHB: ishares 2026-11-13 NAV/발행좌수 없음"
+      "2026-11-13": "ETHA: ishares 2026-11-16 발행좌수 미공시(T+1); ETHB: ishares 2026-11-16 발행좌수 미공시(T+1)"
     },
     "eth_etf_backoff": null,
     "btc_etf_filled": {},
     "btc_etf_missing_cols": {
       "2026-11-13": [
-        "IBIT",
-        "FBTC",
-        "BTCO",
-        "BRRR",
-        "HODL",
-        "BTCW"
+        "IBIT"
       ]
     },
     "btc_etf_fill_status": {
-      "2026-11-13": "IBIT: ishares 2026-11-13 NAV/발행좌수 없음"
+      "2026-11-13": "IBIT: ishares 2026-11-16 발행좌수 미공시(T+1)"
     },
     "btc_etf_backoff": null,
     "btc_etf_pending": {
       "date": "2026-11-13",
-      "value_m": 0.0,
-      "raw": "+$0M",
+      "value_m": -41.9,
+      "raw": "-$41.9M",
       "missing_cols": [
-        "IBIT",
-        "FBTC",
-        "BTCO",
-        "BRRR",
-        "HODL",
-        "BTCW"
+        "IBIT"
       ]
     },
     "btc_etf_invalid_rows": {},
     "eth_etf_pending": {
       "date": "2026-11-13",
-      "value_m": -9.3,
-      "raw": "-$9.3M",
+      "value_m": 2.3,
+      "raw": "+$2.3M",
       "missing_cols": [
         "ETHA",
-        "ETHB",
-        "FETH",
-        "ETHV",
-        "QETH"
+        "ETHB"
       ]
     },
     "eth_etf_invalid_rows": {},
