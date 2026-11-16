@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-16T21:45:48+09:00",
-  "run_id": "1794833156",
-  "status": "ok",
+  "generated_at": "2026-11-16T21:48:14+09:00",
+  "run_id": "1794833316",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -94,36 +94,36 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 103.481,
+      "price": 103.483,
       "prev_close": 103.412,
-      "change": 0.0689999999999884,
-      "change_pct": 0.06672339767143891,
+      "change": 0.07099999999999795,
+      "change_pct": 0.06865740919815684,
       "currency": "USD",
-      "market_time": 1794832551
+      "market_time": 1794832697
     },
     {
       "name": "VIX 변동성",
       "symbol": "^VIX",
       "group": "매크로",
       "unit": "",
-      "price": 20.98,
+      "price": 20.85,
       "prev_close": 19.3,
-      "change": 1.6799999999999997,
-      "change_pct": 8.704663212435232,
+      "change": 1.5500000000000007,
+      "change_pct": 8.031088082901558,
       "currency": "USD",
-      "market_time": 1794832246
+      "market_time": 1794832381
     },
     {
       "name": "금",
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 3871.5,
+      "price": 3871.3,
       "prev_close": 3886.3,
-      "change": -14.800000000000182,
-      "change_pct": -0.38082494918045906,
+      "change": -15.0,
+      "change_pct": -0.3859712322774876,
       "currency": "USD",
-      "market_time": 1794832549
+      "market_time": 1794832694
     },
     {
       "name": "WTI 유가",
@@ -135,7 +135,8 @@
       "change": -0.6000000000000085,
       "change_pct": -0.6775067750677602,
       "currency": "USD",
-      "market_time": 1794832553
+      "market_time": 1794832553,
+      "stale": true
     },
     {
       "name": "코스피",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-16T20:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "WTI 유가(CL=F): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
