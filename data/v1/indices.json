@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-16T19:28:46+09:00",
-  "run_id": "1794824933",
-  "status": "ok",
+  "generated_at": "2026-11-16T19:31:10+09:00",
+  "run_id": "1794825092",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -39,7 +39,8 @@
       "change": -138.93999999999505,
       "change_pct": -0.2647157392311718,
       "currency": "USD",
-      "market_time": 1794606206
+      "market_time": 1794606206,
+      "stale": true
     },
     {
       "name": "미 3개월물(T-Bill)",
@@ -94,48 +95,48 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 103.502,
+      "price": 103.479,
       "prev_close": 103.412,
-      "change": 0.0899999999999892,
-      "change_pct": 0.08703051870188101,
+      "change": 0.06699999999999307,
+      "change_pct": 0.06478938614473471,
       "currency": "USD",
-      "market_time": 1794824326
+      "market_time": 1794824488
     },
     {
       "name": "VIX 변동성",
       "symbol": "^VIX",
       "group": "매크로",
       "unit": "",
-      "price": 20.07,
+      "price": 20.03,
       "prev_close": 19.3,
-      "change": 0.7699999999999996,
-      "change_pct": 3.9896373056994796,
+      "change": 0.7300000000000004,
+      "change_pct": 3.782383419689121,
       "currency": "USD",
-      "market_time": 1794824026
+      "market_time": 1794824176
     },
     {
       "name": "금",
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 3867.7,
+      "price": 3865.0,
       "prev_close": 3886.3,
-      "change": -18.600000000000364,
-      "change_pct": -0.4786043280240939,
+      "change": -21.300000000000182,
+      "change_pct": -0.548079149834037,
       "currency": "USD",
-      "market_time": 1794824329
+      "market_time": 1794824487
     },
     {
       "name": "WTI 유가",
       "symbol": "CL=F",
       "group": "원자재",
       "unit": "",
-      "price": 88.53,
+      "price": 88.69,
       "prev_close": 88.56,
-      "change": -0.030000000000001137,
-      "change_pct": -0.03387533875338882,
+      "change": 0.12999999999999545,
+      "change_pct": 0.14679313459800752,
       "currency": "USD",
-      "market_time": 1794824325
+      "market_time": 1794824483
     },
     {
       "name": "코스피",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-16T16:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "다우존스(^DJI): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
