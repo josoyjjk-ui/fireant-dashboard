@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-18T08:34:54+09:00",
-  "run_id": "1794958501",
-  "status": "ok",
+  "generated_at": "2026-11-18T08:37:17+09:00",
+  "run_id": "1794958659",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -99,7 +99,8 @@
       "change": 0.04800000000000182,
       "change_pct": 0.046354418155482205,
       "currency": "USD",
-      "market_time": 1794956698
+      "market_time": 1794956698,
+      "stale": true
     },
     {
       "name": "VIX 변동성",
@@ -118,24 +119,24 @@
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 3857.9,
+      "price": 3857.3,
       "prev_close": 3853.0,
-      "change": 4.900000000000091,
-      "change_pct": 0.12717363093693462,
+      "change": 4.300000000000182,
+      "change_pct": 0.11160134959772078,
       "currency": "USD",
-      "market_time": 1794957898
+      "market_time": 1794958050
     },
     {
       "name": "WTI 유가",
       "symbol": "CL=F",
       "group": "원자재",
       "unit": "",
-      "price": 85.85,
+      "price": 85.91,
       "prev_close": 85.72,
-      "change": 0.12999999999999545,
-      "change_pct": 0.1516565562295794,
+      "change": 0.18999999999999773,
+      "change_pct": 0.22165188987400575,
       "currency": "USD",
-      "market_time": 1794957893
+      "market_time": 1794958047
     },
     {
       "name": "코스피",
@@ -147,7 +148,7 @@
       "change": 0.0,
       "change_pct": 0.0,
       "currency": "KRW",
-      "market_time": "2026-11-18T08:35:02+09:00"
+      "market_time": "2026-11-18T08:37:41+09:00"
     },
     {
       "name": "코스닥",
@@ -159,8 +160,10 @@
       "change": 0.0,
       "change_pct": 0.0,
       "currency": "KRW",
-      "market_time": "2026-11-18T08:35:03+09:00"
+      "market_time": "2026-11-18T08:37:41+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "달러인덱스(DXY)(DX-Y.NYB): The read operation timed out"
+  ]
 }
