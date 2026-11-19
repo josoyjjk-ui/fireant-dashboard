@@ -90,41 +90,34 @@
     "timezone": "Asia/Seoul (UTC+9)",
     "dat_weekly_source": "SoSoValue sosovalue.com (실시간) as_of=2026-11-16",
     "dat_weekly_fetched_at_ms": 1795043719403,
-    "btc_etf_source": "farside as_of=2026-11-17 -$239.9M | conf=confirmed | xcheck=OK(soso[table] 2026-11-17 -$239.9M ~ farside -$239.9M, d0.0, farside_missing=0) | pending=2026-11-18(farside +$0M 미공시셀 12개[IBIT,FBTC,BITB,ARKB,BTCO,EZBC,BRRR,HODL,BTCW,MSBT,GBTC,BTC], soso 동일 부분합, 0처리 불가: 뉴욕 장 미마감 행(2026-11-18 > 기대일 2026-11-17), 완결행 대기) | fetched=2026-11-19T07:23:03.640707+09:00",
-    "eth_etf_source": "farside as_of=2026-11-17 -$29.1M | conf=single_source | xcheck=single_source(farside 2026-11-17 -$29.1M, 완결행, soso 미반영 asof=unknown) | sosovalue_err: SosoBlockedError: SoSoValue 3회 실패 — bot-block: cf-mitigated=challenge; marker 'just a moment'; marker 'performing security verification'; marker 'ray id:' | status=403 | fetched=2026-11-18T19:23:03.564366+09:00",
-    "btc_etf_fetched_at_ms": 1795040583640,
-    "eth_etf_fetched_at_ms": 1795040583640,
+    "btc_etf_source": "sosovalue as_of=2026-11-18 +$0M | conf=confirmed | xcheck=OVERRIDE→soso[headline] 2026-11-18 +$0M (farside -$86.7M 부분합: 미공시셀 7개[IBIT,FBTC,BTCO,EZBC,BRRR,HODL,BTCW], d86.7) | fetched=2026-11-19T09:23:05.672000+09:00",
+    "eth_etf_source": "sosovalue as_of=2026-11-18 +$0M | conf=confirmed | xcheck=OVERRIDE→soso[headline] 2026-11-18 +$0M (farside -$17M 부분합: 미공시셀 6개[ETHA,ETHB,FETH,ETHV,QETH,EZET], d17.0) | fetched=2026-11-19T09:23:05.672000+09:00",
+    "btc_etf_fetched_at_ms": 1795047785672,
+    "eth_etf_fetched_at_ms": 1795047785672,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-11-18T14:33:08.221699+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-11-18T14:33:08.221699+09:00",
     "btc_oi_24h_fetched_at_ms": 1794979988221,
     "eth_oi_24h_fetched_at_ms": 1794979988221,
     "dat_weekly_asof": "2026-11-16",
-    "btc_etf_asof": "2026-11-17",
-    "eth_etf_asof": "2026-11-17",
+    "btc_etf_asof": "2026-11-18",
+    "eth_etf_asof": "2026-11-18",
     "btc_etf_confidence": "confirmed",
-    "eth_etf_confidence": "single_source",
+    "eth_etf_confidence": "confirmed",
     "global_market_cap_asof_ms": 1794979726000,
     "btc_dominance_asof_ms": 1794979726000,
-    "btc_etf_fallback_from": [
-      "2026-11-18"
-    ],
-    "btc_etf_farside_missing": 0,
+    "btc_etf_fallback_from": [],
+    "btc_etf_farside_missing": 7,
     "eth_etf_fallback_from": [],
-    "eth_etf_farside_missing": 0,
+    "eth_etf_farside_missing": 6,
     "eth_etf_filled": {},
     "eth_etf_missing_cols": {
       "2026-11-18": [
         "ETHA",
         "ETHB",
         "FETH",
-        "ETHW",
-        "TETH",
         "ETHV",
         "QETH",
-        "EZET",
-        "MSSE",
-        "ETHE",
-        "ETH"
+        "EZET"
       ]
     },
     "eth_etf_fill_status": {
@@ -136,63 +129,56 @@
       "2026-11-18": [
         "IBIT",
         "FBTC",
-        "BITB",
-        "ARKB",
         "BTCO",
         "EZBC",
         "BRRR",
         "HODL",
-        "BTCW",
-        "MSBT",
-        "GBTC",
-        "BTC"
+        "BTCW"
       ]
     },
     "btc_etf_fill_status": {
       "2026-11-18": "IBIT: ishares 2026-11-18 NAV/발행좌수 없음"
     },
     "btc_etf_backoff": null,
-    "btc_etf_pending": {
+    "btc_etf_pending": null,
+    "btc_etf_invalid_rows": {},
+    "eth_etf_pending": null,
+    "eth_etf_invalid_rows": {},
+    "btc_etf_partial": {
       "date": "2026-11-18",
-      "value_m": 0.0,
-      "raw": "+$0M",
       "missing_cols": [
         "IBIT",
         "FBTC",
-        "BITB",
-        "ARKB",
         "BTCO",
         "EZBC",
         "BRRR",
         "HODL",
-        "BTCW",
-        "MSBT",
-        "GBTC",
-        "BTC"
-      ]
-    },
-    "btc_etf_invalid_rows": {},
-    "eth_etf_pending": {
-      "date": "2026-11-18",
+        "BTCW"
+      ],
+      "missing": 7,
       "value_m": 0.0,
       "raw": "+$0M",
+      "zero_filled": false,
+      "farside_total_m": -86.7,
+      "label": "잠정 · IBIT,FBTC,BTCO,EZBC,BRRR,HODL,BTCW 미공시(SoSoValue 집계)"
+    },
+    "eth_etf_partial": {
+      "date": "2026-11-18",
       "missing_cols": [
         "ETHA",
         "ETHB",
         "FETH",
-        "ETHW",
-        "TETH",
         "ETHV",
         "QETH",
-        "EZET",
-        "MSSE",
-        "ETHE",
-        "ETH"
-      ]
+        "EZET"
+      ],
+      "missing": 6,
+      "value_m": 0.0,
+      "raw": "+$0M",
+      "zero_filled": false,
+      "farside_total_m": -17.0,
+      "label": "잠정 · ETHA,ETHB,FETH,ETHV,QETH,EZET 미공시(SoSoValue 집계)"
     },
-    "eth_etf_invalid_rows": {},
-    "btc_etf_partial": null,
-    "eth_etf_partial": null,
     "etf_correction": null
   },
   "btc_usd": "$64,728",
@@ -206,8 +192,8 @@
   "btc_dominance": "58.43%",
   "date": "2026.11.18 (수)",
   "dat_weekly": "$51.86M",
-  "btc_etf": "-$239.9M",
-  "eth_etf": "-$29.1M",
+  "btc_etf": "+$0M",
+  "eth_etf": "+$0M",
   "btc_oi_24h": "-0.41%",
   "eth_oi_24h": "+2.74%",
   "comment": "BTC는 $64,728, ETH는 $1,814.11에 거래 중이다. 공포탐욕지수는 11 (Extreme Fear) 수준이다."
