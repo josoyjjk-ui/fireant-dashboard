@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-20T19:47:51+09:00",
-  "run_id": "1795171679",
-  "status": "ok",
+  "generated_at": "2026-11-20T19:50:17+09:00",
+  "run_id": "1795171840",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -27,7 +27,8 @@
       "change": -449.1800000000003,
       "change_pct": -1.846321045626549,
       "currency": "USD",
-      "market_time": 1795126559
+      "market_time": 1795126559,
+      "stale": true
     },
     {
       "name": "다우존스",
@@ -94,48 +95,48 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 103.85,
+      "price": 103.864,
       "prev_close": 103.9,
-      "change": -0.05000000000001137,
-      "change_pct": -0.04812319538018418,
+      "change": -0.036000000000001364,
+      "change_pct": -0.034648700673726045,
       "currency": "USD",
-      "market_time": 1795171076
+      "market_time": 1795171237
     },
     {
       "name": "VIX 변동성",
       "symbol": "^VIX",
       "group": "매크로",
       "unit": "",
-      "price": 29.15,
+      "price": 28.99,
       "prev_close": 28.44,
-      "change": 0.7099999999999973,
-      "change_pct": 2.4964838255977404,
+      "change": 0.5499999999999972,
+      "change_pct": 1.9338959212376834,
       "currency": "USD",
-      "market_time": 1795170766
+      "market_time": 1795170931
     },
     {
       "name": "금",
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 3592.7,
+      "price": 3594.7,
       "prev_close": 3685.5,
-      "change": -92.80000000000018,
-      "change_pct": -2.5179758513091897,
+      "change": -90.80000000000018,
+      "change_pct": -2.463709130375802,
       "currency": "USD",
-      "market_time": 1795171077
+      "market_time": 1795171227
     },
     {
       "name": "WTI 유가",
       "symbol": "CL=F",
       "group": "원자재",
       "unit": "",
-      "price": 81.38,
+      "price": 81.57,
       "prev_close": 83.21,
-      "change": -1.8299999999999983,
-      "change_pct": -2.199254897247925,
+      "change": -1.6400000000000006,
+      "change_pct": -1.9709169570965037,
       "currency": "USD",
-      "market_time": 1795171068
+      "market_time": 1795171239
     },
     {
       "name": "코스피",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-20T16:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "나스닥(^IXIC): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
