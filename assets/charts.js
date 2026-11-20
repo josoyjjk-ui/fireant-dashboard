@@ -10,7 +10,7 @@
   var FALLBACK_TIMEFRAMES = ["1일","5일","1개월","3개월","6개월","1년","2년","5년"];
 
   // Yahoo Finance 실시간 스트리머
-  var YF = {BTC:"BTC-USD",ETH:"ETH-USD",SOL:"SOL-USD",XRP:"XRP-USD",BNB:"BNB-USD",NQ:"NQ=F",ES:"ES=F",GSPC:"^GSPC",IXIC:"^IXIC",DJI:"^DJI",KOSPI:"^KS11",KOSDAQ:"^KQ11",IRX:"^IRX",FVX:"^FVX",TNX:"^TNX",TYX:"^TYX",DXY:"DX-Y.NYB",VIX:"^VIX",GC:"GC=F",CL:"CL=F"};
+  var YF = {BTC:"BTC-USD",ETH:"ETH-USD",SOL:"SOL-USD",XRP:"XRP-USD",BNB:"BNB-USD",NQ:"NQ=F",ES:"ES=F",GSPC:"^GSPC",IXIC:"^IXIC",DJI:"^DJI",KOSPI:"^KS11",KOSDAQ:"^KQ11",IRX:"^IRX",FVX:"^FVX",TNX:"^TNX",TYX:"^TYX",DXY:"DX-Y.NYB",VIX:"^VIX",GC:"GC=F",CL:"CL=F",BZ:"BZ=F"};
   var YF_REV = {};
   Object.keys(YF).forEach(function(k){ YF_REV[YF[k]] = k; });
 
