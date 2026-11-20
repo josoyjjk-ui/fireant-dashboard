@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-21T08:17:32+09:00",
-  "run_id": "1795216660",
-  "status": "ok",
+  "generated_at": "2026-11-21T08:20:02+09:00",
+  "run_id": "1795216825",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -94,10 +94,10 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 103.84,
+      "price": 103.807,
       "prev_close": 103.9,
-      "change": -0.060000000000002274,
-      "change_pct": -0.057747834456210075,
+      "change": -0.09300000000000352,
+      "change_pct": -0.08950914340712562,
       "currency": "USD",
       "market_time": 1795211999
     },
@@ -135,7 +135,8 @@
       "change": 0.4100000000000108,
       "change_pct": 0.4927292392741387,
       "currency": "USD",
-      "market_time": 1795211999
+      "market_time": 1795211999,
+      "stale": true
     },
     {
       "name": "코스피",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-20T20:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "WTI 유가(CL=F): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
