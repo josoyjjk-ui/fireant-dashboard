@@ -22,8 +22,11 @@ from __future__ import annotations
 import html
 import re
 from pathlib import Path
+import sys
 
 ROOT = Path("/Users/fireant/fireant-dashboard")
+sys.path.insert(0, str(Path(__file__).resolve().parent / "scripts"))
+from sync_nav import apply as apply_nav  # noqa: E402  (공용 내비게이션 주입)
 SRC = ROOT / "posts" / "_src"
 OUT = ROOT / "posts"
 BASE = "https://antinfo.io"
@@ -283,10 +286,12 @@ def main():
         meta, body = parse_front(f.read_text(encoding="utf-8"))
         slug = meta.get("slug") or re.sub(r"^\d{4}-\d{2}-\d{2}-", "", f.stem)
         meta["slug"] = slug
-        (OUT / f"{slug}.html").write_text(page(meta, slug, md_body(body)), encoding="utf-8")
+        (OUT / f"{slug}.html").write_text(
+            apply_nav(page(meta, slug, md_body(body)), f"/posts/{slug}"), encoding="utf-8")
         posts.append(meta)
     posts.sort(key=lambda p: p["date"], reverse=True)
-    (OUT / "index.html").write_text(index_page(posts), encoding="utf-8")
+    (OUT / "index.html").write_text(
+        apply_nav(index_page(posts), "/posts/"), encoding="utf-8")
     print(f"생성 완료: {len(posts)}개 글 + index.html")
     for p in posts:
         print(f"  /posts/{p['slug']}  ({p['date']}) {p['title']}")
