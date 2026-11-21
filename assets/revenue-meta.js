@@ -8,7 +8,7 @@
   var NCOL = 9;
   var DISPO_CLS = { '소각': 'burn', '재단 보관': 'treas', '혼합': 'mix', '없음': 'none' };
   var DISPO_ORDER = { '소각': 0, '혼합': 1, '재단 보관': 2, '없음': 3 }; // 처리 방식 정렬 순서
-  var state = { rows: [], top: 20, key: 'bb_supply_pct', dir: -1, open: false, max: 0, extra: 0 };
+  var state = { rows: [], top: 20, key: 'fdv', dir: -1, open: false, max: 0, extra: 0 };
   var NOTE_FDV_ALL = "";
 
   function $(id) { return document.getElementById(id); }
