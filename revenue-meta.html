@@ -105,7 +105,6 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .rm-bb.est{color:var(--accent2);border-color:rgba(255,181,71,.38);background:rgba(255,181,71,.08);}
 .rm-bb.none{color:#8a94a3;border-color:rgba(138,148,163,.3);background:rgba(138,148,163,.06);}
 .rm-src .rm-bb{margin:0 3px 0 6px;}
-.rm-fb{font-size:9.5px;color:var(--accent2);margin-left:3px;font-weight:900;}
 
 /* ===== v3: 바이백 순위 막대 ===== */
 .rm-legend{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;margin:0 0 14px;color:#cbd4df;font-size:12px;font-weight:800;}
@@ -251,7 +250,7 @@ html{background:#0a0c10;}</style></head>
       </div>
       <p class="rm-src">누적 근거: <span id="rmAllCnt">—</span> · <i class="rm-bb ok">실측</i> 일별 바이백 실측 합계 <i class="rm-bb est">추정</i> 일부 구간 추정(≈ 표시) <i class="rm-bb none">없음</i> 바이백 없음</p>
       <p class="rm-src">바이백 근거: <span id="rmBasisCnt">—</span> · <i class="rm-bb ok">실측</i> DefiLlama 바이백 라벨 <i class="rm-bb est">추정</i> 홀더 환원 전체로 대체(≈ 표시) <i class="rm-bb none">없음</i> 바이백 라벨 없음·홀더 환원 0</p>
-      <p class="rm-src">출처: DefiLlama(매출·바이백 라벨·일별 바이백), DefiLlama coins(가격), CoinGecko(시가총액·FDV·발행량) · 투자 권유 아님</p>
+      <p class="rm-src">출처: DefiLlama(매출·바이백 라벨·일별 바이백), DefiLlama coins(가격), CoinGecko(FDV·발행량) · 투자 권유 아님</p>
     </section>
 
     <section class="seo">
@@ -259,21 +258,21 @@ html{background:#0a0c10;}</style></head>
       <p>프로토콜이 실제로 벌어들인 30일 매출, 집계 시작 이후 누적으로 토큰을 사들인 금액, 그 물량의 처리 방식(소각·재무보관·락업 등), 그리고 공급 대비 비중을 나란히 놓고 비교하는 지표입니다. 바이백이 오래 쌓인 프로젝트와 최근에 시작한 프로젝트를 함께 보려면 누적 바이백과 처리 방식을 같이 보셔야 합니다.</p>
       <h2 style="margin-top:16px">누적 바이백 · 공급 대비 % · 소각 %</h2>
       <p><b>누적 바이백</b> = DefiLlama 바이백 라벨(Token Buy Back 등)의 일별 합계와, 매출로 토큰을 사서 태우는 소각(UNI Firepit, RENDER BME)의 집계 시작 이후 전체 합계입니다. DefiLlama 집계 시작일이 실제 바이백 개시일보다 늦을 수 있어 과소 집계일 수 있습니다. 일별 값이 없어 일부 구간만 추정한 경우는 ≈로 표시합니다.</p>
-      <p><b>공급 대비 %</b> = 일별 바이백 USD를 같은 날 가격(DefiLlama coins)으로 나눠 토큰 수량을 구하고 이를 모두 합산한 뒤, <b>소각 전 총발행량</b>(현재 총발행량 + 소각분, 총발행량이 없으면 최대발행량)으로 나눈 값입니다. 현재 총발행량에는 이미 태운 물량이 빠져 있어 그대로 나누면 많이 태운 토큰일수록 비율이 부풀기 때문입니다. 라벨 분해가 없어 홀더 매출 전체로 대신했거나 가격 이력이 바이백 이력보다 짧으면 추정(≈)입니다.</p>
-      <p><b>소각 %</b>는 확인 가능한 경우에만 표시합니다. <b>실측</b>: 온체인에 반영된 소각량(최대발행량−총발행량, 소각분이 바이백에서만 나오는 HYPE·PUMP·LIT·STONK) 또는 공식 발표 수량(JUP 일회성 소각). <b>추정</b>: 공식 발표상 바이백 물량을 소각하는 프로젝트에서 누적 매수 수량을 소각량으로 본 환산치(ORE는 90%, KNTQ는 2026-09-16 이후분만). 재무보관·스테이커 분배처럼 태우지 않는 프로젝트는 "—"입니다.</p>
+      <p><b>공급 대비 %</b> = 일별 바이백 USD를 같은 날 가격(DefiLlama coins)으로 나눠 토큰 수량을 구하고 이를 모두 합산한 뒤, <b>완전희석 공급량</b>(최대발행량, 상한이 없으면 현재 총발행량 + 소각분)으로 나눈 값입니다. 최대발행량에는 이미 태운 물량이 포함돼 있어 소각분을 다시 더하지 않습니다. 상한이 없는 토큰은 현재 총발행량에서 태운 물량이 빠져 있으므로 소각분을 되더합니다. 소각 %도 같은 분모를 씁니다. 참고로 CoinGecko FDV는 현재 총발행량 × 가격으로 계산돼 최대발행량 기준과 다를 수 있습니다. 라벨 분해가 없어 홀더 매출 전체로 대신했거나 가격 이력이 바이백 이력보다 짧으면 추정(≈)입니다.</p>
+      <p><b>소각 %</b>는 확인 가능한 경우에만 표시합니다. <b>실측</b>: 온체인에 반영된 소각량(최대발행량−총발행량, 소각분이 바이백에서만 나오는 HYPE·PUMP·LIT·STONK) 또는 공식 발표 수량(JUP 일회성 소각). <b>추정</b>: 공식 발표상 바이백 물량을 소각하는 프로젝트에서 누적 매수 수량을 소각량으로 본 환산치(ORE는 90%, KNTQ는 2026-09-16 이후분만). 재무보관·스테이커 분배처럼 태우지 않는 프로젝트는 "—"입니다. 실측 소각에는 바이백 외 소각(수수료·가스 소각 등)이 포함될 수 있어 바이백 %보다 클 수 있습니다.</p>
       <p><b>처리 방식</b>은 <b>소각</b> / <b>재무보관</b>(재단·Assistance Fund 등이 보유) / <b>락업</b> / <b>스테이커 분배</b> / <b>혼합</b> / <b>없음</b>으로 구분합니다. 공식 문서와 공지로 수기 확인한 값이며, 확인일은 <span id="rmDispoChecked">—</span>입니다. 배지를 누르면 근거 문서로 이동합니다.</p>
       <h2 style="margin-top:16px">30일 바이백 · FDV/바이백 배율</h2>
       <p><b>30일 바이백</b> = 최근 완결된 30일(UTC) 동안의 토큰 매수 금액입니다. 매출 중 몇 %가 토큰을 사는 데 쓰였는지는 표의 30일 바이백 툴팁에서 바이백률로 확인하실 수 있습니다. 스테이킹 보상·투표자 분배처럼 토큰을 사지 않는 환원은 바이백에서 빠집니다.</p>
-      <p><b>FDV/바이백 배율</b> = FDV ÷ (30일 바이백 × 365/30)입니다. 누적 바이백 총액은 프로그램이 얼마나 오래 돌았는지에 좌우되므로, 배율은 30일 실행 속도를 연환산(연간 환산)해서 비교합니다. 낮을수록 FDV 대비 바이백이 큽니다. 바이백이 0이면 "—"로 표시하고 정렬 시 맨 뒤로 보냅니다. FDV는 CoinGecko 값을 쓰고, 없을 때만 시가총액으로 대체해 표시합니다.</p>
+      <p><b>FDV/바이백 배율</b> = FDV ÷ (30일 바이백 × 365/30)입니다. 누적 바이백 총액은 프로그램이 얼마나 오래 돌았는지에 좌우되므로, 배율은 30일 실행 속도를 연환산(연간 환산)해서 비교합니다. 낮을수록 FDV 대비 바이백이 큽니다. 바이백이 0이면 "—"로 표시하고 정렬 시 맨 뒤로 보냅니다. FDV는 CoinGecko 값을 쓰며, 없으면 시가총액으로 대체하지 않고 "—"(FDV 미제공)로 둡니다. 누적 바이백 셀에 마우스를 올리면 누적 바이백 ÷ FDV(%)도 볼 수 있습니다.</p>
       <p><b>근거 표시</b> — <b>실측</b>: DefiLlama 홀더 매출 라벨 중 바이백 항목(Token Buy Back, Buyback and Burn 등)과 매출로 토큰을 사서 태우는 소각(UNI Firepit, RENDER BME)만 합산. 유저가 토큰으로 낸 수수료를 태우는 소각은 제외합니다. <b>추정</b>: 라벨 분해가 없어 홀더 환원 전체를 바이백으로 가정한 값이라 실제보다 클 수 있습니다(≈ 표시). <b>없음</b>: 바이백 라벨이 없거나 홀더 환원이 0입니다.</p>
-      <p>시가총액·FDV·30일 매출·30일 바이백은 매시간, 누적 바이백·공급 대비 %·처리 방식은 UTC 하루가 끝날 때마다 갱신됩니다.</p>
-      <p>매출 정의는 DefiLlama 방법론을 따르며 프로토콜마다 집계 방식이 다를 수 있습니다. 시가총액은 유통량 기준이라 언락 물량은 반영되지 않습니다.</p>
+      <p>FDV·30일 매출·30일 바이백은 매시간, 누적 바이백·공급 대비 %·처리 방식은 UTC 하루가 끝날 때마다 갱신됩니다.</p>
+      <p>매출 정의는 DefiLlama 방법론을 따르며 프로토콜마다 집계 방식이 다를 수 있습니다. 이 페이지의 가치·공급 기준은 모두 FDV(완전희석)이며, 유통량 기준 시가총액은 쓰지 않습니다. 앞으로 풀릴 언락 물량까지 분모에 포함됩니다.</p>
       <p>제외(DefiLlama 미집계): <span class="rm-unc" id="rmUncovered">—</span></p>
     </section>
   </div>
 </div>
   <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 수익 메타 출처 DefiLlama·CoinGecko · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
-<script src="assets/revenue-meta.js?v=5"></script>
+<script src="assets/revenue-meta.js?v=6"></script>
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=4"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>

@@ -155,14 +155,15 @@
     // 3. 누적 바이백
     var aVal = r.buyback_all > 0 ? aPre + usd(r.buyback_all) : na('—');
     var aSub = r.bb_first_date ? '<span class="rm-sub">집계 ' + esc(ym(r.bb_first_date)) + '~</span>' : '';
-    var aTitle = [r.alltime_note || '', r.bb_tokens != null ? '누적 수량 ' + tok(r.bb_tokens) + ' ' + r.symbol : '']
+    var aTitle = [r.alltime_note || '', r.bb_tokens != null ? '누적 수량 ' + tok(r.bb_tokens) + ' ' + r.symbol : '',
+      r.bb_all_fdv != null ? '누적 바이백 ÷ FDV ' + supplyPct(r.bb_all_fdv) : '']
       .filter(function (s) { return !!s; }).join(' · ');
 
     // 4. 공급 대비
     var sup = supplyPct(r.bb_supply_pct);
     var burn = supplyPct(r.burn_supply_pct);
     var bTag = burn == null ? '' : (r.burn_basis === '실측' ? '<i class="rm-bt ok">실측</i>' : (r.burn_basis === '추정' ? '<i class="rm-bt est">추정</i>' : ''));
-    var supTitle = [r.supply_basis ? '공급 기준: ' + r.supply_basis : '', r.burn_note || '']
+    var supTitle = [r.supply_basis ? '분모: ' + r.supply_basis : '', r.burn_note || '']
       .filter(function (s) { return !!s; }).join(' · ');
     var supCell = (sup == null && burn == null)
       ? na('—')
@@ -171,8 +172,9 @@
 
     // 6. 30일 바이백
     var bb = (r.buyback_30d == null || !(r.buyback_30d > 0)) ? na('—') : (bPre + usd(r.buyback_30d));
-    var fdvCell = r.fdv == null ? na('—') : usd(r.fdv) + (r.fdv_basis === '시총대체' ? '<sup class="rm-fb" title="CoinGecko FDV 없음 → 시가총액으로 대체">시총</sup>' : '');
-    var fm = r.fdv_bb_mult == null ? na('—') : (bPre + mult(r.fdv_bb_mult));
+    var noFdv = '<span class="rm-na" title="FDV 미제공">—</span>'; // 시가총액으로 대체하지 않음
+    var fdvCell = r.fdv == null ? noFdv : usd(r.fdv);
+    var fm = r.fdv == null ? noFdv : (r.fdv_bb_mult == null ? na('—') : (bPre + mult(r.fdv_bb_mult)));
 
     return '<tr>' + sym +
       '<td>' + dispoBadge(r, true) + '</td>' +
