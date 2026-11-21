@@ -3,6 +3,8 @@
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch { return ""; } };
+// CoinGecko 로고: 렌더 크기(16~24px)에 맞춰 large(250px) → small 경량본으로
+const cgSmall = (u) => (u == null ? u : (String(u).includes("/coins/images/") ? String(u).replace("/large/", "/small/") : u));
 
 const fmtUSD = (v) => {
   if (v == null) return "—";
@@ -65,7 +67,7 @@ function render() {
                        : `https://www.coingecko.com/en/search?query=${encodeURIComponent(c.symbol || c.name || "")}`;
     return `<tr>
       <td>${c.rank ?? "—"}</td>
-      <td><a class="coin" href="${cgUrl}" target="_blank" rel="noopener" title="CoinGecko에서 ${esc(c.name)} 보기"><img src="${safeURL(c.image)}" alt="" loading="lazy" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span> <span class="sym">${esc(c.symbol)}</span></a></td>
+      <td><a class="coin" href="${cgUrl}" target="_blank" rel="noopener" title="CoinGecko에서 ${esc(c.name)} 보기"><img src="${safeURL(cgSmall(c.image))}" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span> <span class="sym">${esc(c.symbol)}</span></a></td>
       <td class="mono">${price(c.price)}</td>
       <td class="mono">${pct(c.chg24h)}</td>
       <td class="mono">${pct(c.chg7d)}</td>

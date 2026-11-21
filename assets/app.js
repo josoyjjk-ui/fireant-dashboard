@@ -6,6 +6,8 @@ const BASE = "../data/v1";
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const safeURL = (u) => { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch { return ""; } };
+// CoinGecko 로고: 렌더 크기(16~24px)에 맞춰 large(250px) → small 경량본으로
+const cgSmall = (u) => (u == null ? u : (String(u).includes("/coins/images/") ? String(u).replace("/large/", "/small/") : u));
 
 const fmtUSD = (v) => {
   if (v == null) return "—";
@@ -140,7 +142,7 @@ function cgURL(c) {
 }
 function moverRow(c, i) {
   const v = c.chg;
-  return `<a class="li mv" href="${esc(cgURL(c))}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;cursor:pointer" title="코인게코에서 ${esc(c.name)} 보기"><div class="mvn"><span class="rk">${i + 1}</span><img src="${safeURL(c.image)}" alt="" loading="lazy" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span><span class="sym">${esc(c.symbol)}</span></div>
+  return `<a class="li mv" href="${esc(cgURL(c))}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;cursor:pointer" title="코인게코에서 ${esc(c.name)} 보기"><div class="mvn"><span class="rk">${i + 1}</span><img src="${safeURL(cgSmall(c.image))}" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'"><span class="nm">${esc(c.name)}</span><span class="sym">${esc(c.symbol)}</span></div>
     <div class="mvp"><span class="mono">$${comma(c.price, c.price < 1 ? 4 : 2)}</span><span class="${cls(v)} chg">${v >= 0 ? "+" : ""}${v.toFixed(2)}%</span></div></a>`;
 }
 function loadMovers() {

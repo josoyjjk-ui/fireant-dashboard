@@ -35,9 +35,16 @@
     return '<span class="kr-exch-logos">' + html + '</span>';
   }
 
+  // CoinGecko 로고: 렌더 크기(16~24px)에 맞춰 large(250px) → small 경량본으로
+  function cgSmall(u) {
+    if (u === null || u === undefined) return u;
+    var s = String(u);
+    return s.indexOf('/coins/images/') !== -1 ? s.replace('/large/', '/small/') : u;
+  }
+
   function coinLogoHTML(url) {
     if (!url) return '';
-    return '<img class="kr-coin-logo" src="' + esc(url) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
+    return '<img class="kr-coin-logo" src="' + esc(cgSmall(url)) + '" alt="" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">';
   }
 
   // 심볼 기반 생성 아바타(로고 없거나 URL 깨질 때 대체 — 절대 빈칸 없음)
@@ -48,8 +55,8 @@
   // 코인 아이콘: CoinGecko 로고 우선, 없거나 깨지면 심볼 아바타로 폴백
   function coinIconHTML(url, sym, cls) {
     var av = coinAvatar(sym);
-    var src = url ? esc(url) : av;
-    return '<img class="' + (cls || 'kr-coin-logo') + '" src="' + src + '" alt="' + esc(sym || '') + '" loading="lazy"'
+    var src = url ? esc(cgSmall(url)) : av;
+    return '<img class="' + (cls || 'kr-coin-logo') + '" src="' + src + '" alt="' + esc(sym || '') + '" loading="lazy" decoding="async"'
       + ' onerror="this.onerror=null;this.src=\'' + av + '\'">';
   }
 

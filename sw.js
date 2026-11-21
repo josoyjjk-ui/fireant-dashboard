@@ -1,13 +1,13 @@
 /* ANTINFO PWA service worker
  * 원칙: 셸(HTML/CSS/JS/아이콘)만 캐시. 데이터 JSON(/data/**, *.json)은 절대 캐시하지 않음(시황·가격 고정 방지).
  * 전략: 네트워크 우선 → 실패 시(오프라인) 캐시 폴백. 등록/캐시 실패해도 사이트 동작에 영향 없음. */
-var CACHE = "antinfo-shell-v1";
+var CACHE = "antinfo-shell-v2";
 var SHELL = [
   "/m",
   "/manifest.json",
   "/assets/favicon-32.png",
   "/assets/apple-touch-icon.png",
-  "/assets/antinfo-logo.png"
+  "/assets/antinfo-logo-64.png"
 ];
 
 self.addEventListener("install", function (e) {

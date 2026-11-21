@@ -24,7 +24,7 @@ import re
 from pathlib import Path
 import sys
 
-ROOT = Path("/Users/fireant/fireant-dashboard")
+ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(Path(__file__).resolve().parent / "scripts"))
 from sync_nav import apply as apply_nav  # noqa: E402  (공용 내비게이션 주입)
 SRC = ROOT / "posts" / "_src"
@@ -106,34 +106,18 @@ NAV = ('<div class="nav">'
        '<a class="brand2" href="/" style="text-decoration:none;color:inherit;cursor:pointer">'
        '<span class="logo" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="ANTINFO" style="height:34px;display:block"></span>'
        '<div class="btext"><span class="bname">개미투자정보</span><span class="lede2">개미투자자들이 필요한 모든 정보</span></div></a>'
-       '<div class="tabs">'
-       '<a class="tab" href="/">대시보드</a>'
-       '<a class="tab" href="/market">마켓</a>'
-       '<a class="tab" href="/macro-news">매크로뉴스</a>'
-       '<a class="tab" href="/charts">주요자산차트</a>'
-       '<a class="tab" href="/events">이벤트모음</a>'
-       '<a class="tab" href="/signals">시장지표</a>'
-       '<a class="tab on" href="/posts/">인사이트</a>'
-       '</div>'
+       '<div class="tabs"><!--nav:tabs--><!--/nav:tabs--></div>'
        + _GLOGIN +
        '<a class="btn" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램</a></div>')
 
 DRAWER = ('<aside class="drawer">'
-          '<div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;vertical-align:middle;margin-right:7px;">개미투자정보</span><button class="x" type="button">✕</button></div>'
-          '<a href="/"><span class="ic">🏠</span>홈</a>'
-          '<a href="/macro-news"><span class="ic">📰</span>뉴스</a>'
-          '<a href="/market"><span class="ic">📊</span>마켓</a>'
-          '<a href="/signals"><span class="ic">🐋</span>시장지표</a>'
-          '<a href="/charts"><span class="ic">🕯️</span>주요자산차트</a>'
-          '<a class="on" href="/posts/"><span class="ic">📝</span>인사이트</a>'
-          '<div class="ddiv"></div>'
-          '<a class="sub" href="/events"><span class="ic">🎉</span>이벤트·당첨</a>'
-          '<a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener"><span class="ic">✈️</span>텔레그램 채널</a>'
+          '<div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="">개미투자정보</span>'
+          '<button class="x" type="button">✕</button></div>'
+          '<!--nav:drawer--><!--/nav:drawer-->'
           '</aside><div class="backdrop"></div>')
 
 SCRIPTS = ('<script src="/assets/vendor/supabase.js"></script>'
-           '<script src="/assets/auth.js?v=3"></script>'
-           '<script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>')
+           '<script src="/assets/auth.js?v=3"></script>')
 
 FOOT = ('<div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보<br>'
         '운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener">X</a> · '

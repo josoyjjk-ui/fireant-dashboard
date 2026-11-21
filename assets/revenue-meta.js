@@ -41,9 +41,12 @@
   function na(s) { return '<span class="rm-na">' + s + '</span>'; }
   function ym(d) { return String(d).slice(0, 7).replace(/-/g, '.'); }
   function kst(iso) {
+    if (!iso) return '—';
     try {
-      return new Date(iso).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) + ' (KST)';
-    } catch (e) { return iso || '—'; }
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return '—';
+      return d.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) + ' (KST)';
+    } catch (e) { return '—'; }
   }
   function tip(parts) {
     parts = (parts || []).filter(function (s) { return !!s; });
@@ -110,12 +113,6 @@
 
   // ---------- 상위 순위 ----------
   function rankRowHtml(r, pos) {
-    if (r.error) {
-      return '<div class="rm-rank-row"><span class="rm-rank-n">' + pos + '</span>' +
-        '<div class="rm-rank-id"><b>' + esc(r.symbol) + '</b><span>' + esc(r.name) + '</span></div>' +
-        '<div class="rm-rank-track"></div>' +
-        '<div class="rm-rank-val"><span class="rm-na">데이터 오류</span></div></div>';
-    }
     var p = supplyPct(r.bb_supply_pct);
     var w = (r.bb_supply_pct > 0 && state.max > 0) ? Math.max(2, r.bb_supply_pct / state.max * 100) : 0;
     var bar = w ? '<i class="rm-rank-bar' + (isEst(r) ? ' est' : '') + '" style="width:' + w.toFixed(2) + '%"></i>' : '';
@@ -205,9 +202,6 @@
 
   function rowHtml(r, pos) { // pos = 현재 정렬 기준 1..N, 매출 순위는 툴팁
     var sym = '<td' + tip([rankTip(r)]) + '><div class="rm-sym"><em class="rm-rk">' + pos + '</em><b>' + esc(r.symbol) + '</b><span>' + esc(r.name) + '</span></div></td>';
-    if (r.error) {
-      return '<tr>' + sym + '<td colspan="' + (NCOL - 1) + '" class="rm-err">데이터 오류 · ' + esc(r.error) + '</td></tr>';
-    }
     return '<tr>' + sym + m1Cell(r) +
       '<td>' + usd(r.rev_30d) + '</td>' +
       m3Cell(r) + m4Cell(r) + m5Cell(r) +
@@ -283,7 +277,7 @@
         }
 
         $('rmAsOf').textContent = kst(d.generated_at || d.as_of);
-        $('rmWindow').textContent = '30일 창 ' + d.window_start + '~' + d.window_end + ' (UTC) · 누적은 일 1회 갱신';
+        $('rmWindow').textContent = '30일 창 ' + (d.window_start || '—') + '~' + (d.window_end || '—') + ' (UTC) · 누적은 일 1회 갱신';
         $('rmUncovered').textContent = (d.uncovered || []).map(function (u) {
           return u.symbol + '(' + (u.reason || '사유 미상') + ')';
         }).join(', ') || '없음';

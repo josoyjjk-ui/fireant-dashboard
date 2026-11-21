@@ -11,7 +11,7 @@
 <meta property="og:description" content="실시간 마켓·급등급락·수급·뉴스와 시장지표를 모바일에서 빠르게 확인합니다.">
 <meta property="og:type" content="website">
 <link rel="canonical" href="https://antinfo.io/m">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 @view-transition{navigation:auto;}
 ::view-transition{background:#0a0c10!important;}
@@ -81,9 +81,6 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .menu .mitem+.mitem{border-top:1px solid var(--line);}
 .menu .mi{font-size:27px;width:32px;text-align:center;}.menu .ml{font-size:20px;font-weight:800;}.menu .md{font-size:13px;color:var(--gray);font-weight:600;margin-top:2px;}
 .menu .mc{margin-left:auto;color:var(--gray);font-size:24px;}
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:var(--bg);border-top:1px solid var(--line);padding:9px 0 calc(9px + env(safe-area-inset-bottom));}
-.nav a{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--gray);font-size:10px;font-weight:700;white-space:nowrap;letter-spacing:-.4px;text-align:center;}
-.nav a .ic{font-size:20px;}.nav a.on{color:var(--blue);}
 .skel{background:rgba(127,127,127,.18);color:transparent;border-radius:7px;}
 @keyframes fUp{0%{color:#ff5d6c}100%{color:inherit}}
 @keyframes fDn{0%{color:#4d9bff}100%{color:inherit}}
@@ -102,24 +99,8 @@ html{background:var(--bg);overflow-x:hidden;}body{background:var(--bg);color:var
 .mtrust-soc a{font-size:12.5px;font-weight:800;color:#0a0c10;background:#ffb547;padding:6px 12px;border-radius:8px;text-decoration:none;}
 .mdisc{font-size:11.5px;color:var(--gray);line-height:1.65;margin-top:11px;}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;}
-.btext{display:flex;flex-direction:column;gap:1px;min-width:0;}
-.bname{color:#fff;font-size:17px;font-weight:900;line-height:1.15;letter-spacing:-0.3px;}
 .lede{font-size:13px;color:var(--gray);font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ham{font-size:25px;background:none;border:none;color:#fff;font-weight:800;line-height:1;cursor:pointer;padding:10px 8px;margin:-10px -6px;}
 .topL{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 auto;}
-.drawer{position:fixed;top:0;left:0;bottom:0;width:250px;max-width:82vw;background:#12161d;border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:50;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
-.drawer{visibility:hidden;transition:transform .25s ease,visibility 0s linear .25s;}
-body.navopen .drawer{transform:none;visibility:visible;transition:transform .25s ease;}
-.drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 14px;}
-.drawer .dh .dlogo{font-size:20px;font-weight:900;color:#ff3b30;}
-.drawer .x{font-size:20px;color:var(--gray);background:none;border:none;cursor:pointer;padding:10px 12px;margin:-10px -12px;}
-.drawer a{display:flex;align-items:center;gap:14px;padding:15px 12px;border-radius:14px;text-decoration:none;color:var(--txt);font-size:17px;font-weight:800;}
-.drawer a .ic{font-size:22px;width:26px;text-align:center;}
-.drawer a.on{background:rgba(255,59,48,.14);color:#ff3b30;}
-.drawer .ddiv{height:1px;background:var(--line);margin:9px 6px;}
-.drawer a.sub{font-size:15px;font-weight:700;color:var(--gray);}
-.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40;}
-body.navopen .backdrop{opacity:1;pointer-events:auto;}
 #authSlot{flex:0 1 auto !important;min-width:0 !important;max-width:34vw;overflow:hidden;}
 #authSlot button{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;}
 #authSlot img{flex:0 0 auto;}
@@ -191,17 +172,17 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
 .flowcard h3{font-size:14px;font-weight:900;margin-bottom:8px;}
 .flowsoon{font-size:12.5px;line-height:1.7;color:#cdd6e0;background:#0f1219;border:1px dashed #2a3040;border-radius:12px;padding:12px 13px;}
 .flowsoon b{color:#ffb547;}
-::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style><link rel="stylesheet" href="/assets/nav.css?v=20261122b"></head><body>
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10;}html{background:#0a0c10;}</style><link rel="preconnect" href="https://coin-images.coingecko.com"><link rel="stylesheet" href="/assets/nav.css?v=27e282ba"></head><body>
 <div class="backdrop"></div>
-<aside class="drawer">
-  <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo.png" alt="" style="height:22px;width:22px;vertical-align:middle;margin-right:7px;">개미투자정보</span><button class="x" type="button">✕</button></div><!--nav:drawer--><a class="on" href="/" aria-current="page">대시보드</a><a href="/market">마켓</a><a href="/macro-news">매크로뉴스</a><a href="/charts">주요자산차트</a><a href="/kr-exchange/">K-거래소 현황</a><a href="/buyback">바이백 보드</a><a href="/airdrop">에어드랍</a><div class="ddiv"></div><a href="/signal">시그널</a><a href="/fng">공포탐욕지수</a><a href="/calendar">경제 캘린더</a><a href="/unlocks">언락 캘린더</a><a href="/events">이벤트 모음</a><a href="/winners/">당첨자 확인</a><a href="/posts/">인사이트</a><a href="/donate">코인과세유예 후원</a><div class="ddiv"></div><a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램 채널</a><!--/nav:drawer-->
+<aside class="drawer" id="drawer" aria-label="전체 메뉴" data-nav-ver="16f02055" inert aria-hidden="true">
+  <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo-64.png" width="24" height="24" alt="">개미투자정보</span><button class="x" type="button" aria-label="닫기">✕</button></div><!--nav:drawer--><div class="dg-h">메인</div><a class="on" href="/" aria-current="page">대시보드</a><a href="/market">마켓</a><a href="/macro-news">매크로뉴스</a><a href="/charts">주요자산차트</a><a href="/kr-exchange/">K-거래소 현황</a><a href="/buyback">바이백 보드</a><a href="/airdrop">에어드랍</a><div class="dg-h">지표·캘린더</div><a href="/signal">시그널</a><a href="/fng">공포탐욕지수</a><a href="/calendar">경제 캘린더</a><a href="/unlocks">언락 캘린더</a><div class="dg-h">커뮤니티·콘텐츠</div><a href="/events">이벤트 모음</a><a href="/winners/">당첨자 확인</a><a href="/posts/">인사이트</a><a href="/donate">코인과세유예 후원</a><div class="ddiv"></div><a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램 채널</a><!--/nav:drawer-->
 </aside>
-  <div class="top"><div class="topL"><button class="ham" type="button" aria-label="메뉴">☰</button><a class="brand" href="/" style="text-decoration:none;color:inherit;cursor:pointer"><span class="logo" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo.png" alt="개미투자정보 ANTINFO" style="height:34px;width:34px;display:block"></span><div class="btext"><span class="bname">개미투자정보</span><span class="lede">개미투자자들이 필요한 모든 정보</span></div></a></div><span id="authSlot" data-mobile="1" style="display:inline-flex;align-items:center;gap:6px;margin-left:10px;flex-shrink:0;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>로그인</button></span></div>
+  <div class="top"><div class="topL"><button class="ham" type="button" aria-label="메뉴" aria-expanded="false" aria-controls="drawer">☰</button><a class="brand" href="/" style="text-decoration:none;color:inherit;cursor:pointer"><span class="logo" style="display:inline-flex;align-items:center"><img src="/assets/antinfo-logo-64.png" srcset="/assets/antinfo-logo-64.png 1x, /assets/antinfo-logo-128.png 2x" alt="개미투자정보 ANTINFO" style="height:34px;width:34px;display:block"></span><div class="btext"><span class="bname">개미투자정보</span><span class="lede">개미투자자들이 필요한 모든 정보</span></div></a></div><span id="authSlot" data-mobile="1" style="display:inline-flex;align-items:center;gap:6px;margin-left:10px;flex-shrink:0;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>로그인</button></span></div>
   <div class="wrap">
 
     <div class="mverdict" id="mVerdict">
       <div class="m-hero-brand">
-        <img src="/assets/antinfo-logo.png" alt="ANTINFO">
+        <img src="/assets/antinfo-logo-64.png" srcset="/assets/antinfo-logo-64.png 1x, /assets/antinfo-logo-128.png 2x" alt="ANTINFO">
         <span class="m-hero-title">코인과세유예 후원 리더보드</span>
       </div>
       <a class="m-hero-cta" href="donate">🚚 코인과세유예 후원하기 →</a>
@@ -253,7 +234,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
     <section class="mtrust">
       <div class="mtrust-card">
         <h3>🐜 운영자 소개</h3>
-        <div class="who"><img src="/assets/antinfo-logo.png" alt="ANTINFO"><b>불개미 (ANTINFO)</b></div>
+        <div class="who"><img src="/assets/antinfo-logo-64.png" srcset="/assets/antinfo-logo-64.png 1x, /assets/antinfo-logo-128.png 2x" alt="ANTINFO"><b>불개미 (ANTINFO)</b></div>
         <p>크립토 KOL <b style="color:#fff">불개미</b>가 직접 운영하는 한국형 투자정보 대시보드입니다. 실시간 데이터와 불개미 시황 의견을 한 곳에 모읍니다.</p>
         <div class="mtrust-soc">
           <a href="https://x.com/fireant_korea" target="_blank" rel="noopener">𝕏 X</a>
@@ -275,10 +256,7 @@ body.navopen .backdrop{opacity:1;pointer-events:auto;}
     </section>
     <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보</div>
   </div>
-  <nav class="nav" aria-label="하단 메뉴"><!--nav:bottom--><a class="on" href="/" aria-current="page"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M3 10.5 12 3l9 7.5V21H3z'/><path d='M9 21v-7h6v7'/></svg></span>대시보드</a><a href="/market"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points='3 17 9 11 13 15 21 7'/><polyline points='15 7 21 7 21 13'/></svg></span>마켓</a><a href="/macro-news"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x='3' y='5' width='14' height='14' rx='2'/><path d='M17 9h4v8a2 2 0 0 1-2 2'/><path d='M7 9h6M7 13h6M7 16h4'/></svg></span>매크로뉴스</a><a href="/charts"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M7 3v4M7 17v4'/><rect x='5' y='7' width='4' height='10' rx='1'/><path d='M17 5v3M17 16v3'/><rect x='15' y='8' width='4' height='8' rx='1'/></svg></span>주요자산차트</a><a href="/kr-exchange/"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M3 10 12 4l9 6'/><path d='M5 21v-8M9 21v-8M15 21v-8M19 21v-8M3 21h18'/></svg></span>K-거래소 현황</a><a href="/airdrop"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x='3' y='8' width='18' height='13' rx='2'/><path d='M3 12h18M12 8v13'/><path d='M12 8H8.5a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8zM12 8h3.5a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8z'/></svg></span>에어드랍</a><!--/nav:bottom--></nav>
-<script>
-document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});
-</script>
+  <nav class="nav bnav" aria-label="하단 메뉴" data-nav-ver="16f02055"><!--nav:bottom--><a class="on" href="/" aria-current="page"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M3 10.5 12 3l9 7.5V21H3z'/><path d='M9 21v-7h6v7'/></svg></span>홈</a><a href="/market"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points='3 17 9 11 13 15 21 7'/><polyline points='15 7 21 7 21 13'/></svg></span>마켓</a><a href="/macro-news"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x='3' y='5' width='14' height='14' rx='2'/><path d='M17 9h4v8a2 2 0 0 1-2 2'/><path d='M7 9h6M7 13h6M7 16h4'/></svg></span>뉴스</a><a href="/charts"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M7 3v4M7 17v4'/><rect x='5' y='7' width='4' height='10' rx='1'/><path d='M17 5v3M17 16v3'/><rect x='15' y='8' width='4' height='8' rx='1'/></svg></span>차트</a><a href="/kr-exchange/"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M3 10 12 4l9 6'/><path d='M5 21v-8M9 21v-8M15 21v-8M19 21v-8M3 21h18'/></svg></span>거래소</a><button class="bn-menu" type="button" aria-controls="drawer" aria-expanded="false"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M4 6h16M4 12h16M4 18h16'/></svg></span>메뉴</button><!--/nav:bottom--></nav>
 <script>
 const $=(id)=>document.getElementById(id);
 const esc=(s)=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -325,7 +303,8 @@ async function loadHome(){
   }catch(e){if($("btcChg"))$("btcChg").textContent="재시도…";}
 }
 function cgURL(c){const id=c&&c.id?String(c.id):"";return id?"https://www.coingecko.com/en/coins/"+encodeURIComponent(id):"https://www.coingecko.com/en/search?query="+encodeURIComponent((c&&(c.symbol||c.name))||"");}
-function row(c){return `<a class="m2" href="${esc(cgURL(c))}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;cursor:pointer" title="코인게코에서 ${esc(c.name||c.symbol||"")} 보기"><img class="lg" src="${safe(c.image)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span class="sy">${esc((c.symbol||"").toUpperCase())}</span><span class="pct ${ud(c.chg)}">${c.chg>=0?"+":""}${c.chg.toFixed(1)}%</span></a>`;}
+const cgSmall=(u)=>(u==null?u:(String(u).includes("/coins/images/")?String(u).replace("/large/","/small/"):u)); // CoinGecko large(250px)→small(16~24px 렌더)
+function row(c){return `<a class="m2" href="${esc(cgURL(c))}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;cursor:pointer" title="코인게코에서 ${esc(c.name||c.symbol||"")} 보기"><img class="lg" src="${safe(cgSmall(c.image))}" alt="" loading="lazy" decoding="async" onerror="this.style.visibility='hidden'"><span class="sy">${esc((c.symbol||"").toUpperCase())}</span><span class="pct ${ud(c.chg)}">${c.chg>=0?"+":""}${c.chg.toFixed(1)}%</span></a>`;}
 function renderMovers(){
   if(!MN)return;
   const g=(MN.gainers||[]).slice(0,10).map((c,i)=>({...c,rk:i+1}));
@@ -383,9 +362,9 @@ function stop(){clearInterval(timer);clearInterval(sigTimer);clearInterval(krTim
 document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
 start();
 </script>
-<script src="assets/whale.js?v=2"></script>
-<script src="assets/vendor/supabase.js"></script>
-<script src="assets/auth.js?v=4"></script>
-<script defer src="/assets/visit.js?v=2"></script>
+<script src="/assets/whale.js?v=503732f4"></script>
+<script src="/assets/vendor/supabase.js?v=eb9387ed" defer></script>
+<script src="/assets/auth.js?v=2fb2585f"></script>
+<script defer src="/assets/visit.js?v=47372f76"></script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",function(){try{navigator.serviceWorker.register("/sw.js").catch(function(){});}catch(e){}});}</script>
-<script src="/assets/nav.js?v=20261122b"></script></body></html>
+<script src="/assets/nav.js?v=8c4d6889"></script></body></html>
