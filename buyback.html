@@ -7,9 +7,9 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:image" content="https://antinfo.io/assets/og-image.png">
 <meta property="og:title" content="ANTINFO — 크립토 프로젝트 바이백 현황 대시보드">
-<meta property="og:description" content="크립토 프로젝트 매출 Top 20의 FDV 대비 누적 바이백 %, 30일·누적 매출, 총매출 대비 바이백·소각 %, 공식 바이백 정책, 처리 방식, FDV÷월매출 멀티플. 출처 DefiLlama·CoinGecko, 매시간 갱신.">
+<meta property="og:description" content="크립토 프로젝트 매출 Top 20의 FDV 대비 누적 바이백 %, 30일·누적 매출, 총매출 대비 바이백·소각 %, 공식 바이백 정책, 처리 방식, FDV÷누적매출 멀티플. 출처 DefiLlama·CoinGecko, 매시간 갱신.">
 <meta property="og:type" content="website">
-<meta name="description" content="크립토 프로젝트 매출 Top 20의 FDV 대비 누적 바이백 %, 30일·누적 매출, 총매출 대비 바이백·소각 %, 공식 바이백 정책, 처리 방식, FDV÷월매출 멀티플. 출처 DefiLlama·CoinGecko, 매시간 갱신.">
+<meta name="description" content="크립토 프로젝트 매출 Top 20의 FDV 대비 누적 바이백 %, 30일·누적 매출, 총매출 대비 바이백·소각 %, 공식 바이백 정책, 처리 방식, FDV÷누적매출 멀티플. 출처 DefiLlama·CoinGecko, 매시간 갱신.">
 <link rel="canonical" href="https://antinfo.io/buyback">
 <style>
 
@@ -215,7 +215,7 @@ html{background:#0a0c10;}</style><link rel="stylesheet" href="/assets/nav.css?v=
             <th class="c-hide-sm c-pol"><button type="button" data-k="policy_note">공식 정책<span class="ar"></span></button></th>
             <th><button type="button" data-k="disp_simple">처리 방식<span class="ar"></span></button></th>
             <th><button type="button" data-k="fdv">FDV<span class="ar"></span></button></th>
-            <th><button type="button" data-k="fdv_rev_mult">FDV÷월매출<span class="ar"></span></button></th>
+            <th><button type="button" data-k="fdv_rev_all_mult">FDV÷누적매출<span class="ar"></span></button></th>
           </tr></thead>
           <tbody id="rmBody"><tr><td colspan="9" class="rm-err" style="text-align:center">불러오는 중…</td></tr></tbody>
         </table>
@@ -231,7 +231,7 @@ html{background:#0a0c10;}</style><link rel="stylesheet" href="/assets/nav.css?v=
         <p><b>총매출 대비 바이백·소각 %</b> — 누적 바이백 USD ÷ 누적 총매출. 소각은 바이백 물량을 태우는 프로젝트만 계산하며, 실측 소각에는 바이백 외 소각(수수료·가스 소각 등)이 포함될 수 있어 바이백 %보다 클 수 있습니다.</p>
         <p><b>공식 정책</b> — 공식 문서·거버넌스 기준 매출(수수료) 중 바이백/소각 배정 비율. 확인 불가 시 "미확인".</p>
         <p><b>처리 방식</b> — 매수한 토큰을 소각하는지, 재단·재무 지갑에 보관하는지(혼합·없음 포함).</p>
-        <p><b>FDV÷월매출 멀티플</b> — FDV ÷ 최근 30일 매출. 낮을수록 매출 대비 저평가 쪽.</p>
+        <p><b>FDV÷누적매출 멀티플</b> — FDV ÷ 누적 총매출. 낮을수록 매출 대비 저평가 쪽. 누적 총매출은 DefiLlama 집계 시작일 이후 합계라 프로젝트 개시 전체 매출이 아닐 수 있습니다(집계 시작이 늦을수록 배수가 높게 나옴). 누적 매출이 0이거나 없으면 "—".</p>
       </div>
       <p class="rm-src">출처: DefiLlama(매출·바이백 라벨·일별 바이백), DefiLlama coins(가격), CoinGecko(FDV·발행량), 공식 문서(정책) · 매시간 갱신 · 투자 권유 아님</p>
       <p class="rm-src">매출 미집계 제외: <span class="rm-unc" id="rmUncovered">—</span></p>
@@ -240,7 +240,7 @@ html{background:#0a0c10;}</style><link rel="stylesheet" href="/assets/nav.css?v=
   </div>
 </div>
   <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 출처 DefiLlama·CoinGecko · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
-<script src="assets/revenue-meta.js?v=8"></script>
+<script src="assets/revenue-meta.js?v=9"></script>
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=4"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>
