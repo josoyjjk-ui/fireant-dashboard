@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 NAV_JS = ROOT / "assets" / "nav.js"
 
-NAV_VERSION = "20261122"
+NAV_VERSION = "20261122b"
 
 TAB_START, TAB_END = "<!--nav:tabs-->", "<!--/nav:tabs-->"
 DRAW_START, DRAW_END = "<!--nav:drawer-->", "<!--/nav:drawer-->"
@@ -29,7 +29,7 @@ SVG_CLOSE = '</svg>'
 
 PAGES = [
     "index.html", "m.html", "market.html", "macro-news.html", "signal.html",
-    "charts.html", "kr-exchange/index.html", "revenue-meta.html", "airdrop.html",
+    "charts.html", "kr-exchange/index.html", "buyback.html", "airdrop.html",
     "winners/index.html", "donate.html", "events.html", "fng.html",
     "calendar.html", "unlocks.html",
 ]

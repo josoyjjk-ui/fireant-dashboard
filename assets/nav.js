@@ -9,7 +9,7 @@
  {"label":"매크로뉴스","href":"/macro-news","group":"main","bottom":true},
  {"label":"주요자산차트","href":"/charts","group":"main","bottom":true},
  {"label":"K-거래소 현황","href":"/kr-exchange/","match":["/kr-exchange"],"group":"main","bottom":true},
- {"label":"바이백 보드","href":"/revenue-meta","group":"main"},
+ {"label":"바이백 보드","href":"/buyback","match":["/buyback","/revenue-meta"],"group":"main"},
  {"label":"에어드랍","href":"/airdrop","group":"main","bottom":true},
  {"label":"시그널","href":"/signal","group":"more"},
  {"label":"공포탐욕지수","href":"/fng","group":"more"},
