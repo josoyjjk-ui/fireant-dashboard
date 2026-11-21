@@ -211,7 +211,7 @@ html{background:#0a0c10;}</style></head>
 
   <div class="rm-stack">
     <section class="sector">
-      <div class="sector-hd">📊 FDV 대비 누적 바이백 순위<span class="hint" id="rmCount">—</span></div>
+      <div class="sector-hd">📊 FDV 대비 누적 바이백 현황<span class="hint" id="rmCount">—</span></div>
       <div class="rm-rank" id="rmRank">
         <div class="rm-msg">불러오는 중…</div>
       </div>
@@ -223,16 +223,17 @@ html{background:#0a0c10;}</style></head>
       <div class="tbl-wrap">
         <table id="rmTable">
           <thead><tr>
-            <th><button type="button" data-k="rank">순번 · 토큰<span class="ar"></span></button></th>
+            <th><button type="button" data-k="symbol">순번 · 토큰<span class="ar"></span></button></th>
             <th><button type="button" data-k="bb_supply_pct">FDV 대비 누적 바이백<span class="ar"></span></button></th>
             <th><button type="button" data-k="rev_30d">30일 매출<span class="ar"></span></button></th>
             <th class="c-hide-sm"><button type="button" data-k="rev_all">누적 총매출<span class="ar"></span></button></th>
             <th><button type="button" data-k="bb_rev_pct">총매출 대비<br>바이백 / 소각<span class="ar"></span></button></th>
             <th class="c-hide-sm c-pol"><button type="button" data-k="policy_note">공식 정책<span class="ar"></span></button></th>
             <th><button type="button" data-k="disp_simple">처리 방식<span class="ar"></span></button></th>
+            <th><button type="button" data-k="fdv">FDV<span class="ar"></span></button></th>
             <th><button type="button" data-k="fdv_rev_mult">FDV÷월매출<span class="ar"></span></button></th>
           </tr></thead>
-          <tbody id="rmBody"><tr><td colspan="8" class="rm-err" style="text-align:center">불러오는 중…</td></tr></tbody>
+          <tbody id="rmBody"><tr><td colspan="9" class="rm-err" style="text-align:center">불러오는 중…</td></tr></tbody>
         </table>
       </div>
     </section>
@@ -255,7 +256,7 @@ html{background:#0a0c10;}</style></head>
   </div>
 </div>
   <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 출처 DefiLlama·CoinGecko · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
-<script src="assets/revenue-meta.js?v=7"></script>
+<script src="assets/revenue-meta.js?v=8"></script>
 <script src="assets/vendor/supabase.js"></script>
 <script src="assets/auth.js?v=4"></script>
 <script>document.addEventListener("click",function(e){var b=document.body;if(e.target.closest(".ham"))b.classList.add("navopen");else if(e.target.closest(".drawer .x")||e.target.classList.contains("backdrop"))b.classList.remove("navopen");});</script>

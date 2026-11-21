@@ -3,10 +3,11 @@
 
   var ENDPOINT = 'data/v1/revenue_meta.json';
   var TOP_N = 5; // 상위 순위 섹션에 항상 보이는 행 수
-  var TEXT_KEYS = { symbol: 1, policy_note: 1, disp_simple: 1 }; // 텍스트 컬럼: 사전순 정렬
-  var ASC_KEYS = { rank: 1, policy_note: 1, disp_simple: 1 }; // 첫 클릭 오름차순
-  var NCOL = 8;
+  var TEXT_KEYS = { symbol: 1, policy_note: 1 }; // 텍스트 컬럼: 사전순 정렬
+  var ASC_KEYS = { symbol: 1, policy_note: 1, disp_simple: 1 }; // 첫 클릭 오름차순
+  var NCOL = 9;
   var DISPO_CLS = { '소각': 'burn', '재단 보관': 'treas', '혼합': 'mix', '없음': 'none' };
+  var DISPO_ORDER = { '소각': 0, '혼합': 1, '재단 보관': 2, '없음': 3 }; // 처리 방식 정렬 순서
   var state = { rows: [], top: 20, key: 'bb_supply_pct', dir: -1, open: false, max: 0, extra: 0 };
 
   function $(id) { return document.getElementById(id); }
@@ -52,22 +53,45 @@
   function rankTip(r) { return r.rank == null ? '30일 매출 순위 —' : '30일 매출 ' + r.rank + '위'; }
 
   // ---------- 정렬 ----------
+  function rankAsc(a, b) { return (a.rank == null ? 99 : a.rank) - (b.rank == null ? 99 : b.rank); } // 동률은 매출 순위 오름차순
+  function fin(v) { return v != null && v !== '' && isFinite(Number(v)); }
+  function sortVal(r, k) { // { n: null 여부, v: 비교값 }
+    if (r.error) return { n: true, v: null }; // 오류 행은 전 지표 null → 항상 맨 뒤
+    var v = r[k];
+    if (k === 'fdv_rev_mult' && r.fdv == null) return { n: true, v: null }; // 셀이 '—'인 경우
+    if (k === 'policy_note') {
+      if (v == null || v === '' || v === '미확인') return { n: true, v: null };
+      return { n: false, v: String(v) };
+    }
+    if (k === 'disp_simple') {
+      if (v == null || v === '' || v === '—') return { n: true, v: null }; // '없음'은 실제 범주
+      var o = DISPO_ORDER[v];
+      return { n: false, v: o == null ? 4 : o, t: String(v) };
+    }
+    if (k === 'symbol') {
+      if (v == null || v === '') return { n: true, v: null };
+      return { n: false, v: String(v) };
+    }
+    return fin(v) ? { n: false, v: Number(v) } : { n: true, v: null };
+  }
   function sortRows(rows) {
     var k = state.key, d = state.dir;
     return rows.slice().sort(function (a, b) {
-      var x = a[k], y = b[k];
-      var xn = (x == null || x === ''), yn = (y == null || y === '');
-      if (xn || yn) return xn === yn ? ((a.rank || 99) - (b.rank || 99)) : (xn ? 1 : -1); // null은 항상 맨 뒤
-      if (TEXT_KEYS[k]) return d * String(x).localeCompare(String(y), 'ko') || ((a.rank || 99) - (b.rank || 99));
-      return d * (x - y) || ((a.rank || 99) - (b.rank || 99));
+      var x = sortVal(a, k), y = sortVal(b, k);
+      if (x.n || y.n) return x.n === y.n ? rankAsc(a, b) : (x.n ? 1 : -1); // null은 방향과 무관하게 항상 맨 뒤
+      var c;
+      if (TEXT_KEYS[k]) c = x.v.localeCompare(y.v, 'ko', { sensitivity: 'base' });
+      else if (k === 'disp_simple') c = (x.v - y.v) || x.t.localeCompare(y.t, 'ko', { sensitivity: 'base' });
+      else c = x.v - y.v;
+      return (d * c) || rankAsc(a, b);
     });
   }
-  function sortRank(rows) { // FDV 대비 누적 바이백 내림차순, 없으면 매출 순위
+  function sortRank(rows) { // FDV 내림차순, FDV 없으면 매출 순위
     return rows.slice().sort(function (a, b) {
-      var x = a.bb_supply_pct, y = b.bb_supply_pct;
-      var xn = !(x > 0), yn = !(y > 0);
-      if (xn || yn) return xn === yn ? ((a.rank || 99) - (b.rank || 99)) : (xn ? 1 : -1);
-      return (y - x) || ((a.rank || 99) - (b.rank || 99));
+      var x = a.fdv, y = b.fdv;
+      var xn = !fin(x), yn = !fin(y);
+      if (xn || yn) return xn === yn ? rankAsc(a, b) : (xn ? 1 : -1);
+      return (Number(y) - Number(x)) || rankAsc(a, b);
     });
   }
 
@@ -94,7 +118,8 @@
     var p = supplyPct(r.bb_supply_pct);
     var w = (r.bb_supply_pct > 0 && state.max > 0) ? Math.max(2, r.bb_supply_pct / state.max * 100) : 0;
     var bar = w ? '<i class="rm-rank-bar' + (isEst(r) ? ' est' : '') + '" style="width:' + w.toFixed(2) + '%"></i>' : '';
-    var mt = r.fdv == null ? na('—') : '<span class="rm-mult"><em>FDV/매출</em>' + mult(r.fdv_rev_mult) + '</span>';
+    var mt = r.fdv == null ? na('—') : '<span class="rm-mult"><em>FDV</em>' + usd(r.fdv) + '</span>' +
+      '<span class="rm-mult"><em>FDV/매출</em>' + mult(r.fdv_rev_mult) + '</span>';
     return '<div class="rm-rank-row"' + tip([r.name + ' (' + rankTip(r) + ')', isEst(r) ? '누적 바이백 추정치(≈)' : '']) + '>' +
       '<span class="rm-rank-n">' + pos + '</span>' +
       '<div class="rm-rank-id"><b>' + esc(r.symbol) + '</b><span>' + esc(r.name) + '</span></div>' +
@@ -109,7 +134,7 @@
     var tg = $('rmRankToggle');
     var rows = sortRank(state.rows);
     var cnt = $('rmCount');
-    if (cnt && rows.length) cnt.textContent = rows.length + '개 중 상위 ' + Math.min(rows.length, TOP_N) + '개 · 막대는 1위 대비';
+    if (cnt && rows.length) cnt.textContent = rows.length + '개 · FDV 큰 순 · 막대는 최대 바이백 % 대비';
     if (!rows.length) {
       box.innerHTML = '<div class="rm-msg">표시할 데이터가 없습니다.</div>';
       if (cnt) cnt.textContent = '';
@@ -166,6 +191,10 @@
     return '<td class="c-hide-sm c-pol">' + inner + '</td>';
   }
 
+  function fdvCell(r) { // FDV
+    return '<td>' + (r.fdv == null ? na('—') : usd(r.fdv)) + '</td>';
+  }
+
   function m7Cell(r) {
     if (r.fdv == null) return '<td><span class="rm-na" title="FDV 미제공">—</span></td>';
     return '<td>' + (r.fdv_rev_mult == null ? na('—') : mult(r.fdv_rev_mult)) + '</td>';
@@ -179,7 +208,7 @@
     return '<tr>' + sym + m1Cell(r) +
       '<td>' + usd(r.rev_30d) + '</td>' +
       m3Cell(r) + m4Cell(r) + m5Cell(r) +
-      '<td>' + dispBadge(r) + '</td>' + m7Cell(r) +
+      '<td>' + dispBadge(r) + '</td>' + fdvCell(r) + m7Cell(r) +
       '</tr>';
   }
 
@@ -193,6 +222,10 @@
       btns[i].classList.toggle('on', on);
       var ar = btns[i].querySelector('.ar');
       if (ar) ar.textContent = on ? (state.dir < 0 ? '▼' : '▲') : '';
+      var th = btns[i].parentNode;
+      if (th && th.setAttribute) th.setAttribute('aria-sort', on ? (state.dir < 0 ? 'descending' : 'ascending') : 'none');
+      var lbl = btns[i].textContent.replace(/[▼▲]/g, '').trim(); // '정렬' 접미사 제외한 헤더 텍스트
+      btns[i].setAttribute('aria-label', lbl + ' 정렬');
     }
   }
 
