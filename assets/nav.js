@@ -10,7 +10,6 @@
  {"label":"주요자산차트","short":"차트","href":"/charts","group":"main","bottom":true,"ov":1024},
  {"label":"K-거래소 현황","short":"거래소","href":"/kr-exchange/","match":["/kr-exchange"],"group":"main","bottom":true,"ov":1024},
  {"label":"바이백 보드","href":"/buyback","match":["/buyback","/revenue-meta"],"group":"main"},
- {"label":"에어드랍","href":"/airdrop","group":"main","ov":1180},
  {"label":"시그널","href":"/signal","group":"more","sub":"ind"},
  {"label":"공포탐욕지수","href":"/fng","group":"more","sub":"ind"},
  {"label":"경제 캘린더","href":"/calendar","group":"more","sub":"ind"},
@@ -20,7 +19,7 @@
  {"label":"인사이트","href":"/posts/","match":["/posts"],"group":"more","sub":"com"},
  {"label":"코인과세유예 후원","href":"/donate","group":"more","sub":"com"}
 ]/*NAV-END*/;
-  var NAV_VER = '16f02055';
+  var NAV_VER = '2e149edb';
   var TG = { label: '텔레그램 채널', href: 'https://t.me/fireant_crypto' };
   var ICONS = /*ICONS-START*/{
  "/": "<path d='M3 10.5 12 3l9 7.5V21H3z'/><path d='M9 21v-7h6v7'/>",
@@ -28,7 +27,6 @@
  "/macro-news": "<rect x='3' y='5' width='14' height='14' rx='2'/><path d='M17 9h4v8a2 2 0 0 1-2 2'/><path d='M7 9h6M7 13h6M7 16h4'/>",
  "/charts": "<path d='M7 3v4M7 17v4'/><rect x='5' y='7' width='4' height='10' rx='1'/><path d='M17 5v3M17 16v3'/><rect x='15' y='8' width='4' height='8' rx='1'/>",
  "/kr-exchange/": "<path d='M3 10 12 4l9 6'/><path d='M5 21v-8M9 21v-8M15 21v-8M19 21v-8M3 21h18'/>",
- "/airdrop": "<rect x='3' y='8' width='18' height='13' rx='2'/><path d='M3 12h18M12 8v13'/><path d='M12 8H8.5a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8zM12 8h3.5a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8z'/>",
  "menu": "<path d='M4 6h16M4 12h16M4 18h16'/>"
 }/*ICONS-END*/;
 
