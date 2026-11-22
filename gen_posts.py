@@ -201,7 +201,7 @@ def page(meta, slug, body_html):
 {DRAWER}
 {NAV}
 <article class="main">
-<div class="crumb"><a href="/">홈</a> › <a href="/posts/">인사이트</a> › {html.escape(meta.get("type","글"))}</div>
+<div class="crumb"><a href="/">홈</a> › 인사이트 › {html.escape(meta.get("type","글"))}</div>
 <span class="ptype">{html.escape(meta.get("type","인사이트"))}</span>
 <h1 class="title">{html.escape(title)}</h1>
 <div class="meta">{meta["date"]} · ANTINFO</div>
@@ -240,7 +240,7 @@ def index_page(posts):
         body = '<div class="empty">곧 첫 글이 올라옵니다.</div>'
     url = f"{BASE}/posts/"
     return f"""<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ANTINFO 인사이트 — 시황·용어해설·크립토 분석</title>
 <meta name="description" content="불개미의 시황 코멘트와 김치프리미엄·코인베이스 프리미엄·공포탐욕지수 등 한국 투자자를 위한 크립토 용어해설·인사이트 아카이브.">
 <link rel="canonical" href="{url}">

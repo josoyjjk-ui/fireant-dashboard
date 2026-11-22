@@ -14,12 +14,9 @@
  {"label":"공포탐욕지수","href":"/fng","group":"more","sub":"ind"},
  {"label":"경제 캘린더","href":"/calendar","group":"more","sub":"ind"},
  {"label":"언락 캘린더","href":"/unlocks","group":"more","sub":"ind"},
- {"label":"이벤트 모음","href":"/events","group":"more","sub":"com"},
- {"label":"당첨자 확인","href":"/winners/","match":["/winners"],"group":"more","sub":"com"},
- {"label":"인사이트","href":"/posts/","match":["/posts"],"group":"more","sub":"com"},
  {"label":"코인과세유예 후원","href":"/donate","group":"more","sub":"com"}
 ]/*NAV-END*/;
-  var NAV_VER = '2e149edb';
+  var NAV_VER = '660d858c';
   var TG = { label: '텔레그램 채널', href: 'https://t.me/fireant_crypto' };
   var ICONS = /*ICONS-START*/{
  "/": "<path d='M3 10.5 12 3l9 7.5V21H3z'/><path d='M9 21v-7h6v7'/>",
