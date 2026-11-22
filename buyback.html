@@ -97,8 +97,9 @@ html,body{overflow-x:hidden;}
 .rm-sub{display:block;font-size:10px;font-weight:700;color:#7d8797;margin-top:2px;letter-spacing:.1px;}
 .rm-cum{display:block;font-size:12px;}
 .rm-cum2{display:block;font-size:10.5px;font-weight:700;color:#7d8797;margin-top:1px;line-height:1.45;}
-#rmTable .c-pol{white-space:normal;max-width:190px;text-align:left;font-size:12px;line-height:1.4;color:#cbd4df;}
-#rmTable th.c-pol{text-align:left;}
+#rmTable td.c-mix{white-space:normal;min-width:120px;max-width:200px;}
+.rm-pol{display:block;margin-top:4px;font-size:10.5px;font-weight:600;line-height:1.4;color:#9aa4b2;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;text-align:right;}
+.rm-pol .rm-plink{color:#9aa4b2;}
 .rm-plink{color:#cbd4df;text-decoration:underline;text-decoration-color:rgba(255,181,71,.5);text-underline-offset:2px;}
 .rm-plink:hover{color:var(--accent2);}
 .rm-plink.unv{text-decoration-color:rgba(138,148,163,.4);}
@@ -121,14 +122,18 @@ html,body{overflow-x:hidden;}
   .rm-rank-n{flex:0 0 16px;}
   .rm-rank-id{flex:1 1 auto;order:1;min-width:0;}
   .rm-rank-id span{font-size:11px;}
-  .rm-rank-val{order:2;margin-left:auto;gap:6px;flex:0 0 auto;white-space:nowrap;}
+  .rm-rank-val{order:2;margin-left:auto;gap:5px;flex:0 0 auto;white-space:nowrap;flex-wrap:wrap;row-gap:2px;}
   .rm-rank-track{order:3;flex:1 0 100%;height:12px;}
   .rm-rank-val>b{min-width:0;font-size:12.5px;}
-  .rm-mult{min-width:0;}
+  .rm-mult{min-width:0;font-size:10.5px;}
+  .rm-mult em{font-size:8.5px;}
   .rm-rank-val .rm-dp{font-size:9.5px;padding:1px 5px;}
   .rm-toggle{font-size:12px;}
   #rmTable{font-size:11.5px;}
-  #rmTable .c-hide-sm{display:none;} /* M3 누적 총매출 · M5 공식 정책 */
+  #rmTable .c-hide-sm{display:none;} /* M3 누적 총매출 · FDV÷누적바이백 */
+  #rmTable td.c-mix{min-width:70px;max-width:96px;}
+  #rmTable td.c-mix .rm-cum,#rmTable td.c-mix .rm-cum2{white-space:nowrap;}
+  .rm-pol{font-size:9px;margin-top:3px;}
   #rmTable th,#rmTable td{padding:8px 2px;}
   #rmTable th:first-child,#rmTable td:first-child{padding-left:7px;padding-right:2px;}
   #rmTable th{white-space:normal;line-height:1.2;}
@@ -188,11 +193,11 @@ html{background:#0a0c10;}</style><link rel="stylesheet" href="/assets/nav.css?v=
             <th><button type="button" data-k="bb_supply_pct">FDV 대비 누적 바이백<span class="ar"></span></button></th>
             <th><button type="button" data-k="rev_30d">30일 매출<span class="ar"></span></button></th>
             <th class="c-hide-sm"><button type="button" data-k="rev_all">누적 총매출<span class="ar"></span></button></th>
-            <th><button type="button" data-k="bb_rev_pct">총매출 대비<br>바이백 / 소각<span class="ar"></span></button></th>
-            <th class="c-hide-sm c-pol"><button type="button" data-k="policy_note">공식 정책<span class="ar"></span></button></th>
+            <th class="c-mix"><button type="button" data-k="bb_rev_pct">매출 대비 바이백·소각<br>(실측 / 공식)<span class="ar"></span></button></th>
             <th><button type="button" data-k="disp_simple">처리 방식<span class="ar"></span></button></th>
             <th><button type="button" data-k="fdv">FDV<span class="ar"></span></button></th>
             <th><button type="button" data-k="fdv_rev_all_mult">FDV÷누적매출<span class="ar"></span></button></th>
+            <th class="c-hide-sm"><button type="button" data-k="fdv_bb_all_mult">FDV÷누적바이백<span class="ar"></span></button></th>
           </tr></thead>
           <tbody id="rmBody"><tr><td colspan="9" class="rm-err" style="text-align:center">불러오는 중…</td></tr></tbody>
         </table>
@@ -205,10 +210,10 @@ html{background:#0a0c10;}</style><link rel="stylesheet" href="/assets/nav.css?v=
         <p><b>FDV 대비 누적 바이백 %</b> — 누적 바이백으로 매수한 토큰 수 ÷ 소각 전 공급량. 분모 = FDV 기준 공급량 + 누적 소각량 (소각 전 공급량). FDV 기준 공급량 = CoinGecko FDV ÷ 가격. 소각 %도 같은 분모. 최대발행량까지 미발행 물량이 남은 토큰은 툴팁에 "미발행 물량 有" 표시.</p>
         <p><b>30일 매출</b> — 최근 완결 30일(UTC) DefiLlama 매출 합계. 대상은 누적 바이백이 있고 CoinGecko 시가총액 300위 이내인 프로토콜 중 30일 매출 상위 20개입니다(채굴형 ORE 제외).</p>
         <p><b>누적 총매출</b> — DefiLlama 집계 시작 이후 전체 매출 합계(집계 시작일 표시).</p>
-        <p><b>총매출 대비 바이백·소각 %</b> — 누적 바이백 USD ÷ 누적 총매출. 소각은 바이백 물량을 태우는 프로젝트만 계산하며, 실측 소각에는 바이백 외 소각(수수료·가스 소각 등)이 포함될 수 있어 바이백 %보다 클 수 있습니다.</p>
-        <p><b>공식 정책</b> — 공식 문서·거버넌스 기준 매출(수수료) 중 바이백/소각 배정 비율. 확인 불가 시 "미확인".</p>
+        <p><b>매출 대비 바이백·소각 (실측 / 공식)</b> — 윗줄은 실측: 누적 바이백 USD ÷ 누적 총매출, 소각은 바이백 물량을 태우는 프로젝트만 계산(실측 소각에는 수수료·가스 소각 등 바이백 외 소각이 포함될 수 있어 바이백 %보다 클 수 있음). 아랫줄은 공식: 공식 문서·거버넌스 기준 매출(수수료) 중 바이백/소각 배정 비율(확인 불가 시 "미확인", 클릭 시 출처). 정렬은 실측 바이백 % 기준.</p>
         <p><b>처리 방식</b> — 매수한 토큰을 소각하는지, 재단·재무 지갑에 보관하는지(혼합·없음 포함).</p>
         <p><b>FDV÷누적매출 멀티플</b> — FDV ÷ 누적 총매출. 낮을수록 매출 대비 저평가 쪽. 누적 총매출은 DefiLlama 집계 시작일 이후 합계라 프로젝트 개시 전체 매출이 아닐 수 있습니다(집계 시작이 늦을수록 배수가 높게 나옴). 누적 매출이 0이거나 없으면 "—".</p>
+        <p><b>FDV÷누적바이백 멀티플</b> — FDV ÷ 누적 바이백 USD(DefiLlama 일별 바이백 전 기간 합계). 지금까지 사들인 금액의 몇 배가 FDV인지. 낮을수록 시총 대비 바이백 규모가 큼. 누적 바이백이 0이거나 없으면 "—".</p>
       </div>
       <p class="rm-src">출처: DefiLlama(매출·바이백 라벨·일별 바이백), DefiLlama coins(가격), CoinGecko(FDV·발행량), 공식 문서(정책) · 매시간 갱신 · 투자 권유 아님</p>
       <p class="rm-src">매출 미집계 제외: <span class="rm-unc" id="rmUncovered">—</span></p>
@@ -219,7 +224,7 @@ html{background:#0a0c10;}</style><link rel="stylesheet" href="/assets/nav.css?v=
   </div>
 </div>
   <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 출처 DefiLlama·CoinGecko · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
-<script src="/assets/revenue-meta.js?v=092a0b8f"></script>
+<script src="/assets/revenue-meta.js?v=ce88492f"></script>
 <script src="/assets/vendor/supabase.js?v=eb9387ed" defer></script>
 <script src="/assets/auth.js?v=2fb2585f"></script>
 <script defer src="/assets/visit.js?v=47372f76"></script>

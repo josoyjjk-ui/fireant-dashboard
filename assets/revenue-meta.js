@@ -3,8 +3,8 @@
 
   var ENDPOINT = 'data/v1/revenue_meta.json';
   var TOP_N = 5; // 상위 순위 섹션에 항상 보이는 행 수
-  var TEXT_KEYS = { symbol: 1, policy_note: 1 }; // 텍스트 컬럼: 사전순 정렬
-  var ASC_KEYS = { symbol: 1, policy_note: 1, disp_simple: 1 }; // 첫 클릭 오름차순
+  var TEXT_KEYS = { symbol: 1 }; // 텍스트 컬럼: 사전순 정렬
+  var ASC_KEYS = { symbol: 1, disp_simple: 1 }; // 첫 클릭 오름차순
   var NCOL = 9;
   var DISPO_CLS = { '소각': 'burn', '재단 보관': 'treas', '혼합': 'mix', '없음': 'none' };
   var DISPO_ORDER = { '소각': 0, '혼합': 1, '재단 보관': 2, '없음': 3 }; // 처리 방식 정렬 순서
@@ -85,10 +85,7 @@
     if (r.error) return { n: true, v: null }; // 오류 행은 전 지표 null → 항상 맨 뒤
     var v = r[k];
     if (k === 'fdv_rev_all_mult' && (r.fdv == null || !(r.rev_all > 0))) return { n: true, v: null }; // 셀이 '—'인 경우
-    if (k === 'policy_note') {
-      if (v == null || v === '' || v === '미확인') return { n: true, v: null };
-      return { n: false, v: String(v) };
-    }
+    if (k === 'fdv_bb_all_mult' && (r.fdv == null || !(r.buyback_all > 0))) return { n: true, v: null };
     if (k === 'disp_simple') {
       if (v == null || v === '' || v === '—') return { n: true, v: null }; // '없음'은 실제 범주
       var o = DISPO_ORDER[v];
@@ -139,7 +136,8 @@
     var w = (r.bb_supply_pct > 0 && state.max > 0) ? Math.max(2, r.bb_supply_pct / state.max * 100) : 0;
     var bar = w ? '<i class="rm-rank-bar' + (isEst(r) ? ' est' : '') + '" style="width:' + w.toFixed(2) + '%"></i>' : '';
     var mt = r.fdv == null ? na('—') : '<span class="rm-mult"><em>FDV</em>' + usd(r.fdv) + '</span>' +
-      '<span class="rm-mult"><em>FDV/누적매출</em>' + mult(r.rev_all > 0 ? r.fdv_rev_all_mult : null) + '</span>';
+      '<span class="rm-mult"><em>FDV/누적매출</em>' + mult(r.rev_all > 0 ? r.fdv_rev_all_mult : null) + '</span>' +
+      '<span class="rm-mult"><em>FDV/누적바이백</em>' + mult(r.buyback_all > 0 ? r.fdv_bb_all_mult : null) + '</span>';
     return '<div class="rm-rank-row"' + tip([r.name + ' (' + rankTip(r) + ')', isEst(r) ? '누적 바이백 추정치(≈)' : '']) + '>' +
       '<span class="rm-rank-n">' + pos + '</span>' +
       logoHtml(r) +
@@ -190,16 +188,12 @@
     return '<td class="c-hide-sm">' + usd(r.rev_all) + sub + '</td>';
   }
 
-  function m4Cell(r) { // 총매출 대비 바이백 / 소각
+  function m4Cell(r) { // 총매출 대비 바이백 / 소각 + 공식 정책
     var bb = pct1(r.bb_rev_pct);
     var bn = pct1(r.burn_rev_pct);
     var l1 = bb == null ? '<span class="rm-na">바이백 —</span>' : '바이백 ' + (isEst(r) ? '≈' : '') + bb;
     var l2 = bn == null ? '<span class="rm-na">소각 —</span>' : '소각 ' + bn;
-    return '<td><span class="rm-cum">' + l1 + '</span><span class="rm-cum2">' + l2 + '</span></td>';
-  }
-
-  function m5Cell(r) { // 공식 정책
-    var t = r.policy_note || '미확인';
+    var t = r.policy_note || '미확인'; // 공식 정책
     var unv = (t === '미확인');
     var inner = unv ? na('미확인') : esc(t);
     var ttl = tip(['확인일 ' + (r.policy_checked || '—')]);
@@ -209,7 +203,8 @@
     } else {
       inner = '<span' + ttl + '>' + inner + '</span>';
     }
-    return '<td class="c-hide-sm c-pol">' + inner + '</td>';
+    return '<td class="c-mix"><span class="rm-cum">' + l1 + '</span><span class="rm-cum2">' + l2 + '</span>' +
+      '<span class="rm-pol">공식 · ' + inner + '</span></td>';
   }
 
   function fdvCell(r) { // FDV
@@ -223,12 +218,19 @@
     return '<td' + t + '>' + (v == null ? na('—') : mult(v)) + '</td>';
   }
 
+  function m8Cell(r) {
+    if (r.fdv == null) return '<td class="c-hide-sm"><span class="rm-na" title="FDV 미제공">—</span></td>';
+    var v = (r.buyback_all > 0) ? r.fdv_bb_all_mult : null;
+    var t = tip(['FDV ÷ 누적 바이백 USD', r.bb_first_date ? '바이백 집계 ' + ym(r.bb_first_date) + '~' : '']);
+    return '<td class="c-hide-sm"' + t + '>' + (v == null ? na('—') : mult(v)) + '</td>';
+  }
+
   function rowHtml(r, pos) { // pos = 현재 정렬 기준 1..N, 매출 순위는 툴팁
     var sym = '<td' + tip([rankTip(r)]) + '><div class="rm-sym"><em class="rm-rk">' + pos + '</em>' + logoHtml(r) + '<b>' + esc(r.symbol) + '</b><span>' + esc(r.name) + '</span></div></td>';
     return '<tr>' + sym + m1Cell(r) +
       '<td>' + usd(r.rev_30d) + '</td>' +
-      m3Cell(r) + m4Cell(r) + m5Cell(r) +
-      '<td>' + dispBadge(r) + '</td>' + fdvCell(r) + m7Cell(r) +
+      m3Cell(r) + m4Cell(r) +
+      '<td>' + dispBadge(r) + '</td>' + fdvCell(r) + m7Cell(r) + m8Cell(r) +
       '</tr>';
   }
 
