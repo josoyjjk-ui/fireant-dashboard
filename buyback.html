@@ -201,7 +201,7 @@ html{background:#0a0c10;}</style><link rel="stylesheet" href="/assets/nav.css?v=
       <div class="sector-hd">📖 지표 정의</div>
       <div class="rm-defs">
         <p><b>FDV 대비 누적 바이백 %</b> — 누적 바이백으로 매수한 토큰 수 ÷ 소각 전 공급량. 분모 = FDV 기준 공급량 + 누적 소각량 (소각 전 공급량). FDV 기준 공급량 = CoinGecko FDV ÷ 가격. 소각 %도 같은 분모. 최대발행량까지 미발행 물량이 남은 토큰은 툴팁에 "미발행 물량 有" 표시.</p>
-        <p><b>30일 매출</b> — 최근 완결 30일(UTC) DefiLlama 매출 합계. 대상은 누적 바이백이 있는 프로토콜 중 30일 매출 상위 20개입니다.</p>
+        <p><b>30일 매출</b> — 최근 완결 30일(UTC) DefiLlama 매출 합계. 대상은 누적 바이백이 있고 CoinGecko 시가총액 300위 이내인 프로토콜 중 30일 매출 상위 20개입니다(채굴형 ORE 제외).</p>
         <p><b>누적 총매출</b> — DefiLlama 집계 시작 이후 전체 매출 합계(집계 시작일 표시).</p>
         <p><b>총매출 대비 바이백·소각 %</b> — 누적 바이백 USD ÷ 누적 총매출. 소각은 바이백 물량을 태우는 프로젝트만 계산하며, 실측 소각에는 바이백 외 소각(수수료·가스 소각 등)이 포함될 수 있어 바이백 %보다 클 수 있습니다.</p>
         <p><b>공식 정책</b> — 공식 문서·거버넌스 기준 매출(수수료) 중 바이백/소각 배정 비율. 확인 불가 시 "미확인".</p>
@@ -211,11 +211,13 @@ html{background:#0a0c10;}</style><link rel="stylesheet" href="/assets/nav.css?v=
       <p class="rm-src">출처: DefiLlama(매출·바이백 라벨·일별 바이백), DefiLlama coins(가격), CoinGecko(FDV·발행량), 공식 문서(정책) · 매시간 갱신 · 투자 권유 아님</p>
       <p class="rm-src">매출 미집계 제외: <span class="rm-unc" id="rmUncovered">—</span></p>
       <p class="rm-src">바이백 없음(수익을 스테이커·ve홀더에 분배): <span class="rm-unc" id="rmNoBuyback">—</span></p>
+      <p class="rm-src" hidden>제외: <span class="rm-unc" id="rmExcluded">—</span></p>
+      <p class="rm-src">CoinGecko 시가총액 300위 이내 종목만 표시</p>
     </section>
   </div>
 </div>
   <div class="foot">🐜 ANTINFO · 개미들이 필요한 모든 투자정보 · 출처 DefiLlama·CoinGecko · 투자 권유 아님<div style="margin-top:11px;font-size:14px;color:#ffb547;font-weight:800;">운영자 Social Media · <a href="https://x.com/fireant_korea" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">𝕏 X</a> · <a href="https://t.me/fireant_crypto" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">Telegram</a> · <a href="https://www.youtube.com/@FIREANTCRYPTO" target="_blank" rel="noopener" style="color:#ffb547;text-decoration:none;font-weight:800;">YouTube</a></div></div>
-<script src="/assets/revenue-meta.js?v=2a07099b"></script>
+<script src="/assets/revenue-meta.js?v=d4b7cf3b"></script>
 <script src="/assets/vendor/supabase.js?v=eb9387ed" defer></script>
 <script src="/assets/auth.js?v=2fb2585f"></script>
 <script defer src="/assets/visit.js?v=47372f76"></script>

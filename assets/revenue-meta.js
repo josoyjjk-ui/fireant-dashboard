@@ -54,7 +54,11 @@
   }
   function isEst(r) { return r.alltime_basis === '추정'; }
   function safeUrl(u) { return (typeof u === 'string' && /^https?:\/\//i.test(u)) ? u : null; }
-  function rankTip(r) { return r.rank == null ? '30일 매출 순위 —' : '30일 매출 ' + r.rank + '위'; }
+  function rankTip(r) {
+    var s = r.rank == null ? '30일 매출 순위 —' : '30일 매출 ' + r.rank + '위';
+    if (r.mcap_rank != null) s += ' · 시총 ' + r.mcap_rank + '위' + (r.mcap_rank_stale ? '(직전값)' : '');
+    return s;
+  }
 
   // ---------- 정렬 ----------
   function rankAsc(a, b) { return (a.rank == null ? 99 : a.rank) - (b.rank == null ? 99 : b.rank); } // 동률은 매출 순위 오름차순
@@ -240,8 +244,13 @@
 
   // ---------- 로드 ----------
   function hasBuyback(r) { return !r.error && r.buyback_all > 0; } // 누적 바이백(실측·추정) > 0
-  function topRows(rows, top) { // 바이백이 있는 프로토콜 중 30일 매출 상위 top개
-    return rows.filter(function (r) { return r.rank != null && hasBuyback(r); })
+  function topRows(rows, top, cap, exSyms) { // 바이백이 있는 프로토콜 중 30일 매출 상위 top개
+    return rows.filter(function (r) {
+      if (r.rank == null || !hasBuyback(r)) return false;
+      if (exSyms && exSyms[r.symbol]) return false;
+      if (cap && !(r.mcap_rank != null && r.mcap_rank <= cap)) return false;
+      return true;
+    })
       .sort(function (a, b) { return a.rank - b.rank; })
       .slice(0, top);
   }
@@ -266,14 +275,30 @@
           all.sort(function (a, b) { return (b.rev_30d || -1) - (a.rev_30d || -1); })
             .forEach(function (r, i) { if (r.rev_30d != null) r.rank = i + 1; });
         }
-        state.rows = topRows(all, state.top);
-        var nob = all.filter(function (r) { return r.rank != null && !r.error && !(r.buyback_all > 0); })
+        var exSyms = {};
+        (d.excluded || []).forEach(function (e) { if (e && e.symbol) exSyms[e.symbol] = 1; });
+        var cap = d.mcap_rank_max || 0;
+        if (cap && !all.some(function (r) { return r.mcap_rank != null; })) cap = 0; // 순위 데이터 없으면 필터 생략
+        state.rows = topRows(all, state.top, cap, exSyms);
+        var nob = all.filter(function (r) { return r.rank != null && !r.error && !(r.buyback_all > 0) && !exSyms[r.symbol]; })
           .sort(function (a, b) { return a.rank - b.rank; })
           .map(function (r) { return r.symbol; });
         var nb = $('rmNoBuyback');
         if (nb) {
           nb.parentNode.hidden = !nob.length;
           nb.textContent = nob.join(' · ');
+        }
+        var ex = $('rmExcluded');
+        if (ex) {
+          var parts = (d.excluded || []).map(function (e) {
+            return esc(e.symbol) + ' — ' + esc(e.reason || '사유 미상');
+          });
+          var rx = (d.rank_excluded || []).map(function (e) {
+            return esc(e.symbol) + '(' + (e.mcap_rank != null ? esc(e.mcap_rank) + '위' : '순위 없음') + ')';
+          });
+          if (rx.length) parts.push('시총 ' + esc(d.mcap_rank_max || 300) + '위 밖: ' + rx.join(' · '));
+          ex.innerHTML = parts.join(' / ');
+          ex.parentNode.hidden = !parts.length;
         }
 
         $('rmAsOf').textContent = kst(d.generated_at || d.as_of);
