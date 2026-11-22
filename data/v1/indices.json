@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-23T05:30:45+09:00",
-  "run_id": "1795379453",
-  "status": "ok",
+  "generated_at": "2026-11-23T05:33:09+09:00",
+  "run_id": "1795379612",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -99,7 +99,8 @@
       "change": 0.030000000000001137,
       "change_pct": 0.028898950004817583,
       "currency": "USD",
-      "market_time": 1795211999
+      "market_time": 1795211999,
+      "stale": true
     },
     {
       "name": "VIX 변동성",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-20T20:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "달러인덱스(DXY)(DX-Y.NYB): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
