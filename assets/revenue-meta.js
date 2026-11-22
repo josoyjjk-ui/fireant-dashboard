@@ -54,6 +54,24 @@
   }
   function isEst(r) { return r.alltime_basis === '추정'; }
   function safeUrl(u) { return (typeof u === 'string' && /^https?:\/\//i.test(u)) ? u : null; }
+  function cgSmall(u) { // CoinGecko 로고는 /large/ 대신 /small/ 사용
+    u = String(u == null ? '' : u);
+    return u.indexOf('/coins/images/') >= 0 ? u.replace('/large/', '/small/') : u;
+  }
+  function logoHtml(r) {
+    var L = String((r && r.symbol) || '?').charAt(0).toUpperCase();
+    if (!r || !r.image) return '<span class="rm-logo rm-logo-fb" aria-hidden="true">' + esc(L) + '</span>';
+    return '<img class="rm-logo" src="' + esc(cgSmall(r.image)) + '" width="20" height="20" alt="" loading="lazy" decoding="async" data-fb="' + esc(L) + '">';
+  }
+  function onLogoError(e) { // 로딩 실패 시 이니셜 폴백 (캡처 위임, 1회 등록)
+    var t = e && e.target;
+    if (!t || t.tagName !== 'IMG' || !t.classList || !t.classList.contains('rm-logo')) return;
+    var span = document.createElement('span');
+    span.className = 'rm-logo rm-logo-fb';
+    span.setAttribute('aria-hidden', 'true');
+    span.textContent = t.getAttribute('data-fb') || '?';
+    t.replaceWith(span);
+  }
   function rankTip(r) {
     var s = r.rank == null ? '30일 매출 순위 —' : '30일 매출 ' + r.rank + '위';
     if (r.mcap_rank != null) s += ' · 시총 ' + r.mcap_rank + '위' + (r.mcap_rank_stale ? '(직전값)' : '');
@@ -124,6 +142,7 @@
       '<span class="rm-mult"><em>FDV/누적매출</em>' + mult(r.rev_all > 0 ? r.fdv_rev_all_mult : null) + '</span>';
     return '<div class="rm-rank-row"' + tip([r.name + ' (' + rankTip(r) + ')', isEst(r) ? '누적 바이백 추정치(≈)' : '']) + '>' +
       '<span class="rm-rank-n">' + pos + '</span>' +
+      logoHtml(r) +
       '<div class="rm-rank-id"><b>' + esc(r.symbol) + '</b><span>' + esc(r.name) + '</span></div>' +
       '<div class="rm-rank-track">' + bar + '</div>' +
       '<div class="rm-rank-val"><b>' + (p == null ? na('—') : (isEst(r) ? '≈' : '') + p) + '</b>' + dispBadge(r) + mt + '</div>' +
@@ -205,7 +224,7 @@
   }
 
   function rowHtml(r, pos) { // pos = 현재 정렬 기준 1..N, 매출 순위는 툴팁
-    var sym = '<td' + tip([rankTip(r)]) + '><div class="rm-sym"><em class="rm-rk">' + pos + '</em><b>' + esc(r.symbol) + '</b><span>' + esc(r.name) + '</span></div></td>';
+    var sym = '<td' + tip([rankTip(r)]) + '><div class="rm-sym"><em class="rm-rk">' + pos + '</em>' + logoHtml(r) + '<b>' + esc(r.symbol) + '</b><span>' + esc(r.name) + '</span></div></td>';
     return '<tr>' + sym + m1Cell(r) +
       '<td>' + usd(r.rev_30d) + '</td>' +
       m3Cell(r) + m4Cell(r) + m5Cell(r) +
@@ -314,6 +333,7 @@
   }
 
   function init() {
+    document.addEventListener('error', onLogoError, true); // 로고 로딩 실패 → 이니셜 폴백 (1회)
     bindSort();
     var tg = $('rmRankToggle');
     if (tg) tg.addEventListener('click', function () { state.open = !state.open; renderRank(); });
