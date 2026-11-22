@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0c10">
+<meta name="robots" content="noindex,nofollow">
+<title>ANTINFO — Direct</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<style>
+@view-transition{navigation:auto;}
+::view-transition-group(site-nav){animation:none!important;}::view-transition-old(site-nav),::view-transition-new(site-nav){animation:none!important;mix-blend-mode:normal!important;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',sans-serif;}
+:root{color-scheme:dark;--bg:#0a0c10;--card:#13161c;--line:#232936;--txt:#e7edf3;--dim:#8a94a3;--up:#ff5d6c;--down:#4d9bff;--accent:#ff3b30;--accent2:#ffb547;}
+html{background:var(--bg);scrollbar-gutter:stable;}
+body{background:var(--bg);color:var(--txt);}
+html,body{overflow-x:hidden;}
+.logo{font-size:21px;font-weight:900;color:var(--accent);}.logo span{color:#fff;}
+.btn{padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:var(--accent);color:#0a0c10;text-decoration:none;}
+.main{padding:22px 24px;max-width:1240px;margin:0 auto;}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px;}
+.head h1{font-size:26px;font-weight:900;letter-spacing:-0.2px;}
+.head .sub{color:var(--dim);font-size:14px;font-weight:700;margin-top:5px;}
+.mono{font-variant-numeric:tabular-nums;}
+.tf{flex:0 0 auto;border:1px solid var(--line);background:#0f1218;color:var(--txt);border-radius:999px;padding:6px 8px;font-size:11px;font-weight:900;white-space:nowrap;cursor:pointer;transition:border-color .14s ease,background .14s ease,color .14s ease;}
+.tf:hover{border-color:var(--accent);}
+.tf.on{background:var(--accent);color:#0a0c10;border-color:var(--accent);}
+.foot{padding:22px;color:var(--dim);font-size:11px;border-top:1px solid var(--line);text-align:center;margin-top:40px;}
+@media(max-width:860px){.head{align-items:flex-start;flex-direction:column;}}
+@media(max-width:600px){
+  body{font-size:16px;}.logo{font-size:22px;}
+  .btn{font-size:13px;padding:8px 12px;white-space:nowrap;flex-shrink:0;}
+  .main{padding:16px 14px;}
+  .head h1{font-size:24px;}.head .sub{font-size:14px;}
+}
+
+/* ===== Direct 앱 ===== */
+#direct-main{max-width:1040px;}
+[hidden]{display:none!important;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;min-width:0;}
+.gate{max-width:520px;margin:46px auto;text-align:center;padding:36px 24px;}
+.gate h2{font-size:19px;font-weight:900;color:#fff;}
+.gate p{color:var(--dim);font-size:14px;margin-top:10px;line-height:1.6;word-break:break-word;}
+.btnG{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 18px;border-radius:10px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:800;font-size:14px;cursor:pointer;}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 14px;border-radius:9px;border:1px solid var(--line);background:#0f1218;color:var(--txt);font-weight:800;font-size:13px;cursor:pointer;transition:border-color .14s ease,background .14s ease;}
+.btn2:hover{border-color:var(--accent);}
+.btn2.pri{background:var(--accent);border-color:var(--accent);color:#0a0c10;}
+.btn2.pri:hover{filter:brightness(1.08);}
+.btn2:disabled{opacity:.45;cursor:not-allowed;}
+label.f{display:block;font-size:12px;font-weight:800;color:var(--dim);margin-bottom:5px;}
+input[type=text],input[type=number],input[type=search],input[type=file],select,textarea{width:100%;background:#0d1016;border:1px solid var(--line);border-radius:9px;color:var(--txt);font-size:13px;padding:9px 10px;font-family:inherit;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+textarea{resize:vertical;line-height:1.55;}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.err{color:#ff8a92;font-size:12.5px;font-weight:700;margin-top:8px;word-break:break-word;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.radio{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:800;cursor:pointer;min-width:0;}
+.radio input{width:auto;accent-color:var(--accent);flex:0 0 auto;}
+.statusbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:#101319;font-size:12.5px;font-weight:800;margin-bottom:12px;}
+.sb-item{display:inline-flex;align-items:center;gap:7px;min-width:0;}
+.dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
+.dot.g{background:#2ecc71;box-shadow:0 0 7px rgba(46,204,113,.55);}
+.dot.r{background:#ff5d6c;box-shadow:0 0 7px rgba(255,93,108,.5);}
+.dot.n{background:#8a94a3;}
+.sb-mail{color:var(--dim);font-weight:700;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto;text-align:right;}
+.tabs-row{display:flex;gap:6px;margin:2px 0 14px;}
+.tf.big{padding:9px 18px;font-size:13px;}
+.timer{color:var(--accent2);font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums;}
+.warn{color:#ffb547;font-size:12.5px;font-weight:800;}
+.chatwrap{display:grid;grid-template-columns:216px minmax(0,1fr);gap:12px;align-items:start;}
+.chatside{display:flex;flex-direction:column;gap:8px;padding:12px;}
+.chat-list{display:flex;flex-direction:column;gap:4px;max-height:430px;overflow-y:auto;min-width:0;}
+.chat-item{text-align:left;padding:9px 10px;border:1px solid var(--line);background:#0f1218;border-radius:9px;color:var(--txt);font-size:12.5px;font-weight:700;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.chat-item.on{border-color:var(--accent);background:#1c1216;}
+.chat-empty{color:var(--dim);font-size:12px;font-weight:700;padding:6px 2px;}
+.chat-select{display:none;}
+.chatmain{display:flex;flex-direction:column;gap:12px;min-width:0;}
+.modelbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) 110px;gap:8px;}
+#sysBox{display:flex;flex-direction:column;gap:2px;border:1px dashed var(--line);border-radius:10px;padding:12px;}
+#msgs{display:flex;flex-direction:column;gap:11px;min-width:0;}
+.msg{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:#0f1218;min-width:0;overflow-wrap:anywhere;}
+.msg.user{background:#171c26;border-color:#2b3345;}
+.msg .who{display:flex;justify-content:space-between;gap:10px;font-size:11px;font-weight:900;color:var(--accent2);margin-bottom:7px;}
+.mcost{color:var(--dim);font-weight:800;font-variant-numeric:tabular-nums;}
+.msg .body{font-size:14px;line-height:1.65;min-width:0;}
+.chatbar textarea{min-height:66px;}
+.md>*:first-child{margin-top:0;}.md>*:last-child{margin-bottom:0;}
+.md p{margin:8px 0;}
+.md h3,.md h4,.md h5{margin:14px 0 6px;color:#fff;line-height:1.3;}
+.md h3{font-size:17px;}.md h4{font-size:15px;}.md h5{font-size:14px;}
+.md ul,.md ol{margin:8px 0;padding-left:20px;display:flex;flex-direction:column;gap:3px;}
+.md hr{border:none;border-top:1px solid var(--line);margin:12px 0;}
+.md a{color:var(--accent2);text-decoration:underline;word-break:break-all;}
+.md .ic{background:#0a0d13;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:#ffd9a0;overflow-wrap:anywhere;}
+.codeblk{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0;background:#0a0d13;min-width:0;}
+.code-hd{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border-bottom:1px solid var(--line);background:#0d1016;}
+.code-lang{font-size:10.5px;font-weight:900;color:var(--accent2);text-transform:uppercase;letter-spacing:.6px;}
+.code-btns{display:flex;gap:5px;}
+.cb{border:1px solid var(--line);background:#141926;color:var(--dim);border-radius:6px;font-size:11px;font-weight:800;padding:3px 9px;cursor:pointer;}
+.cb:hover{color:var(--txt);border-color:var(--accent);}
+pre.code{margin:0;padding:11px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+pre.code code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.3px;line-height:1.6;white-space:pre;color:#dbe4f0;}
+.tok-s{color:#9ecbff;}.tok-c{color:#66707f;font-style:italic;}.tok-k{color:#ff9ab5;}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px;}
+.thumb{position:relative;width:76px;height:76px;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex:0 0 auto;}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.thumb .rm{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:6px;border:none;background:rgba(10,12,16,.82);color:#fff;font-size:11px;cursor:pointer;line-height:1;}
+.jerr{color:#ff8a92;}
+.parent-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid rgba(255,181,71,.4);background:rgba(255,181,71,.08);color:var(--accent2);border-radius:999px;font-size:12px;font-weight:800;}
+.parent-chip button{border:none;background:none;color:var(--accent2);font-size:13px;font-weight:900;cursor:pointer;padding:0 1px;line-height:1;}
+.gal-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;margin-bottom:10px;}
+.gal-head .f{margin:0;}
+.gal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+@media(min-width:800px){.gal{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(min-width:1200px){.gal{grid-template-columns:repeat(4,minmax(0,1fr));}}
+.gcard,.gprog{border:1px solid var(--line);border-radius:10px;background:#0f1218;overflow:hidden;min-width:0;display:flex;flex-direction:column;}
+.gcard .media{position:relative;width:100%;aspect-ratio:1/1;background:#0a0d13;overflow:hidden;cursor:pointer;}
+.gcard .media img,.gcard .media video{width:100%;height:100%;object-fit:cover;display:block;}
+.vph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:#0a0d13;color:var(--dim);font-size:11px;font-weight:800;text-align:center;padding:8px;overflow:hidden;}
+.vph .play{font-size:24px;color:var(--txt);line-height:1;}
+.vbadge{position:absolute;top:6px;left:6px;background:rgba(10,12,16,.85);border:1px solid var(--line);color:var(--accent2);border-radius:6px;font-size:10px;font-weight:900;padding:2px 6px;z-index:2;}
+.vstrip{display:flex;gap:4px;flex-wrap:wrap;padding:6px 8px 0;}
+.vbtn{border:1px solid var(--line);background:#0d1016;color:var(--dim);border-radius:6px;font-size:10px;font-weight:900;padding:3px 8px;cursor:pointer;line-height:1.3;}
+.vbtn.on{background:var(--accent2);border-color:var(--accent2);color:#0a0c10;}
+.gmeta{padding:7px 9px 5px;font-size:11px;color:var(--dim);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gbtns{display:flex;flex-wrap:wrap;gap:4px;padding:0 8px 9px;}
+.cbtn{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:#141926;color:var(--dim);border-radius:7px;font-size:11px;font-weight:800;padding:5px 8px;cursor:pointer;line-height:1.3;}
+.cbtn:hover{color:var(--txt);border-color:var(--accent);}
+.gprog .media{position:relative;width:100%;aspect-ratio:1/1;background:#0a0d13;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--dim);font-size:12px;font-weight:800;text-align:center;padding:10px;}
+.spin{width:22px;height:22px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:gal-spin .9s linear infinite;}
+@keyframes gal-spin{to{transform:rotate(360deg);}}
+.gfail{border-color:rgba(255,93,108,.55)!important;}
+.gfail .media{color:#ff8a92;}
+.lb{position:fixed;inset:0;background:rgba(7,9,13,.96);z-index:9000;display:flex;flex-direction:column;}
+.lb-info{padding:10px 16px 16px;font-size:12.5px;color:var(--dim);font-weight:700;overflow-y:auto;max-height:30vh;}
+.lb-info .pr{color:var(--txt);white-space:pre-wrap;overflow-wrap:anywhere;font-weight:600;line-height:1.55;}
+.gfail .media{color:#ff8a92;text-align:center;gap:5px;align-items:center;}
+.lb-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;font-size:12.5px;font-weight:800;color:var(--dim);}
+.lb-mid{flex:1;min-height:0;display:flex;align-items:center;justify-content:space-between;position:relative;padding:0 58px;}
+#lbStage{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;}
+#lbStage img,#lbStage video{max-width:100%;max-height:100%;border-radius:8px;background:#000;}
+.lb-nav{position:relative;z-index:2;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(15,18,24,.92);color:var(--txt);font-size:19px;cursor:pointer;flex:0 0 auto;}
+.lb-nav:hover{border-color:var(--accent);}
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:9999;width:min(92vw,420px);}
+.toast{background:#1b2130;border:1px solid var(--line);border-left:3px solid var(--accent);color:var(--txt);padding:11px 13px;border-radius:10px;font-size:13px;font-weight:700;box-shadow:0 10px 28px rgba(0,0,0,.5);transition:opacity .4s ease;overflow-wrap:anywhere;}
+.toast.ok{border-left-color:#2ecc71;}
+@media(max-width:860px){
+  .chatwrap{grid-template-columns:1fr;}
+  .chat-list{display:none;}.chat-select{display:block;}
+  .modelbar{grid-template-columns:1fr 1fr;}
+  .modelbar>div:nth-child(2){grid-column:1 / -1;}
+}
+@media(max-width:600px){
+  button:not(.cb):not(.rm):not(.thumb .rm),select,input[type=number],input[type=search],input[type=file]{min-height:40px;}
+  .grid3{grid-template-columns:1fr;}
+  .statusbar{font-size:12px;}
+  .gal{gap:8px;}
+  .lb-mid{padding:0 10px;}
+  .lb-nav{width:40px;height:40px;}
+  .cbtn{padding:6px 9px;}
+  .vbtn{min-height:34px;}
+}
+::view-transition{background:#0a0c10!important;}
+::view-transition-group(root),::view-transition-image-pair(root){background:#0a0c10!important;}
+::view-transition-old(root),::view-transition-new(root){background:#0a0c10!important;mix-blend-mode:normal!important;}
+html{background:#0a0c10;}
+</style><link rel="stylesheet" href="/assets/nav.css?v=27e282ba"></head>
+<body>
+<div class="backdrop"></div>
+<aside class="drawer" id="drawer" aria-label="전체 메뉴" data-nav-ver="660d858c" inert aria-hidden="true">
+  <div class="dh"><span class="dlogo"><img src="/assets/antinfo-logo-64.png" width="24" height="24" alt="">개미투자정보</span><button class="x" type="button" aria-label="닫기">✕</button></div><!--nav:drawer--><div class="dg-h">메인</div><a href="/">대시보드</a><a href="/market">마켓</a><a href="/macro-news">매크로뉴스</a><a href="/charts">주요자산차트</a><a href="/kr-exchange/">K-거래소 현황</a><a href="/buyback">바이백 보드</a><div class="dg-h">지표·캘린더</div><a href="/signal">시그널</a><a href="/fng">공포탐욕지수</a><a href="/calendar">경제 캘린더</a><a href="/unlocks">언락 캘린더</a><div class="dg-h">커뮤니티·콘텐츠</div><a href="/donate">코인과세유예 후원</a><div class="ddiv"></div><a class="sub" href="https://t.me/fireant_crypto" target="_blank" rel="noopener">텔레그램 채널</a><!--/nav:drawer-->
+</aside>
+  <div class="nav">
+    <button class="ham" type="button" aria-label="메뉴" aria-expanded="false" aria-controls="drawer">☰</button>
+    <a class="brand2" href="/"><span class="logo"><img src="/assets/antinfo-logo-64.png" srcset="/assets/antinfo-logo-64.png 1x, /assets/antinfo-logo-128.png 2x" width="28" height="28" alt="개미투자정보 ANTINFO"></span><span class="btext"><span class="bname">개미투자정보</span><span class="lede2">개미투자자들이 필요한 모든 정보</span></span></a>
+    <div class="tabs" data-nav-ver="660d858c"><!--nav:tabs--><a class="tab" href="/">대시보드</a><a class="tab" href="/market">마켓</a><a class="tab" href="/macro-news">매크로뉴스</a><a class="tab" href="/charts" data-ov="1024">주요자산차트</a><a class="tab" href="/kr-exchange/" data-ov="1024">K-거래소 현황</a><a class="tab" href="/buyback">바이백</a><div class="tab-more"><button class="tab tab-more-btn" type="button" aria-expanded="false" aria-controls="nav-more"><span class="tm-l">더보기</span></button><div class="more-panel" id="nav-more"><div class="mp-g mp-main"><div class="mp-h">메인</div><a href="/">대시보드</a><a href="/market">마켓</a><a href="/macro-news">매크로뉴스</a><a href="/charts" data-ov="1024">주요자산차트</a><a href="/kr-exchange/" data-ov="1024">K-거래소 현황</a><a href="/buyback">바이백 보드</a></div><div class="mp-g"><div class="mp-h">지표·캘린더</div><a href="/signal">시그널</a><a href="/fng">공포탐욕지수</a><a href="/calendar">경제 캘린더</a><a href="/unlocks">언락 캘린더</a></div><div class="mp-g"><div class="mp-h">커뮤니티·콘텐츠</div><a href="/donate">코인과세유예 후원</a></div></div></div><!--/nav:tabs--></div>
+    <span id="authSlot" data-mobile="0" style="display:inline-flex;align-items:center;gap:8px;margin-right:8px;"><button id="loginBtn" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid #232936;background:#fff;color:#1f2937;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button></span><script>(function(){try{var h=localStorage.getItem("antinfo_navauth");if(h){var s=document.getElementById("authSlot");if(s)s.innerHTML=h;}}catch(e){}})();</script><a class="btn nav-tg" href="https://t.me/fireant_crypto" target="_blank" rel="noopener" aria-label="텔레그램"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.4 4.3 2.9 11.5c-1.3.5-1.2 1.2-.2 1.5l4.7 1.5 1.8 5.5c.2.6.4.8.8.8s.6-.2.9-.5l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.5c.3-1.3-.5-1.8-1.3-1.5zM9 14.3l8.6-5.4c.4-.3.8-.1.5.2l-7.3 6.6-.3 3.2z"/></svg><span class="tg-l">텔레그램</span></a>
+  </div>
+
+<div id="direct-main" class="main">
+  <!-- 게이트 -->
+  <div id="gate" class="card gate" hidden>
+    <h2>Direct — 개인 전용 도구</h2>
+    <p id="gateMsg">허용된 계정으로 로그인해야 사용할 수 있습니다.</p>
+    <button id="gateLogin" type="button" class="btnG"><svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.6 20-21 0-1.2-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 5 29.5 3 24 3 16 3 9.1 7.6 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.2 0 10-2 13.6-5.2l-6.3-5.3C29.2 36 26.7 37 24 37c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9 40.3 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.3 5.3C41.8 36.2 44 30.6 44 24c0-1.2-.1-2.3-.4-3.5z"/></svg>Google 로그인</button>
+  </div>
+
+  <!-- 앱 -->
+  <div id="app" style="display:none">
+    <div class="head"><div><h1>Direct</h1><div class="sub">개인 전용 AI 도구 · 텍스트 / 이미지 / 영상</div></div></div>
+    <div class="statusbar" id="statusbar">
+      <span class="sb-item"><span class="dot n" id="relayDot" aria-hidden="true"></span><span id="relayTxt">릴레이 연결 안 됨</span></span>
+      <span class="sb-item mono" id="usageTxt">오늘 사용 –</span>
+      <span class="sb-mail" id="whoMail"></span>
+    </div>
+    <div class="tabs-row" role="tablist" aria-label="도구 종류">
+      <button class="tf big" id="tabText" role="tab">텍스트</button>
+      <button class="tf big" id="tabImage" role="tab">이미지</button>
+      <button class="tf big" id="tabVideo" role="tab">영상</button>
+    </div>
+
+    <!-- 텍스트 탭 -->
+    <section id="paneText" aria-label="텍스트">
+      <div class="chatwrap">
+        <div class="card chatside">
+          <button id="newChat" type="button" class="btn2 pri" style="width:100%">새 대화</button>
+          <select id="chatSelect" class="chat-select" aria-label="저장된 대화"></select>
+          <div class="chat-list" id="chatList" aria-label="저장된 대화 목록"></div>
+          <button id="delChat" type="button" class="btn2" style="width:100%">삭제</button>
+        </div>
+        <div class="chatmain">
+          <div class="card">
+            <div class="modelbar">
+              <div><label class="f" for="tSearch">모델 검색</label><input type="search" id="tSearch" placeholder="id 검색" autocomplete="off"></div>
+              <div><label class="f" for="tModel">텍스트 모델</label><select id="tModel"></select></div>
+              <div><label class="f" for="maxTok">max_tokens</label><input type="number" id="maxTok" value="4096" min="1" max="131072" step="1" inputmode="numeric"></div>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <button id="sysToggle" type="button" class="btn2" aria-expanded="false">시스템 프롬프트 ▾</button>
+              <select id="sysPreset" aria-label="시스템 프롬프트 프리셋" style="width:auto;flex:1 1 200px">
+                <option value="">프리셋…</option>
+                <option value="none">없음</option>
+                <option value="content">콘텐츠 작성(한국어, 습니다체)</option>
+                <option value="code">코드 생성(완전한 파일, 코드블록에 언어 표기)</option>
+              </select>
+              <button id="exportChat" type="button" class="btn2">대화 내보내기(.md)</button>
+            </div>
+            <div id="sysBox" hidden style="margin-top:10px"><label class="f" for="sysPrompt">시스템 프롬프트</label><textarea id="sysPrompt" rows="4" placeholder="예: 당신은 한국어 콘텐츠 작성 도우미입니다."></textarea></div>
+          </div>
+          <div class="card"><div id="msgs" aria-live="polite"><div class="chat-empty" id="msgEmpty">대화를 시작하세요.</div></div></div>
+          <div class="card chatbar">
+            <label class="f" for="chatInput" style="margin-bottom:7px">메시지 (Enter 전송 · Shift+Enter 줄바꿈)</label>
+            <textarea id="chatInput" rows="2" placeholder="메시지를 입력하세요"></textarea>
+            <div class="row" style="margin-top:9px">
+              <button id="sendBtn" type="button" class="btn2 pri" style="min-width:96px">전송</button>
+              <button id="stopBtn" type="button" class="btn2" disabled>중지</button>
+              <span class="err" id="tErr" style="margin-top:0;flex:1 1 100%"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 이미지 탭 -->
+    <section id="paneImage" hidden aria-label="이미지">
+      <div class="card">
+        <div class="modelbar">
+          <div><label class="f" for="iSearch">모델 검색</label><input type="search" id="iSearch" placeholder="id 검색" autocomplete="off"></div>
+          <div><label class="f" for="iModel">이미지 모델</label><select id="iModel"></select></div>
+          <div></div>
+        </div>
+        <div class="grid3" style="margin-top:10px">
+          <div><label class="f" for="iSize">크기</label><select id="iSize"><option value="">자동</option><option>1024x1024</option><option>1536x1024</option><option>1024x1536</option></select></div>
+          <div><label class="f" for="iQual">품질</label><select id="iQual"><option value="">자동</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option></select></div>
+          <div><label class="f" for="iN">생성 수 n</label><select id="iN"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+        </div>
+        <div style="margin-top:10px"><label class="f" for="iPrompt">프롬프트</label><textarea id="iPrompt" rows="3" placeholder="만들고 싶은 이미지를 설명하세요"></textarea></div>
+        <div class="row" id="iParentChip" hidden style="margin-top:9px"></div>
+        <div style="margin-top:10px"><label class="f" for="iRefs">참고 이미지 (최대 4장 · 4MB 초과 시 자동 축소)</label><input type="file" id="iRefs" accept="image/*" multiple></div>
+        <div class="thumbs" id="iThumbs"></div>
+        <div class="row" style="margin-top:12px">
+          <button id="iGen" type="button" class="btn2 pri" style="min-width:120px">생성</button>
+          <span class="warn" id="iEst"></span>
+          <span class="timer" id="iTimer"></span>
+          <span class="err" id="iErr" style="margin-top:0;flex:1 1 100%"></span>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="gal-head"><span class="f" id="iGalHead">갤러리</span><span class="timer" id="iCost"></span></div>
+        <div class="gal" id="iGal"></div>
+        <div class="chat-empty" id="iGalEmpty">아직 결과가 없습니다.</div>
+      </div>
+    </section>
+
+    <!-- 영상 탭 -->
+    <section id="paneVideo" hidden aria-label="영상">
+      <div class="card">
+        <div class="modelbar">
+          <div><label class="f" for="vSearch">모델 검색</label><input type="search" id="vSearch" placeholder="id 검색" autocomplete="off"></div>
+          <div><label class="f" for="vModel">영상 모델</label><select id="vModel"></select></div>
+          <div></div>
+        </div>
+        <fieldset style="border:none;margin-top:12px">
+          <legend class="f" style="margin-bottom:7px">모드</legend>
+          <div class="row">
+            <label class="radio"><input type="radio" name="vMode" value="text" checked>텍스트→영상</label>
+            <label class="radio"><input type="radio" name="vMode" value="image">이미지→영상</label>
+          </div>
+        </fieldset>
+        <div id="vUpBox" hidden style="margin-top:10px">
+          <label class="f" for="vUp">첫 프레임 이미지</label>
+          <input type="file" id="vUp" accept="image/*">
+          <div class="thumbs" id="vThumbs"></div>
+        </div>
+        <div style="margin-top:10px"><label class="f" for="vPrompt">프롬프트</label><textarea id="vPrompt" rows="3" placeholder="영상 묘사를 입력하세요"></textarea></div>
+        <div class="row" id="vParentChip" hidden style="margin-top:9px"></div>
+        <div class="grid3" style="margin-top:10px">
+          <div><label class="f" for="vDur">길이(초) 1–15</label><input type="number" id="vDur" value="5" min="1" max="15" step="1" inputmode="numeric"></div>
+          <div><label class="f" for="vRes">해상도</label><select id="vRes"><option value="480p" selected>480p</option><option value="720p">720p</option><option value="1080p">1080p</option></select></div>
+          <div><label class="f" for="vAr">화면 비율</label><select id="vAr"><option value="16:9" selected>16:9</option><option value="9:16">9:16</option><option value="1:1">1:1</option><option value="">자동(생략)</option></select></div>
+        </div>
+        <div class="grid2" style="margin-top:10px">
+          <div><label class="f" for="vAudio">오디오</label><label class="radio"><input type="checkbox" id="vAudio">배경음·효과음 생성</label></div>
+          <div><label class="f" for="vCap">건당 USD 상한</label><input type="number" id="vCap" value="" min="0.01" step="0.01" inputmode="decimal"></div>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button id="vGen" type="button" class="btn2 pri" style="min-width:120px">생성</button>
+          <span class="warn" id="vEst"></span>
+          <span class="err" id="vErr" style="margin-top:0;flex:1 1 100%"></span>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="gal-head"><span class="f" id="vGalHead">갤러리</span></div>
+        <div class="gal" id="vGal"></div>
+        <div class="chat-empty" id="vGalEmpty">아직 결과가 없습니다.</div>
+      </div>
+    </section>
+  </div>
+</div>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="미리보기">
+  <div class="lb-top">
+    <span id="lbTitle"></span>
+    <button class="btn2" id="lbClose" type="button" style="min-width:40px">✕</button>
+  </div>
+  <div class="lb-mid">
+    <button class="lb-nav" id="lbPrev" type="button" aria-label="이전">‹</button>
+    <div id="lbStage"></div>
+    <button class="lb-nav" id="lbNext" type="button" aria-label="다음">›</button>
+  </div>
+  <div class="lb-info">
+    <div class="pr" id="lbPrompt"></div>
+    <div id="lbMeta"></div>
+    <div id="lbBtns" class="row" style="margin-top:9px"></div>
+  </div>
+</div>
+<div id="toasts" aria-live="polite"></div>
+<script>
+/* === Direct 개인 도구 === */
+(function () {
+"use strict";
+const RELAY = (location.hostname === "localhost" || location.hostname === "127.0.0.1") ? "http://127.0.0.1:8791" : "https://fireants-mac-mini-2.tailaf106b.ts.net";
+const $ = (id) => document.getElementById(id);
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+  json(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+};
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt$ = (n) => { const v = Number(n) || 0; return "$" + (v !== 0 && Math.abs(v) < 0.01 ? v.toFixed(4) : v.toFixed(2)); };
+const pad2 = (n) => String(n).padStart(2, "0");
+function ts() { const d = new Date(); return "" + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + "-" + pad2(d.getHours()) + pad2(d.getMinutes()) + pad2(d.getSeconds()); }
+function toast(msg, ok) {
+  const t = document.createElement("div");
+  t.className = "toast" + (ok ? " ok" : "");
+  t.textContent = msg;
+  $("toasts").appendChild(t);
+  setTimeout(() => { t.style.opacity = "0"; setTimeout(() => t.remove(), 420); }, 4600);
+}
+function setErr(el, msg) { if (el) el.textContent = msg || ""; }
+
+/* ---------- 인증 ---------- */
+let sb = null, me = null;
+let renderSeq = 0;
+function showGate(msg) {
+  $("gateMsg").textContent = msg;
+  $("gate").hidden = false;
+  $("app").style.display = "none";
+}
+async function render(session) {
+  const seq = ++renderSeq;
+  if (!session) { showGate("허용된 계정으로 로그인해야 사용할 수 있습니다."); return; }
+  /* 계정 허용 여부는 릴레이가 서버측에서 판정 (/api/me) */
+  if ($("app").style.display === "none") showGate("확인 중…");  /* 토큰 갱신 시 깜빡임 방지 */
+  try {
+    await api("/api/me");
+  } catch (e) {
+    if (seq !== renderSeq) return;  /* 중복 render 호출 무시: 최신 것만 반영 */
+    if (e && e.status === 403) { showGate("허용되지 않은 계정입니다 (" + (session.user && session.user.email || "") + ")"); return; }
+    if (e && e.status === 401) { showGate("로그인이 만료되었습니다. 다시 로그인해 주세요."); return; }
+    showGate("릴레이에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.");
+    return;
+  }
+  if (seq !== renderSeq) return;  /* 중복 render 호출 무시: 최신 것만 반영 */
+  $("gate").hidden = true; $("app").style.display = "";
+  $("whoMail").textContent = session.user.email || "";
+  refreshMe();
+  bootModels();
+  if (curTab === "Image") loadGallery("image");
+  if (curTab === "Video") loadGallery("video");
+}
+function waitSb() {
+  let n = 0;
+  (function p() {
+    if (window.__sb) {
+      sb = window.__sb;
+      sb.auth.getSession().then((r) => { render(r.data.session); }).catch(() => render(null));
+      sb.auth.onAuthStateChange((ev, session) => { render(session); });
+      return;
+    }
+    if (++n > 150) {
+      $("gateMsg").textContent = "로그인 모듈을 불러오지 못했습니다. 새로고침 해주세요.";
+      $("gate").hidden = false; $("gateLogin").disabled = true;
+      return;
+    }
+    setTimeout(p, 100);
+  })();
+}
+waitSb();
+$("gateLogin").addEventListener("click", () => {
+  try { window.__sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + location.pathname } }); }
+  catch (e) { toast("로그인에 실패했습니다. 새로고침 해주세요."); }
+});
+
+/* ---------- 릴레이 API ---------- */
+function apiErr(msg, status) { const e = new Error(msg); e.status = status; return e; }
+async function api(path, opts) {
+  const sess = sb ? (await sb.auth.getSession()).data.session : null;
+  if (!sess) throw apiErr("로그인이 만료되었습니다. 다시 로그인해주세요", 401);
+  let res;
+  try {
+    res = await fetch(RELAY + path, Object.assign({}, opts, { headers: Object.assign({ "Authorization": "Bearer " + sess.access_token }, (opts && opts.headers) || {}) }));
+  } catch (e) {
+    if (e instanceof TypeError) throw new Error("릴레이 서버에 연결할 수 없습니다(맥미니/Funnel 확인)");
+    throw e;
+  }
+  if (res.ok) return res;
+  let msg = "", code = "", errField = "";
+  try { const j = await res.json(); msg = j.message || j.error || ""; code = j.code || ""; errField = j.error || ""; } catch (e) {}
+  if (res.status === 401) throw apiErr("로그인이 만료되었습니다. 다시 로그인해주세요", res.status);
+  if (res.status === 403) throw apiErr(msg || "접근이 거부되었습니다", res.status);
+  if (res.status === 402) throw apiErr("AntSeed 크레딧(USDC)이 부족합니다. 앱에서 충전해주세요", res.status);
+  if (res.status === 429) {
+    if (code === "rate_limited") throw apiErr("요청이 너무 잦습니다. 잠시 후 다시", res.status);
+    if (errField === "video_busy" || msg === "video_busy") throw apiErr("동시 영상 생성은 최대 3건입니다", res.status);
+    throw apiErr(msg || "요청이 너무 잦습니다. 잠시 후 다시", res.status);  /* daily_cap 등: 서버 message 사용 */
+  }
+  if (res.status === 502) {
+    if (code === "peer_policy") throw apiErr("피어 평판 정책에 막혔습니다. 다른 모델을 선택해보세요", res.status);
+    throw apiErr("맥미니 AntSeed 프록시가 꺼져 있습니다", res.status);  /* proxy_down */
+  }
+  throw apiErr(msg || ("요청 실패 (" + res.status + ")"), res.status);
+}
+let meTimer = null;
+async function refreshMe() {
+  try {
+    me = await (await api("/api/me")).json();
+    const dot = $("relayDot"), txt = $("relayTxt");
+    if (me.proxy === true) { dot.className = "dot g"; txt.textContent = "프록시 ON"; }
+    else if (me.proxy === false) { dot.className = "dot r"; txt.textContent = "프록시 OFF"; }
+    else { dot.className = "dot n"; txt.textContent = "릴레이 연결 안 됨"; }
+    $("usageTxt").textContent = "오늘 사용 " + fmt$(me.today_usd) + " / 상한 " + fmt$(me.daily_cap_usd);
+    if ($("vCap").value === "") {
+      $("vCap").value = me.video_default_usd;
+      $("vCap").max = me.video_max_usd;
+    }
+  } catch (e) {
+    $("relayDot").className = "dot n"; $("relayTxt").textContent = "릴레이 연결 안 됨";
+    toast(e.message);
+  }
+}
+function meTick() { clearInterval(meTimer); meTimer = setInterval(() => { if (!sb || $("app").style.display === "none") return; refreshMe(); }, 60000); }
+meTick();
+
+/* ---------- 마크다운 렌더러 ---------- */
+const KW = {
+  js: "break|case|catch|class|const|continue|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|let|new|return|super|switch|this|throw|try|typeof|var|void|while|yield|async|await|of|null|undefined|true|false",
+  ts: "break|case|catch|class|const|continue|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|interface|let|new|return|super|switch|this|throw|try|typeof|var|void|while|yield|async|await|of|type|enum|implements|readonly|null|undefined|true|false",
+  py: "and|as|assert|async|await|break|class|continue|def|del|elif|else|except|False|finally|for|from|global|if|import|in|is|lambda|None|nonlocal|not|or|pass|raise|return|True|try|while|with|yield|self",
+  html: "html|head|body|div|span|script|style|link|meta|title|a|p|ul|ol|li|table|tr|td|th|img|input|button|form|header|footer|nav|main|section|article|h1|h2|h3|h4|h5|h6",
+  css: "important|media|supports|keyframes|import|root|from|to",
+  bash: "if|then|else|elif|fi|for|while|do|done|case|esac|function|return|export|local|echo|cd|sudo|apt|npm|pip|python|git|curl",
+  json: "true|false|null"
+};
+const LANGEXT = { python: "py", py: "py", javascript: "js", js: "js", jsx: "js", typescript: "ts", ts: "ts", tsx: "ts", html: "html", xml: "html", css: "css", scss: "css", bash: "sh", sh: "sh", shell: "sh", zsh: "sh", json: "json", md: "md", markdown: "md", sql: "txt", go: "txt", rust: "txt", java: "txt", c: "txt", cpp: "txt" };
+function normLang(l) { l = (l || "").toLowerCase().trim(); return { javascript: "js", js: "js", jsx: "js", typescript: "ts", ts: "ts", tsx: "ts", python: "py", py: "py", html: "html", xml: "html", css: "css", scss: "css", bash: "sh", sh: "sh", shell: "sh", zsh: "sh", json: "json", md: "md", markdown: "md" }[l] || "txt"; }
+function hl(code, lang) {
+  const e = esc(code);
+  const kw = KW[lang] || KW.js;
+  const hash = (lang === "py" || lang === "sh");
+  const re = new RegExp(
+    "(&quot;(?:[^&\\n]|&(?!quot;))*?&quot;|&#39;(?:[^&\\n]|&(?!#39;))*?&#39;)" +
+    "|(\\/\\/[^\\n]*|\\/\\*[\\s\\S]*?\\*\\/|&lt;!--[\\s\\S]*?--&gt;" + (hash ? "|#[^\\n]*" : "") + ")" +
+    "|\\b(" + kw + ")\\b",
+    "g"
+  );
+  let out = "", last = 0;
+  e.replace(re, function (m, s, c, k, idx) {
+    out += e.slice(last, idx);
+    if (s != null) out += '<span class="tok-s">' + m + "</span>";
+    else if (c != null) out += '<span class="tok-c">' + m + "</span>";
+    else out += '<span class="tok-k">' + m + "</span>";
+    last = idx + m.length;
+    return m;
+  });
+  out += e.slice(last);
+  return out;
+}
+function safeHref(u) { try { const x = new URL(u, location.href); return /^https?:$/.test(x.protocol) ? x.href : ""; } catch (e) { return ""; } }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/`([^`\n]+)`/g, (m, c) => '<span class="ic">' + c + "</span>");
+  s = s.replace(/\*\*([^*\n][^*]*?)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>");
+  s = s.replace(/\[([^\]\n]+)\]\((https?:\/\/[^)\s]+)\)/g, (m, t, u) => { const h = safeHref(u); return h ? '<a href="' + esc(h) + '" target="_blank" rel="noopener nofollow">' + t + "</a>" : t; });
+  return s;
+}
+function renderMD(src) {
+  src = String(src ?? "");
+  const out = [];
+  const parts = src.split(/```/);
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 1) {
+      const nl = parts[i].indexOf("\n");
+      const lang = (nl < 0 ? parts[i] : parts[i].slice(0, nl)).trim();
+      const code = nl < 0 ? "" : parts[i].slice(nl + 1).replace(/\n$/, "");
+      out.push('<div class="codeblk"><div class="code-hd"><span class="code-lang">' + esc(lang || "code") + '</span><div class="code-btns"></div></div><pre class="code"><code>' + hl(code, normLang(lang)) + "</code></pre></div>");
+      continue;
+    }
+    out.push(mdBlock(parts[i]));
+  }
+  return out.join("");
+}
+function mdBlock(src) {
+  src = String(src ?? "").replace(/\r/g, "");
+  const lines = src.split("\n");
+  const out = [];
+  let list = null, para = [];
+  const flushP = () => { if (para.length) { out.push("<p>" + para.map(inline).join("<br>") + "</p>"); para = []; } };
+  const flushL = () => { if (list) { out.push("</" + list + ">"); list = null; } };
+  for (const raw of lines) {
+    const ln = raw;
+    let m;
+    if (/^###\s+/.test(ln)) { flushP(); flushL(); out.push("<h5>" + inline(ln.replace(/^###\s+/, "")) + "</h5>"); continue; }
+    if (/^##\s+/.test(ln)) { flushP(); flushL(); out.push("<h4>" + inline(ln.replace(/^##\s+/, "")) + "</h4>"); continue; }
+    if (/^#\s+/.test(ln)) { flushP(); flushL(); out.push("<h3>" + inline(ln.replace(/^#\s+/, "")) + "</h3>"); continue; }
+    if (/^\s*(---|\*\*\*)\s*$/.test(ln)) { flushP(); flushL(); out.push("<hr>"); continue; }
+    if ((m = ln.match(/^\s*[-*+]\s+(.*)$/))) { flushP(); if (list !== "ul") { flushL(); out.push("<ul>"); list = "ul"; } out.push("<li>" + inline(m[1]) + "</li>"); continue; }
+    if ((m = ln.match(/^\s*\d+[.)]\s+(.*)$/))) { flushP(); if (list !== "ol") { flushL(); out.push("<ol>"); list = "ol"; } out.push("<li>" + inline(m[1]) + "</li>"); continue; }
+    if (/^\s*>\s?/.test(ln)) { flushP(); flushL(); out.push('<p style="border-left:3px solid var(--line);padding-left:10px;color:var(--dim)">' + inline(ln.replace(/^\s*>\s?/, "")) + "</p>"); continue; }
+    if (!ln.trim()) { flushP(); flushL(); continue; }
+    para.push(ln.trim());
+  }
+  flushP(); flushL();
+  return out.join("");
+}
+
+/* ---------- 탭 ---------- */
+const TABS = [
+  { id: "Text", label: "텍스트" },
+  { id: "Image", label: "이미지" },
+  { id: "Video", label: "영상" }
+];
+let curTab = (function () { const t = LS.get("direct.tab", "Text"); return ["Text", "Image", "Video"].includes(t) ? t : "Text"; })();
+function showTab(id) {
+  curTab = id;
+  LS.set("direct.tab", id);
+  for (const t of TABS) {
+    const b = $("tab" + t.id), p = $("pane" + t.id);
+    const on = t.id === id;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-selected", on ? "true" : "false");
+    p.hidden = !on;
+  }
+  if (id === "Image") loadGallery("image");
+  if (id === "Video") loadGallery("video");
+}
+for (const t of TABS) $("tab" + t.id).addEventListener("click", () => showTab(t.id));
+/* 초기 탭 표시는 스크립트 끝(GAL 등 선언 이후)에서 */
+
+/* ---------- 모델 피커 ---------- */
+const MODEL_DEFS = [
+  { type: "text", search: "tSearch", sel: "tModel", ls: "direct.model.text", def: "glm-5.3" },
+  { type: "image", search: "iSearch", sel: "iModel", ls: "direct.model.image", def: "gpt-image-2" },
+  { type: "video", search: "vSearch", sel: "vModel", ls: "direct.model.video", def: "bytedance/seedance-2.5/text-to-video" }
+];
+const modelStore = { text: [], image: [], video: [] };
+async function loadModels(type) {
+  const d = MODEL_DEFS.find((x) => x.type === type);
+  try {
+    const r = await api("/api/models?type=" + type);
+    const j = await r.json();
+    modelStore[type] = (j.models || []).slice();
+    fillModels(type);
+  } catch (e) {
+    toast("모델 목록(" + type + ") 불러오기 실패: " + e.message);
+  }
+}
+function curModelId(type) {
+  const d = MODEL_DEFS.find((x) => x.type === type);
+  const sel = $(d.sel);
+  if (sel && sel.value) return sel.value;
+  const saved = LS.get(d.ls, "");
+  return saved || d.def;
+}
+function curModel(type) {
+  const id = curModelId(type);
+  return modelStore[type].find((m) => m.id === id) || null;
+}
+function fillModels(type) {
+  const d = MODEL_DEFS.find((x) => x.type === type);
+  const sel = $(d.sel), q = ($(d.search).value || "").toLowerCase();
+  const saved = LS.get(d.ls, "") || d.def;
+  const models = modelStore[type].filter((m) => !q || m.id.toLowerCase().includes(q) || String(m.name || "").toLowerCase().includes(q));
+  const prev = sel.value;
+  sel.textContent = "";
+  if (!models.length) { const o = document.createElement("option"); o.value = ""; o.textContent = q ? "일치하는 모델 없음" : "모델 없음"; sel.appendChild(o); sel.disabled = !modelStore[type].length; return; }
+  sel.disabled = false;
+  let pick = prev;
+  if (!pick || !models.some((m) => m.id === pick)) pick = models.some((m) => m.id === saved) ? saved : models[0].id;
+  for (const m of models) {
+    const o = document.createElement("option");
+    o.value = m.id;
+    o.textContent = m.id + " · peers " + (m.peers ?? "?") + " · " + (m.price ?? "?");
+    sel.appendChild(o);
+  }
+  sel.value = pick;
+  LS.set(d.ls, pick);
+  if (type === "video") vEstimate();
+  if (type === "image") iEstimate();
+}
+for (const d of MODEL_DEFS) {
+  $(d.search).addEventListener("input", () => fillModels(d.type));
+  $(d.sel).addEventListener("change", () => { LS.set(d.ls, $(d.sel).value); if (d.type === "video") vEstimate(); });
+}
+
+/* ---------- 코드블록 버튼(위임) ---------- */
+document.addEventListener("click", (e) => {
+  const cp = e.target.closest(".cb-copy");
+  if (cp) {
+    const code = cp.closest(".codeblk").querySelector("code");
+    const txt = code ? code.textContent : "";
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(() => { cp.textContent = "복사됨"; setTimeout(() => { cp.textContent = "복사"; }, 1400); }).catch(() => { toast("복사에 실패했습니다"); });
+    } else { toast("이 브라우저는 클립보드를 지원하지 않습니다"); }
+    return;
+  }
+  const dl = e.target.closest(".cb-dl");
+  if (dl) {
+    const blk = dl.closest(".codeblk");
+    const code = blk.querySelector("code").textContent;
+    const lang = normLang(blk.querySelector(".code-lang").textContent);
+    const fname = "direct-code-" + ts() + "." + (LANGEXT[lang] || "txt");
+    const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = fname;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+});
+function attachCodeBtns(root) {
+  root.querySelectorAll(".codeblk").forEach((blk) => {
+    if (blk.dataset.btns) return;
+    blk.dataset.btns = "1";
+    const hd = blk.querySelector(".code-btns");
+    if (!hd) return;
+    const c = document.createElement("button"); c.type = "button"; c.className = "cb cb-copy"; c.textContent = "복사";
+    const d = document.createElement("button"); d.type = "button"; d.className = "cb cb-dl"; d.textContent = "다운로드";
+    hd.appendChild(c); hd.appendChild(d);
+  });
+}
+
+/* ---------- 텍스트 탭 ---------- */
+const SYS_PRESETS = {
+  none: "",
+  content: "당신은 한국어 콘텐츠 작성 전문가입니다. 모든 답변은 한국어로, 습니다체(존댓말)로 작성하세요. 명확하고 읽기 쉬운 구성으로, 필요하면 소제목과 목록을 활용하세요.",
+  code: "당신은 시니어 개발자입니다. 코드를 생성할 때는 항상 완전한 파일(전체 코드)을 제출하고, 코드블록에 언어를 표기하세요. 부분적인 스니펫이나 '...생략...' 표기는 쓰지 마세요. 짧은 설명은 한국어로 덧붙이세요."
+};
+let chats = LS.json("direct.chats", []);
+if (!Array.isArray(chats)) chats = [];
+let curChatId = LS.get("direct.chat.cur", "");
+function saveChats() { LS.set("direct.chats", JSON.stringify(chats.slice(0, 50))); }
+function curChat() { return chats.find((c) => c.id === curChatId) || null; }
+function newChat() {
+  const c = { id: "c" + Date.now().toString(36), title: "새 대화", model: "", messages: [], updated: Date.now() };
+  chats.unshift(c);
+  chats = chats.slice(0, 50);
+  curChatId = c.id;
+  LS.set("direct.chat.cur", curChatId);
+  saveChats();
+  renderChats(); renderMsgs();
+}
+function renderChats() {
+  const list = $("chatList"), selc = $("chatSelect");
+  list.textContent = ""; selc.textContent = "";
+  if (!chats.length) {
+    const d = document.createElement("div"); d.className = "chat-empty"; d.textContent = "저장된 대화가 없습니다."; list.appendChild(d);
+    const o = document.createElement("option"); o.value = ""; o.textContent = "대화 없음"; selc.appendChild(o);
+    return;
+  }
+  chats.sort((a, b) => (b.updated || 0) - (a.updated || 0));
+  for (const c of chats) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chat-item" + (c.id === curChatId ? " on" : "");
+    b.textContent = c.title || "제목 없음";
+    b.title = c.title || "";
+    b.addEventListener("click", () => { curChatId = c.id; LS.set("direct.chat.cur", c.id); renderChats(); renderMsgs(); });
+    list.appendChild(b);
+    const o = document.createElement("option"); o.value = c.id; o.textContent = c.title || "제목 없음"; if (c.id === curChatId) o.selected = true; selc.appendChild(o);
+  }
+}
+$("chatSelect").addEventListener("change", (e) => { curChatId = e.target.value; LS.set("direct.chat.cur", curChatId); renderChats(); renderMsgs(); });
+$("newChat").addEventListener("click", newChat);
+$("delChat").addEventListener("click", () => {
+  if (!curChatId || !curChat()) { toast("삭제할 대화가 없습니다"); return; }
+  if (!confirm("현재 대화를 삭제할까요?")) return;
+  chats = chats.filter((c) => c.id !== curChatId);
+  curChatId = chats[0] ? chats[0].id : "";
+  LS.set("direct.chat.cur", curChatId);
+  saveChats(); renderChats(); renderMsgs();
+});
+let streamCtl = null;
+function setSending(on) {
+  $("sendBtn").disabled = on;
+  $("stopBtn").disabled = !on;
+  $("stopBtn").style.display = "";
+}
+function bubble(role, content, cost) {
+  const wrap = document.createElement("div");
+  wrap.className = "msg " + (role === "user" ? "user" : "ai");
+  const who = document.createElement("div"); who.className = "who";
+  const nm = document.createElement("span"); nm.textContent = role === "user" ? "나" : "어시스턴트";
+  const cs = document.createElement("span"); cs.className = "mcost"; cs.textContent = cost != null ? ("비용 " + fmt$(cost)) : "";
+  who.appendChild(nm); who.appendChild(cs);
+  const body = document.createElement("div"); body.className = "body md";
+  if (role === "user") body.textContent = content;
+  else { body.innerHTML = renderMD(content); attachCodeBtns(body); }
+  wrap.appendChild(who); wrap.appendChild(body);
+  return { wrap, body, cost: cs };
+}
+function renderMsgs() {
+  const box = $("msgs");
+  box.textContent = "";
+  const c = curChat();
+  if (!c || !c.messages.length) {
+    const d = document.createElement("div"); d.className = "chat-empty"; d.textContent = "대화를 시작하세요."; box.appendChild(d);
+    return;
+  }
+  for (const m of c.messages) {
+    const b = bubble(m.role, m.content, m.cost);
+    box.appendChild(b.wrap);
+  }
+  box.scrollTop = box.scrollHeight;
+}
+async function sendMsg() {
+  if (streamCtl) return;
+  const inp = $("chatInput");
+  const text = inp.value.trim();
+  if (!text) return;
+  let c = curChat();
+  if (!c) { newChat(); c = curChat(); }
+  const model = curModelId("text");
+  if (!model) { setErr($("tErr"), "모델을 선택해주세요"); return; }
+  c.messages.push({ role: "user", content: text });
+  if (c.messages.filter((m) => m.role === "user").length === 1) {
+    c.title = text.slice(0, 26).replace(/\s+/g, " ") || "새 대화";
+  }
+  c.model = model; c.updated = Date.now();
+  saveChats(); renderChats();
+  inp.value = "";
+  setErr($("tErr"), "");
+  renderMsgs();
+  const ai = bubble("assistant", "", 0);
+  $("msgs").appendChild(ai.wrap);
+  ai.body.innerHTML = '<span class="chat-empty">생성 중…</span>';
+  $("msgs").scrollTop = $("msgs").scrollHeight;
+  streamCtl = new AbortController();
+  setSending(true);
+  let acc = "", cost = null;
+  try {
+    const body = { model, messages: c.messages.map((m) => ({ role: m.role, content: m.content })) };
+    const sys = $("sysPrompt").value.trim();
+    if (sys) body.system = sys;
+    const mt = parseInt($("maxTok").value, 10);
+    if (mt > 0) body.max_tokens = mt;
+    const res = await fetch(RELAY + "/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + (await tok()) },
+      body: JSON.stringify(body),
+      signal: streamCtl.signal
+    });
+    if (!res.ok || !res.body) {
+      let msg = "", code2 = "";
+      try { const j = await res.json(); msg = j.message || j.error || ""; code2 = j.code || ""; } catch (e) {}
+      throw new Error(mapErr(res.status, code2, msg));
+    }
+    const rd = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "";
+    for (;;) {
+      const { done, value } = await rd.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      const lines = buf.split("\n");
+      buf = lines.pop() || "";
+      for (const ln of lines) handleLine(ln);
+    }
+    if (buf) handleLine(buf);
+    function handleLine(ln) {
+      const s = ln.trim();
+      if (!s) return;
+      if (s.startsWith(":")) {
+        const m = s.match(/^:\s*relay-cost\s+([\d.]+)/);
+        if (m) { cost = parseFloat(m[1]); ai.cost.textContent = "비용 " + fmt$(cost); }
+        return;
+      }
+      if (!s.startsWith("data:")) return;
+      const d = s.slice(5).trim();
+      if (d === "[DONE]") return;
+      try {
+        const j = JSON.parse(d);
+        const t = j && j.choices && j.choices[0] && j.choices[0].delta && j.choices[0].delta.content;
+        if (typeof t === "string" && t) { acc += t; ai.body.innerHTML = renderMD(acc); attachCodeBtns(ai.body); $("msgs").scrollTop = $("msgs").scrollHeight; }
+      } catch (e) {}
+    }
+    if (!acc) acc = "(응답 없음)";
+    c.messages.push({ role: "assistant", content: acc, cost });
+    c.updated = Date.now();
+    saveChats();
+    ai.body.innerHTML = renderMD(acc); attachCodeBtns(ai.body);
+  } catch (e) {
+    if (e && e.name === "AbortError") {
+      if (acc) { c.messages.push({ role: "assistant", content: acc + "\n\n*(중지됨)*", cost }); saveChats(); }
+      ai.body.innerHTML = renderMD(acc || "*중지되었습니다*"); attachCodeBtns(ai.body);
+      renderChats();
+    } else {
+      const m = (e && e.message) || "전송 실패";
+      setErr($("tErr"), m); toast(m);
+      ai.body.innerHTML = '<span class="jerr">' + esc(m) + "</span>";
+      if (acc) { c.messages.push({ role: "assistant", content: acc, cost }); saveChats(); }
+    }
+  } finally {
+    streamCtl = null; setSending(false); renderChats();
+    if ($("app").style.display !== "none") refreshMe();
+  }
+}
+async function tok() {
+  const r = await sb.auth.getSession();
+  return r.data.session ? r.data.session.access_token : "";
+}
+function mapErr(status, code, msg) {
+  if (status === 401) return "로그인이 만료되었습니다. 다시 로그인해주세요";
+  if (status === 403) return msg || "접근이 거부되었습니다";
+  if (status === 402) return "AntSeed 크레딧(USDC)이 부족합니다. 앱에서 충전해주세요";
+  if (status === 429) return code === "rate_limited" ? "요청이 너무 잦습니다. 잠시 후 다시" : (msg || "요청이 너무 잦습니다. 잠시 후 다시");
+  if (status === 502) return code === "peer_policy" ? "피어 평판 정책에 막혔습니다. 다른 모델을 선택해보세요" : "맥미니 AntSeed 프록시가 꺼져 있습니다";
+  return msg || ("요청 실패 (" + status + ")");
+}
+$("sendBtn").addEventListener("click", sendMsg);
+$("stopBtn").addEventListener("click", () => { if (streamCtl) streamCtl.abort(); });
+$("chatInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey && !e.isComposing && window.matchMedia("(min-width: 861px)").matches) { e.preventDefault(); sendMsg(); }
+});
+$("exportChat").addEventListener("click", () => {
+  const c = curChat();
+  if (!c || !c.messages.length) { toast("내보낼 대화가 없습니다"); return; }
+  const lines = ["# " + (c.title || "대화"), "", "_모델: " + (c.model || "?") + " · " + new Date(c.updated || Date.now()).toLocaleString("ko-KR") + "_", ""];
+  for (const m of c.messages) lines.push((m.role === "user" ? "## 나" : "## 어시스턴트") + "\n\n" + m.content + "\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/markdown;charset=utf-8" }));
+  a.download = "direct-chat-" + ts() + ".md";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+});
+$("sysToggle").addEventListener("click", () => {
+  const b = $("sysBox");
+  b.hidden = !b.hidden;
+  $("sysToggle").setAttribute("aria-expanded", b.hidden ? "false" : "true");
+  $("sysToggle").textContent = "시스템 프롬프트 " + (b.hidden ? "▾" : "▴");
+});
+$("sysPreset").addEventListener("change", (e) => {
+  const v = e.target.value;
+  if (!v) return;
+  $("sysPrompt").value = SYS_PRESETS[v] || "";
+  LS.set("direct.system", $("sysPrompt").value);
+  if ($("sysBox").hidden) $("sysToggle").click();
+  e.target.value = "";
+});
+$("sysPrompt").value = LS.get("direct.system", "");
+$("sysPrompt").addEventListener("input", (e) => LS.set("direct.system", e.target.value));
+if ($("sysPrompt").value) { $("sysBox").hidden = false; $("sysToggle").textContent = "시스템 프롬프트 ▴"; $("sysToggle").setAttribute("aria-expanded", "true"); }
+$("maxTok").value = LS.get("direct.maxtok", "4096");
+$("maxTok").addEventListener("input", (e) => LS.set("direct.maxtok", e.target.value));
+
+/* ---------- 이미지 탭 ---------- */
+let iRefs = [], iTimerIv = null;
+function readFile(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = () => rej(new Error("파일을 읽지 못했습니다"));
+    r.readAsDataURL(file);
+  });
+}
+function downscale(dataUrl) {
+  return new Promise((res) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width: w, height: h } = img;
+      const max = 1536;
+      if (w <= max && h <= max) return res(dataUrl);
+      const sc = Math.min(max / w, max / h);
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(w * sc); cv.height = Math.round(h * sc);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      res(cv.toDataURL("image/jpeg", 0.9));
+    };
+    img.onerror = () => res(dataUrl);
+    img.src = dataUrl;
+  });
+}
+async function pickRefs(files, max, existing) {
+  const out = existing.slice();
+  for (const f of files) {
+    if (out.length >= max) { toast("참고 이미지는 최대 " + max + "장까지입니다"); break; }
+    if (!/^image\//.test(f.type)) continue;
+    let d = await readFile(f);
+    if (f.size > 4 * 1024 * 1024) d = await downscale(d);
+    out.push(d);
+  }
+  return out;
+}
+function renderThumbs() {
+  const box = $("iThumbs");
+  box.textContent = "";
+  iRefs.forEach((d, i) => {
+    const t = document.createElement("div"); t.className = "thumb";
+    const im = document.createElement("img"); im.src = d; im.alt = "참고 이미지 " + (i + 1);
+    const x = document.createElement("button"); x.type = "button"; x.className = "rm"; x.textContent = "✕"; x.setAttribute("aria-label", "참고 이미지 " + (i + 1) + " 제거");
+    x.addEventListener("click", () => { iRefs.splice(i, 1); renderThumbs(); });
+    t.appendChild(im); t.appendChild(x);
+    box.appendChild(t);
+  });
+}
+$("iRefs").addEventListener("change", async (e) => {
+  iRefs = await pickRefs(e.target.files, 4, iRefs);
+  e.target.value = "";
+  renderThumbs();
+});
+function genBtnTimer(btn, timerEl, on) {
+  clearInterval(iTimerIv);
+  if (!on) { timerEl.textContent = ""; return; }
+  const t0 = Date.now();
+  timerEl.textContent = "0초 경과";
+  iTimerIv = setInterval(() => { timerEl.textContent = Math.round((Date.now() - t0) / 1000) + "초 경과"; }, 1000);
+}
+async function genImage() {
+  const prompt = $("iPrompt").value.trim();
+  if (!prompt) { setErr($("iErr"), "프롬프트를 입력해주세요"); return; }
+  const model = curModelId("image");
+  if (!model) { setErr($("iErr"), "모델을 선택해주세요"); return; }
+  setErr($("iErr"), "");
+  const n = Math.min(4, Math.max(1, parseInt($("iN").value, 10) || 1));
+  const est = iEstimate();
+  if (!confirm((est != null ? "약 " + fmt$(est) + " 차감" : "차감") + "될 수 있습니다. 진행할까요?")) return;
+  const btn = $("iGen");
+  btn.disabled = true; btn.textContent = "생성 중…";
+  genBtnTimer(btn, $("iTimer"), true);
+  const progs = [];
+  for (let i = 0; i < n; i++) progs.push(progCard("image", "생성 중", n > 1 ? (i + 1) + "/" + n + " · " + model : model));
+  try {
+    const body = { model, prompt, n };
+    const size = $("iSize").value; if (size) body.size = size;
+    const q = $("iQual").value; if (q) body.quality = q;
+    if (iRefs.length) body.refs = iRefs;
+    if (PARENT.image) body.parent = PARENT.image;
+    const j = await (await api("/api/image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })).json();
+    const imgs = (j && j.images) || [];
+    if (!imgs.length) throw new Error("이미지가 반환되지 않았습니다");
+    const st = galState("image");
+    if (!st.loaded) { await loadGallery("image"); }
+    const per = j && j.cost != null ? (j.cost / imgs.length) : null;
+    const parentId = PARENT.image || null;
+    const newIds = [];
+    const now = Date.now();
+    let k = 0;
+    for (const im of imgs) {
+      if (!im || !im.id) continue;
+      if (im.b64) { try { putCache(im.id, URL.createObjectURL(b64blob(im.b64))); } catch (e) {} }
+      const item = {
+        id: im.id, kind: "image", model, created: now + k, prompt,
+        est_usd: per, bytes: im.b64 ? Math.round(im.b64.length * 3 / 4) : 0,
+        parent: parentId, settings: { size: body.size || "", quality: body.quality || "", n: imgs.length, mode: iRefs.length ? "ref" : "text" }
+      };
+      newIds.push(im.id);
+      prependItem("image", item);
+      k++;
+    }
+    if (parentId) {
+      /* 방금 만든 결과물을 이어서 수정할 수 있도록 부모를 첫 결과물로 지정 */
+      setParent("image", newIds[0] || null);
+    }
+    renderGallery("image");
+    $("iCost").textContent = j && j.cost != null ? "예상 비용 " + fmt$(j.cost) : "";
+    toast("이미지 생성 완료" + (imgs.length > 1 ? " (" + imgs.length + "장)" : ""), true);
+  } catch (e) {
+    const m = e && e.message || "생성 실패";
+    setErr($("iErr"), m); toast(m);
+  } finally {
+    for (const p of progs) removeProg("image", p);
+    renderGallery("image");
+    btn.disabled = false; btn.textContent = "생성";
+    genBtnTimer(null, $("iTimer"), false);
+    if ($("app").style.display !== "none") refreshMe();
+  }
+}
+function b64blob(b64) {
+  const s = atob(b64 || "");
+  const u8 = new Uint8Array(s.length);
+  for (let i = 0; i < s.length; i++) u8[i] = s.charCodeAt(i);
+  return new Blob([u8], { type: "image/png" });
+}
+function iEstimate() {
+  const m = curModel("image");
+  const n = Math.min(4, Math.max(1, parseInt($("iN").value, 10) || 1));
+  const per = m ? (m.image_usd != null ? m.image_usd : (m.usd != null ? m.usd : null)) : null;
+  const est = per != null ? per * n : null;
+  $("iEst").textContent = est != null ? ("예상 약 " + fmt$(est) + (n > 1 ? " (" + n + "장)" : "")) : (m ? "예상 비용 미정" : "");
+  return est;
+}
+["iN", "iSize", "iQual"].forEach((id) => $(id).addEventListener("input", iEstimate));
+["iN", "iSize", "iQual"].forEach((id) => $(id).addEventListener("change", iEstimate));
+$("iGen").addEventListener("click", genImage);
+
+/* ---------- 갤러리 공통 ---------- */
+const MEDIA_CACHE_MAX = 60;
+const mediaCache = new Map(); /* id -> blobURL */
+const io = ("IntersectionObserver" in window) ? new IntersectionObserver(onIntersect, { rootMargin: "200px" }) : null;
+const ioPlay = ("IntersectionObserver" in window) ? new IntersectionObserver(onIntersectPlay, { rootMargin: "120px" }) : null;
+function cacheURL(id) { const u = mediaCache.get(id); if (u != null) { mediaCache.delete(id); mediaCache.set(id, u); } return u; }
+function putCache(id, url) {
+  if (mediaCache.has(id)) { const old = mediaCache.get(id); if (old !== url) URL.revokeObjectURL(old); mediaCache.delete(id); }
+  mediaCache.set(id, url);
+  while (mediaCache.size > MEDIA_CACHE_MAX) {
+    const k = mediaCache.keys().next().value;
+    const u = mediaCache.get(k); if (u) URL.revokeObjectURL(u);
+    mediaCache.delete(k);
+    dropVideos(k);
+  }
+}
+async function mediaURL(id) {
+  const c = cacheURL(id);
+  if (c) return c;
+  const res = await api("/api/media/file?id=" + encodeURIComponent(id));
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  putCache(id, url);
+  return url;
+}
+function onIntersect(ents) {
+  for (const en of ents) {
+    const el = en.target;
+    if (en.isIntersecting && el.dataset.lazy === "1") { io.unobserve(el); loadVideoCard(el); }
+    else if (en.isIntersecting) io.unobserve(el);
+  }
+}
+function onIntersectPlay(ents) {
+  for (const en of ents) {
+    const v = en.target;
+    if (en.isIntersecting) { if (v.paused) v.play().catch(() => {}); }
+    else if (!v.paused) v.pause();
+  }
+}
+function dropVideos(id) {
+  document.querySelectorAll("video[data-mid='" + CSS.escape(id) + "']").forEach((v) => {
+    if (!v.isConnected) return;
+    /* LRU 방출: 화면 밖이면 unload, 안이면 다음 관찰 시 재요청되도록 표시 */
+    const r = v.getBoundingClientRect();
+    const visible = r.bottom > 0 && r.top < innerHeight;
+    if (!visible) { v.pause(); v.removeAttribute("src"); v.src = ""; v.closest(".media").dataset.loaded = ""; }
+  });
+}
+const GAL = { image: null, video: null }; /* 각 탭 상태 */
+function galState(kind) {
+  if (!GAL[kind]) GAL[kind] = { items: [], loaded: false, loading: false, groups: [], prog: [], showMap: new Map() };
+  return GAL[kind];
+}
+function shortId(id) { return String(id || "").slice(-6); }
+function mbFmt(n) { const v = (Number(n) || 0) / 1048576; return v.toFixed(1); }
+function groupRoot(items, item) {
+  const by = new Map(items.map((x) => [x.id, x]));
+  let cur = item, hops = 0;
+  while (cur && cur.parent && hops++ < 12) {
+    const p = by.get(cur.parent);
+    if (!p) break;
+    cur = p;
+  }
+  return cur;
+}
+async function loadGallery(kind, force) {
+  const st = galState(kind);
+  if (!sb || $("app").style.display === "none") return;
+  if (st.loading) return;
+  if (st.loaded && !force) { renderGallery(kind); return; }
+  st.loading = true;
+  if (st.prog.length) renderGallery(kind);
+  try {
+    const j = await (await api("/api/media?limit=50&kind=" + kind)).json();
+    st.items = (j && j.items) || [];
+    st.total_bytes = (j && j.total_bytes) || 0;
+    st.loaded = true;
+    st.loading = false;
+    renderGallery(kind);
+  } catch (e) {
+    st.loading = false;
+    toast("갤러리(" + (kind === "image" ? "이미지" : "영상") + ") 불러오기 실패: " + e.message);
+  }
+}
+function buildGroups(st) {
+  const groups = [];
+  const byRoot = new Map();
+  for (const it of st.items) {
+    const root = groupRoot(st.items, it);
+    let g = byRoot.get(root.id);
+    if (!g) {
+      g = { rootId: root.id, versions: [] };
+      byRoot.set(root.id, g);
+      groups.push(g);
+    }
+    g.versions.push(it);
+  }
+  for (const g of groups) {
+    g.versions.sort((a, b) => String(b.created || "").localeCompare(String(a.created || ""))); /* 최신 버전이 v1 */
+    const saved = st.showMap.get(g.rootId);
+    g.show = (saved != null && saved < g.versions.length) ? saved : 0;
+  }
+  return groups;
+}
+function updateGalleryHead(kind) {
+  const st = galState(kind);
+  const h = $(kind === "image" ? "iGalHead" : "vGalHead");
+  h.textContent = "최근 생성물 " + st.items.length + "개 · 보관 용량 " + mbFmt(st.total_bytes) + " MB (맥미니 ~/.openclaw/media/direct)";
+}
+function prependItem(kind, item) {
+  const st = galState(kind);
+  if (!st.items.some((x) => x.id === item.id)) {
+    st.items.unshift(item);
+    st.items = st.items.slice(0, 50);
+  }
+  if (item.bytes) st.total_bytes = (st.total_bytes || 0) + item.bytes;
+}
+async function renderGallery(kind) {
+  const st = galState(kind);
+  const box = $(kind === "image" ? "iGal" : "vGal");
+  updateGalleryHead(kind);
+  st.groups = buildGroups(st);
+  if (kind === "video") {
+    box.querySelectorAll("video").forEach((v) => { if (ioPlay) ioPlay.unobserve(v); if (io) io.unobserve(v.closest(".media") || v); });
+  }
+  box.textContent = "";
+  const frag = document.createDocumentFragment();
+  for (const p of st.prog) frag.appendChild(p.el);
+  for (const g of st.groups) frag.appendChild(mediaCard(kind, g));
+  box.appendChild(frag);
+  $(kind === "image" ? "iGalEmpty" : "vGalEmpty").style.display = (st.prog.length || st.groups.length) ? "none" : "";
+  if (kind === "video") observeAll(box);
+}
+function observeAll(box) {
+  const els = box.querySelectorAll(".media[data-lazy]");
+  if (!io) { els.forEach(loadVideoCard); return; }
+  els.forEach((el) => io.observe(el));
+}
+function mediaCard(kind, g) {
+  const it = g.versions[g.show || 0];
+  const card = document.createElement("div"); card.className = "gcard"; card.dataset.root = g.rootId;
+  const media = document.createElement("div"); media.className = "media"; media.dataset.mid = it.id; media.setAttribute("role", "button"); media.tabIndex = 0;
+  media.setAttribute("aria-label", (kind === "image" ? "이미지" : "영상") + " 열기");
+  if (kind === "image") {
+    const im = document.createElement("img"); im.alt = "생성 이미지"; im.loading = "lazy";
+    mediaURL(it.id).then((u) => { im.src = u; }, () => { im.alt = "불러오기 실패"; im.style.opacity = ".15"; });
+    media.appendChild(im);
+  } else {
+    media.dataset.lazy = "1";
+    const ph = document.createElement("div"); ph.className = "vph";
+    const pl = document.createElement("div"); pl.className = "play"; pl.textContent = "▶";
+    const mn = document.createElement("div"); mn.textContent = it.model || "?";
+    ph.appendChild(pl); ph.appendChild(mn);
+    media.appendChild(ph);
+  }
+  if (g.versions.length > 1) {
+    const b = document.createElement("div"); b.className = "vbadge";
+    b.textContent = "v" + ((g.show || 0) + 1) + "/" + g.versions.length;
+    media.appendChild(b);
+  }
+  media.addEventListener("click", () => openLB(kind, g));
+  media.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLB(kind, g); } });
+  card.appendChild(media);
+  if (g.versions.length > 1) {
+    const strip = document.createElement("div"); strip.className = "vstrip";
+    g.versions.forEach((v, i) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "vbtn" + (i === (g.show || 0) ? " on" : "");
+      b.textContent = "v" + (i + 1);
+      b.setAttribute("aria-label", "버전 v" + (i + 1) + " 보기");
+      b.addEventListener("click", () => { g.show = i; galState(kind).showMap.set(g.rootId, i); renderGallery(kind); });
+      strip.appendChild(b);
+    });
+    card.appendChild(strip);
+  }
+  const meta = document.createElement("div"); meta.className = "gmeta";
+  meta.textContent = (it.model || "?") + (it.est_usd != null ? " · " + fmt$(it.est_usd) : "");
+  card.appendChild(meta);
+  const btns = document.createElement("div"); btns.className = "gbtns";
+  card.appendChild(btns);
+  card._btns = btns; card._item = it; card._kind = kind;
+  fillCardBtns(card);
+  return card;
+}
+function fillCardBtns(card) {
+  const it = card._item, kind = card._kind, btns = card._btns;
+  btns.textContent = "";
+  btns.appendChild(cbtn("다운로드", "⬇", () => downloadMedia(it)));
+  btns.appendChild(cbtn("이 설정으로 다시", "↻", () => reuseSettings(kind, it)));
+  if (kind === "image") btns.appendChild(cbtn("참조로 사용", "🖼", () => useAsRef(it)));
+  if (kind === "image") btns.appendChild(cbtn("영상 시작 프레임", "🎬", () => useAsFirstFrame(it)));
+}
+function cbtn(label, icon, fn) {
+  const b = document.createElement("button"); b.type = "button"; b.className = "cbtn";
+  if (icon) { const s = document.createElement("span"); s.textContent = icon; b.appendChild(s); }
+  const t = document.createElement("span"); t.textContent = label; b.appendChild(t);
+  b.addEventListener("click", fn);
+  return b;
+}
+async function downloadMedia(it) {
+  try {
+    const res = await api("/api/media/file?id=" + encodeURIComponent(it.id) + "&dl=1");
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = String(it.id).split("/").pop() || ("direct-" + ts());
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  } catch (e) { toast("다운로드 실패: " + e.message); }
+}
+
+/* ---------- 갤러리 진행 카드 ---------- */
+function progCard(kind, label, sub, t0) {
+  const st = galState(kind);
+  const p = { el: null, t0: t0 || Date.now(), iv: null, timerEl: null, statusEl: null, kind, label, sub };
+  const card = document.createElement("div"); card.className = "gprog";
+  const media = document.createElement("div"); media.className = "media";
+  const sp = document.createElement("div"); sp.className = "spin";
+  const l1 = document.createElement("div"); p.timerEl = l1;
+  const l2 = document.createElement("div"); p.statusEl = l2;
+  l2.style.fontSize = "11px"; l2.style.fontWeight = "700"; l2.style.color = "var(--dim)";
+  media.appendChild(sp); media.appendChild(l1); media.appendChild(l2);
+  card.appendChild(media);
+  const meta = document.createElement("div"); meta.className = "gmeta"; meta.textContent = sub || "";
+  card.appendChild(meta);
+  p.el = card;
+  const tick = () => { p.timerEl.textContent = label + " · " + Math.round((Date.now() - p.t0) / 1000) + "s"; };
+  p.iv = setInterval(tick, 1000);
+  tick();
+  st.prog.unshift(p);
+  renderGallery(kind);
+  return p;
+}
+function removeProg(kind, p) {
+  const st = galState(kind);
+  if (p && p.iv) clearInterval(p.iv);
+  st.prog = st.prog.filter((x) => x !== p);
+}
+async function loadVideoCard(el) {
+  const id = el.dataset.mid;
+  if (!id || el.dataset.loaded === "1") return;
+  el.dataset.loaded = "1";
+  let ph = el.querySelector(".vph");
+  if (!ph) { ph = document.createElement("div"); ph.className = "vph"; el.appendChild(ph); }
+  ph.textContent = "";
+  const spn = document.createElement("div"); spn.className = "spin";
+  ph.appendChild(spn);
+  ph.appendChild(document.createTextNode("불러오는 중…"));
+  try {
+    const url = await mediaURL(id);
+    const v = document.createElement("video");
+    v.muted = true; v.playsInline = true; v.loop = true; v.preload = "metadata"; v.controls = true;
+    v.dataset.mid = id;
+    v.src = url;
+    ph.remove();
+    el.appendChild(v);
+    if (ioPlay) ioPlay.observe(v);
+    v.play().catch(() => {});
+  } catch (e) {
+    ph.textContent = "";
+    const pl = document.createElement("div"); pl.className = "play"; pl.textContent = "⚠";
+    ph.appendChild(pl);
+    ph.appendChild(document.createTextNode("불러오기 실패 · " + (e && e.message || "")));
+  }
+}
+
+/* ---------- 라이트박스 ---------- */
+let lbCtx = null; /* {kind, groups, gi, vi, onSwipe} */
+function lbList(kind) { return galState(kind).groups; }
+function lbCur() {
+  if (!lbCtx) return null;
+  const g = lbCtx.groups[lbCtx.gi];
+  return g ? { g, it: g.versions[lbCtx.vi] } : null;
+}
+function openLB(kind, g) {
+  const groups = lbList(kind);
+  const gi = groups.indexOf(g);
+  if (gi < 0) return;
+  lbCtx = { kind, groups, gi, vi: g.show || 0 };
+  $("lb").hidden = false;
+  document.body.style.overflow = "hidden";
+  renderLB();
+}
+function closeLB() {
+  $("lb").hidden = true;
+  document.body.style.overflow = "";
+  const st = $("lbStage");
+  st.textContent = "";
+  lbCtx = null;
+}
+function lbMove(d) {
+  if (!lbCtx) return;
+  const cur = lbCur();
+  if (!cur) return;
+  let vi = lbCtx.vi, gi = lbCtx.gi;
+  if (d > 0) { if (vi < cur.g.versions.length - 1) vi++; else { gi = (gi + 1) % lbCtx.groups.length; vi = lbCtx.groups[gi].show || 0; } }
+  else { if (vi > 0) vi--; else { gi = (gi - 1 + lbCtx.groups.length) % lbCtx.groups.length; vi = lbCtx.groups[gi].show || 0; } }
+  lbCtx.gi = gi; lbCtx.vi = vi;
+  renderLB();
+}
+function settingsText(kind, it) {
+  const s = (it && it.settings) || {};
+  const parts = [];
+  if (kind === "image") {
+    if (s.size) parts.push("크기 " + s.size);
+    if (s.quality) parts.push("품질 " + s.quality);
+    if (s.n > 1) parts.push("n " + s.n);
+  } else {
+    if (s.duration) parts.push(s.duration + "초");
+    if (s.resolution) parts.push(s.resolution);
+    if (s.aspect_ratio) parts.push("비율 " + s.aspect_ratio);
+    if (s.generate_audio) parts.push("오디오");
+    if (s.max_usd != null && s.max_usd !== "") parts.push("상한 $" + s.max_usd);
+    if (s.mode === "image") parts.push("이미지→영상");
+    else if (s.mode === "text") parts.push("텍스트→영상");
+  }
+  return parts.join(" · ") || "설정 기본값";
+}
+function renderLB() {
+  const c = lbCur();
+  if (!c) { closeLB(); return; }
+  const st = $("lbStage");
+  st.textContent = "";
+  const it = c.it, kind = lbCtx.kind;
+  if (kind === "image") {
+    const im = document.createElement("img"); im.alt = "생성 이미지";
+    mediaURL(it.id).then((u) => { im.src = u; }, () => { im.alt = "불러오기 실패"; });
+    st.appendChild(im);
+  } else {
+    const v = document.createElement("video");
+    v.controls = true; v.playsInline = true; v.autoplay = true; v.loop = true; v.muted = false; v.dataset.mid = it.id;
+    mediaURL(it.id).then((u) => { v.src = u; v.play().catch(() => {}); }, () => {});
+    st.appendChild(v);
+  }
+  $("lbTitle").textContent = (kind === "image" ? "이미지" : "영상") + " · " + (it.model || "?") + (c.g.versions.length > 1 ? " · v" + (lbCtx.vi + 1) + "/" + c.g.versions.length : "");
+  $("lbPrompt").textContent = it.prompt || "";
+  $("lbMeta").textContent = settingsText(kind, it) + (it.est_usd != null ? " · 비용 " + fmt$(it.est_usd) : "") + " · " + (it.created ? new Date(it.created).toLocaleString("ko-KR") : "-");
+  const bb = $("lbBtns");
+  bb.textContent = "";
+  bb.appendChild(lbtn("다운로드", () => downloadMedia(it)));
+  bb.appendChild(lbtn("이 설정으로 다시", () => { reuseSettings(kind, it); }));
+  if (kind === "image") bb.appendChild(lbtn("참조로 사용", () => useAsRef(it)));
+  if (kind === "image") bb.appendChild(lbtn("영상 시작 프레임", () => useAsFirstFrame(it)));
+}
+function lbtn(label, fn) {
+  const b = document.createElement("button"); b.type = "button"; b.className = "btn2"; b.textContent = label;
+  b.addEventListener("click", fn);
+  return b;
+}
+$("lbClose").addEventListener("click", closeLB);
+$("lbPrev").addEventListener("click", () => lbMove(-1));
+$("lbNext").addEventListener("click", () => lbMove(1));
+document.addEventListener("keydown", (e) => {
+  if ($("lb").hidden) return;
+  if (e.key === "Escape") { closeLB(); }
+  else if (e.key === "ArrowLeft") lbMove(-1);
+  else if (e.key === "ArrowRight") lbMove(1);
+});
+(function () {
+  const m = $("lb");
+  let x0 = null, y0 = null;
+  m.addEventListener("touchstart", (e) => { const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; }, { passive: true });
+  m.addEventListener("touchend", (e) => {
+    if (x0 == null) return;
+    const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.4) lbMove(dx < 0 ? 1 : -1);
+  }, { passive: true });
+})();
+
+/* ---------- 부모(수정) 칩 ---------- */
+const PARENT = { image: null, video: null };
+function setParent(kind, id) {
+  PARENT[kind] = id || null;
+  renderParentChip(kind);
+}
+function renderParentChip(kind) {
+  const box = $(kind === "image" ? "iParentChip" : "vParentChip");
+  box.textContent = "";
+  const id = PARENT[kind];
+  if (!id) { box.hidden = true; return; }
+  box.hidden = false;
+  const c = document.createElement("span"); c.className = "parent-chip";
+  const t = document.createElement("span"); t.textContent = "수정 중: " + shortId(id);
+  const x = document.createElement("button"); x.type = "button"; x.textContent = "✕"; x.setAttribute("aria-label", "수정 대상 해제");
+  x.addEventListener("click", () => setParent(kind, null));
+  c.appendChild(t); c.appendChild(x);
+  box.appendChild(c);
+}
+function blobToDataURL(blob) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = () => rej(new Error("파일을 읽지 못했습니다"));
+    r.readAsDataURL(blob);
+  });
+}
+async function reuseSettings(kind, it) {
+  const s = (it && it.settings) || {};
+  if (it && it.prompt) $(kind === "image" ? "iPrompt" : "vPrompt").value = it.prompt;
+  if (it && it.model) selectModel(kind, it.model);
+  if (kind === "image") {
+    $("iSize").value = s.size && hasOption($("iSize"), s.size) ? s.size : "";
+    $("iQual").value = s.quality && hasOption($("iQual"), s.quality) ? s.quality : "";
+    $("iN").value = s.n > 0 ? String(s.n) : "1";
+  } else {
+    if (s.duration > 0) $("vDur").value = String(s.duration);
+    if (s.resolution && hasOption($("vRes"), s.resolution)) $("vRes").value = s.resolution;
+    if (s.aspect_ratio != null) $("vAr").value = hasOption($("vAr"), s.aspect_ratio) ? s.aspect_ratio : "";
+    $("vAudio").checked = !!s.generate_audio;
+    if (s.max_usd > 0) $("vCap").value = String(s.max_usd);
+    if (s.mode === "image") { const r = document.querySelector('input[name="vMode"][value="image"]'); if (r) { r.checked = true; $("vUpBox").hidden = false; } }
+    else if (s.mode === "text") { const r = document.querySelector('input[name="vMode"][value="text"]'); if (r) { r.checked = true; $("vUpBox").hidden = true; } }
+    vEstimate();
+  }
+  setParent(kind, it ? it.id : null);
+  closeLB();
+  showTab(kind === "image" ? "Image" : "Video");
+  const el = $(kind === "image" ? "iPrompt" : "vPrompt");
+  el.scrollIntoView({ block: "center" });
+  el.focus();
+  toast("설정을 불러왔습니다" + (it && it.model ? " · " + it.model : ""), true);
+}
+function hasOption(sel, v) {
+  for (const o of sel.options) if (o.value === v) return true;
+  return false;
+}
+function selectModel(type, id) {
+  const d = MODEL_DEFS.find((x) => x.type === type);
+  if (!d) return;
+  LS.set(d.ls, id);
+  const sel = $(d.sel), search = $(d.search);
+  const inStore = modelStore[type].some((m) => m.id === id);
+  if (!inStore) { search.value = ""; fillModels(type); }
+  const models = modelStore[type];
+  if (models.some((m) => m.id === id)) {
+    const q = (search.value || "").toLowerCase();
+    if (q && !id.toLowerCase().includes(q)) { search.value = ""; fillModels(type); }
+    if (hasOption(sel, id)) sel.value = id;
+    LS.set(d.ls, sel.value || id);
+  }
+}
+async function useAsRef(it) {
+  try {
+    const res = await api("/api/media/file?id=" + encodeURIComponent(it.id));
+    const blob = await res.blob();
+    let d = await blobToDataURL(blob);
+    d = await downscale(d);
+    iRefs = await pickRefs([dataURLFile(d)], 4, iRefs);
+    renderThumbs();
+    setParent("image", it.id);
+    closeLB();
+    showTab("Image");
+    toast("참조 이미지로 추가했습니다 (수정 중: " + shortId(it.id) + ")", true);
+  } catch (e) { toast("참조 이미지 추가 실패: " + e.message); }
+}
+function dataURLFile(dataUrl) {
+  const parts = dataUrl.split(",");
+  const mime = (/^data:([^;,]+)/.exec(parts[0]) || [])[1] || "image/jpeg";
+  const bstr = atob(parts[1] || "");
+  const u8 = new Uint8Array(bstr.length);
+  for (let i = 0; i < bstr.length; i++) u8[i] = bstr.charCodeAt(i);
+  return new File([u8], "ref.png", { type: mime });
+}
+async function useAsFirstFrame(it) {
+  try {
+    const res = await api("/api/media/file?id=" + encodeURIComponent(it.id));
+    const blob = await res.blob();
+    let d = await blobToDataURL(blob);
+    d = await downscale(d);
+    vRef = d;
+    renderVThumb();
+    const r = document.querySelector('input[name="vMode"][value="image"]');
+    if (r) { r.checked = true; $("vUpBox").hidden = false; }
+    setParent("video", it.id);
+    closeLB();
+    showTab("Video");
+    toast("첫 프레임으로 설정했습니다. 프롬프트를 입력해 영상을 만들어보세요", true);
+  } catch (e) { toast("첫 프레임 설정 실패: " + e.message); }
+}
+
+/* ---------- 영상 탭 ---------- */
+let vRef = null;
+function renderVThumb() {
+  const box = $("vThumbs");
+  box.textContent = "";
+  if (!vRef) return;
+  const t = document.createElement("div"); t.className = "thumb";
+  const im = document.createElement("img"); im.src = vRef; im.alt = "첫 프레임 이미지";
+  const x = document.createElement("button"); x.type = "button"; x.className = "rm"; x.textContent = "✕"; x.setAttribute("aria-label", "첫 프레임 제거");
+  x.addEventListener("click", () => { vRef = null; renderVThumb(); });
+  t.appendChild(im); t.appendChild(x);
+  box.appendChild(t);
+}
+$("vUp").addEventListener("change", async (e) => {
+  const f = e.target.files && e.target.files[0];
+  e.target.value = "";
+  if (!f || !/^image\//.test(f.type)) return;
+  let d = await readFile(f);
+  if (f.size > 4 * 1024 * 1024) d = await downscale(d);
+  vRef = d;
+  renderVThumb();
+});
+document.querySelectorAll('input[name="vMode"]').forEach((r) => r.addEventListener("change", () => {
+  const img = document.querySelector('input[name="vMode"]:checked').value === "image";
+  $("vUpBox").hidden = !img;
+}));
+function vEstimate() {
+  const m = curModel("video");
+  const dur = Math.min(15, Math.max(1, parseFloat($("vDur").value) || 5));
+  const est = m && m.video_usd_s ? dur * m.video_usd_s : null;
+  $("vEst").textContent = est != null ? "예상 약 " + fmt$(est) : (m ? "예상 비용 미정" : "");
+  return est;
+}
+["vDur", "vRes", "vAr", "vAudio"].forEach((id) => $(id).addEventListener("input", vEstimate));
+const vJobTimers = {};
+let vJobs = LS.json("direct.jobs", []);
+if (!Array.isArray(vJobs)) vJobs = [];
+function runningJobs() { return vJobs.filter((j) => !j.done && !j.error); }
+function saveJobs() {
+  const clean = vJobs.map((j) => {
+    const o = { job_id: j.job_id, model: j.model, peer: j.peer, created: j.created, prompt: j.prompt || "", parent: j.parent || null };
+    if (j.status) o.status = j.status;
+    return o;
+  });
+  LS.set("direct.jobs", JSON.stringify(clean.slice(0, 12)));
+}
+function vDurValid() {
+  let v = parseFloat($("vDur").value);
+  if (!isFinite(v)) return 5;
+  return Math.min(15, Math.max(1, Math.round(v)));
+}
+async function genVideo() {
+  const mode = document.querySelector('input[name="vMode"]:checked').value;
+  const prompt = $("vPrompt").value.trim();
+  if (!prompt) { setErr($("vErr"), "프롬프트를 입력해주세요"); return; }
+  if (mode === "image" && !vRef) { setErr($("vErr"), "첫 프레임 이미지를 업로드해주세요"); return; }
+  const model = curModelId("video");
+  if (!model) { setErr($("vErr"), "모델을 선택해주세요"); return; }
+  if (runningJobs().length >= 3) { setErr($("vErr"), "동시 영상 생성은 최대 3건입니다"); return; }
+  const dur = vDurValid();
+  const cap = parseFloat($("vCap").value);
+  const est = vEstimate();
+  if (est != null && cap > 0 && est > cap) {
+    toast("예상 비용($" + est.toFixed(2) + ")이 건당 상한($" + cap.toFixed(2) + ")을 넘습니다. 상한을 올리거나 길이를 줄여주세요");
+    return;
+  }
+  setErr($("vErr"), "");
+  if (!confirm("약 $" + (est != null ? est.toFixed(2) : (cap > 0 ? cap.toFixed(2) : "0.00")) + " 차감될 수 있습니다. 진행할까요?")) return;
+  const btn = $("vGen");
+  btn.disabled = true; btn.textContent = "제출 중…";
+  vSubmitting = true;
+  try {
+    const body = { model, prompt, duration: dur };
+    const res = $("vRes").value; if (res) body.resolution = res;
+    const ar = $("vAr").value; if (ar) body.aspect_ratio = ar;
+    if (mode === "image" && vRef) body.image_url = vRef;
+    if ($("vAudio").checked) body.generate_audio = true;
+    if (isFinite(cap) && cap > 0) body.max_usd = cap;
+    if (PARENT.video) body.parent = PARENT.video;
+    const j = await (await api("/api/video", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })).json();
+    const job = { job_id: j.job_id, model, peer: j.peer || "", created: Date.now(), prompt, parent: PARENT.video || null, settings: body };
+    vJobs.unshift(job);
+    vJobs = vJobs.slice(0, 12);
+    saveJobs();
+    startJobCard(job);
+    pollJob(job);
+    toast("영상 생성 요청 완료", true);
+    if ($("app").style.display !== "none") refreshMe();
+  } catch (e) {
+    const m = e && e.message || "요청 실패";
+    setErr($("vErr"), m); toast(m);
+  } finally {
+    vSubmitting = false;
+    updateVBtn();
+  }
+}
+let vSubmitting = false;
+function updateVBtn() {
+  if (vSubmitting) return;
+  const btn = $("vGen"), n = runningJobs().length;
+  btn.disabled = n >= 3;
+  btn.textContent = n >= 3 ? "3건 진행 중" : "생성";
+}
+function startJobCard(job) {
+  const p = progCard("video", "생성 중", shortId(job.job_id) + " · " + (job.model || "?"), job.created);
+  if (p.statusEl && job.status) p.statusEl.textContent = job.status;
+  job.card = p;
+}
+function failJobCard(job, msg) {
+  const st = galState("video");
+  const card = document.createElement("div"); card.className = "gcard gfail";
+  const media = document.createElement("div"); media.className = "media";
+  const m1 = document.createElement("div"); m1.textContent = "실패";
+  const m2 = document.createElement("div"); m2.textContent = msg || "생성 실패";
+  const m3 = document.createElement("div"); m3.style.fontSize = "10.5px"; m3.style.fontWeight = "700"; m3.textContent = shortId(job.job_id);
+  media.appendChild(m1); media.appendChild(m2); media.appendChild(m3);
+  const btns = document.createElement("div"); btns.className = "gbtns";
+  const rb = cbtn("다시 시도", "↻", () => retryVideo(job));
+  btns.appendChild(rb);
+  card.appendChild(media); card.appendChild(btns);
+  const p = { el: card, iv: null };
+  job.failCard = p;
+  st.prog.unshift(p);
+  renderGallery("video");
+}
+async function retryVideo(job) {
+  if (runningJobs().length >= 3) { toast("동시 영상 생성은 최대 3건입니다"); return; }
+  const st = galState("video");
+  if (job.failCard) st.prog = st.prog.filter((x) => x !== job.failCard);
+  renderGallery("video");
+  const oldPrompt = job.prompt || "";
+  const oldModel = job.model;
+  const oldSettings = job.settings || null;
+  let body;
+  if (oldSettings) {
+    body = Object.assign({}, oldSettings);
+    body.prompt = oldPrompt; body.model = oldModel;
+  } else {
+    /* 세부 설정이 로컬에 남지 않은(재시작 후) 잡: 현재 폼 값으로 재구성 */
+    body = { model: oldModel, prompt: oldPrompt, duration: vDurValid() };
+    const res2 = $("vRes").value; if (res2) body.resolution = res2;
+    const ar = $("vAr").value; if (ar) body.aspect_ratio = ar;
+    const cap = parseFloat($("vCap").value); if (isFinite(cap) && cap > 0) body.max_usd = cap;
+    if (job.parent) body.parent = job.parent;
+  }
+  try {
+    const j = await (await api("/api/video", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })).json();
+    const nj = { job_id: j.job_id, model: oldModel, peer: j.peer || "", created: Date.now(), prompt: oldPrompt, parent: body.parent || null, settings: body };
+    vJobs = vJobs.filter((x) => x.job_id !== job.job_id);
+    vJobs.unshift(nj); vJobs = vJobs.slice(0, 12);
+    saveJobs();
+    startJobCard(nj);
+    pollJob(nj);
+    toast("다시 시도합니다", true);
+  } catch (e) {
+    toast("재시도 실패: " + (e && e.message || ""));
+    failJobCard(job, (e && e.message) || "재시도 실패");
+  }
+  updateVBtn();
+}
+async function pollJob(job) {
+  if (job.done || vJobTimers[job.job_id]) return;
+  const t0 = job.created || Date.now();
+  const iv = setInterval(async () => {
+    if (job.done) { clearInterval(iv); delete vJobTimers[job.job_id]; return; }
+    const elapsed = Math.round((Date.now() - t0) / 1000);
+    if (elapsed > 1800) {
+      stopJob(job, "30분 초과");
+      toast("영상 생성이 30분을 초과했습니다");
+      return;
+    }
+    try {
+      const res = await api("/api/video/status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ job_id: job.job_id, model: job.model, peer: job.peer }) });
+      const j = await res.json();
+      const stt = j && (j.status || "");
+      if (stt === "COMPLETED" && j && j.id) {
+        clearInterval(iv); delete vJobTimers[job.job_id];
+        finishJob(job, j.id);
+        return;
+      }
+      if (/FAILED|ERROR/i.test(stt) || (j && j.error)) {
+        stopJob(job, (j && j.error) || stt || "생성 실패");
+        toast("영상 생성 실패: " + ((j && j.error) || stt || ""));
+        return;
+      }
+      if (job.card && job.card.statusEl && stt) {
+        job.status = stt;
+        job.card.statusEl.textContent = stt;
+      }
+    } catch (e) {
+      const msg = (e && e.message) || "";
+      if (/릴레이 서버에 연결할 수 없습니다|로그인이 만료되었습니다/.test(msg)) { /* 일시 오류·로그아웃: 계속 폴링(재로그인 시 이어서 확인) */ }
+      else { stopJob(job, msg || "상태 확인 실패"); toast(job.error || "상태 확인 실패"); }
+    }
+  }, 8000);
+  vJobTimers[job.job_id] = iv;
+  updateVBtn();
+}
+function stopJob(job, err) {
+  const iv = vJobTimers[job.job_id];
+  if (iv) { clearInterval(iv); delete vJobTimers[job.job_id]; }
+  job.done = true; job.error = err || "실패";
+  vJobs = vJobs.filter((x) => x.job_id !== job.job_id);
+  saveJobs();
+  if (job.card) removeProg("video", job.card);
+  failJobCard(job, job.error);
+  updateVBtn();
+  if ($("app").style.display !== "none") refreshMe();
+}
+async function finishJob(job, mediaId) {
+  const iv = vJobTimers[job.job_id];
+  if (iv) { clearInterval(iv); delete vJobTimers[job.job_id]; }
+  job.done = true; job.mediaId = mediaId;
+  vJobs = vJobs.filter((x) => x.job_id !== job.job_id);
+  saveJobs();
+  if (job.card) removeProg("video", job.card);
+  const st = galState("video");
+  const s = job.settings || {};
+  prependItem("video", {
+    id: mediaId, kind: "video", model: job.model, created: Date.now(),
+    prompt: job.prompt || "", est_usd: null, bytes: 0, parent: job.parent || null,
+    settings: { duration: s.duration, resolution: s.resolution, aspect_ratio: s.aspect_ratio, generate_audio: s.generate_audio, max_usd: s.max_usd, mode: s.image_url ? "image" : "text" }
+  });
+  st.loaded = false; /* 완료된 항목을 서버 목록과 동기화하기 위해 다음 로드를 강제 */
+  renderGallery("video");
+  toast("영상 생성 완료", true);
+  updateVBtn();
+  if ($("app").style.display !== "none") refreshMe();
+  loadGallery("video", true);
+}
+$("vGen").addEventListener("click", genVideo);
+
+/* ---------- 로그인 후 모델 로드 ---------- */
+let modelsBooted = false;
+function bootModels() {
+  if (modelsBooted || !sb || $("app").style.display === "none") return;
+  modelsBooted = true;
+  for (const d of MODEL_DEFS) loadModels(d.type);
+  showTab(curTab);
+  for (const j of vJobs) if (!j.done && !j.error) { j.card = null; startJobCard(j); pollJob(j); }
+  updateVBtn();
+}
+
+/* 초기 렌더 */
+renderChats();
+vEstimate();
+iEstimate();
+updateVBtn();
+showTab(curTab);
+bootModels();
+})();
+</script>
+<script src="/assets/vendor/supabase.js?v=eb9387ed" defer></script>
+<script src="/assets/auth.js?v=2fb2585f"></script>
+<script src="/assets/nav.js?v=e839bf5d"></script>
+</body></html>
+
