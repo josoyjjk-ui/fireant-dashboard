@@ -90,10 +90,10 @@
     "timezone": "Asia/Seoul (UTC+9)",
     "dat_weekly_source": "SoSoValue sosovalue.com (실시간) as_of=2026-11-16",
     "dat_weekly_fetched_at_ms": 1795389317961,
-    "btc_etf_source": "farside as_of=2026-11-20 -$124.5M | conf=confirmed | xcheck=ZERO_FILL farside 2026-11-20 -$124.5M 미공시셀 1개[IBIT]=0 반영 잠정 (soso[headline] -$124.4M 동일 부분합) | fetched=2026-11-23T09:23:05.157924+09:00",
-    "eth_etf_source": "farside as_of=2026-11-20 -$13.2M | conf=confirmed | xcheck=ZERO_FILL farside 2026-11-20 -$13.2M 미공시셀 3개[ETHA,ETHB,FETH]=0 반영 잠정 (soso[headline] -$13.2M 동일 부분합) | fetched=2026-11-23T09:23:05.157924+09:00",
-    "btc_etf_fetched_at_ms": 1795393385158,
-    "eth_etf_fetched_at_ms": 1795393385158,
+    "btc_etf_source": "farside as_of=2026-11-20 -$124.5M | conf=single_source | xcheck=ZERO_FILL farside 2026-11-20 -$124.5M 미공시셀 1개[IBIT]=0 반영 잠정 (soso 미반영 asof=unknown) | fetched=2026-11-23T11:23:05.096587+09:00",
+    "eth_etf_source": "sosovalue as_of=2026-11-20 -$97.4M | conf=confirmed | xcheck=OVERRIDE→soso[table] 2026-11-20 -$97.4M (farside -$13.2M 부분합: 미공시셀 3개[ETHA,ETHB,FETH], d84.2) | fetched=2026-11-23T11:23:05.096587+09:00",
+    "btc_etf_fetched_at_ms": 1795400585096,
+    "eth_etf_fetched_at_ms": 1795400585096,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-11-22T14:32:38.203034+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-11-22T14:32:38.203034+09:00",
     "btc_oi_24h_fetched_at_ms": 1795325558203,
@@ -101,7 +101,7 @@
     "dat_weekly_asof": "2026-11-16",
     "btc_etf_asof": "2026-11-20",
     "eth_etf_asof": "2026-11-20",
-    "btc_etf_confidence": "confirmed",
+    "btc_etf_confidence": "single_source",
     "eth_etf_confidence": "confirmed",
     "global_market_cap_asof_ms": 1795325054000,
     "btc_dominance_asof_ms": 1795325054000,
@@ -155,11 +155,11 @@
         "FETH"
       ],
       "missing": 3,
-      "value_m": -13.2,
-      "raw": "-$13.2M",
-      "zero_filled": true,
+      "value_m": -97.38,
+      "raw": "-$97.4M",
+      "zero_filled": false,
       "farside_total_m": -13.2,
-      "label": "잠정 · ETHA,ETHB,FETH 미공시분 0 반영"
+      "label": "잠정 · ETHA,ETHB,FETH 미공시(SoSoValue 집계)"
     },
     "etf_correction": null
   },
@@ -175,7 +175,7 @@
   "date": "2026.11.22 (일)",
   "dat_weekly": "$51.86M",
   "btc_etf": "-$124.5M",
-  "eth_etf": "-$13.2M",
+  "eth_etf": "-$97.4M",
   "btc_oi_24h": "-4.16%",
   "eth_oi_24h": "-0.97%",
   "comment": "BTC는 $59,006, ETH는 $1,654.60에 거래 중이다. 공포탐욕지수는 11 (Extreme Fear) 수준이다."
