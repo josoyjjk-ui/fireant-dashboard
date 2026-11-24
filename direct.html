@@ -159,6 +159,58 @@ pre.code code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;f
 #toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:9999;width:min(92vw,420px);}
 .toast{background:#1b2130;border:1px solid var(--line);border-left:3px solid var(--accent);color:var(--txt);padding:11px 13px;border-radius:10px;font-size:13px;font-weight:700;box-shadow:0 10px 28px rgba(0,0,0,.5);transition:opacity .4s ease;overflow-wrap:anywhere;}
 .toast.ok{border-left-color:#2ecc71;}
+/* 모델 성능·검열 정보 카드·배지 (assets/direct-video-models.json) */
+.minfo{border:1px solid var(--line);border-radius:12px;background:#101319;padding:10px 12px;margin-top:10px;display:flex;flex-direction:column;gap:7px;overflow-wrap:anywhere;min-width:0;}
+.minfo .mrow1{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0;}
+.minfo .mname{font-size:13.5px;font-weight:900;color:var(--txt);}
+.minfo .mstars{color:var(--accent2);font-size:12.5px;font-weight:900;letter-spacing:1px;white-space:nowrap;}
+.minfo .mstars.none{color:var(--dim);letter-spacing:0;font-size:11.5px;font-weight:800;}
+.minfo .mprice{font-size:12.5px;font-weight:800;color:var(--txt);white-space:nowrap;}
+.minfo .mnote{font-size:13px;font-weight:700;color:var(--txt);line-height:1.5;min-width:0;}
+.minfo .mcnote{font-size:12.5px;font-weight:700;color:var(--dim);line-height:1.5;min-width:0;}
+.minfo .mtags{display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0;}
+.minfo .mmax{font-size:11px;font-weight:700;color:var(--dim);overflow-wrap:anywhere;}
+.minfo .mfoot{font-size:10.5px;font-weight:700;color:var(--dim);border-top:1px solid var(--line);padding-top:6px;}
+.mbadge{display:inline-flex;align-items:center;border-radius:7px;font-size:11px;font-weight:900;padding:2px 7px;border:1px solid;white-space:nowrap;line-height:1.35;}
+.mbadge.b0{color:#ff5d6c;background:rgba(255,93,108,.1);border-color:rgba(255,93,108,.45);} /* 검열 엄격 */
+.mbadge.b1{color:#ffb547;background:rgba(255,181,71,.1);border-color:rgba(255,181,71,.45);} /* 검열 보통 */
+.mbadge.b2{color:#2ecc71;background:rgba(46,204,113,.1);border-color:rgba(46,204,113,.45);} /* 검열 느슨 */
+.mbadge.bx{color:var(--dim);background:rgba(138,148,163,.08);border-color:rgba(138,148,163,.4);} /* 오디오·추정 등 중립 */
+.mchip{display:inline-flex;align-items:center;border:1px solid var(--line);background:#141926;color:var(--dim);border-radius:7px;font-size:11px;font-weight:800;padding:2px 7px;white-space:nowrap;}
+.mc-info{flex:0 0 auto;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;min-width:0;}
+.mc-info .mc-star{color:var(--accent2);font-size:12px;font-weight:900;}
+/* 영상 모델 비교 모달 (.lb 라이트박스와 별개) */
+.cmp{position:fixed;inset:0;background:rgba(7,9,13,.96);z-index:9500;display:flex;align-items:center;justify-content:center;padding:18px;}
+.cmp-box{width:100%;max-width:980px;max-height:86vh;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden;}
+.cmp-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;font-size:13px;font-weight:900;color:var(--txt);border-bottom:1px solid var(--line);}
+.cmp-scroll{overflow-y:auto;padding:12px 14px 16px;min-height:0;}
+.cmp-twrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;}
+.cmp-t{width:100%;border-collapse:collapse;font-size:12.5px;min-width:660px;}
+.cmp-t th,.cmp-t td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;overflow-wrap:anywhere;}
+.cmp-t tbody tr:last-child td{border-bottom:none;}
+.cmp-t td:nth-child(3),.cmp-t td:nth-child(4){white-space:nowrap;overflow-wrap:normal;} /* 검열 배지·가격대 줄바꿈 방지 */
+.cmp-t th{font-size:11px;color:var(--dim);font-weight:900;user-select:none;white-space:nowrap;background:#0f1218;}
+.cmp-t th.cmp-sort{cursor:pointer;}
+.cmp-t th.cmp-sort:hover{color:var(--txt);}
+.cmp-t tbody tr{cursor:pointer;}
+.cmp-t tbody tr:hover{background:#141926;}
+.cmp-t .cmp-name{font-weight:900;color:var(--txt);}
+.cmp-t .cmp-cnt{font-size:10.5px;color:var(--dim);font-weight:700;margin-top:2px;}
+.cmp-t .cmp-stars{color:var(--accent2);letter-spacing:1px;white-space:nowrap;font-weight:900;}
+.cmp-t .cmp-tags{display:flex;flex-wrap:wrap;gap:4px;max-width:220px;}
+.cmp-t .cmp-dim{color:var(--dim);}
+.cmp-legend{margin-top:10px;display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--dim);font-weight:700;line-height:1.5;}
+.cmp-legend .cmp-lg-row{display:flex;align-items:flex-start;gap:6px;}
+.cmp-legend .cmp-lg-row>span:last-child{overflow-wrap:anywhere;}
+.cmp-legend .mbadge{flex:0 0 auto;}
+@media(max-width:640px){
+  .cmp{padding:0;} /* 모달 전체 화면 */
+  .cmp-box{width:100%;max-width:100%;height:100%;max-height:100dvh;border-radius:0;border:none;}
+  .cmp-t{font-size:12px;min-width:580px;}
+  .cmp-t .cmp-tags{max-width:150px;}
+  .cmp-t .cmp-tags .mchip:nth-child(n+3){display:none;} /* 강점 태그는 최대 2개만 */
+  .cmp-legend{font-size:11px;}
+}
 @media(max-width:860px){
   .chatwrap{grid-template-columns:1fr;}
   .chat-list{display:none;}.chat-select{display:block;}
@@ -321,6 +373,7 @@ html{background:#0a0c10;}
     <section id="paneVideo" hidden aria-label="영상">
       <div class="card">
         <div class="mcompact" id="mbarVideo" aria-hidden="true">
+          <span class="mc-info" id="mcInfoVideo"></span>
           <span class="mc-model" id="mcModelVideo"></span>
           <button type="button" class="btn2" id="mcOptVideo">옵션 ▾</button>
         </div>
@@ -328,8 +381,9 @@ html{background:#0a0c10;}
         <div class="modelbar">
           <div><label class="f" for="vSearch">모델 검색</label><input type="search" id="vSearch" placeholder="id 검색" autocomplete="off"></div>
           <div><label class="f" for="vModel">영상 모델</label><select id="vModel"></select></div>
-          <div></div>
+          <div><label class="f">&nbsp;</label><button type="button" class="btn2" id="vCompare" style="width:100%">모델 비교</button></div>
         </div>
+        <div class="minfo" id="vInfo"></div>
         <fieldset style="border:none;margin-top:12px">
           <legend class="f" style="margin-bottom:7px">모드</legend>
           <div class="row">
@@ -387,6 +441,19 @@ html{background:#0a0c10;}
   </div>
 </div>
 <div id="toasts" aria-live="polite"></div>
+<!-- 영상 모델 비교 모달 (성능·검열 참고표) -->
+<div id="cmpModal" class="cmp" hidden role="dialog" aria-modal="true" aria-label="영상 모델 비교">
+  <div class="cmp-box">
+    <div class="cmp-top">
+      <span id="cmpTitle"></span>
+      <button class="btn2" id="cmpClose" type="button" style="min-width:40px;flex:0 0 auto">✕</button>
+    </div>
+    <div class="cmp-scroll">
+      <div class="cmp-twrap"><table class="cmp-t" id="cmpTable"></table></div>
+      <div class="cmp-legend" id="cmpLegend"></div>
+    </div>
+  </div>
+</div>
 <script>
 /* === Direct 개인 도구 === */
 (function () {
@@ -744,6 +811,47 @@ const MODEL_DEFS = [
   { type: "video", search: "vSearch", sel: "vModel", ls: "direct.model.video", def: "bytedance/seedance-2.5/text-to-video" }
 ];
 const modelStore = { text: [], image: [], video: [] };
+/* ---------- 모델 성능·검열 참고표 (assets/direct-video-models.json) ---------- */
+const MODEL_INFO = { video: null, image: null }; /* 불러온 계열 정보(type별) */
+function modelInfo(type, id) { /* families 순서대로 첫 매칭 계열 → variants 첫 매칭 얕은 덮어쓰기. 없으면 null */
+  const data = MODEL_INFO[type];
+  if (!data || !Array.isArray(data.families) || !id) return null;
+  for (const fam of data.families) {
+    if (!fam || !safeMatch(fam.match, id)) continue;
+    const hit = Object.assign({}, fam, { variantLabel: "", family: fam });
+    if (Array.isArray(fam.variants)) {
+      for (const vr of fam.variants) {
+        if (!vr || !safeMatch(vr.match, id)) continue;
+        const lb = vr.label || "";
+        Object.assign(hit, vr, { variantLabel: lb, family: fam });
+        break;
+      }
+    }
+    return hit;
+  }
+  return null;
+}
+function safeMatch(pat, id) { /* 정규식 문자열 매칭(대소문자 무시). 오류는 무시하고 미매칭 취급 */
+  if (!pat || !id) return false;
+  try { return new RegExp(pat, "i").test(id); } catch (e) { return false; }
+}
+function censorBadge(censor) { /* 검열 배지 span 생성(엄격=빨강·보통=주황·느슨=초록) */
+  const b = document.createElement("span");
+  const key = { "엄격": "b0", "보통": "b1", "느슨": "b2" }[censor];
+  b.className = "mbadge" + (key ? " " + key : " bx");
+  b.textContent = censor ? ("검열 " + censor) : "검열 미정";
+  return b;
+}
+function starStr(perf) { /* ★★★★☆ 형태 문자열 */
+  const n = Math.max(0, Math.min(5, Math.round(Number(perf) || 0)));
+  return "★".repeat(n) + "☆".repeat(5 - n);
+}
+function setStars(el, perf) { /* 채운 별 + 흐린 빈 별(구분 잘 되게) */
+  const n = Math.max(0, Math.min(5, Math.round(Number(perf) || 0)));
+  el.textContent = "★".repeat(n);
+  if (n < 5) { const e = document.createElement("span"); e.style.opacity = ".28"; e.textContent = "★".repeat(5 - n); el.appendChild(e); }
+  el.setAttribute("aria-label", "성능 " + n + "/5");
+}
 async function loadModels(type) {
   const d = MODEL_DEFS.find((x) => x.type === type);
   try {
@@ -773,35 +881,173 @@ function fillModels(type) {
   const models = modelStore[type].filter((m) => !q || m.id.toLowerCase().includes(q) || String(m.name || "").toLowerCase().includes(q));
   const prev = sel.value;
   sel.textContent = "";
-  if (!models.length) { const o = document.createElement("option"); o.value = ""; o.textContent = q ? "일치하는 모델 없음" : "모델 없음"; sel.appendChild(o); sel.disabled = !modelStore[type].length; mcSummaries(); return; }
+  if (!models.length) { const o = document.createElement("option"); o.value = ""; o.textContent = q ? "일치하는 모델 없음" : "모델 없음"; sel.appendChild(o); sel.disabled = !modelStore[type].length; mcSummaries(); if (type === "video") updateVInfo(); return; }
   sel.disabled = false;
   let pick = prev;
   if (!pick || !models.some((m) => m.id === pick)) pick = models.some((m) => m.id === saved) ? saved : models[0].id;
   for (const m of models) {
     const o = document.createElement("option");
     o.value = m.id;
-    o.textContent = m.id + " · peers " + (m.peers ?? "?") + " · " + (m.price ?? "?");
+    o.textContent = type === "video" ? vOptionText(m) : m.id + " · peers " + (m.peers ?? "?") + " · " + (m.price ?? "?");
     sel.appendChild(o);
   }
   sel.value = pick;
   LS.set(d.ls, pick);
   mcSummaries(); /* 모바일 컴팩트 바 요약 갱신 */
-  if (type === "video") vEstimate();
+  if (type === "video") { vEstimate(); updateVInfo(); }
   if (type === "image") iEstimate();
 }
 for (const d of MODEL_DEFS) {
   $(d.search).addEventListener("input", () => fillModels(d.type));
-  $(d.sel).addEventListener("change", () => { LS.set(d.ls, $(d.sel).value); if (d.type === "video") vEstimate(); });
+  $(d.sel).addEventListener("change", () => { LS.set(d.ls, $(d.sel).value); if (d.type === "video") { vEstimate(); updateVInfo(); } });
 }
 
 /* ---------- 모바일(≤640px) 설정 접기 ---------- */
 const mMobile = () => window.matchMedia("(max-width:640px)").matches;
 const MCOL_KEY = "direct.mcol"; /* 탭별 펼침/접힘 저장: {Text:0/1,Image:0/1,Video:0/1} */
 function mcolState() { const s = LS.json(MCOL_KEY, {}); return (s && typeof s === "object") ? s : {}; }
+/* ---------- 영상 모델 정보 카드·컴팩트 바 별점 표시 ---------- */
+const CENSOR_ORDER = { "느슨": 0, "보통": 1, "엄격": 2 }; /* 정렬용: 느슨→보통→엄격 */
+function usdStr(n) { /* 초당 가격 표시: $0.05 / $0.123처럼 유효 자릿수만(0.01 미만은 4자리) */
+  const v = Number(n) || 0;
+  if (v !== 0 && Math.abs(v) < 0.01) return v.toFixed(4);
+  return parseFloat(v.toFixed(3)) !== parseFloat(v.toFixed(2)) ? v.toFixed(3) : v.toFixed(2);
+}
+function fmtS$(n) { return "$" + usdStr(n) + "/초"; }
+function vPriceTag(m) { /* 셀렉트 옵션용 가격: 기존처럼 m.price 우선, 없으면 video_usd_s */
+  if (m.price) return String(m.price);
+  if (m.video_usd_s != null) return "$" + usdStr(m.video_usd_s) + "/s";
+  return null;
+}
+function vOptionText(m) { /* 영상 셀렉트 옵션 텍스트: id · ★4 · 검열 보통 · $0.12/s */
+  const info = modelInfo("video", m.id);
+  const price = vPriceTag(m);
+  if (!info) return m.id + " · 정보 없음" + (price ? " · " + price : "");
+  let t = m.id;
+  if (info.perf != null) t += " · ★" + Math.max(0, Math.min(5, Math.round(info.perf)));
+  if (info.censor) t += " · 검열 " + info.censor;
+  if (price) t += " · " + price;
+  return t;
+}
+function updateVInfo() { /* 선택 영상 모델 정보 카드(vInfo) 갱신 */
+  const box = $("vInfo");
+  if (!box) return;
+  box.textContent = "";
+  const id = curModelId("video");
+  const m = modelStore.video.find((x) => x.id === id) || null;
+  const info = modelInfo("video", id);
+  if (!info) {
+    const p = document.createElement("div");
+    p.className = "mcnote";
+    p.textContent = MODEL_INFO.video ? "이 모델은 정보 없음" : "정보 없음"; /* 로드 실패 vs 매칭 없음 구분 */
+    box.appendChild(p);
+    return;
+  }
+  /* 1행: 계열명(+변형) · 별점 · 검열 배지 · 오디오 배지 · 초당 가격 · 추정 배지 */
+  const r1 = document.createElement("div");
+  r1.className = "mrow1";
+  const nm = document.createElement("span");
+  nm.className = "mname";
+  nm.textContent = info.name + (info.variantLabel ? " · " + info.variantLabel : "");
+  r1.appendChild(nm);
+  if (info.perf != null) {
+    const st = document.createElement("span");
+    st.className = "mstars";
+    setStars(st, info.perf);
+    st.title = "성능 " + info.perf + "/5";
+    r1.appendChild(st);
+  } else {
+    const st = document.createElement("span");
+    st.className = "mstars none";
+    st.textContent = "성능 정보 없음";
+    r1.appendChild(st);
+  }
+  r1.appendChild(censorBadge(info.censor));
+  if (info.audio === true || info.audio === false) {
+    const ab = document.createElement("span");
+    ab.className = "mbadge bx";
+    ab.textContent = info.audio ? "오디오 O" : "오디오 X";
+    if (info.audio_note) ab.title = info.audio_note;
+    r1.appendChild(ab);
+  }
+  if (m && m.video_usd_s != null) {
+    const pr = document.createElement("span");
+    pr.className = "mprice";
+    pr.textContent = fmtS$(m.video_usd_s);
+    r1.appendChild(pr);
+  }
+  if (info.confidence === "추정") {
+    const cb = document.createElement("span");
+    cb.className = "mbadge bx";
+    cb.textContent = "추정";
+    r1.appendChild(cb);
+  }
+  box.appendChild(r1);
+  /* 2행: perf_note */
+  if (info.perf_note) {
+    const n1 = document.createElement("div");
+    n1.className = "mnote";
+    n1.textContent = info.perf_note;
+    box.appendChild(n1);
+  }
+  /* 3행: 검열 설명 */
+  if (info.censor_note) {
+    const n2 = document.createElement("div");
+    n2.className = "mcnote";
+    n2.textContent = "검열: " + info.censor_note;
+    box.appendChild(n2);
+  }
+  /* 4행: best_for 칩 + max */
+  const r4 = document.createElement("div");
+  r4.className = "mtags";
+  const tags = Array.isArray(info.best_for) ? info.best_for : [];
+  for (const t of tags) {
+    const c = document.createElement("span");
+    c.className = "mchip";
+    c.textContent = t;
+    r4.appendChild(c);
+  }
+  if (info.max) {
+    const mx = document.createElement("span");
+    mx.className = "mmax";
+    mx.textContent = info.max;
+    r4.appendChild(mx);
+  }
+  if (r4.childNodes.length) box.appendChild(r4);
+  /* 하단: 기준일·근거 */
+  const data = MODEL_INFO.video;
+  if (data && data.checked) {
+    const f = document.createElement("div");
+    f.className = "mfoot";
+    f.textContent = "기준일 " + data.checked + " · 근거: 벤치마크·공식 정책·사용자 반응";
+    box.appendChild(f);
+  }
+}
+function updateMcInfoVideo() { /* 컴팩트 바 별점·검열 배지 */
+  const el = $("mcInfoVideo");
+  if (!el) return;
+  el.textContent = "";
+  const info = modelInfo("video", curModelId("video"));
+  if (!info || (info.perf == null && !info.censor)) return;
+  if (info.perf != null) {
+    const s = document.createElement("span");
+    s.className = "mc-star";
+    s.textContent = "★" + Math.max(0, Math.min(5, Math.round(info.perf)));
+    el.appendChild(s);
+  }
+  if (info.censor) {
+    const key = { "엄격": "b0", "보통": "b1", "느슨": "b2" }[info.censor];
+    const b = document.createElement("span");
+    b.className = "mbadge" + (key ? " " + key : " bx");
+    b.textContent = "검열 " + info.censor;
+    el.appendChild(b);
+  }
+}
 function mcSummaries() { /* 컴팩트 바 한 줄 요약 */
   $("mcModelText").textContent = curModelId("text") || "모델 없음";
   $("mcModelImage").textContent = [curModelId("image") || "모델 없음", $("iSize").value || "자동", "n" + ($("iN").value || "1")].filter(Boolean).join(" · ");
   $("mcModelVideo").textContent = [curModelId("video") || "모델 없음", $("vRes").value, ($("vDur").value || "5") + "s", ($("vAr").value || "auto")].filter(Boolean).join(" · ");
+  updateMcInfoVideo();
 }
 function mcolApply(tab, on, save) { /* on=1 펼침(원본 컨트롤 표시) · on=0 접힘(컴팩트 바만) · save=모바일 토글 시에만 저장 */
   const pane = $("pane" + tab), bar = $("mbar" + tab);
@@ -1685,6 +1931,7 @@ function selectModel(type, id) {
     if (hasOption(sel, id)) sel.value = id;
     LS.set(d.ls, sel.value || id);
   }
+  if (type === "video") updateVInfo(); /* 모델 정보 카드 갱신 */
   mcSummaries(); /* 모바일 컴팩트 바 요약 갱신 */
 }
 async function useAsRef(it) {
@@ -1971,6 +2218,205 @@ function bootModels() {
   for (const j of vJobs) if (!j.done && !j.error) { j.card = null; startJobCard(j); pollJob(j); }
   updateVBtn();
 }
+
+/* ---------- 영상 모델 성능·검열 참고표 로드·비교 모달 ---------- */
+(async function loadModelInfo() {
+  try {
+    const r = await fetch("/assets/direct-video-models.json", { cache: "no-cache" });
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    if (j && Array.isArray(j.families)) MODEL_INFO.video = j;
+  } catch (e) { /* 불러오기 실패해도 페이지 동작 유지(정보 칸 "정보 없음") */ }
+  if (modelStore.video.length) fillModels("video"); /* 옵션 텍스트·카드 갱신 */
+  else updateVInfo();
+})();
+const CMP_COLS = [ /* 비교 표 열 정의 */
+  { key: "name", label: "계열", sort: null },
+  { key: "perf", label: "성능", sort: "desc" },
+  { key: "censor", label: "검열", sort: "asc" },
+  { key: "price", label: "가격대($/초)", sort: "asc" },
+  { key: "audio", label: "오디오", sort: null },
+  { key: "best", label: "강점", sort: null },
+  { key: "conf", label: "근거", sort: null }
+];
+let cmpState = { col: "perf", dir: -1 }; /* 성능 내림차순 기본 */
+function cmpFamMatch(fam, id) { const i = modelInfo("video", id); return !!i && i.family === fam; } /* 첫 매칭 계열 기준(Kling 아바타가 Kling 본계열에 섞이지 않게) */
+function cmpPriceRange(fam) { /* 계열에 매칭되는 modelStore.video 모델들의 video_usd_s 최소~최대 */
+  const ps = modelStore.video.filter((m) => m.video_usd_s != null && cmpFamMatch(fam, m.id)).map((m) => m.video_usd_s);
+  if (!ps.length) return null;
+  const mn = Math.min(...ps), mx = Math.max(...ps);
+  return { mn, mx, text: mn === mx ? ("$" + usdStr(mn)) : ("$" + usdStr(mn) + "~" + usdStr(mx)), count: ps.length };
+}
+function cmpCount(fam) { return modelStore.video.filter((m) => cmpFamMatch(fam, m.id)).length; }
+function cmpRowData(fam) {
+  return {
+    fam,
+    name: fam.name || fam.id || "",
+    perf: fam.perf,
+    censor: fam.censor || null,
+    censorOrder: CENSOR_ORDER[fam.censor] ?? -1,
+    price: cmpPriceRange(fam),
+    audio: fam.audio,
+    best: Array.isArray(fam.best_for) ? fam.best_for : [],
+    conf: fam.confidence || null
+  };
+}
+function cmpSortRows(rows, col, dir) {
+  const sorted = rows.slice();
+  const isNull = (x) => col === "perf" ? x.perf == null : col === "censor" ? !x.censor : col === "price" ? !x.price : false;
+  sorted.sort((a, b) => {
+    const na = isNull(a), nb = isNull(b);
+    if (na !== nb) return na ? 1 : -1; /* 정보 없음은 방향과 무관하게 맨 아래 */
+    let r = 0;
+    if (col === "perf") r = (a.perf ?? -1) - (b.perf ?? -1);
+    else if (col === "censor") r = a.censorOrder - b.censorOrder;
+    else if (col === "price") r = (a.price ? a.price.mn : Infinity) - (b.price ? b.price.mn : Infinity);
+    else r = 0;
+    if (r === 0) r = String(a.name).localeCompare(String(b.name), "ko"); /* 동률은 계열명 */
+    return r * dir;
+  });
+  return sorted;
+}
+function cmpBuild() { /* 비교 표(헤더+본문) 생성 — innerHTML 아님, 전부 DOM 구성 */
+  const data = MODEL_INFO.video;
+  const t = $("cmpTable");
+  if (!t) return;
+  t.textContent = "";
+  if (!data) return;
+  const rows = (data.families || []).map(cmpRowData);
+  const sorted = cmpSortRows(rows, cmpState.col, cmpState.dir);
+  /* 헤더 */
+  const thead = document.createElement("thead");
+  const trh = document.createElement("tr");
+  for (const c of CMP_COLS) {
+    const th = document.createElement("th");
+    th.scope = "col";
+    th.textContent = c.label + (cmpState.col === c.key ? (cmpState.dir === -1 ? " ▼" : " ▲") : "");
+    if (c.sort) {
+      th.className = "cmp-sort";
+      th.title = "정렬";
+      th.setAttribute("role", "button");
+      th.tabIndex = 0;
+      const click = () => { /* 같은 열 재클릭 → 역순 */
+        if (cmpState.col === c.key) cmpState.dir = cmpState.dir === -1 ? 1 : -1;
+        else { cmpState.col = c.key; cmpState.dir = c.sort === "asc" ? 1 : -1; }
+        cmpBuild();
+      };
+      th.addEventListener("click", click);
+      th.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); click(); } });
+    }
+    trh.appendChild(th);
+  }
+  thead.appendChild(trh);
+  t.appendChild(thead);
+  /* 본문 */
+  const tbody = document.createElement("tbody");
+  for (const r of sorted) {
+    const tr = document.createElement("tr");
+    tr.tabIndex = 0;
+    tr.title = "클릭 시 이 계열 모델로 전환";
+    tr.addEventListener("click", () => cmpPick(r.fam));
+    tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); cmpPick(r.fam); } });
+    /* 계열명+모델 수 */
+    const tdName = document.createElement("td");
+    const nm = document.createElement("div");
+    nm.className = "cmp-name";
+    nm.textContent = r.name;
+    tdName.appendChild(nm);
+    const cnt = cmpCount(r.fam);
+    if (cnt) {
+      const cEl = document.createElement("div");
+      cEl.className = "cmp-cnt";
+      cEl.textContent = cnt + "개 모델";
+      tdName.appendChild(cEl);
+    }
+    tr.appendChild(tdName);
+    /* 성능 */
+    const tdPerf = document.createElement("td");
+    if (r.perf != null) {
+      const st = document.createElement("div");
+      st.className = "cmp-stars";
+      setStars(st, r.perf);
+      tdPerf.appendChild(st);
+    } else {
+      tdPerf.className = "cmp-dim";
+      tdPerf.textContent = "—";
+    }
+    tr.appendChild(tdPerf);
+    /* 검열 */
+    const tdCen = document.createElement("td");
+    tdCen.appendChild(censorBadge(r.censor));
+    tr.appendChild(tdCen);
+    /* 가격대 */
+    const tdPrice = document.createElement("td");
+    tdPrice.textContent = r.price ? r.price.text : "—";
+    tr.appendChild(tdPrice);
+    /* 오디오 */
+    const tdAud = document.createElement("td");
+    tdAud.textContent = r.audio === true ? "O" : r.audio === false ? "X" : "?";
+    if (r.audio == null) tdAud.className = "cmp-dim";
+    tr.appendChild(tdAud);
+    /* 강점 */
+    const tdBest = document.createElement("td");
+    const tw = document.createElement("div");
+    tw.className = "cmp-tags";
+    for (const b of r.best) {
+      const ch = document.createElement("span");
+      ch.className = "mchip";
+      ch.textContent = b;
+      tw.appendChild(ch);
+    }
+    if (!r.best.length) tw.appendChild(document.createTextNode("—"));
+    tdBest.appendChild(tw);
+    tr.appendChild(tdBest);
+    /* 근거 */
+    const tdConf = document.createElement("td");
+    tdConf.textContent = r.conf || "—";
+    if (r.conf === "추정") tdConf.className = "cmp-dim";
+    tr.appendChild(tdConf);
+    tbody.appendChild(tr);
+  }
+  t.appendChild(tbody);
+  /* 범례 */
+  const lg = $("cmpLegend");
+  if (lg) {
+    lg.textContent = "";
+    const levels = (data.censor_levels && typeof data.censor_levels === "object") ? data.censor_levels : {};
+    for (const [lv, desc] of Object.entries(levels)) {
+      const row = document.createElement("div");
+      row.className = "cmp-lg-row";
+      row.appendChild(censorBadge(lv));
+      const d = document.createElement("span");
+      d.textContent = desc;
+      row.appendChild(d);
+      lg.appendChild(row);
+    }
+  }
+  /* 제목 */
+  const tt = $("cmpTitle");
+  if (tt) tt.textContent = "영상 모델 비교 (계열별)" + (data.checked ? " · 기준일 " + data.checked : "");
+}
+function cmpPick(fam) { /* 행 클릭: 검색 비우고 계열 첫 모델 선택(가능하면 현재 선택 유지) */
+  const all = modelStore.video.filter((m) => cmpFamMatch(fam, m.id));
+  if (!all.length) { toast("이 계열에 해당하는 모델이 없습니다"); return; }
+  const cur = curModelId("video");
+  const target = all.some((m) => m.id === cur) ? cur : all[0].id;
+  $("vSearch").value = "";
+  fillModels("video"); /* 필터 해제 후 전체 옵션 재구성 */
+  selectModel("video", target);
+  cmpClose();
+}
+function cmpOpen() {
+  if (!MODEL_INFO.video) { toast("모델 정보를 아직 불러오지 못했습니다"); return; }
+  cmpState = { col: "perf", dir: -1 }; /* 열 때마다 성능 내림차순 초기화 */
+  cmpBuild();
+  $("cmpModal").hidden = false;
+}
+function cmpClose() { $("cmpModal").hidden = true; }
+$("vCompare").addEventListener("click", cmpOpen);
+$("cmpClose").addEventListener("click", cmpClose);
+$("cmpModal").addEventListener("click", (e) => { if (e.target === $("cmpModal")) cmpClose(); }); /* 배경 클릭 닫기 */
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("cmpModal").hidden) cmpClose(); }); /* ESC 닫기 */
 
 /* 초기 렌더 */
 fitAllTA();

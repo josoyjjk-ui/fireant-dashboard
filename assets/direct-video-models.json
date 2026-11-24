@@ -1,0 +1,306 @@
+{
+  "version": 1,
+  "checked": "2026-11-25",
+  "about": "영상 모델 계열별 성능·검열 참고표. 근거: Artificial Analysis Video Arena(2026-11 스냅샷), 공식 문서·이용정책, X 사용자 반응(Grok 실시간 검색), 운영자 실사용 메모. perf는 동급 모델 대비 상대 점수(1~5). censor는 콘텐츠 필터 체감 강도. confidence=확인(문서·벤치·실사용 근거) / 추정(간접 근거).",
+  "match_rule": "families를 위에서부터 차례로 검사해 match(정규식, 대소문자 무시)가 모델 id에 맞는 첫 계열을 고른다. 그 계열의 variants도 위에서부터 검사해 맞는 첫 항목의 필드로 덮어쓴다.",
+  "censor_levels": {
+    "엄격": "실사 인물 사진·유명인·폭력·선정성 대부분 거부",
+    "보통": "일반 실사 인물은 대체로 통과, 유명인·선정성·정치는 거부",
+    "느슨": "실사 인물 사진 업로드 허용, 수위 허용 폭이 넓음"
+  },
+  "families": [
+    {
+      "id": "omnihuman",
+      "name": "OmniHuman v2",
+      "match": "omnihuman",
+      "perf": 4,
+      "perf_note": "사진 1장+음성으로 말하는 인물 영상. 입모양·표정·제스처가 강점, 일반 장면 생성용은 아님",
+      "censor": "엄격",
+      "censor_note": "실존 인물은 본인 동의 필요, 유명인·정치인 금지, 선정성·폭력 거부",
+      "best_for": ["립싱크", "아바타", "인물 발표"],
+      "audio": true,
+      "audio_note": "입력 음성으로 구동(소리를 새로 만들지 않음)",
+      "max": "음성 길이만큼(수분) · 720p~1080p",
+      "confidence": "확인",
+      "checked": "2026-11-25"
+    },
+    {
+      "id": "heygen",
+      "name": "HeyGen Avatar 6",
+      "match": "heygen",
+      "perf": 5,
+      "perf_note": "토킹헤드 특화 최상위. 대본에 맞춘 제스처·표정이 자연스럽고 긴 발표 영상 가능",
+      "censor": "엄격",
+      "censor_note": "실존 인물은 동의 영상 필수, 유명인 무단 사용·선정성·폭력 거부",
+      "best_for": ["아바타", "립싱크", "UGC 광고", "발표"],
+      "audio": true,
+      "audio_note": "입력 음성·보이스로 구동",
+      "max": "음성 길이만큼 · 최대 2K",
+      "confidence": "확인",
+      "checked": "2026-11-25"
+    },
+    {
+      "id": "inspectant",
+      "name": "inspectant (UGC 광고·아바타)",
+      "match": "^inspectant/",
+      "perf": null,
+      "perf_note": "AntSeed 피어가 제공하는 세로(9:16) UGC 광고·아바타 전용 파이프라인. 공개 벤치마크·평판 자료 없음",
+      "censor": null,
+      "censor_note": "공개 정책 자료 없음",
+      "best_for": ["UGC 광고", "세로 숏폼", "아바타"],
+      "audio": null,
+      "max": "10초·30초 고정(9:16)",
+      "confidence": "추정",
+      "checked": "2026-11-25"
+    },
+    {
+      "id": "kling-avatar",
+      "name": "Kling AI Avatar v2",
+      "match": "kling.*avatar",
+      "perf": 4,
+      "perf_note": "사진+음성 립싱크 아바타. pro가 standard보다 표정·디테일 우수",
+      "censor": "보통",
+      "censor_note": "일반 실사 인물 사진은 대체로 통과, 유명인·정치인·선정성 거부",
+      "best_for": ["립싱크", "아바타"],
+      "audio": true,
+      "audio_note": "입력 음성으로 구동",
+      "max": "음성 길이만큼 · 1080p",
+      "confidence": "추정",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "standard", "label": "standard", "perf": 3, "perf_note": "저가 립싱크 아바타. 디테일은 pro보다 떨어짐" }
+      ]
+    },
+    {
+      "id": "seedance",
+      "name": "Seedance 2.0 / 2.5 (ByteDance)",
+      "match": "seedance",
+      "perf": 5,
+      "perf_note": "AA 아레나 최상위권. 움직임·카메라·프롬프트 충실도가 좋고 2.5는 최대 30초 원테이크",
+      "censor": "엄격",
+      "censor_note": "실사 인물 사진(AI 가상 인물 포함) 첫 프레임·참조 거부, 유명인·로고·폭력·선정성 차단",
+      "best_for": ["광고", "제품", "시네마틱", "멀티 참조"],
+      "audio": true,
+      "max": "2.0 최대 15초 · 2.5 최대 30초 · 최대 1080p",
+      "confidence": "확인",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "mini", "label": "mini", "perf": 3, "perf_note": "가장 싼 Seedance. 화질·움직임은 낮고 구도 시안용" },
+        { "match": "2[.-]5.*flash|flash.*2[.-]5", "label": "2.5 flash", "perf": 4, "perf_note": "2.5 경량판. 빠르고 싸며 시안·숏폼에 적합", "best_for": ["빠른 시안", "숏폼", "광고"] },
+        { "match": "2[.-]0.*fast", "label": "2.0 fast", "perf": 3, "perf_note": "2.0 고속판. 빠른 시안용, 디테일은 정식보다 낮음", "best_for": ["빠른 시안"] },
+        { "match": "2[.-]5", "label": "2.5", "perf": 5, "perf_note": "현행 최상위권. 최대 30초 원테이크, 다중 참조(이미지·영상·음성)로 광고 연출에 강함" },
+        { "match": "2[.-]0", "label": "2.0", "perf": 4, "perf_note": "2.5 이전 세대 주력. 품질 안정적, 최대 15초" }
+      ]
+    },
+    {
+      "id": "kling",
+      "name": "Kling v3 / O3 / v4 (Kuaishou)",
+      "match": "kling",
+      "perf": 4,
+      "perf_note": "사람 동작·물리 표현이 자연스럽고 멀티샷·키프레임 지원. v4는 최대 30초",
+      "censor": "보통",
+      "censor_note": "일반 실사 인물 사진 통과율이 Seedance·Veo보다 높음. 유명인·정치·선정성은 거부",
+      "best_for": ["인물 동작", "시네마틱", "광고", "모션 컨트롤"],
+      "audio": true,
+      "max": "v3/O3 최대 15초 · v4 최대 30초 · 1080p(4k 변형은 4K)",
+      "confidence": "추정",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "motion-control", "label": "motion control", "perf": 4, "perf_note": "참조 영상의 동작을 인물 이미지에 옮김(댄스·제스처 따라하기)", "best_for": ["모션 컨트롤", "댄스", "인물 동작"] },
+        { "match": "video-to-video|edit", "label": "영상 편집", "perf": 4, "perf_note": "기존 영상을 프롬프트로 수정(영상→영상)", "best_for": ["영상 편집"] },
+        { "match": "4k", "label": "O3 4K", "perf": 5, "perf_note": "4K 네이티브 출력. 고해상도 최종본용, 가격 높음", "best_for": ["고해상도", "광고 최종본", "시네마틱"] },
+        { "match": "v4.*flash|flash", "label": "v4 flash", "perf": 3, "perf_note": "v4 경량판. 빠르고 저렴한 시안용", "best_for": ["빠른 시안"] },
+        { "match": "turbo", "label": "turbo", "perf": 3, "perf_note": "v3 고속판. 빠른 시안용" },
+        { "match": "v4", "label": "v4", "perf": 4, "perf_note": "최신 세대. 최대 30초·키프레임 10개, 시네마틱 평가가 좋음(벤치 반영 전)" },
+        { "match": "standard", "label": "standard", "perf": 3, "perf_note": "저가 등급. 움직임은 괜찮고 디테일은 pro보다 낮음" },
+        { "match": "pro", "label": "pro", "perf": 4, "perf_note": "고화질 등급. 인물·동작 디테일 우수" }
+      ]
+    },
+    {
+      "id": "veo",
+      "name": "Veo 3.1 (Google)",
+      "match": "veo",
+      "perf": 4,
+      "perf_note": "빛·물리·사실감이 강하고 대사·효과음 동시 생성. 한 번에 4~8초로 짧음",
+      "censor": "엄격",
+      "censor_note": "유명인·실사 인물 사진 거부 경향 강함, 폭력·선정성·정치·브랜드 모두 엄격",
+      "best_for": ["시네마틱", "광고", "사실감"],
+      "audio": true,
+      "max": "4~8초(연장 가능) · 최대 1080p~4K",
+      "confidence": "확인",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "fast", "label": "fast", "perf": 3, "perf_note": "빠르고 저렴한 Veo. 시안용, 디테일은 full보다 낮음", "best_for": ["빠른 시안", "광고"] }
+      ]
+    },
+    {
+      "id": "gemini-omni",
+      "name": "Gemini Omni Flash 1.1 (Google)",
+      "match": "gemini-omni|omni-flash",
+      "perf": 4,
+      "perf_note": "AA 상위권(~1125). 대화형 수정·연장에 강하고 가격 하한이 매우 낮음",
+      "censor": "엄격",
+      "censor_note": "Google 정책 적용: 유명인·선정성·폭력·정치 엄격, 실사 사진 업로드는 제한적(추정)",
+      "best_for": ["빠른 시안", "수정·연장", "광고"],
+      "audio": true,
+      "max": "한 번 3~10초(연장 누적 ~40초) · 720p 네이티브",
+      "confidence": "추정",
+      "checked": "2026-11-25"
+    },
+    {
+      "id": "wan",
+      "name": "Wan 2.7 / 3.0 (Alibaba)",
+      "match": "wan",
+      "perf": 5,
+      "perf_note": "3.0은 AA 오디오 포함 T2V 1위권(~1175). 움직임·일관성·프롬프트 충실도 최상급, 최대 30초",
+      "censor": "엄격",
+      "censor_note": "공식 API 기준: 실사 얼굴 이미지→영상 거부 보고 다수, 선정성·폭력·IP 금지",
+      "best_for": ["시네마틱", "광고", "멀티샷", "애니"],
+      "audio": true,
+      "max": "3.0 최대 30초 · 2.7 최대 15초 · 1080p",
+      "confidence": "추정",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "2[.-]7.*(edit|video-to-video)|video-to-video|edit", "label": "2.7 편집", "perf": 3, "perf_note": "기존 영상을 프롬프트로 수정(영상→영상)", "best_for": ["영상 편집"] },
+        { "match": "2[.-]7", "label": "2.7", "perf": 3, "perf_note": "이전 세대. 품질 중상, 가격 저렴" },
+        { "match": "prime-pro|prime.*pro", "label": "3.0 prime pro", "perf": 5, "perf_note": "3.0 최상위 등급. 디테일 최고, 가격도 높음" },
+        { "match": "prime", "label": "3.0 prime", "perf": 5, "perf_note": "3.0 상위 등급" },
+        { "match": "pro", "label": "3.0 pro", "perf": 5, "perf_note": "3.0 고화질 등급" }
+      ]
+    },
+    {
+      "id": "happyhorse",
+      "name": "HappyHorse 1.1 (Alibaba)",
+      "match": "happyhorse",
+      "perf": 3,
+      "perf_note": "AA 중하위(~1047). 다국어 립싱크·참조 일관성 무난, 소셜·빠른 시안용",
+      "censor": "보통",
+      "censor_note": "선정성·폭력 금지, 실사 인물 사진은 제한적으로 통과(추정)",
+      "best_for": ["숏폼", "빠른 시안", "인물"],
+      "audio": true,
+      "max": "3~15초 · 720p~1080p",
+      "confidence": "추정",
+      "checked": "2026-11-25"
+    },
+    {
+      "id": "grok-imagine",
+      "name": "Grok Imagine 1.5 (xAI)",
+      "match": "grok-imagine",
+      "perf": 3,
+      "perf_note": "AA 중위(~1050). 생성이 빠르고 대사 생성. 실사 인물 드라마 시안에 실사용",
+      "censor": "느슨",
+      "censor_note": "실사 인물 사진 이미지→영상 허용(실사용 확인). 실존 인물 성적 묘사·딥페이크는 금지",
+      "best_for": ["실사 인물", "빠른 시안", "숏폼"],
+      "audio": true,
+      "audio_note": "자체 대사 생성(정식판은 입력 음성을 무시)",
+      "max": "1~15초 · 최대 1080p",
+      "confidence": "확인",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "lite", "label": "lite", "perf": 2, "perf_note": "최저가 시안용. 1080p는 업스케일, 입모양 맞추기 불가", "best_for": ["빠른 시안", "실사 인물"] }
+      ]
+    },
+    {
+      "id": "minimax",
+      "name": "MiniMax Hailuo H3 / H3-Max",
+      "match": "minimax|hailuo",
+      "perf": 4,
+      "perf_note": "AA 상위권(~1160). 물리·일관성 좋고 참조 음성으로 입모양 맞춘 원테이크 가능. 해상도는 768p 위주",
+      "censor": "보통",
+      "censor_note": "실사풍 배역 사진 참조 통과(실사용 확인). 딥페이크·선정성·폭력은 거부",
+      "best_for": ["립싱크", "인물 대화", "광고"],
+      "audio": true,
+      "max": "5~15초 · 480p~768p(업스케일 가능)",
+      "confidence": "확인",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "recast", "label": "recast", "perf": 4, "perf_note": "기존 영상의 인물·캐릭터를 다른 인물로 교체(영상→영상)", "best_for": ["캐릭터 교체", "영상 편집"] },
+        { "match": "h3-max", "label": "H3-Max", "perf": 4, "perf_note": "H3 상위판. 속도·품질 균형, 가격 하한이 낮음" }
+      ]
+    },
+    {
+      "id": "vidu",
+      "name": "Vidu Q3 / Q4 (Shengshu)",
+      "match": "vidu",
+      "perf": 3,
+      "perf_note": "Q4는 참조 기반 인물 일관성·연기가 강점(AA ~1030). Q3는 하위권",
+      "censor": "엄격",
+      "censor_note": "공인·유명인 차단(공식 문서), 선정성·폭력·정치 차단",
+      "best_for": ["참조 일관성", "인물", "광고"],
+      "audio": true,
+      "max": "최대 16초 · Q4 최대 4K",
+      "confidence": "확인",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "q3", "label": "Q3", "perf": 2, "perf_note": "이전 세대(AA ~935). 저가 시안용", "best_for": ["빠른 시안"] }
+      ]
+    },
+    {
+      "id": "pixverse",
+      "name": "PixVerse C1 / V6 Max",
+      "match": "pixverse",
+      "perf": 3,
+      "perf_note": "V6 Max는 AA 20위권(~1050). 숏폼·광고·캐릭터 일관성 무난",
+      "censor": "보통",
+      "censor_note": "일반 실사 인물 사진은 허용, 유명인·로고·선정성은 금지",
+      "best_for": ["숏폼", "광고", "액션·VFX"],
+      "audio": true,
+      "max": "1~15초 · 최대 1080p",
+      "confidence": "추정",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "c1", "label": "C1", "perf": 2, "perf_note": "최저가 계열. 액션·VFX·스토리보드→영상 지향, 벤치 미등재", "best_for": ["빠른 시안", "액션·VFX"] }
+      ]
+    },
+    {
+      "id": "runway",
+      "name": "Runway Gen-4.5",
+      "match": "runway",
+      "perf": 3,
+      "perf_note": "카메라 제어·물리 정밀. 출시 때 1위였으나 오디오 포함 경쟁에서 밀림. 소리 없음",
+      "censor": "엄격",
+      "censor_note": "실사 인물은 동의 필요, 유명인·로고·선정성·그래픽 폭력 금지",
+      "best_for": ["시네마틱", "카메라 연출"],
+      "audio": false,
+      "max": "2~10초 · 720p",
+      "confidence": "확인",
+      "checked": "2026-11-25"
+    },
+    {
+      "id": "ltx",
+      "name": "LTX 2.3 / 2.5 (Lightricks)",
+      "match": "ltx",
+      "perf": 3,
+      "perf_note": "오픈웨이트 계열 상위, 전체로는 중하위(AA ~940). 가격 저렴, 빠른 동작 표현 개선",
+      "censor": "보통",
+      "censor_note": "노골적 선정성·그래픽 폭력 차단, 실존 인물 비동의 딥페이크 금지",
+      "best_for": ["빠른 시안", "가성비", "숏폼"],
+      "audio": true,
+      "max": "fast 최대 20초 · pro 최대 10초 · 최대 4K",
+      "confidence": "추정",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "2[.-]5|2-5", "label": "2.5 pro", "perf": 3, "perf_note": "2.5 고화질판. 디테일·멀티샷 개선" },
+        { "match": "fast", "label": "2.3 fast", "perf": 2, "perf_note": "2.3 고속판. 가장 저렴한 시안용", "best_for": ["빠른 시안"] },
+        { "match": "2[.-]3|v2-3", "label": "2.3", "perf": 2, "perf_note": "이전 세대(AA ~890)" }
+      ]
+    },
+    {
+      "id": "flux3",
+      "name": "FLUX-3 video (Black Forest Labs)",
+      "match": "flux-3|flux3",
+      "perf": 4,
+      "perf_note": "AA 상위권(~1140, max ~1155). 복잡한 지시·글자 표현에 강하고 최대 20초",
+      "censor": "보통",
+      "censor_note": "노골적 선정성·묘사적 폭력 차단, 실존 인물 성적·비동의 묘사 금지",
+      "best_for": ["시네마틱", "글자·타이포", "광고"],
+      "audio": true,
+      "max": "최대 20초 · 최대 4K",
+      "confidence": "추정",
+      "checked": "2026-11-25",
+      "variants": [
+        { "match": "max", "label": "max", "perf": 5, "perf_note": "FLUX-3 상위판(AA ~1155). 디테일 최상급" }
+      ]
+    }
+  ]
+}
