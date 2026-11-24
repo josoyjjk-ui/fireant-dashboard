@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-24T16:43:30+09:00",
-  "run_id": "1795506217",
-  "status": "ok",
+  "generated_at": "2026-11-24T16:45:51+09:00",
+  "run_id": "1795506374",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -94,12 +94,12 @@
       "symbol": "DX-Y.NYB",
       "group": "매크로",
       "unit": "",
-      "price": 104.361,
+      "price": 104.355,
       "prev_close": 104.32,
-      "change": 0.04100000000001103,
-      "change_pct": 0.039302147239274374,
+      "change": 0.0350000000000108,
+      "change_pct": 0.03355061349694287,
       "currency": "USD",
-      "market_time": 1795505612
+      "market_time": 1795505753
     },
     {
       "name": "VIX 변동성",
@@ -118,12 +118,12 @@
       "symbol": "GC=F",
       "group": "원자재",
       "unit": "",
-      "price": 3614.9,
+      "price": 3615.9,
       "prev_close": 3651.4,
-      "change": -36.5,
-      "change_pct": -0.9996165854192912,
+      "change": -35.5,
+      "change_pct": -0.9722298296543792,
       "currency": "USD",
-      "market_time": 1795505613
+      "market_time": 1795505757
     },
     {
       "name": "WTI 유가",
@@ -135,7 +135,8 @@
       "change": 0.01999999999999602,
       "change_pct": 0.02494698765123615,
       "currency": "USD",
-      "market_time": 1795505610
+      "market_time": 1795505610,
+      "stale": true
     },
     {
       "name": "코스피",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-24T16:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "WTI 유가(CL=F): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
