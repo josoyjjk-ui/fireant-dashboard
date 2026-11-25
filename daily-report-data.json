@@ -93,7 +93,7 @@
     "btc_etf_source": "sosovalue as_of=2026-11-24 +$0M | conf=confirmed | xcheck=OVERRIDE→soso[headline] 2026-11-24 +$0M (farside -$8.7M 부분합: 미공시셀 8개[IBIT,FBTC,BITB,BTCO,EZBC,BRRR,HODL,BTCW], d8.7) | fetched=2026-11-25T09:23:04.101694+09:00",
     "eth_etf_source": "farside as_of=2026-11-23 -$84.9M | conf=confirmed | xcheck=OK(soso[table] 2026-11-23 -$85M ~ farside -$84.9M, d0.1, farside_missing=0) | fetched=2026-11-24T14:30:13.739082+09:00",
     "btc_etf_fetched_at_ms": 1795566184101,
-    "eth_etf_fetched_at_ms": 1795566184101,
+    "eth_etf_fetched_at_ms": 1795573382307,
     "btc_oi_24h_source": "Binance Futures openInterestHist BTCUSDT period=1h limit=24 @ 2026-11-24T14:30:46.566649+09:00",
     "eth_oi_24h_source": "Binance Futures openInterestHist ETHUSDT period=1h limit=24 @ 2026-11-24T14:30:46.566649+09:00",
     "btc_oi_24h_fetched_at_ms": 1795498246566,
@@ -113,16 +113,11 @@
     "eth_etf_missing_cols": {
       "2026-11-24": [
         "ETHA",
-        "ETHB",
-        "FETH",
-        "ETHW",
-        "ETHV",
-        "QETH",
-        "EZET"
+        "ETHB"
       ]
     },
     "eth_etf_fill_status": {
-      "2026-11-24": "ETHA: ishares 2026-11-24 NAV/발행좌수 없음; ETHB: ishares 2026-11-24 NAV/발행좌수 없음"
+      "2026-11-24": "ETHA: ishares 2026-11-25 발행좌수 미공시(T+1); ETHB: ishares 2026-11-25 발행좌수 미공시(T+1)"
     },
     "eth_etf_backoff": null,
     "btc_etf_filled": {},
@@ -146,16 +141,11 @@
     "btc_etf_invalid_rows": {},
     "eth_etf_pending": {
       "date": "2026-11-24",
-      "value_m": -3.8,
-      "raw": "-$3.8M",
+      "value_m": -0.5,
+      "raw": "-$0.5M",
       "missing_cols": [
         "ETHA",
-        "ETHB",
-        "FETH",
-        "ETHW",
-        "ETHV",
-        "QETH",
-        "EZET"
+        "ETHB"
       ]
     },
     "eth_etf_invalid_rows": {},
