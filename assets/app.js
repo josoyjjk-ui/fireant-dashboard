@@ -184,7 +184,7 @@ async function loadSignature() {
       const m = M[d.k] || {};
       const v = m.value;
       const disp = d.money ? fmtUSD(v) : (m.raw ?? (v != null ? v + "%" : "—"));
-      const pill = v == null ? "" : `<span class="pill ${v < 0 ? "d" : "u"}">${v < 0 ? "유출/감소" : "유입/증가"}</span>`;
+      const pill = v == null ? "" : (v === 0 ? `<span class="pill n">${m.partial ? "잠정" : "보합"}</span>` : `<span class="pill ${v < 0 ? "d" : "u"}">${v < 0 ? "유출/감소" : "유입/증가"}</span>`);
       html += `<a class="sigcard" href="${d.link}">${pill}<span class="asof">${m.basis || "—"}</span><div class="t">${d.t}</div><div class="big ${cls(v)}">${disp}</div><div class="sub">${(m.as_of || "").slice(0, 60) || "기준 미상"}</div><div class="sparkbox"><canvas id="sk${i}" height="54"></canvas></div><span class="more">자세히 →</span></a>`;
     });
     $("sigGrid").innerHTML = html;
@@ -199,7 +199,7 @@ async function loadSignature() {
       } else if (defs[i].k === "btc_etf" || defs[i].k === "eth_etf") {
         // ETF는 출시 이후 전체 일일 데이터 — 최근 30일 스파크라인
         hist = await getJSON(`${BASE}/history/${defs[i].k}_full.json?t=${Date.now()}`)
-          .then((a) => (Array.isArray(a) ? a.slice(-30) : []))
+          .then((a) => (Array.isArray(a) ? a.filter((row) => !(row.partial && row.value === 0)).slice(-30) : []))
           .catch(() => []);
       } else {
         hist = await getJSON(`${BASE}/history/${defs[i].hist}.json?t=${Date.now()}`).catch(() => []);
