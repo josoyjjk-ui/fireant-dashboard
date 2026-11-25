@@ -685,6 +685,7 @@ async function render(session) {
   if (seq !== renderSeq) return;  /* 중복 render 호출 무시: 최신 것만 반영 */
   $("gate").hidden = true; $("app").style.display = "";
   $("whoMail").textContent = session.user.email || "";
+  if (typeof agLoadConfig === "function") agLoadConfig();
   refreshMe();
   bootModels();
   if (curTab === "Image") loadGallery("image");
@@ -2895,29 +2896,37 @@ function agPushBlock(b) {
 }
 /* --- 설정 --- */
 let agCfgTried = false;
+let agCfgP = null; /* 진행 중인 설정 요청(동시 호출 공유) */
 async function agLoadConfig() {
+  if (agCfgP) return agCfgP;
   if (agCfg || agCfgTried) return;
   agCfgTried = true;
-  try {
-    const j = await (await api("/api/agent/config")).json();
-    agCfg = j || {};
-    const sel = $("agModel");
-    const saved = LS.get(AG_K.model, "");
-    const models = (agCfg.models || []).slice();
-    const vision = agCfg.vision || [];
-    sel.textContent = "";
-    if (!models.length) { const o = document.createElement("option"); o.value = ""; o.textContent = "모델 없음"; sel.appendChild(o); return; }
-    for (const m of models) {
-      const o = document.createElement("option");
-      o.value = m;
-      o.textContent = m + (vision.includes(m) ? " · 비전" : "");
-      sel.appendChild(o);
+  agCfgP = (async () => {
+    try {
+      const j = await (await api("/api/agent/config")).json();
+      agCfg = j || {};
+      const sel = $("agModel");
+      const saved = LS.get(AG_K.model, "");
+      const models = (agCfg.models || []).slice();
+      const vision = agCfg.vision || [];
+      sel.textContent = "";
+      if (!models.length) { const o = document.createElement("option"); o.value = ""; o.textContent = "모델 없음"; sel.appendChild(o); return; }
+      for (const m of models) {
+        const o = document.createElement("option");
+        o.value = m;
+        o.textContent = m + (vision.includes(m) ? " · 비전" : "");
+        sel.appendChild(o);
+      }
+      sel.value = (saved && models.includes(saved)) ? saved : (agCfg.default && models.includes(agCfg.default) ? agCfg.default : models[0]);
+      LS.set(AG_K.model, sel.value);
+    } catch (e) {
+      agCfgTried = false; /* 실패(예: 세션 준비 전 401)는 다음 호출에서 재시도 */
+      if (!(e && e.status === 401)) toast("디렉터 설정 불러오기 실패: " + (e && e.message));
+    } finally {
+      agCfgP = null;
     }
-    sel.value = (saved && models.includes(saved)) ? saved : (agCfg.default && models.includes(agCfg.default) ? agCfg.default : models[0]);
-    LS.set(AG_K.model, sel.value);
-  } catch (e) {
-    toast("디렉터 설정 불러오기 실패: " + (e && e.message));
-  }
+  })();
+  return agCfgP;
 }
 /* --- 전송 --- */
 function agSetHint(t) { $("agHint").textContent = t; }
@@ -2946,6 +2955,7 @@ async function agSend() {
   agEmitStop();
   const p = agCurProj();
   if (!p) return;
+  if (!$("agModel").value && !agCfg) await agLoadConfig(); /* 세션 준비 전 실패분 재시도 */
   const model = $("agModel").value || "";
   if (!model) { toast("모델을 선택해주세요"); return; }
   p.messages.push({ role: "user", content: text });
