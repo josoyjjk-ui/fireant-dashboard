@@ -716,15 +716,37 @@ $("gateLogin").addEventListener("click", () => {
 
 /* ---------- 릴레이 API ---------- */
 function apiErr(msg, status) { const e = new Error(msg); e.status = status; return e; }
+function is429(e) { return !!e && e.status === 429; } /* 백그라운드 로더는 429면 토스트 대신 조용히 재시도 */
+const bgRetryTimers = new Map(); /* 키별 재시도 1건만 예약(중복 누적 방지) */
+function bgRetryLater(key, fn) {
+  if (bgRetryTimers.has(key)) return;
+  const t = setTimeout(() => { bgRetryTimers.delete(key); fn(); }, 10000);
+  bgRetryTimers.set(key, t);
+}
+function retryAfterMs(res, attempt) {
+  let w = 3000 * (attempt + 1); /* 기본: 3초, 그다음 6초 */
+  const h = (res.headers && res.headers.get("Retry-After")) || "";
+  if (h) {
+    const sec = Number(h);
+    if (Number.isFinite(sec) && sec >= 0) w = sec * 1000;
+    else { const at = Date.parse(h); if (!isNaN(at)) w = Math.max(0, at - Date.now()); }
+  }
+  return w;
+}
 async function api(path, opts) {
   const sess = sb ? (await sb.auth.getSession()).data.session : null;
   if (!sess) throw apiErr("로그인이 만료되었습니다. 다시 로그인해주세요", 401);
   let res;
-  try {
-    res = await fetch(RELAY + path, Object.assign({}, opts, { headers: Object.assign({ "Authorization": "Bearer " + sess.access_token }, (opts && opts.headers) || {}) }));
-  } catch (e) {
-    if (e instanceof TypeError) throw new Error("릴레이 서버에 연결할 수 없습니다(맥미니/Funnel 확인)");
-    throw e;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      res = await fetch(RELAY + path, Object.assign({}, opts, { headers: Object.assign({ "Authorization": "Bearer " + sess.access_token }, (opts && opts.headers) || {}) }));
+    } catch (e) {
+      if (e instanceof TypeError) throw new Error("릴레이 서버에 연결할 수 없습니다(맥미니/Funnel 확인)");
+      throw e;
+    }
+    if (res.status !== 429 || attempt >= 2) break; /* 429는 최대 2회 재시도 */
+    try { if (res.body && res.body.cancel) await res.body.cancel(); } catch (e) {}
+    await new Promise((r) => setTimeout(r, retryAfterMs(res, attempt)));
   }
   if (res.ok) return res;
   let msg = "", code = "", errField = "";
@@ -757,6 +779,7 @@ async function refreshMe() {
       $("vCap").max = me.video_max_usd;
     }
   } catch (e) {
+    if (is429(e)) { bgRetryLater("me", refreshMe); return; } /* 429는 토스트 없이 10초 뒤 1회 재시도 */
     $("relayDot").className = "dot n"; $("relayTxt").textContent = "릴레이 연결 안 됨";
     toast(e.message);
   }
@@ -931,6 +954,7 @@ async function loadModels(type) {
     modelStore[type] = (j.models || []).slice();
     fillModels(type);
   } catch (e) {
+    if (is429(e)) { bgRetryLater("models:" + type, () => loadModels(type)); return; }
     toast("모델 목록(" + type + ") 불러오기 실패: " + e.message);
   }
 }
@@ -1642,6 +1666,7 @@ async function loadGallery(kind, force) {
     renderGallery(kind);
   } catch (e) {
     st.loading = false;
+    if (is429(e)) { bgRetryLater("gal:" + kind, () => loadGallery(kind, true)); return; }
     toast("갤러리(" + (kind === "image" ? "이미지" : "영상") + ") 불러오기 실패: " + e.message);
   }
 }
@@ -2921,7 +2946,8 @@ async function agLoadConfig() {
       LS.set(AG_K.model, sel.value);
     } catch (e) {
       agCfgTried = false; /* 실패(예: 세션 준비 전 401)는 다음 호출에서 재시도 */
-      if (!(e && e.status === 401)) toast("디렉터 설정 불러오기 실패: " + (e && e.message));
+      if (is429(e)) bgRetryLater("agCfg", () => agLoadConfig()); /* 429는 토스트 없이 10초 뒤 1회 재시도 */
+      else if (!(e && e.status === 401)) toast("디렉터 설정 불러오기 실패: " + (e && e.message));
     } finally {
       agCfgP = null;
     }
