@@ -120,6 +120,8 @@ pre.code code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;f
 .thumb{position:relative;width:76px;height:76px;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex:0 0 auto;}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
 .thumb .rm{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:6px;border:none;background:rgba(10,12,16,.82);color:#fff;font-size:11px;cursor:pointer;line-height:1;}
+.iwarn{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;color:#ffb547;font-size:12.5px;font-weight:800;}
+.iwarn .btn2{padding:6px 11px;font-size:12px;}
 .jerr{color:#ff8a92;}
 .parent-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid rgba(255,181,71,.4);background:rgba(255,181,71,.08);color:var(--accent2);border-radius:999px;font-size:12px;font-weight:800;}
 .parent-chip button{border:none;background:none;color:var(--accent2);font-size:13px;font-weight:900;cursor:pointer;padding:0 1px;line-height:1;}
@@ -277,6 +279,34 @@ html{background:#0a0c10;}
 .agappr.done{opacity:.6;}
 .ag-actions{display:flex;align-items:center;gap:8px;justify-content:flex-end;}
 .ag-hint{flex:1;font-size:12px;color:var(--dim);min-width:0;}
+/* --- 디렉터 첨부(파일·유튜브) --- */
+.ag-att{display:flex;gap:8px;overflow-x:auto;padding:2px;min-width:0;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+.ag-att[hidden]{display:none;}
+.agatt{position:relative;flex:0 0 auto;width:64px;border:1px solid var(--line);border-radius:10px;background:#0f1218;padding:3px 4px 4px;cursor:default;}
+.agatt .th{width:56px;height:56px;border-radius:8px;overflow:hidden;background:#0a0d13;margin:0 auto;position:relative;}
+.agatt .th img,.agatt .th video{width:100%;height:100%;object-fit:cover;display:block;}
+.agatt .cap{font-size:10px;font-weight:800;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;}
+.agatt .rm{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:#1b2230;color:#fff;font-size:11px;cursor:pointer;line-height:1;z-index:2;}
+.agatt .ytb{position:absolute;bottom:3px;left:3px;background:rgba(10,12,16,.85);color:#f87171;border-radius:5px;font-size:9px;font-weight:900;padding:1px 4px;}
+.agatt .pbar{height:4px;border-radius:3px;background:#1a2028;margin-top:3px;overflow:hidden;}
+.agatt .pbar .fill{height:100%;width:0;background:var(--accent2);transition:width .2s ease;}
+.agatt .pbar.indet .fill{width:34%;animation:att-indet 1.2s ease-in-out infinite;}
+@keyframes att-indet{0%{margin-left:-34%;}100%{margin-left:100%;}}
+.agatt .stat{font-size:9.5px;font-weight:800;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.agatt.err{border-color:rgba(255,93,108,.65);}
+.agatt.err .stat{color:#ff8a92;}
+.ag-ytrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;}
+.ag-ytrow[hidden]{display:none;}
+.ag-ytrow input{flex:1 1 170px;min-width:0;}
+.ag-ytsug{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border:1px dashed rgba(255,181,71,.45);background:rgba(255,181,71,.07);border-radius:10px;font-size:12.5px;font-weight:800;color:var(--accent2);}
+.ag-ytsug[hidden]{display:none;}
+.ag-ytsug .btn2{padding:6px 11px;font-size:12px;}
+.agmain.drag{outline:2px dashed var(--accent2);outline-offset:6px;border-radius:14px;}
+.agattbtn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;border-radius:9px;border:1px solid var(--line);background:#0f1218;color:var(--txt);cursor:pointer;transition:border-color .14s ease;}
+.agattbtn:hover{border-color:var(--accent);}
+.agmsg.user .agmedia{grid-template-columns:repeat(auto-fill,minmax(120px,160px));}
+.agmsg.user .agmedia img,.agmsg.user .agmedia video{max-width:160px;justify-self:end;}
+.agmsg .atttitle{font-size:11.5px;color:var(--dim);font-weight:700;margin-top:4px;overflow-wrap:anywhere;}
 @media(max-width:760px){
   .agwrap{grid-template-columns:1fr;}
   .agside{display:none;}
@@ -285,6 +315,10 @@ html{background:#0a0c10;}
   .aglog{height:calc(100dvh - 380px);min-height:260px;}
   .agmsg{max-width:100%;}
   #agInput{max-height:25vh;}
+  .ag-actions{flex-wrap:wrap;}
+  .agattbtn{width:40px;height:40px;}
+  .agmsg.user .agmedia{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .agmsg.user .agmedia img,.agmsg.user .agmedia video{max-width:100%;justify-self:stretch;}
 }
 </style><link rel="stylesheet" href="/assets/nav.css?v=27e282ba"></head>
 <body>
@@ -340,8 +374,24 @@ html{background:#0a0c10;}
           </div>
           <div class="aglog" id="agLog" aria-live="polite"></div>
           <div class="agcomp">
+            <div class="ag-att" id="agAtt" hidden aria-label="첨부 목록"></div>
             <div class="prow"><textarea id="agInput" rows="2" placeholder="무엇을 만들까요? 예) 불개미가 달 위에서 춤추는 10초 영상"></textarea><button type="button" class="micBtn" id="micBtn-agInput" aria-label="음성 입력" title="음성 입력 (Ctrl/Cmd+Shift+M)"><svg class="micIc" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v1a7 7 0 0 0 14 0v-1"></path><path d="M12 18v4"></path></svg><span class="micDot" aria-hidden="true"></span><span class="micTxt">듣는 중…</span></button></div>
-            <div class="ag-actions"><span class="ag-hint" id="agHint">이미지는 바로 생성, 영상은 실행 전 확인을 받습니다</span><button type="button" class="btn2" id="agStop" hidden>중지</button><button type="button" class="btn2 pri" id="agSend" style="min-width:96px">전송</button></div>
+            <div class="ag-ytrow" id="agYtRow" hidden>
+              <input type="url" id="agYtUrl" placeholder="https://youtu.be/..." inputmode="url" autocomplete="off" aria-label="유튜브 주소">
+              <button type="button" class="btn2" id="agYtGo" style="min-width:96px">가져오기</button>
+              <button type="button" class="btn2" id="agYtCancel">취소</button>
+            </div>
+            <div class="ag-ytsug" id="agYtSuggest" hidden>
+              <span>유튜브 영상을 첨부할까요?</span>
+              <button type="button" class="btn2" id="agYtSugYes">첨부</button>
+              <button type="button" class="btn2" id="agYtSugNo">무시</button>
+            </div>
+            <div class="ag-actions">
+              <button type="button" class="agattbtn" id="agAttachBtn" aria-label="파일 첨부" title="이미지·영상 첨부"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button>
+              <button type="button" class="agattbtn" id="agYtBtn" aria-label="유튜브 가져오기" title="유튜브 가져오기"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none"></path></svg></button>
+              <input type="file" id="agFile" accept="image/png,image/jpeg,image/webp,image/heic,image/heif,video/mp4,video/webm,video/quicktime" multiple hidden>
+              <span class="ag-hint" id="agHint">이미지는 바로 생성, 영상은 실행 전 확인 · 📎 이미지·영상·유튜브 첨부 가능</span><button type="button" class="btn2" id="agStop" hidden>중지</button><button type="button" class="btn2 pri" id="agSend" style="min-width:96px">전송</button>
+            </div>
           </div>
         </div>
       </div>
@@ -423,6 +473,10 @@ html{background:#0a0c10;}
         <div style="margin-top:10px"><label class="f" for="iRefs">참고 이미지 (최대 4장 · 4MB 초과 시 자동 축소)</label><input type="file" id="iRefs" accept="image/*" multiple></div>
         </div>
         <div class="thumbs" id="iThumbs"></div>
+        <div class="iwarn" id="iRefWarn" hidden>
+          <span>선택한 모델은 참고 이미지를 받지 않습니다. 참고 이미지 지원 모델로 바꿔주세요</span>
+          <button type="button" class="btn2" id="iRefSwitch">지원 모델로 변경</button>
+        </div>
         <div class="row" style="margin-top:12px">
           <button id="iGen" type="button" class="btn2 pri" style="min-width:120px">생성</button>
           <span class="warn" id="iEst"></span>
@@ -749,20 +803,25 @@ async function api(path, opts) {
     await new Promise((r) => setTimeout(r, retryAfterMs(res, attempt)));
   }
   if (res.ok) return res;
-  let msg = "", code = "", errField = "";
-  try { const j = await res.json(); msg = j.message || j.error || ""; code = j.code || ""; errField = j.error || ""; } catch (e) {}
+  let msg = "", code = "", suggest = null;
+  try { const j = await res.json(); msg = String(j.message || j.error || ""); code = String(j.error || j.code || ""); suggest = Array.isArray(j.suggest_models) ? j.suggest_models : null; } catch (e) {}
+  /* 릴레이 오류 형식: {"error": "<코드>", "message": "<내용>"} — 코드는 JSON "error" 필드에서 읽음 */
   if (res.status === 401) throw apiErr("로그인이 만료되었습니다. 다시 로그인해주세요", res.status);
   if (res.status === 403) throw apiErr(msg || "접근이 거부되었습니다", res.status);
   if (res.status === 402) throw apiErr("AntSeed 크레딧(USDC)이 부족합니다. 앱에서 충전해주세요", res.status);
   if (res.status === 429) {
     if (code === "rate_limited") throw apiErr("요청이 너무 잦습니다. 잠시 후 다시", res.status);
-    if (errField === "video_busy" || msg === "video_busy") throw apiErr("동시 영상 생성은 최대 3건입니다", res.status);
+    if (code === "video_busy") throw apiErr("동시 영상 생성은 최대 3건입니다", res.status);
     throw apiErr(msg || "요청이 너무 잦습니다. 잠시 후 다시", res.status);  /* daily_cap 등: 서버 message 사용 */
   }
   if (res.status === 502) {
     if (code === "peer_policy") throw apiErr("피어 평판 정책에 막혔습니다. 다른 모델을 선택해보세요", res.status);
-    throw apiErr("맥미니 AntSeed 프록시가 꺼져 있습니다", res.status);  /* proxy_down */
+    if (code === "proxy_down") throw apiErr("맥미니 AntSeed 프록시가 꺼져 있습니다", res.status);
+    if (code === "download_failed") throw apiErr(msg || "유튜브 영상을 가져오지 못했습니다", res.status);
+    throw apiErr(upstreamMsg(msg, suggest), res.status);  /* upstream_error 등: 모델/제공자 실패 */
   }
+  if (path === "/api/youtube" && res.status === 504) throw apiErr(msg || "유튜브 가져오기 시간이 초과되었습니다", res.status);
+  if (res.status === 504 || code === "timeout") throw apiErr("업스트림 응답 시간 초과 · 잠시 후 다시 시도하거나 다른 모델을 선택해보세요", res.status);
   throw apiErr(msg || ("요청 실패 (" + res.status + ")"), res.status);
 }
 let meTimer = null;
@@ -983,18 +1042,18 @@ function fillModels(type) {
   for (const m of models) {
     const o = document.createElement("option");
     o.value = m.id;
-    o.textContent = type === "video" ? vOptionText(m) : m.id + " · peers " + (m.peers ?? "?") + " · " + (m.price ?? "?");
+    o.textContent = type === "video" ? vOptionText(m) : m.id + " · peers " + (m.peers ?? "?") + " · " + (m.price ?? "?") + (type === "image" && Array.isArray(m.inputs) && m.inputs.includes("image") ? " · 참고이미지" : "");
     sel.appendChild(o);
   }
   sel.value = pick;
   LS.set(d.ls, pick);
   mcSummaries(); /* 모바일 컴팩트 바 요약 갱신 */
   if (type === "video") { vEstimate(); updateVInfo(); }
-  if (type === "image") iEstimate();
+  if (type === "image") { iEstimate(); iRefWarnCheck(); }
 }
 for (const d of MODEL_DEFS) {
   $(d.search).addEventListener("input", () => fillModels(d.type));
-  $(d.sel).addEventListener("change", () => { LS.set(d.ls, $(d.sel).value); if (d.type === "video") { vEstimate(); updateVInfo(); } });
+  $(d.sel).addEventListener("change", () => { LS.set(d.ls, $(d.sel).value); if (d.type === "video") { vEstimate(); updateVInfo(); } if (d.type === "image") iRefWarnCheck(); });
 }
 
 /* ---------- 모바일(≤640px) 설정 접기 ---------- */
@@ -1340,9 +1399,9 @@ async function sendMsg() {
       signal: streamCtl.signal
     });
     if (!res.ok || !res.body) {
-      let msg = "", code2 = "";
-      try { const j = await res.json(); msg = j.message || j.error || ""; code2 = j.code || ""; } catch (e) {}
-      throw new Error(mapErr(res.status, code2, msg));
+      let msg = "", code2 = "", suggest2 = null;
+      try { const j = await res.json(); msg = String(j.message || j.error || ""); code2 = String(j.error || j.code || ""); suggest2 = Array.isArray(j.suggest_models) ? j.suggest_models : null; } catch (e) {}
+      throw new Error(mapErr(res.status, code2, msg, suggest2));
     }
     const rd = res.body.getReader();
     const dec = new TextDecoder();
@@ -1398,12 +1457,24 @@ async function tok() {
   const r = await sb.auth.getSession();
   return r.data.session ? r.data.session.access_token : "";
 }
-function mapErr(status, code, msg) {
+function upstreamMsg(msg, suggest) {
+  /* 502 upstream_error 등: 프록시는 정상, 모델/제공자가 실패한 경우의 메시지 */
+  const m = String(msg || "").replace(/\s+/g, " ").trim() || "응답 없음";
+  let s = "업스트림 모델 오류: " + m.slice(0, 160) + " · 다른 모델로 시도해보세요";
+  if (Array.isArray(suggest) && suggest.length) s += " (추천: " + suggest.slice(0, 3).join(", ") + ")";
+  return s;
+}
+function mapErr(status, code, msg, suggest) {
   if (status === 401) return "로그인이 만료되었습니다. 다시 로그인해주세요";
   if (status === 403) return msg || "접근이 거부되었습니다";
   if (status === 402) return "AntSeed 크레딧(USDC)이 부족합니다. 앱에서 충전해주세요";
   if (status === 429) return code === "rate_limited" ? "요청이 너무 잦습니다. 잠시 후 다시" : (msg || "요청이 너무 잦습니다. 잠시 후 다시");
-  if (status === 502) return code === "peer_policy" ? "피어 평판 정책에 막혔습니다. 다른 모델을 선택해보세요" : "맥미니 AntSeed 프록시가 꺼져 있습니다";
+  if (status === 502) {
+    if (code === "peer_policy") return "피어 평판 정책에 막혔습니다. 다른 모델을 선택해보세요";
+    if (code === "proxy_down") return "맥미니 AntSeed 프록시가 꺼져 있습니다";
+    return upstreamMsg(msg, suggest);  /* upstream_error 등: 모델/제공자 실패 */
+  }
+  if (status === 504 || code === "timeout") return "업스트림 응답 시간 초과 · 잠시 후 다시 시도하거나 다른 모델을 선택해보세요";
   return msg || ("요청 실패 (" + status + ")");
 }
 $("sendBtn").addEventListener("click", sendMsg);
@@ -1492,12 +1563,47 @@ function renderThumbs() {
     t.appendChild(im); t.appendChild(x);
     box.appendChild(t);
   });
+  iRefWarnCheck();
 }
+const I_REF_PREF = ["gpt-image-1-5", "nano-banana-2.1", "seedream-v5-pro", "qwen-image-2.1-pro", "grok-imagine-image"];
+function iModelInputs(id) { /* 모델 inputs 배열 — 커스텀(사용자 지정) 모델은 서버가 모른다고 가정해 null */
+  const m = modelStore.image.find((x) => x.id === id) || null;
+  return (m && Array.isArray(m.inputs) && m.inputs.length) ? m.inputs : null;
+}
+function iRefWarnCheck() { /* 참고 이미지 있는데 선택 모델이 이미지 입력 미지원 → 경고 */
+  const box = $("iRefWarn");
+  if (!box) return;
+  const inputs = iRefs.length ? iModelInputs(curModelId("image")) : null;
+  const bad = !!(inputs && !inputs.includes("image"));
+  box.hidden = !bad;
+}
+$("iRefSwitch").addEventListener("click", () => {
+  let target = null;
+  for (const id of I_REF_PREF) { if (modelStore.image.some((m) => m.id === id)) { target = id; break; } }
+  if (!target) { /* 우선순위 목록에 없으면 첫 지원 모델 */
+    const m = modelStore.image.find((x) => Array.isArray(x.inputs) && x.inputs.includes("image"));
+    target = m ? m.id : "";
+  }
+  if (!target) { toast("참고 이미지를 지원하는 모델이 없습니다"); return; }
+  $("iSearch").value = "";
+  fillModels("image");
+  selectModel("image", target);
+  iRefWarnCheck(); iEstimate();
+  toast("모델을 " + target + "(으)로 바꿨습니다", true);
+});
 $("iRefs").addEventListener("change", async (e) => {
   iRefs = await pickRefs(e.target.files, 4, iRefs);
   e.target.value = "";
   renderThumbs();
 });
+["iPrompt"].forEach((id) => $(id).addEventListener("paste", async (e) => { /* 이미지 탭 프롬프트에 붙여넣은 이미지 파일 → 참고 이미지 */
+  const fs = agFilesFromClipboard(e);
+  if (!fs.length) return;
+  e.preventDefault();
+  iRefs = await pickRefs(fs, 4, iRefs);
+  renderThumbs();
+  toast("참고 이미지로 추가했습니다", true);
+}));
 function genBtnTimer(btn, timerEl, on) {
   clearInterval(iTimerIv);
   if (!on) { timerEl.textContent = ""; return; }
@@ -1511,6 +1617,10 @@ async function genImage() {
   if (!prompt) { setErr($("iErr"), "프롬프트를 입력해주세요"); return; }
   const model = curModelId("image");
   if (!model) { setErr($("iErr"), "모델을 선택해주세요"); return; }
+  if (iRefs.length) {
+    const inputs = iModelInputs(model);
+    if (inputs && !inputs.includes("image")) { setErr($("iErr"), "선택한 모델은 참고 이미지를 받지 않습니다. 참고 이미지 지원 모델로 바꿔주세요"); return; }
+  }
   setErr($("iErr"), "");
   const n = Math.min(4, Math.max(1, parseInt($("iN").value, 10) || 1));
   const est = iEstimate();
@@ -1583,6 +1693,19 @@ function iEstimate() {
 ["iN", "iSize", "iQual"].forEach((id) => $(id).addEventListener("input", iEstimate));
 ["iN", "iSize", "iQual"].forEach((id) => $(id).addEventListener("change", iEstimate));
 $("iGen").addEventListener("click", genImage);
+(function () { /* 이미지 탭 프롬프트 박스에 드래그&드롭 → 참고 이미지 */
+  const zone = $("iPrompt");
+  let depth = 0;
+  zone.addEventListener("dragenter", (e) => { if (!e.dataTransfer || !Array.from(e.dataTransfer.types || []).includes("Files")) return; e.preventDefault(); depth++; zone.style.borderColor = "var(--accent)"; });
+  zone.addEventListener("dragover", (e) => { if (Array.from(e.dataTransfer.types || []).includes("Files")) e.preventDefault(); });
+  zone.addEventListener("dragleave", () => { if (--depth <= 0) { depth = 0; zone.style.borderColor = ""; } });
+  zone.addEventListener("drop", async (e) => {
+    if (!e.dataTransfer || !Array.from(e.dataTransfer.types || []).includes("Files")) return;
+    e.preventDefault(); depth = 0; zone.style.borderColor = "";
+    iRefs = await pickRefs(Array.from(e.dataTransfer.files || []), 4, iRefs);
+    renderThumbs();
+  });
+})();
 
 /* ---------- 갤러리 공통 ---------- */
 const MEDIA_CACHE_MAX = 60;
@@ -2638,7 +2761,7 @@ function agApprCard(b) {
   card.appendChild(h);
   const meta = document.createElement("div");
   meta.style.fontSize = "12.5px"; meta.style.marginTop = "6px";
-  const modeTxt = args.mode === "i2v" ? "이미지→영상" : "텍스트→영상";
+  const modeTxt = args.mode === "i2v" ? "이미지→영상" : args.mode === "ref" ? "참고이미지→영상" : args.mode === "v2v" ? "참고영상→영상" : "텍스트→영상";
   let mtxt = esc(args.model || "") + " · " + modeTxt;
   if (b.est_usd != null) mtxt += ' · 예상 <span class="est">' + fmt$(b.est_usd) + "</span>";
   if (args.max_usd != null && args.max_usd !== "") mtxt += " · 상한 " + fmt$(args.max_usd);
@@ -2658,6 +2781,35 @@ function agApprCard(b) {
     th.addEventListener("click", () => agLightbox(args.start_frame_media_id, "image"));
     mediaURL(args.start_frame_media_id).then((u) => { th.src = u; }, () => { th.alt = "불러오기 실패"; });
     card.appendChild(th);
+  }
+  const refIds = Array.isArray(args.reference_image_media_ids) ? args.reference_image_media_ids.filter((x) => typeof x === "string" && x) : [];
+  const refVid = typeof args.reference_video_media_id === "string" && args.reference_video_media_id ? args.reference_video_media_id : "";
+  if (refIds.length || refVid) {
+    const rrow = document.createElement("div");
+    rrow.style.display = "flex"; rrow.style.gap = "6px"; rrow.style.marginTop = "6px"; rrow.style.flexWrap = "wrap";
+    for (const id of refIds) {
+      const im = document.createElement("img");
+      im.alt = "참고 이미지"; im.loading = "lazy";
+      im.style.width = "64px"; im.style.borderRadius = "7px"; im.style.cursor = "zoom-in";
+      im.addEventListener("click", () => agLightbox(id, "image"));
+      mediaURL(id).then((u) => { im.src = u; }, () => { im.alt = "불러오기 실패"; });
+      rrow.appendChild(im);
+    }
+    if (refVid) {
+      const rv = document.createElement("video");
+      rv.muted = true; rv.playsInline = true; rv.preload = "metadata"; rv.controls = false;
+      rv.style.width = "96px"; rv.style.borderRadius = "7px"; rv.style.cursor = "zoom-in";
+      rv.addEventListener("click", () => agLightbox(refVid, "video"));
+      mediaURL(refVid).then((u) => { rv.src = u; }, () => {});
+      rrow.appendChild(rv);
+    }
+    card.appendChild(rrow);
+    if (refVid) {
+      const cap = document.createElement("div");
+      cap.style.fontSize = "11px"; cap.style.color = "var(--dim)";
+      cap.textContent = "참고 영상";
+      card.appendChild(cap);
+    }
   }
   const ta = document.createElement("textarea");
   ta.rows = 3; ta.value = args.prompt || ""; ta.readOnly = true;
@@ -2791,6 +2943,328 @@ async function agStartJobPoll(b) {
   if (b.state === "done") { toast("영상 생성 완료", true); if (curTab === "Agent") agRenderGal(); }
   else if (b.state === "fail") toast("영상 생성 실패: " + (b.error || ""));
 }
+/* --- 첨부(파일 업로드·유튜브 가져오기) --- */
+const AG_ATT_MAX = 6;
+let agAtts = []; /* 칩 상태: {id?, file?, kind, source, title?, keyframes?, url?, state:"up"|"yt"|"ok"|"err", prog?, msg?, attId?} */
+const agYtSeen = new Set(); /* 이미 제안한 유튜브 URL(중복 제안 방지) */
+const YT_RE = /https?:\/\/(?:www\.youtube\.com\/watch\?v=|youtube\.com\/shorts\/|youtu\.be\/|m\.youtube\.com\/watch\?v=)[\w-]{6,}/i;
+function agYtExtract(text) { const m = String(text || "").match(YT_RE); return m ? m[0] : ""; }
+function agFilesFromClipboard(e) {
+  const dt = e.clipboardData;
+  if (!dt) return [];
+  let fs = Array.from(dt.files || []);
+  if (!fs.length) { /* items 경로: kind==="file"만, 폴더 등은 제외 */
+    fs = [];
+    for (const it of Array.from(dt.items || [])) {
+      if (it && it.kind === "file") { const f = it.getAsFile(); if (f) fs.push(f); }
+    }
+  }
+  return fs.filter((f) => /^image\//.test(f.type) || /^video\//.test(f.type));
+}
+/* 로컬 이미지 → JPEG Blob 변환(HEIC 등 미지원 포맷·9MB 초과 축소) · 실패 시 null */
+function agImgToJpeg(blob, maxSide) {
+  return new Promise(async (res) => {
+    let url = "";
+    try {
+      url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const max = maxSide || 2048;
+          const sc = Math.min(1, max / Math.max(img.width, img.height));
+          const cv = document.createElement("canvas");
+          cv.width = Math.max(1, Math.round(img.width * sc));
+          cv.height = Math.max(1, Math.round(img.height * sc));
+          cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+          cv.toBlob((b) => { res(b || null); }, "image/jpeg", 0.9);
+        } catch (e) { res(null); }
+      };
+      img.onerror = () => res(null);
+      img.src = url;
+    } catch (e) { res(null); }
+    setTimeout(() => { if (url) URL.revokeObjectURL(url); }, 15000);
+  });
+}
+async function agPrepareFile(file) { /* {file, name, thumb} 또는 Error */
+  const isImg = /^image\//.test(file.type);
+  const isVid = /^video\//.test(file.type);
+  if (!isImg && !isVid) return { err: "이미지·영상 파일만 첨부할 수 있습니다" };
+  if (isVid) {
+    if (!/video\/(mp4|webm|quicktime)/.test(file.type) || file.size > 50 * 1024 * 1024) return { err: "영상은 50MB 이하 MP4/WEBM/MOV만 첨부할 수 있습니다" };
+    return { file, name: file.name || "video", kind: "video" };
+  }
+  const okTypes = ["image/png", "image/jpeg", "image/webp"];
+  if (okTypes.includes(file.type) && file.size <= 9 * 1024 * 1024) return { file, name: file.name || "image", kind: "image" };
+  /* HEIC 등 기타 이미지·9MB 초과: JPEG 변환(실패 시 안내) */
+  const jpg = await agImgToJpeg(file, 2048);
+  if (!jpg) return { err: "이 이미지 형식은 지원되지 않습니다. JPG/PNG로 변환해주세요" };
+  const base = (file.name || "image").replace(/\.[^.]+$/, "");
+  return { file: new File([jpg], base + ".jpg", { type: "image/jpeg" }), name: base + ".jpg", kind: "image" };
+}
+function agAttCount() { return agAtts.filter((a) => a.state !== "err").length; }
+function agAttRender() {
+  const box = $("agAtt");
+  box.textContent = "";
+  if (!agAtts.length) { box.hidden = true; return; }
+  box.hidden = false;
+  agAtts.forEach((a, i) => {
+    const chip = document.createElement("div");
+    chip.className = "agatt" + (a.state === "err" ? " err" : "");
+    const th = document.createElement("div"); th.className = "th";
+    if (a.thumbEl) th.appendChild(a.thumbEl);
+    else if (a.url) {
+      if (a.kind === "video") {
+        const v = document.createElement("video");
+        v.muted = true; v.playsInline = true; v.preload = "metadata";
+        v.src = a.url;
+        a.thumbEl = v; th.appendChild(v);
+      } else {
+        const im = document.createElement("img"); im.alt = "";
+        im.src = a.url;
+        a.thumbEl = im; th.appendChild(im);
+      }
+    }
+    if (a.source === "youtube") {
+      const b = document.createElement("span"); b.className = "ytb"; b.textContent = "YT";
+      th.appendChild(b);
+    }
+    chip.appendChild(th);
+    const rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "✕"; rm.setAttribute("aria-label", "첨부 제거");
+    rm.addEventListener("click", () => agAttRemove(i));
+    chip.appendChild(rm);
+    const cap = document.createElement("div"); cap.className = "cap"; cap.textContent = a.title || a.name || "";
+    cap.title = cap.textContent;
+    chip.appendChild(cap);
+    if (a.state === "up" || a.state === "yt") {
+      const pb = document.createElement("div"); pb.className = "pbar" + (a.state === "yt" ? " indet" : "");
+      const fl = document.createElement("div"); fl.className = "fill"; fl.style.width = (a.prog || 0) + "%";
+      pb.appendChild(fl); chip.appendChild(pb);
+      const st = document.createElement("div"); st.className = "stat"; st.textContent = a.state === "yt" ? "가져오는 중…" : (a.prog ? Math.round(a.prog) + "%" : "대기 중…");
+      chip.appendChild(st);
+    } else if (a.state === "err") {
+      const st = document.createElement("div"); st.className = "stat"; st.textContent = a.msg || "실패";
+      st.title = st.textContent;
+      chip.appendChild(st);
+    } else {
+      const st = document.createElement("div"); st.className = "stat"; st.textContent = "✓ 첨부됨";
+      chip.appendChild(st);
+    }
+    box.appendChild(chip);
+  });
+}
+function agAttRemove(i) {
+  const a = agAtts[i];
+  if (!a) return;
+  if (a.xhr) { try { a.xhr.abort(); } catch (e) {} }
+  if (a.url) { try { URL.revokeObjectURL(a.url); } catch (e) {} }
+  agAtts.splice(i, 1);
+  agAttRender();
+}
+function agAttRevokeAll() {
+  for (const a of agAtts) if (a.url) { try { URL.revokeObjectURL(a.url); } catch (e) {} }
+  agAtts = [];
+  agAttRender();
+}
+function agAttClearOk() { /* 전송 완료: 성공 칩만 정리(오류 칩은 사용자가 지울 때까지 유지) */
+  for (const a of agAtts) if (a.state === "ok" && a.url) { try { URL.revokeObjectURL(a.url); } catch (e) {} }
+  agAtts = agAtts.filter((a) => a.state !== "ok");
+  agAttRender();
+}
+/* 로컬 파일 하나 첨부 → 검증 후 즉시 업로드 시작 */
+async function agAttachFiles(files) {
+  const list = Array.from(files || []).filter(Boolean);
+  if (!list.length) return;
+  for (const f of list) {
+    if (agAttCount() >= AG_ATT_MAX) { toast("첨부는 최대 6개까지입니다"); break; }
+    const prep = await agPrepareFile(f);
+    if (prep.err) {
+      agAtts.push({ state: "err", msg: prep.err, kind: /^video\//.test(f.type) ? "video" : "image", title: f.name || "" });
+      agAttRender();
+      toast(prep.err);
+      continue;
+    }
+    const att = {
+      state: "up", prog: 0, kind: prep.kind, source: "upload",
+      name: prep.name, title: f.name || prep.name,
+      url: URL.createObjectURL(prep.file), xhr: null, attId: null, keyframes: null
+    };
+    agAtts.push(att);
+    agAttRender();
+    agUploadAtt(att, prep.file);
+  }
+}
+/* POST /api/upload — 원시 바이트 XHR 업로드(진행률·429 재시도·401/네트워크 안내) */
+function agUploadXHR(att, body) {
+  return new Promise(async (res, rej) => {
+    let token = "";
+    try { token = await tok(); } catch (e) { token = ""; }
+    if (!token) return rej(new Error("로그인이 만료되었습니다"));
+    const p = agCurProj();
+    const url = RELAY + "/api/upload?project=" + encodeURIComponent(p ? p.id : "p_direct") + "&name=" + encodeURIComponent(att.name || "upload");
+    const attempt = (n) => {
+      const xhr = new XMLHttpRequest();
+      att.xhr = xhr;
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Authorization", "Bearer " + token);
+      xhr.setRequestHeader("Content-Type", att.file && att.file.type ? att.file.type : "application/octet-stream");
+      xhr.upload.onprogress = (ev) => { if (ev.lengthComputable) { att.prog = Math.min(100, (ev.loaded / ev.total) * 100); agAttRender(); } };
+      xhr.onerror = () => rej(new Error("릴레이 서버에 연결할 수 없습니다(맥미니/Funnel 확인)"));
+      xhr.onabort = () => rej(new Error("중단됨"));
+      xhr.onload = () => {
+        let j = null;
+        try { j = JSON.parse(xhr.responseText || ""); } catch (e) {}
+        if (xhr.status === 200) return res(j);
+        if (xhr.status === 429 && n < 2) { /* 429: 최대 2회 재시도(Retry-After 우선) */
+          let w = Number(xhr.getResponseHeader("Retry-After"));
+          if (!isFinite(w) || w < 0) w = n === 0 ? 1.5 : 3;
+          setTimeout(() => attempt(n + 1), w * 1000);
+          return;
+        }
+        if (xhr.status === 401) return rej(new Error("로그인이 만료되었습니다"));
+        const m = (j && (j.message || j.error)) || ("업로드 실패 (" + xhr.status + ")");
+        return rej(new Error(m));
+      };
+      xhr.send(body);
+    };
+    attempt(0);
+  });
+}
+async function agUploadAtt(att, file) {
+  att.file = file; /* Content-Type용 */
+  try {
+    const j = await agUploadXHR(att, file);
+    const item = (j && j.item) || null;
+    if (!item || !item.id) throw new Error("업로드 응답이 올바르지 않습니다");
+    att.attId = item.id;
+    att.kind = item.kind || att.kind;
+    att.bytes = item.bytes;
+    att.keyframes = (j && j.keyframes) || [];
+    att.state = "ok";
+    att.prog = 100;
+    agAttRender();
+  } catch (e) {
+    att.state = "err";
+    att.msg = (e && e.message) || "업로드 실패";
+    agAttRender();
+  } finally {
+    att.file = null;
+  }
+}
+/* 유튜브 가져오기(최대 ~2분) */
+async function agImportYouTube(url) {
+  if (agAttCount() >= AG_ATT_MAX) { toast("첨부는 최대 6개까지입니다"); return; }
+  if (!url) { toast("유튜브 주소를 입력해주세요"); return; }
+  const att = {
+    state: "yt", kind: "video", source: "youtube", title: url,
+    url: null, attId: null, keyframes: [], prog: 0, thumbEl: null
+  };
+  agAtts.push(att);
+  agAttRender();
+  try {
+    const p = agCurProj();
+    const j = await (await api("/api/youtube", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url, project: p ? p.id : "p_direct" }) })).json();
+    const item = (j && j.item) || null;
+    if (!item || !item.id) throw new Error("가져오기 응답이 올바르지 않습니다");
+    att.attId = item.id;
+    att.kind = "video";
+    att.title = item.title || url;
+    att.duration = item.duration_s;
+    att.keyframes = (j && j.keyframes) || [];
+    att.state = "ok";
+    if (att.keyframes.length) {
+      try {
+        const u = await mediaURL(att.keyframes[0]);
+        att.url = u;
+        const im = document.createElement("img"); im.alt = "";
+        im.src = u;
+        att.thumbEl = im;
+      } catch (e) {}
+    }
+    agAttRender();
+    toast("유튜브 영상을 첨부했습니다", true);
+  } catch (e) {
+    att.state = "err";
+    att.msg = (e && e.message) || "가져오기 실패";
+    agAttRender();
+  }
+}
+/* 전송 가능 여부: 업로드/가져오기 중이면 기다렸다가 진행 */
+function agAttPending() { return agAtts.some((a) => a.state === "up" || a.state === "yt"); }
+async function agAttWaitReady() {
+  while (agAttPending()) {
+    agSetHint("첨부 업로드 중…");
+    await new Promise((r) => setTimeout(r, 300));
+  }
+}
+function agAttDone() { /* 성공한 첨부 → {attachments:[ids], meta:[{id,kind,source,title?,keyframes?}]} */
+  const ok = agAtts.filter((a) => a.state === "ok" && a.attId);
+  return {
+    ids: ok.map((a) => a.attId),
+    meta: ok.map((a) => {
+      const m = { id: a.attId, kind: a.kind, source: a.source };
+      if (a.source === "youtube") { if (a.title) m.title = a.title; m.keyframes = a.keyframes || []; }
+      return m;
+    })
+  };
+}
+/* --- 첨부 UI 이벤트 --- */
+$("agAttachBtn").addEventListener("click", () => $("agFile").click());
+$("agFile").addEventListener("change", async (e) => { await agAttachFiles(e.target.files); e.target.value = ""; });
+$("agYtBtn").addEventListener("click", () => {
+  const row = $("agYtRow");
+  row.hidden = !row.hidden;
+  if (!row.hidden) { $("agYtUrl").value = ""; $("agYtUrl").focus(); }
+});
+$("agYtCancel").addEventListener("click", () => { $("agYtRow").hidden = true; });
+$("agYtGo").addEventListener("click", () => {
+  const u = $("agYtUrl").value.trim();
+  if (!u) { toast("유튜브 주소를 입력해주세요"); return; }
+  $("agYtRow").hidden = true;
+  agImportYouTube(u);
+});
+$("agYtUrl").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); $("agYtGo").click(); } });
+/* 입력·붙여넣기 중 유튜브 URL 자동 감지 → 제안 바(자동 가져오기 안 함) */
+function agYtSuggestCheck() {
+  const u = agYtExtract($("agInput").value);
+  const bar = $("agYtSuggest");
+  if (u && !agYtSeen.has(u)) { bar.dataset.url = u; bar.hidden = false; }
+  else if (bar.hidden === false && u !== bar.dataset.url) bar.hidden = true;
+}
+$("agInput").addEventListener("input", agYtSuggestCheck);
+$("agInput").addEventListener("paste", (e) => {
+  const fs = agFilesFromClipboard(e);
+  if (fs.length) { e.preventDefault(); agAttachFiles(fs); toast("첨부했습니다", true); return; }
+  setTimeout(agYtSuggestCheck, 0); /* 붙여넣은 텍스트 처리 뒤 감지 */
+});
+$("agYtSugYes").addEventListener("click", () => {
+  const bar = $("agYtSuggest");
+  const u = bar.dataset.url || "";
+  bar.hidden = true;
+  if (u) { agYtSeen.add(u); agImportYouTube(u); }
+});
+$("agYtSugNo").addEventListener("click", () => {
+  const bar = $("agYtSuggest");
+  if (bar.dataset.url) agYtSeen.add(bar.dataset.url);
+  bar.hidden = true;
+});
+/* 드래그&드롭 — 디렉터 영역 전체 */
+(function () {
+  const zone = document.querySelector("#paneAgent .agmain");
+  if (!zone) return;
+  let depth = 0;
+  zone.addEventListener("dragenter", (e) => {
+    if (!e.dataTransfer || !Array.from(e.dataTransfer.types || []).includes("Files")) return;
+    e.preventDefault(); depth++;
+    zone.classList.add("drag");
+  });
+  zone.addEventListener("dragover", (e) => { if (Array.from(e.dataTransfer.types || []).includes("Files")) e.preventDefault(); });
+  zone.addEventListener("dragleave", () => { if (--depth <= 0) { depth = 0; zone.classList.remove("drag"); } });
+  zone.addEventListener("drop", (e) => {
+    if (!e.dataTransfer || !Array.from(e.dataTransfer.types || []).includes("Files")) return;
+    e.preventDefault(); depth = 0; zone.classList.remove("drag");
+    agAttachFiles(e.dataTransfer.files);
+  });
+})();
 /* --- 라이트박스 --- */
 function agLightbox(id, kind) {
   let lb = $("agLB");
@@ -2877,6 +3351,15 @@ function agMsgEl(m) {
     const body = document.createElement("div");
     body.innerHTML = esc(m.content || "").replace(/\n/g, "<br>");
     wrap.appendChild(body);
+    if (Array.isArray(m.attachments) && m.attachments.length) {
+      for (const a of m.attachments) {
+        if (a && a.source === "youtube" && a.title) {
+          const t = document.createElement("div"); t.className = "atttitle"; t.textContent = "▶ " + a.title;
+          wrap.appendChild(t);
+        }
+      }
+      wrap.appendChild(agMediaGrid(m.attachments.map((a) => ({ id: a.id, kind: a.kind }))));
+    }
   } else {
     const body = document.createElement("div");
     body.className = "md";
@@ -2974,28 +3457,52 @@ function agMediaBlock(items) {
   agScroll();
   return b;
 }
+let agSending = false; /* 업로드 대기 중 중복 전송 방지 */
 async function agSend() {
   const inp = $("agInput");
-  const text = inp.value.trim();
-  if (!text || agBusy) return;
+  let text = inp.value.trim();
+  if (agBusy || agSending) return;
+  const hasAtt = agAttCount() > 0;
+  if (!text && !hasAtt) return;
+  agSending = true;
+  try {
+    if (agAttPending()) {
+      inp.disabled = true;
+      try { await agAttWaitReady(); } finally { inp.disabled = false; }
+    }
+  } finally { agSending = false; }
+  const att = agAttDone();
+  const attIds = att.ids.slice(0, AG_ATT_MAX);
+  const attMeta = att.meta.slice(0, AG_ATT_MAX);
+  if (!attIds.length && !text) return; /* 대기 중 모두 실패했고 본문도 없음 → 전송 안 함(칩은 유지) */
+  if (!text) text = "첨부한 자료를 참고해주세요";
   agEmitStop();
   const p = agCurProj();
   if (!p) return;
   if (!$("agModel").value && !agCfg) await agLoadConfig(); /* 세션 준비 전 실패분 재시도 */
   const model = $("agModel").value || "";
   if (!model) { toast("모델을 선택해주세요"); return; }
-  p.messages.push({ role: "user", content: text });
+  const userMsg = { role: "user", content: text };
+  if (attMeta.length) userMsg.attachments = attMeta;
+  p.messages.push(userMsg);
   if (!p.title) { p.title = text.slice(0, 24).replace(/\s+/g, " "); $("agTitle").textContent = p.title; }
   agTouch(p);
   const ai = { role: "assistant", content: "", blocks: [] };
   p.messages.push(ai);
   agSave();
   inp.value = ""; fitTA(inp);
+  $("agYtSuggest").hidden = true;
+  agAttClearOk(); /* 성공 첨부 칩 정리(오브젝트 URL 해제) — 오류 칩은 유지 */
   agRenderProjects(); agRenderLog();
-  const history = p.messages.slice(0, -1).slice(-40).map((m) => ({
-    role: m.role,
-    content: m.role === "assistant" ? (m.content + (m.notes ? "\n" + m.notes : "")) : m.content
-  }));
+  const history = p.messages.slice(0, -1).slice(-40).map((m) => {
+    let content = m.role === "assistant" ? (m.content + (m.notes ? "\n" + m.notes : "")) : m.content;
+    if (m.role === "user" && m !== userMsg && Array.isArray(m.attachments) && m.attachments.length) {
+      /* 이전 턴 첨부: 디렉터가 이후 턴에서도 id를 알 수 있게 내용에 메모(현재 턴은 attachments 필드로 전달 — 서버가 메모 추가) */
+      const note = m.attachments.map((a) => a.id + " (" + (a.kind || "?") + ")").join(", ");
+      content += "\n[첨부: " + note + "]";
+    }
+    return { role: m.role, content };
+  });
   agBusy = true;
   agBtns(false);
   agSetHint("생성 중…");
@@ -3005,7 +3512,7 @@ async function agSend() {
     const res = await fetch(RELAY + "/api/agent", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + (await tok()) },
-      body: JSON.stringify({ model, project: p.id, auto_video: $("agAutoVideo").checked, messages: history }),
+      body: JSON.stringify({ model, project: p.id, auto_video: $("agAutoVideo").checked, messages: history, attachments: attIds }),
       signal: agAbort.signal
     });
     if (!res.ok || !res.body) {
@@ -3145,7 +3652,7 @@ async function agSend() {
     agBusy = false;
     agAbort = null;
     agBtns(true);
-    agSetHint("이미지는 바로 생성, 영상은 실행 전 확인을 받습니다");
+    agSetHint("이미지는 바로 생성, 영상은 실행 전 확인 · 📎 이미지·영상·유튜브 첨부 가능");
     agRenderLog(); /* 최종 상태로 다시 그림(blocks·notes 반영) */
     if (mediaCount) agRenderGal();
     if (curTab === "Agent" && $("app").style.display !== "none") refreshMe();
