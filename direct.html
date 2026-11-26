@@ -34,7 +34,7 @@ html,body{overflow-x:hidden;}
 }
 
 /* ===== Direct 앱 ===== */
-#direct-main{max-width:1040px;}
+#direct-main{max-width:1240px;}
 [hidden]{display:none!important;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;min-width:0;}
 .gate{max-width:520px;margin:46px auto;text-align:center;padding:36px 24px;}
@@ -261,6 +261,7 @@ html{background:#0a0c10;}
 .ag-gal img,.ag-gal video{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;display:block;}
 .agmain{display:flex;flex-direction:column;gap:10px;min-width:0;}
 .agbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-width:0;}
+.agbar select{width:auto;flex:0 1 220px;min-width:0;max-width:240px;}
 .ag-title{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800;}
 #agProjToggle{display:none;}
 .aglog{height:calc(100dvh - 330px);min-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;padding:12px;background:#0d1016;display:flex;flex-direction:column;gap:12px;min-width:0;}
@@ -269,7 +270,7 @@ html{background:#0a0c10;}
 .agmsg.ai{align-self:flex-start;background:#121722;border:1px solid var(--line);}
 .agtool{font-size:12px;color:var(--dim);border:1px dashed var(--line);border-radius:8px;padding:4px 8px;display:inline-block;margin:4px 4px 0 0;}
 .agtool.err{color:#f87171;}
-.agmedia{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:8px;}
+.agmedia{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,260px));gap:8px;margin-top:8px;}
 .agmedia img,.agmedia video{width:100%;border-radius:10px;cursor:zoom-in;display:block;}
 .agmedia .dl{font-size:11px;color:var(--dim);}
 .agappr{border:1px solid #b45309;background:#1a1408;border-radius:12px;padding:12px;margin-top:8px;}
@@ -304,6 +305,7 @@ html{background:#0a0c10;}
 .agmain.drag{outline:2px dashed var(--accent2);outline-offset:6px;border-radius:14px;}
 .agattbtn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;border-radius:9px;border:1px solid var(--line);background:#0f1218;color:var(--txt);cursor:pointer;transition:border-color .14s ease;}
 .agattbtn:hover{border-color:var(--accent);}
+.agmsg.ai:has(.agmedia),.agmsg.ai:has(.agappr){width:88%;}
 .agmsg.user .agmedia{grid-template-columns:repeat(auto-fill,minmax(120px,160px));}
 .agmsg.user .agmedia img,.agmsg.user .agmedia video{max-width:160px;justify-self:end;}
 .agmsg .atttitle{font-size:11.5px;color:var(--dim);font-weight:700;margin-top:4px;overflow-wrap:anywhere;}
@@ -317,6 +319,9 @@ html{background:#0a0c10;}
   #agInput{max-height:25vh;}
   .ag-actions{flex-wrap:wrap;}
   .agattbtn{width:40px;height:40px;}
+  .agbar select{flex:1 1 100%;max-width:none;}
+  .agmsg.ai:has(.agmedia),.agmsg.ai:has(.agappr){width:100%;}
+  .agmedia{grid-template-columns:repeat(2,minmax(0,1fr));}
   .agmsg.user .agmedia{grid-template-columns:repeat(2,minmax(0,1fr));}
   .agmsg.user .agmedia img,.agmsg.user .agmedia video{max-width:100%;justify-self:stretch;}
 }
@@ -369,6 +374,7 @@ html{background:#0a0c10;}
             <button type="button" class="btn2" id="agProjToggle" aria-expanded="false" aria-controls="agSide">프로젝트 ▾</button>
             <span class="ag-title" id="agTitle">새 프로젝트</span>
             <select id="agModel" aria-label="디렉터 모델"></select>
+            <select id="agImgModel" aria-label="이미지 모델" title="이미지 모델"><option value="">이미지: 자동</option></select>
             <label class="ag-sw"><input type="checkbox" id="agAutoVideo"> 영상도 자동</label>
             <span class="ag-cost mono" id="agCost"></span>
           </div>
@@ -814,6 +820,7 @@ async function api(path, opts) {
     if (code === "video_busy") throw apiErr("동시 영상 생성은 최대 3건입니다", res.status);
     throw apiErr(msg || "요청이 너무 잦습니다. 잠시 후 다시", res.status);  /* daily_cap 등: 서버 message 사용 */
   }
+  if (code === "content_filtered") throw apiErr(msg + (suggest && suggest.length ? " (추천: " + suggest.slice(0, 3).join(", ") + ")" : ""), res.status);
   if (res.status === 502) {
     if (code === "peer_policy") throw apiErr("피어 평판 정책에 막혔습니다. 다른 모델을 선택해보세요", res.status);
     if (code === "proxy_down") throw apiErr("맥미니 AntSeed 프록시가 꺼져 있습니다", res.status);
@@ -1465,6 +1472,7 @@ function upstreamMsg(msg, suggest) {
   return s;
 }
 function mapErr(status, code, msg, suggest) {
+  if (code === "content_filtered") return msg + (suggest && suggest.length ? " (추천: " + suggest.slice(0, 3).join(", ") + ")" : "");
   if (status === 401) return "로그인이 만료되었습니다. 다시 로그인해주세요";
   if (status === 403) return msg || "접근이 거부되었습니다";
   if (status === 402) return "AntSeed 크레딧(USDC)이 부족합니다. 앱에서 충전해주세요";
@@ -1710,11 +1718,17 @@ $("iGen").addEventListener("click", genImage);
 /* ---------- 갤러리 공통 ---------- */
 const MEDIA_CACHE_MAX = 60;
 const mediaCache = new Map(); /* id -> blobURL */
+const mediaInflight = new Map(); /* id -> Promise<blobURL> */
 const io = ("IntersectionObserver" in window) ? new IntersectionObserver(onIntersect, { root: $("vGal"), rootMargin: "200px" }) : null; /* 갤러리가 내부 스크롤이라 root를 컨테이너로 지정 */
 const ioPlay = ("IntersectionObserver" in window) ? new IntersectionObserver(onIntersectPlay, { root: $("vGal"), rootMargin: "120px" }) : null;
 function cacheURL(id) { const u = mediaCache.get(id); if (u != null) { mediaCache.delete(id); mediaCache.set(id, u); } return u; }
 function putCache(id, url) {
-  if (mediaCache.has(id)) { const old = mediaCache.get(id); if (old !== url) URL.revokeObjectURL(old); mediaCache.delete(id); }
+  if (mediaCache.has(id)) {
+    const old = mediaCache.get(id);
+    /* 지연 해제: 이미 이 URL로 로딩 중인 <img>가 깨지지 않도록 */
+    if (old !== url) setTimeout(() => URL.revokeObjectURL(old), 60000);
+    mediaCache.delete(id);
+  }
   mediaCache.set(id, url);
   while (mediaCache.size > MEDIA_CACHE_MAX) {
     const k = mediaCache.keys().next().value;
@@ -1723,14 +1737,20 @@ function putCache(id, url) {
     dropVideos(k);
   }
 }
-async function mediaURL(id) {
+function mediaURL(id) {
   const c = cacheURL(id);
-  if (c) return c;
-  const res = await api("/api/media/file?id=" + encodeURIComponent(id));
-  const blob = await res.blob();
-  const url = URL.createObjectURL(blob);
-  putCache(id, url);
-  return url;
+  if (c) return Promise.resolve(c);
+  const pending = mediaInflight.get(id);
+  if (pending) return pending;
+  const p = (async () => {
+    const res = await api("/api/media/file?id=" + encodeURIComponent(id));
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    putCache(id, url);
+    return url;
+  })().finally(() => { mediaInflight.delete(id); });
+  mediaInflight.set(id, p);
+  return p;
 }
 function onIntersect(ents) {
   for (const en of ents) {
@@ -2638,7 +2658,7 @@ $("cmpModal").addEventListener("click", (e) => { if (e.target === $("cmpModal"))
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("cmpModal").hidden) cmpClose(); }); /* ESC 닫기 */
 
 /* ---------- 디렉터(오케스트레이터) ---------- */
-const AG_K = { proj: "direct.agent.projects", cur: "direct.agent.cur", model: "direct.agent.model", av: "direct.agent.autovideo" };
+const AG_K = { proj: "direct.agent.projects", cur: "direct.agent.cur", model: "direct.agent.model", av: "direct.agent.autovideo", img: "direct.agent.imgmodel" };
 const AG_TOOL_LABEL = { generate_image: "이미지 생성", generate_video: "영상 준비", list_models: "모델 조회", get_model_info: "모델 정보" };
 let agProjects = LS.json(AG_K.proj, []);
 if (!Array.isArray(agProjects)) agProjects = [];
@@ -3405,6 +3425,14 @@ function agPushBlock(b) {
 /* --- 설정 --- */
 let agCfgTried = false;
 let agCfgP = null; /* 진행 중인 설정 요청(동시 호출 공유) */
+function agImgTitle() {
+  const isel = $("agImgModel");
+  if (!isel) return;
+  const auto = !isel.value;
+  const mdl = $("agModel") ? ($("agModel").value || "") : "";
+  const onAuto = auto ? (mdl.indexOf("grok") === 0 ? "grok-imagine-image" : (agCfg && agCfg.default_image_model) || "기본") : "";
+  isel.title = auto ? ("자동: " + onAuto) : "이미지 모델";
+}
 async function agLoadConfig() {
   if (agCfgP) return agCfgP;
   if (agCfg || agCfgTried) return;
@@ -3427,6 +3455,24 @@ async function agLoadConfig() {
       }
       sel.value = (saved && models.includes(saved)) ? saved : (agCfg.default && models.includes(agCfg.default) ? agCfg.default : models[0]);
       LS.set(AG_K.model, sel.value);
+      const isel = $("agImgModel");
+      if (isel) {
+        const imgs = Array.isArray(agCfg.image_models) ? agCfg.image_models.slice() : [];
+        const isaved = LS.get(AG_K.img, "");
+        isel.textContent = "";
+        const auto = document.createElement("option");
+        auto.value = ""; auto.textContent = "이미지: 자동";
+        isel.appendChild(auto);
+        for (const im of imgs) {
+          const o = document.createElement("option");
+          o.value = im;
+          o.textContent = "이미지: " + im;
+          isel.appendChild(o);
+        }
+        isel.value = (isaved === "" || imgs.includes(isaved)) ? isaved : "";
+        LS.set(AG_K.img, isel.value);
+        agImgTitle();
+      }
     } catch (e) {
       agCfgTried = false; /* 실패(예: 세션 준비 전 401)는 다음 호출에서 재시도 */
       if (is429(e)) bgRetryLater("agCfg", () => agLoadConfig()); /* 429는 토스트 없이 10초 뒤 1회 재시도 */
@@ -3512,7 +3558,7 @@ async function agSend() {
     const res = await fetch(RELAY + "/api/agent", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + (await tok()) },
-      body: JSON.stringify({ model, project: p.id, auto_video: $("agAutoVideo").checked, messages: history, attachments: attIds }),
+      body: JSON.stringify({ model, project: p.id, auto_video: $("agAutoVideo").checked, image_model: $("agImgModel").value || "auto", messages: history, attachments: attIds }),
       signal: agAbort.signal
     });
     if (!res.ok || !res.body) {
@@ -3564,7 +3610,8 @@ async function agSend() {
           b.text = "✓ " + (j.summary || "완료") + (j.cost != null ? " " + fmt$(j.cost) : "");
           b.err = false;
         } else {
-          b.text = "✕ " + (j.error || "실패");
+          const em = String(j.error || "실패").replace(/^content_filtered:\s*/, "");
+          b.text = "✕ " + em;
           b.err = true;
         }
         if (rec && rec.el) { rec.el.textContent = b.text; rec.el.classList.toggle("err", !!b.err); }
@@ -3671,12 +3718,15 @@ $("agProjToggle").addEventListener("click", () => {
   const open = s.classList.toggle("open");
   $("agProjToggle").setAttribute("aria-expanded", open ? "true" : "false");
 });
-$("agModel").addEventListener("change", (e) => LS.set(AG_K.model, e.target.value));
+$("agModel").addEventListener("change", (e) => { LS.set(AG_K.model, e.target.value); agImgTitle(); });
+$("agImgModel").addEventListener("change", (e) => { LS.set(AG_K.img, e.target.value); agImgTitle(); });
 $("agAutoVideo").addEventListener("change", (e) => LS.set(AG_K.av, e.target.checked ? "1" : "0"));
 $("agAutoVideo").checked = LS.get(AG_K.av, "0") === "1";
+agImgTitle();
 let agDirty = false; /* 다른 탭에 있는 동안 job 완료 등 변경 발생 */
 window.agOnShow = function () {
   agLoadConfig();
+  agImgTitle();
   if (!agProjects.length) agNewProject();
   else if (!agCurProj()) agSelProject(agProjects.slice().sort((a, b) => (b.updated || 0) - (a.updated || 0))[0].id);
   else { if (agDirty) agDirty = false; agRenderLog(); agRenderProjects(); agRenderGal(); }
