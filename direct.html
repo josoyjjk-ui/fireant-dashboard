@@ -132,7 +132,20 @@ pre.code code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;f
 @media(min-width:1200px){.gal{grid-template-columns:repeat(4,minmax(0,1fr));}}
 .gcard,.gprog{border:1px solid var(--line);border-radius:10px;background:#0f1218;overflow:hidden;min-width:0;display:flex;flex-direction:column;}
 .gcard .media{position:relative;width:100%;aspect-ratio:1/1;background:#0a0d13;overflow:hidden;cursor:pointer;}
-.gcard .media img,.gcard .media video{width:100%;height:100%;object-fit:cover;display:block;}
+.gcard .media img,.gcard .media video,.gcard .media .mimg{width:100%;height:100%;object-fit:cover;display:block;}
+/* ---------- 미디어 스켈레톤 ---------- */
+.mimg{position:relative;display:block;overflow:hidden;background:#0a0d13;min-height:60px;}
+.mimg img{display:block;width:100%;height:auto;opacity:0;transition:opacity .18s ease;cursor:inherit;}
+.gcard .media .mimg img{height:100%;object-fit:cover;}
+.mimg.loaded img{opacity:1;}
+.mimg.loading::before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(100deg,#0a0d13 8%,#141a24 40%,#0a0d13 72%);background-size:220% 100%;animation:mimg-shimmer 1.25s ease-in-out infinite;}
+.mimg.err img{opacity:0;}
+.mimg.err::after{content:"불러오기 실패";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:11px;font-weight:800;text-align:center;padding:4px 4px 24px;}
+.mimg .retry{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:2;border:1px solid var(--line);background:#141926;color:var(--txt);border-radius:7px;font-size:11px;font-weight:800;padding:4px 9px;cursor:pointer;white-space:nowrap;}
+.mimg.small .retry{bottom:4px;right:4px;left:auto;transform:none;padding:2px 6px;font-size:10px;}
+.mimg.small::after{display:none;}
+@keyframes mimg-shimmer{0%{background-position:120% 0;}100%{background-position:-120% 0;}}
+@media(prefers-reduced-motion:reduce){.mimg.loading::before{animation:none;background:#141a24;}}
 .vph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:#0a0d13;color:var(--dim);font-size:11px;font-weight:800;text-align:center;padding:8px;overflow:hidden;}
 .vph .play{font-size:24px;color:var(--txt);line-height:1;}
 .vbadge{position:absolute;top:6px;left:6px;background:rgba(10,12,16,.85);border:1px solid var(--line);color:var(--accent2);border-radius:6px;font-size:10px;font-weight:900;padding:2px 6px;z-index:2;}
@@ -258,7 +271,9 @@ html{background:#0a0c10;}
 .ag-del:hover{color:#f87171;}
 .ag-galh{font-size:11px;color:var(--dim);font-weight:800;margin-top:2px;}
 .ag-gal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
-.ag-gal img,.ag-gal video{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;display:block;}
+.ag-gal img,.ag-gal video,.ag-gal .mimg{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;display:block;}
+.ag-gal .mimg img{position:absolute;inset:0;height:100%;width:100%;aspect-ratio:auto;border-radius:0;cursor:pointer;}
+.ag-gal .mimg .vidph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;text-shadow:0 2px 8px rgba(0,0,0,.75);pointer-events:none;z-index:1;}
 .agmain{display:flex;flex-direction:column;gap:10px;min-width:0;}
 .agbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-width:0;}
 .agbar select{width:auto;flex:0 1 220px;min-width:0;max-width:240px;}
@@ -271,7 +286,11 @@ html{background:#0a0c10;}
 .agtool{font-size:12px;color:var(--dim);border:1px dashed var(--line);border-radius:8px;padding:4px 8px;display:inline-block;margin:4px 4px 0 0;}
 .agtool.err{color:#f87171;}
 .agmedia{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,260px));gap:8px;margin-top:8px;}
-.agmedia img,.agmedia video{width:100%;border-radius:10px;cursor:zoom-in;display:block;}
+.agmedia img,.agmedia video,.agmedia .mimg{width:100%;border-radius:10px;cursor:zoom-in;display:block;}
+.agmedia .mimg:not(.loaded){aspect-ratio:1/1;min-height:120px;}
+.agmedia .mimg img{position:absolute;inset:0;height:100%;object-fit:cover;cursor:zoom-in;}
+.agmedia .mimg.loaded{aspect-ratio:auto;min-height:0;}
+.agmedia .mimg.loaded img{position:static;height:auto;}
 .agmedia .dl{font-size:11px;color:var(--dim);}
 .agappr{border:1px solid #b45309;background:#1a1408;border-radius:12px;padding:12px;margin-top:8px;}
 .agappr textarea{width:100%;rows:5;}
@@ -285,7 +304,9 @@ html{background:#0a0c10;}
 .ag-att[hidden]{display:none;}
 .agatt{position:relative;flex:0 0 auto;width:64px;border:1px solid var(--line);border-radius:10px;background:#0f1218;padding:3px 4px 4px;cursor:default;}
 .agatt .th{width:56px;height:56px;border-radius:8px;overflow:hidden;background:#0a0d13;margin:0 auto;position:relative;}
-.agatt .th img,.agatt .th video{width:100%;height:100%;object-fit:cover;display:block;}
+.agatt .th img,.agatt .th video,.agatt .th .mimg{width:100%;height:100%;object-fit:cover;display:block;}
+.agatt .th .mimg{min-height:0;}
+.agatt .th .mimg img{position:absolute;inset:0;height:100%;object-fit:cover;}
 .agatt .cap{font-size:10px;font-weight:800;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;}
 .agatt .rm{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:#1b2230;color:#fff;font-size:11px;cursor:pointer;line-height:1;z-index:2;}
 .agatt .ytb{position:absolute;bottom:3px;left:3px;background:rgba(10,12,16,.85);color:#f87171;border-radius:5px;font-size:9px;font-weight:900;padding:1px 4px;}
@@ -307,7 +328,7 @@ html{background:#0a0c10;}
 .agattbtn:hover{border-color:var(--accent);}
 .agmsg.ai:has(.agmedia),.agmsg.ai:has(.agappr){width:88%;}
 .agmsg.user .agmedia{grid-template-columns:repeat(auto-fill,minmax(120px,160px));}
-.agmsg.user .agmedia img,.agmsg.user .agmedia video{max-width:160px;justify-self:end;}
+.agmsg.user .agmedia img,.agmsg.user .agmedia video,.agmsg.user .agmedia .mimg{max-width:160px;justify-self:end;}
 .agmsg .atttitle{font-size:11.5px;color:var(--dim);font-weight:700;margin-top:4px;overflow-wrap:anywhere;}
 @media(max-width:760px){
   .agwrap{grid-template-columns:1fr;}
@@ -323,7 +344,7 @@ html{background:#0a0c10;}
   .agmsg.ai:has(.agmedia),.agmsg.ai:has(.agappr){width:100%;}
   .agmedia{grid-template-columns:repeat(2,minmax(0,1fr));}
   .agmsg.user .agmedia{grid-template-columns:repeat(2,minmax(0,1fr));}
-  .agmsg.user .agmedia img,.agmsg.user .agmedia video{max-width:100%;justify-self:stretch;}
+  .agmsg.user .agmedia img,.agmsg.user .agmedia video,.agmsg.user .agmedia .mimg{max-width:100%;justify-self:stretch;}
 }
 </style><link rel="stylesheet" href="/assets/nav.css?v=27e282ba"></head>
 <body>
@@ -1734,23 +1755,89 @@ function putCache(id, url) {
     const k = mediaCache.keys().next().value;
     const u = mediaCache.get(k); if (u) URL.revokeObjectURL(u);
     mediaCache.delete(k);
-    dropVideos(k);
+    /* 썸네일 키(id@w256)는 영상 캐시와 무관 — 원본 키일 때만 해당 id로 정리 */
+    if (!/@w\d+$/.test(String(k))) dropVideos(k);
   }
 }
-function mediaURL(id) {
-  const c = cacheURL(id);
+/* ---------- 미디어 fetch 동시성 제한(최대 4개) ---------- */
+const MEDIA_FETCH_MAX = 4;
+let mediaFetchActive = 0;
+const mediaFetchQueue = []; /* FIFO: resolvers */
+function mediaFetchSlot() {
+  if (mediaFetchActive < MEDIA_FETCH_MAX) { mediaFetchActive++; return Promise.resolve(); }
+  return new Promise((res) => mediaFetchQueue.push(res));
+}
+function mediaFetchRelease() {
+  const next = mediaFetchQueue.shift();
+  if (next) next(); /* 슬롯을 대기자에게 그대로 넘김 */
+  else mediaFetchActive--;
+}
+function mediaKey(id, w) { return w ? id + "@w" + w : id; }
+function mediaURL(id, w) {
+  const key = mediaKey(id, w);
+  const c = cacheURL(key);
   if (c) return Promise.resolve(c);
-  const pending = mediaInflight.get(id);
+  const pending = mediaInflight.get(key);
   if (pending) return pending;
   const p = (async () => {
-    const res = await api("/api/media/file?id=" + encodeURIComponent(id));
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    putCache(id, url);
-    return url;
-  })().finally(() => { mediaInflight.delete(id); });
-  mediaInflight.set(id, p);
+    await mediaFetchSlot();
+    try {
+      const q = w ? "&w=" + encodeURIComponent(w) : "";
+      const res = await api("/api/media/file?id=" + encodeURIComponent(id) + q);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      putCache(key, url);
+      return url;
+    } finally { mediaFetchRelease(); }
+  })().finally(() => { mediaInflight.delete(key); });
+  mediaInflight.set(key, p);
   return p;
+}
+/* ---------- 이미지 스켈레톤 래퍼 ---------- */
+const mediaLazyIO = ("IntersectionObserver" in window) ? new IntersectionObserver((ents) => {
+  for (const en of ents) {
+    const el = en.target;
+    if (!el.isConnected) { mediaLazyIO.unobserve(el); continue; } /* 다시 그려져 DOM에서 빠진 타일 정리 */
+    if (!en.isIntersecting) continue;
+    mediaLazyIO.unobserve(el);
+    if (typeof el._mstart === "function") { const f = el._mstart; el._mstart = null; f(); }
+  }
+}, { root: null, rootMargin: "200px" }) : null;
+function mediaImg(id, w, opts) {
+  opts = opts || {};
+  const box = document.createElement("span");
+  box.className = "mimg loading" + (opts.small ? " small" : "");
+  const im = document.createElement("img");
+  im.loading = "lazy";
+  im.decoding = "async";
+  im.alt = "";
+  box.appendChild(im);
+  const altText = opts.alt == null ? "생성 이미지" : opts.alt;
+  const showErr = () => {
+    box.classList.remove("loading", "loaded");
+    box.classList.add("err");
+    if (box.querySelector(".retry")) return; /* 버튼 중복 방지 */
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "retry"; b.textContent = "다시 시도";
+    b.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); load(); });
+    box.appendChild(b);
+  };
+  const load = () => {
+    box.classList.remove("err", "loaded");
+    box.classList.add("loading");
+    const old = box.querySelector(".retry"); if (old) old.remove();
+    mediaURL(id, w).then((u) => { im.src = u; }, showErr);
+  };
+  im.addEventListener("load", () => {
+    box.classList.remove("loading", "err");
+    box.classList.add("loaded");
+    im.alt = altText;
+  });
+  im.addEventListener("error", showErr);
+  if (opts.onClick) box.addEventListener("click", opts.onClick);
+  if (opts.lazy && mediaLazyIO) { box._mstart = load; mediaLazyIO.observe(box); }
+  else load();
+  return box;
 }
 function onIntersect(ents) {
   for (const en of ents) {
@@ -1773,7 +1860,12 @@ function dropVideos(id) {
     const r = v.getBoundingClientRect();
     const g = v.closest(".gal") ? v.closest(".gal").getBoundingClientRect() : null;
     const visible = r.bottom > 0 && r.top < innerHeight && (!g || (r.bottom > g.top && r.top < g.bottom));
-    if (!visible) { v.pause(); v.removeAttribute("src"); v.src = ""; v.closest(".media").dataset.loaded = ""; }
+    if (!visible) {
+      v.pause(); v.removeAttribute("src"); v.src = "";
+      /* 영상 갤러리 카드는 다음 관찰 시 다시 로드되도록 표시(lazy). 다른 곳(이미지 카드·로그)은 그대로 둠 */
+      const m = v.closest(".media");
+      if (m && m.dataset.kind === "video") { m.dataset.loaded = ""; m.dataset.lazy = "1"; }
+    }
   });
 }
 const GAL = { image: null, video: null }; /* 각 탭 상태 */
@@ -1870,12 +1962,10 @@ function observeAll(box) {
 function mediaCard(kind, g) {
   const it = g.versions[g.show || 0];
   const card = document.createElement("div"); card.className = "gcard"; card.dataset.root = g.rootId;
-  const media = document.createElement("div"); media.className = "media"; media.dataset.mid = it.id; media.setAttribute("role", "button"); media.tabIndex = 0;
+  const media = document.createElement("div"); media.className = "media"; media.dataset.mid = it.id; media.dataset.kind = kind; media.setAttribute("role", "button"); media.tabIndex = 0;
   media.setAttribute("aria-label", (kind === "image" ? "이미지" : "영상") + " 열기");
   if (kind === "image") {
-    const im = document.createElement("img"); im.alt = "생성 이미지"; im.loading = "lazy";
-    mediaURL(it.id).then((u) => { im.src = u; }, () => { im.alt = "불러오기 실패"; im.style.opacity = ".15"; });
-    media.appendChild(im);
+    media.appendChild(mediaImg(it.id, 256, { alt: "생성 이미지" }));
   } else {
     media.dataset.lazy = "1";
     const ph = document.createElement("div"); ph.className = "vph";
@@ -2053,9 +2143,9 @@ function renderLB() {
   st.textContent = "";
   const it = c.it, kind = lbCtx.kind;
   if (kind === "image") {
-    const im = document.createElement("img"); im.alt = "생성 이미지";
-    mediaURL(it.id).then((u) => { im.src = u; }, () => { im.alt = "불러오기 실패"; });
+    const im = document.createElement("img"); im.alt = "";
     st.appendChild(im);
+    mediaURL(it.id).then((u) => { im.onload = () => { im.alt = "생성 이미지"; }; im.src = u; }, () => {});
   } else {
     const v = document.createElement("video");
     v.controls = true; v.playsInline = true; v.autoplay = true; v.loop = true; v.muted = false; v.dataset.mid = it.id;
@@ -2737,16 +2827,15 @@ function agMediaGrid(items) {
   const g = document.createElement("div"); g.className = "agmedia";
   for (const it of items || []) {
     const cell = document.createElement("div");
-    let el;
-    if (it.kind === "video") {
-      el = document.createElement("video");
-      el.controls = true; el.playsInline = true; el.preload = "metadata";
+    if (it.kind !== "video") {
+      cell.appendChild(mediaImg(it.id, 768, { alt: "생성 이미지", onClick: () => agLightbox(it.id, it.kind) }));
     } else {
-      el = document.createElement("img"); el.alt = "생성 이미지"; el.loading = "lazy";
+      const el = document.createElement("video");
+      el.controls = true; el.playsInline = true; el.preload = "metadata";
+      el.addEventListener("click", () => agLightbox(it.id, it.kind));
+      mediaURL(it.id).then((u) => { el.src = u; }, () => {});
+      cell.appendChild(el);
     }
-    el.addEventListener("click", () => agLightbox(it.id, it.kind));
-    mediaURL(it.id).then((u) => { el.src = u; }, () => { if (it.kind !== "video") { el.alt = "불러오기 실패"; el.style.opacity = ".2"; } });
-    cell.appendChild(el);
     const dl = document.createElement("a"); dl.className = "dl"; dl.textContent = "다운로드";
     dl.href = "#"; dl.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); agDownload(it.id); });
     cell.appendChild(dl);
@@ -2754,10 +2843,53 @@ function agMediaGrid(items) {
   }
   return g;
 }
+/* 오류 원문 → {short, raw} (짧은 사람용 문구 + 툴팁용 원문) */
+function friendlyErr(text) {
+  const raw = String(text == null ? "" : text);
+  const low = raw.toLowerCase();
+  /* "(대체 모델 X 도 실패: ...)" → 본문에서는 제거하고 짧은 접미사로만 유지 */
+  const alt = /\(대체 모델\s+([^)도]+?)\s*도 실패[^)]*\)/.exec(raw);
+  const bodyRaw = alt ? raw.replace(alt[0], " ") : raw;
+  let short = "";
+  if (/content checker|content_filtered|content policy|content_policy|moderation|safety system|nsfw/.test(low)) {
+    short = "콘텐츠 검열에 걸렸습니다(실존 인물·폭력 등). 표현을 바꾸거나 다른 모델을 쓰세요";
+  } else if (/upstream_image_rejected|peer could not complete/.test(low)) {
+    short = "모델 피어가 요청을 처리하지 못했습니다. 다시 시도하거나 다른 모델을 쓰세요";
+  } else if (/no_credit|credits/.test(low)) {
+    short = "AntSeed 크레딧(USDC)이 부족합니다";
+  } else if (/timeout/.test(low)) {
+    short = "업스트림 응답 시간 초과 · 잠시 후 다시 시도하거나 다른 모델을 선택해보세요";
+  } else if (/model_not_found/.test(low)) {
+    short = "모델을 찾을 수 없습니다. 다른 모델을 선택해보세요";
+  } else {
+    let s = bodyRaw;
+    const brace = s.indexOf("{");
+    if (brace >= 0) s = s.slice(0, brace);
+    s = s.replace(/^\s*[A-Za-z0-9_.-]*error\s*:\s*/i, ""); /* upstream_error: 같은 기계 코드 제거 */
+    s = s.replace(/\s+/g, " ").trim();
+    if (s.length > 120) s = s.slice(0, 120).trim();
+    short = s || "알 수 없는 오류";
+  }
+  if (alt) short += " (대체 모델 " + alt[1].trim() + " 도 실패)";
+  return { short, raw };
+}
 function agToolChip(text, err) {
   const c = document.createElement("span");
   c.className = "agtool" + (err ? " err" : "");
-  c.textContent = text;
+  const t = String(text == null ? "" : text);
+  if (err) {
+    let rest = t.trim();
+    if (rest.charAt(0) === "✕") rest = rest.slice(1).trim();
+    if (!rest || rest === "실패") {
+      c.textContent = "✕ 실패 · 원인 미상 (다시 시도해보세요)";
+    } else {
+      const fe = friendlyErr(rest);
+      c.textContent = "✕ " + fe.short;
+      c.title = fe.raw.slice(0, 500);
+    }
+    return c;
+  }
+  c.textContent = t;
   return c;
 }
 function agRenderBlocks(host, blocks) {
@@ -2795,11 +2927,8 @@ function agApprCard(b) {
     card.appendChild(mrow);
   }
   if (args.mode === "i2v" && args.start_frame_media_id) {
-    const th = document.createElement("img");
-    th.alt = "시작 프레임"; th.loading = "lazy";
+    const th = mediaImg(args.start_frame_media_id, 768, { alt: "시작 프레임", small: true, onClick: () => agLightbox(args.start_frame_media_id, "image") });
     th.style.width = "64px"; th.style.borderRadius = "7px"; th.style.marginTop = "6px"; th.style.display = "block"; th.style.cursor = "zoom-in";
-    th.addEventListener("click", () => agLightbox(args.start_frame_media_id, "image"));
-    mediaURL(args.start_frame_media_id).then((u) => { th.src = u; }, () => { th.alt = "불러오기 실패"; });
     card.appendChild(th);
   }
   const refIds = Array.isArray(args.reference_image_media_ids) ? args.reference_image_media_ids.filter((x) => typeof x === "string" && x) : [];
@@ -2808,11 +2937,8 @@ function agApprCard(b) {
     const rrow = document.createElement("div");
     rrow.style.display = "flex"; rrow.style.gap = "6px"; rrow.style.marginTop = "6px"; rrow.style.flexWrap = "wrap";
     for (const id of refIds) {
-      const im = document.createElement("img");
-      im.alt = "참고 이미지"; im.loading = "lazy";
+      const im = mediaImg(id, 768, { alt: "참고 이미지", small: true, onClick: () => agLightbox(id, "image") });
       im.style.width = "64px"; im.style.borderRadius = "7px"; im.style.cursor = "zoom-in";
-      im.addEventListener("click", () => agLightbox(id, "image"));
-      mediaURL(id).then((u) => { im.src = u; }, () => { im.alt = "불러오기 실패"; });
       rrow.appendChild(im);
     }
     if (refVid) {
@@ -2921,7 +3047,9 @@ function agJobCard(b) {
   }
   if (b.state === "fail") {
     card.classList.add("err");
-    card.textContent = "✕ 영상 생성 실패: " + (b.error || "알 수 없는 오류");
+    const fe = friendlyErr(b.error || "");
+    card.textContent = "✕ 영상 생성 실패: " + (b.error ? fe.short : "원인 미상 (다시 시도해보세요)");
+    if (b.error) card.title = fe.raw.slice(0, 500);
     return card;
   }
   card.textContent = "⏳ 영상 생성 중… (" + (b.model || "?") + ")";
@@ -3193,11 +3321,9 @@ async function agImportYouTube(url) {
     att.state = "ok";
     if (att.keyframes.length) {
       try {
-        const u = await mediaURL(att.keyframes[0]);
-        att.url = u;
-        const im = document.createElement("img"); im.alt = "";
-        im.src = u;
-        att.thumbEl = im;
+        await mediaURL(att.keyframes[0], 768);
+        /* att.url 에 공유 캐시 URL을 넣으면 첨부 제거 시 revoke 되어 캐시가 깨진다 → 넣지 않음 */
+        att.thumbEl = mediaImg(att.keyframes[0], 768, { alt: "첫 장면", small: true });
       } catch (e) {}
     }
     agAttRender();
@@ -3312,9 +3438,12 @@ function agLightbox(id, kind) {
   stage.textContent = "";
   let el;
   if (kind === "video") { el = document.createElement("video"); el.controls = true; el.playsInline = true; el.autoplay = true; }
-  else { el = document.createElement("img"); el.alt = "미리보기"; }
+  else { el = document.createElement("img"); el.alt = ""; }
   el.style.cssText = "max-width:92vw;max-height:88vh;border-radius:8px;background:#000;";
-  mediaURL(id).then((u) => { el.src = u; if (kind === "video") el.play().catch(() => {}); }, () => {});
+  mediaURL(id).then((u) => {
+    if (kind !== "video") el.onload = () => { el.alt = "미리보기"; };
+    el.src = u; if (kind === "video") el.play().catch(() => {});
+  }, () => {});
   stage.appendChild(el);
   dl.onclick = (e) => { e.preventDefault(); e.stopPropagation(); agDownload(id); };
   const fname = String(id || "").split("/").pop() || "direct-media";
@@ -3331,23 +3460,30 @@ async function agDownload(id) {
   } catch (e) { toast("다운로드 실패: " + (e && e.message)); }
 }
 /* --- 프로젝트 갤러리 --- */
+let agGalSeq = 0; /* 동시 호출 시 마지막 요청만 그리기(타일 중복 방지) */
 async function agRenderGal() {
   const box = $("agGal");
   const p = agCurProj();
+  const seq = ++agGalSeq;
+  if (mediaLazyIO) box.querySelectorAll(".mimg").forEach((el) => mediaLazyIO.unobserve(el)); /* 이전 타일 관찰 해제 */
   box.textContent = "";
   if (!p) return;
   try {
     const j = await (await api("/api/media?project=" + encodeURIComponent(p.id) + "&limit=50")).json();
     const items = (j && j.items) || [];
-    if (agCur !== p.id) return; /* 전환 경쟁 */
+    if (agCur !== p.id || seq !== agGalSeq) return; /* 전환 경쟁·중복 호출 */
+    box.textContent = "";
     if (!items.length) { const d = document.createElement("div"); d.className = "chat-empty"; d.textContent = "결과가 없습니다."; box.appendChild(d); return; }
     for (const it of items) {
-      let el;
-      if (it.kind === "video") { el = document.createElement("video"); el.muted = true; el.preload = "metadata"; }
-      else { el = document.createElement("img"); el.alt = "생성 이미지"; el.loading = "lazy"; }
-      el.addEventListener("click", () => agLightbox(it.id, it.kind));
-      mediaURL(it.id).then((u) => { el.src = u; }, () => {});
-      box.appendChild(el);
+      if (it.kind === "video") {
+        /* 영상은 256 썸네일 포스터 JPEG + ▶ 오버레이(전체 영상은 라이트박스에서) */
+        const el = mediaImg(it.id, 256, { alt: "생성 영상", lazy: true, onClick: () => agLightbox(it.id, "video") });
+        const pl = document.createElement("span"); pl.className = "vidph"; pl.textContent = "▶";
+        el.appendChild(pl);
+        box.appendChild(el);
+      } else {
+        box.appendChild(mediaImg(it.id, 256, { alt: "생성 이미지", lazy: true, onClick: () => agLightbox(it.id, "image") }));
+      }
     }
   } catch (e) { /* 실패는 조용히 무시 */ }
 }
@@ -3486,11 +3622,12 @@ async function agLoadConfig() {
 /* --- 전송 --- */
 function agSetHint(t) { $("agHint").textContent = t; }
 function agChipToAI(text, err) {
-  const b = { t: "tool", text, err: !!err };
+  const raw = String(text == null ? "" : text);
+  const b = { t: "tool", text: raw, err: !!err }; /* 저장은 원문 그대로 — 표시만 agToolChip이 friendlyErr로 축약 */
   agPushBlock(b);
   const box = $("agLog");
   const last = box.lastElementChild;
-  if (last && last.classList.contains("ai")) last.appendChild(agToolChip(text, err));
+  if (last && last.classList.contains("ai")) last.appendChild(agToolChip(raw, b.err));
   agScroll();
   return b;
 }
@@ -3610,11 +3747,19 @@ async function agSend() {
           b.text = "✓ " + (j.summary || "완료") + (j.cost != null ? " " + fmt$(j.cost) : "");
           b.err = false;
         } else {
-          const em = String(j.error || "실패").replace(/^content_filtered:\s*/, "");
+          const em = String(j.error || j.message || j.summary || "실패");
           b.text = "✕ " + em;
           b.err = true;
         }
-        if (rec && rec.el) { rec.el.textContent = b.text; rec.el.classList.toggle("err", !!b.err); }
+        if (rec && rec.el) {
+          if (b.err) {
+            const rest = b.text.slice(1).trim();
+            const fe = (!rest || rest === "실패") ? null : friendlyErr(rest);
+            rec.el.textContent = fe ? "✕ " + fe.short : "✕ 실패 · 원인 미상 (다시 시도해보세요)";
+            if (fe) rec.el.title = fe.raw.slice(0, 500); else rec.el.removeAttribute("title");
+          } else { rec.el.textContent = b.text; rec.el.title = ""; }
+          rec.el.classList.toggle("err", !!b.err);
+        }
         else { const host = $("agLog").lastElementChild; if (host && host.classList.contains("ai")) host.appendChild(agToolChip(b.text, b.err)); }
         if (j.media && j.media.length) {
           mediaCount += j.media.length;
