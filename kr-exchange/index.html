@@ -283,20 +283,37 @@
     .kcl-countrow { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
     .kcl-count { font-size:0.74rem; font-weight:800; color:var(--text-dim); font-variant-numeric:tabular-nums; }
     #kcl-list { display:flex; flex-direction:column; gap:6px; min-height:60px; }
-    .kcl-item { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; }
+    .kcl-item { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; min-width:0; }
     .kcl-row {
-      display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1.85fr); align-items:center; gap:10px;
-      padding:10px 12px; cursor:pointer; border-left:3px solid transparent;
+      display:grid; grid-template-columns:34px minmax(0,1fr); align-items:start; gap:10px;
+      padding:11px 12px; cursor:pointer; border-left:3px solid transparent;
     }
     .kcl-row:hover { background:var(--surface2); }
     .kcl-row:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
     .kcl-item.open .kcl-row { border-left-color:var(--gold); }
-    .kcl-main { min-width:0; }
+    .kcl-coin { width:34px; height:34px; border-radius:9px; object-fit:cover; background:var(--surface2); flex-shrink:0; }
+    .kcl-main { min-width:0; display:flex; flex-direction:column; gap:5px; }
     .kcl-id { display:flex; align-items:center; gap:6px; flex-wrap:wrap; min-width:0; }
-    .kcl-logo { width:18px; height:18px; border-radius:5px; object-fit:contain; background:#fff; padding:2px; flex-shrink:0; }
-    .kcl-sym { font-weight:800; font-size:0.86rem; overflow-wrap:anywhere; }
-    .kcl-name { font-size:0.76rem; color:var(--text-dim); overflow-wrap:anywhere; }
-    .kcl-ex { font-size:0.66rem; font-weight:700; color:var(--text-muted); white-space:nowrap; }
+    .kcl-sym { font-weight:800; font-size:0.9rem; overflow-wrap:anywhere; }
+    .kcl-name { font-size:0.76rem; color:var(--text-dim); overflow-wrap:anywhere; min-width:0; }
+    .kcl-exbs { display:flex; flex-wrap:wrap; gap:5px; min-width:0; }
+    .kcl-exb {
+      display:inline-flex; align-items:center; gap:4px; max-width:100%; min-width:0; overflow:hidden;
+      padding:2px 7px 2px 3px; border-radius:999px;
+      background:var(--surface2); border:1px solid var(--border);
+      font-size:0.66rem; font-weight:700; color:var(--text-dim);
+    }
+    .kcl-exb-img { width:14px; height:14px; border-radius:4px; object-fit:contain; background:#fff; flex-shrink:0; }
+    .kcl-exb-n { white-space:nowrap; color:var(--text-dim); }
+    .kcl-exb-s { white-space:nowrap; font-weight:800; }
+    .kcl-exb.designated .kcl-exb-s, .kcl-exb.extended .kcl-exb-s { color:#F7981C; }
+    .kcl-exb.delist .kcl-exb-s { color:#FF5F5F; }
+    .kcl-exb.done .kcl-exb-s { color:var(--text-muted); }
+    .kcl-exb.released .kcl-exb-s { color:#48C78E; }
+    [data-theme="light"] .kcl-exb.designated .kcl-exb-s,
+    [data-theme="light"] .kcl-exb.extended .kcl-exb-s { color:#9A6A00; }
+    [data-theme="light"] .kcl-exb.delist .kcl-exb-s { color:var(--red); }
+    [data-theme="light"] .kcl-exb.released .kcl-exb-s { color:var(--green); }
     .kcl-badge { display:inline-block; font-size:0.66rem; font-weight:800; padding:2px 7px; border-radius:5px; white-space:nowrap; }
     .kcl-badge.designated { background:rgba(247,152,28,.16); color:#F7981C; }
     .kcl-badge.extended   { background:rgba(247,152,28,.30); color:#F7981C; }
@@ -309,17 +326,29 @@
     [data-theme="light"] .kcl-badge.delist   { background:rgba(229,72,72,.14); color:var(--red); }
     [data-theme="light"] .kcl-badge.released { background:rgba(34,168,85,.14); color:var(--green); }
     .kcl-reason {
-      font-size:0.74rem; color:var(--text-muted); margin-top:4px;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      font-size:0.74rem; color:var(--text-muted); min-width:0;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+      overflow:hidden; overflow-wrap:anywhere; word-break:break-word; line-height:1.4;
     }
-    .kcl-dates { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:6px 8px; min-width:0; }
-    .kcl-dl { display:flex; flex-direction:column; gap:1px; min-width:0; }
-    .kcl-dl-k { font-size:0.62rem; color:var(--text-muted); white-space:nowrap; }
+    .kcl-dates { display:flex; flex-wrap:wrap; gap:6px 14px; min-width:0; }
+    .kcl-dl { display:flex; align-items:baseline; gap:5px; min-width:0; }
+    .kcl-dl-k { font-size:0.66rem; color:var(--text-muted); white-space:nowrap; }
     .kcl-dl-v { font-size:0.76rem; font-weight:700; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
-    .kcl-detail { border-top:1px dashed var(--border); background:var(--surface2); padding:10px 12px 12px; }
-    .kcl-drow { display:grid; grid-template-columns:108px minmax(0,1fr); gap:3px 10px; font-size:0.76rem; padding:3px 0; }
+    .kcl-detail { border-top:1px dashed var(--border); background:var(--surface2); padding:10px 12px 12px; min-width:0; }
+    .kcl-round { display:flex; flex-direction:column; gap:8px; min-width:0; }
+    .kcl-round + .kcl-round { margin-top:10px; }
+    .kcl-round-h {
+      display:flex; align-items:center; gap:6px; margin:2px 0 7px;
+      font-size:0.72rem; font-weight:800; color:var(--gold); letter-spacing:0.02em;
+    }
+    .kcl-round-now { font-size:0.62rem; font-weight:800; color:var(--text-muted); border:1px solid var(--border); border-radius:999px; padding:1px 6px; }
+    .kcl-excard { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:9px 10px; min-width:0; }
+    .kcl-excard-h { display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding-bottom:6px; margin-bottom:4px; border-bottom:1px dashed var(--border); min-width:0; }
+    .kcl-excard-n { font-size:0.78rem; font-weight:800; color:var(--text); overflow-wrap:anywhere; }
+    .kcl-drow { display:grid; grid-template-columns:88px minmax(0,1fr); gap:2px 9px; font-size:0.76rem; padding:3px 0; min-width:0; }
     .kcl-dk { color:var(--text-muted); font-size:0.72rem; }
-    .kcl-dv { color:var(--text); min-width:0; overflow-wrap:anywhere; }
+    .kcl-dv { color:var(--text); min-width:0; overflow-wrap:anywhere; word-break:break-word; line-height:1.5; }
+    .kcl-note-inline { color:var(--text-muted); font-size:0.68rem; }
     .kcl-tl { margin-top:10px; padding-top:9px; border-top:1px dashed var(--border); }
     .kcl-tl-h { font-size:0.7rem; font-weight:800; color:var(--text-muted); margin-bottom:4px; letter-spacing:0.02em; }
     .kcl-tl-item { display:flex; flex-wrap:wrap; align-items:center; gap:5px 8px; padding:4px 0; font-size:0.74rem; min-width:0; }
@@ -337,10 +366,17 @@
     .kcl-note { margin-top:12px; margin-bottom:0; }
     @media (max-width: 820px) {
       .kcl-controls { grid-template-columns:minmax(0,1fr); }
-      .kcl-row { grid-template-columns:minmax(0,1fr); align-items:start; gap:8px; }
-      .kcl-dates { grid-template-columns:repeat(2, minmax(0,1fr)); }
-      .kcl-drow { grid-template-columns:84px minmax(0,1fr); }
+      .kcl-row { grid-template-columns:30px minmax(0,1fr); align-items:start; gap:9px; padding:10px 11px; }
+      .kcl-coin { width:30px; height:30px; border-radius:8px; }
+      .kcl-drow { grid-template-columns:76px minmax(0,1fr); }
       .kcl-chip { min-height:34px; }
+      .kcl-excard { padding:8px 9px; }
+    }
+    @media (max-width: 380px) {
+      .kcl-sel-grid { grid-template-columns:minmax(0,1fr); }
+      .kcl-drow { grid-template-columns:minmax(0,1fr); gap:1px; padding:4px 0; }
+      .kcl-dk { font-size:0.68rem; }
+      .kcl-exbs { gap:4px; }
     }
     .kr-up { color: var(--red); }   /* 국내 관습: 상승=빨강 */
     .kr-down { color: var(--blue); } /* 국내 관습: 하락=파랑 */
@@ -603,7 +639,7 @@
     });
   </script>
   <script src="/assets/kr_dashboard.js?v=dbcc2e10" defer></script>
-  <script src="/assets/kr_caution_lookup.js?v=1" defer></script>
+  <script src="/assets/kr_caution_lookup.js?v=2" defer></script>
   <script src="/assets/vendor/supabase.js?v=eb9387ed" defer></script>
   <script src="/assets/auth.js?v=2fb2585f"></script>
 <script src="/assets/nav.js?v=e839bf5d"></script></body>
