@@ -1,8 +1,8 @@
 {
   "schema_version": "2.0.0",
-  "generated_at": "2026-11-28T18:31:57+09:00",
-  "run_id": "1795858325",
-  "status": "ok",
+  "generated_at": "2026-11-28T18:34:21+09:00",
+  "run_id": "1795858483",
+  "status": "partial",
   "source": "Yahoo Finance + 네이버 금융",
   "indices": [
     {
@@ -63,7 +63,8 @@
       "change": 0.0860000000000003,
       "change_pct": 1.845493562231766,
       "currency": "USD",
-      "market_time": 1795809594
+      "market_time": 1795809594,
+      "stale": true
     },
     {
       "name": "미 10년물",
@@ -162,5 +163,7 @@
       "market_time": "2026-11-27T20:15:00+09:00"
     }
   ],
-  "failures": []
+  "failures": [
+    "미 5년물(^FVX): <urlopen error _ssl.c:1063: The handshake operation timed ou"
+  ]
 }
